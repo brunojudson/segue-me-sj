@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "pessoa",schema="public")
+@Table(name = "pessoa", schema = "public")
 public class Pessoa implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -42,9 +42,12 @@ public class Pessoa implements Serializable {
 
     @Column(name = "ativo")
     private Boolean ativo = true;
-    
+
     @Column(name = "foto")
     private String foto;
+
+    @Column(name = "idade")
+    private Integer idade;
 
     // Construtores
     public Pessoa() {
@@ -139,6 +142,7 @@ public class Pessoa implements Serializable {
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
     }
+
     public String getFoto() {
         return foto;
     }
@@ -147,14 +151,32 @@ public class Pessoa implements Serializable {
         this.foto = foto;
     }
 
+    public Integer getIdade() {
+        return idade;
+    }
+
+    public void setIdade(Integer idade) {
+        this.idade = idade;
+    }
+
+    public void calcularIdade() {
+        if (this.dataNascimento != null) {
+            this.idade = java.time.Period.between(this.dataNascimento, java.time.LocalDate.now()).getYears();
+        } else {
+            this.idade = null;
+        }
+    }
+
     // Equals e HashCode
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Pessoa pessoa = (Pessoa) o;
         return Objects.equals(id, pessoa.id) &&
-               Objects.equals(cpf, pessoa.cpf);
+                Objects.equals(cpf, pessoa.cpf);
     }
 
     @Override

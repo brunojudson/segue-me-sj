@@ -2,10 +2,22 @@ package br.com.segueme.entity;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.HashSet;
+
+import javax.json.bind.annotation.JsonbTransient;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "equipe", schema="public")
@@ -20,6 +32,7 @@ public class Equipe implements Serializable {
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 
+    @JsonbTransient
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_equipe_id", nullable = false)
     private TipoEquipe tipoEquipe;
@@ -40,9 +53,11 @@ public class Equipe implements Serializable {
     @Column(name = "ativo")
     private Boolean ativo = true;
 
+    @JsonbTransient
     @OneToMany(mappedBy = "equipe", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Trabalhador> trabalhadores = new HashSet<>();
 
+    @JsonbTransient
     @OneToMany(mappedBy = "equipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Pasta> pastas = new HashSet<>();
 

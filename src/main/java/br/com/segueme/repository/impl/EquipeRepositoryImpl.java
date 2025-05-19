@@ -51,7 +51,7 @@ public class EquipeRepositoryImpl implements EquipeRepository {
                 "SELECT e FROM Equipe e " +
                         "JOIN FETCH e.tipoEquipe t " + // Carrega a associação TipoEquipe
                         "LEFT JOIN FETCH e.encontro en " + // Carrega a associação Encontro
-                        "ORDER BY e.nome ASC",
+                        "ORDER BY e.ativo DESC, e.nome ASC",
                 Equipe.class)
                 .getResultList();
     }

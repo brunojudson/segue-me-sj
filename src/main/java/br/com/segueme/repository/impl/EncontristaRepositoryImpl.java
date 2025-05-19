@@ -52,7 +52,7 @@ public class EncontristaRepositoryImpl implements EncontristaRepository {
                 "SELECT e FROM Encontrista e " +
                 "JOIN FETCH e.pessoa " +
                 "JOIN FETCH e.encontro " +
-                "LEFT JOIN FETCH e.trabalhador", // Adicione outras associações necessárias
+                "LEFT JOIN FETCH e.trabalhador order by e.ativo desc", // Adicione outras associações necessárias
                 Encontrista.class)
                 .getResultList();
     }

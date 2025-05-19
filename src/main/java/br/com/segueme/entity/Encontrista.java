@@ -3,8 +3,21 @@ package br.com.segueme.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import javax.persistence.*;
 import java.util.Objects;
+
+import javax.json.bind.annotation.JsonbTransient;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "encontrista", schema="public",uniqueConstraints = {
@@ -22,6 +35,7 @@ public class Encontrista implements Serializable {
     @JoinColumn(name = "pessoa_id", nullable = false)
     private Pessoa pessoa;
 
+    @JsonbTransient
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "encontro_id", nullable = false)
     private Encontro encontro;
@@ -43,6 +57,9 @@ public class Encontrista implements Serializable {
 
     @OneToOne(mappedBy = "encontrista", cascade = CascadeType.ALL, orphanRemoval = false)
     private Trabalhador trabalhador;
+    
+    @Column(name = "idade")
+    private Integer idade;
 
     // Construtores
     public Encontrista() {
@@ -127,6 +144,25 @@ public class Encontrista implements Serializable {
 
     public void setTrabalhador(Trabalhador trabalhador) {
         this.trabalhador = trabalhador;
+    }
+
+    public Integer getIdade() {
+        return idade;
+    }
+
+    public void setIdade(Integer idade) {
+        this.idade = idade;
+    }
+
+    public void calcularIdade() {
+        if (this.pessoa != null && this.pessoa.getDataNascimento() != null) {
+            this.idade = java.time.Period.between(
+                this.pessoa.getDataNascimento(),
+                java.time.LocalDate.now()
+            ).getYears();
+        } else {
+            this.idade = null;
+        }
     }
 
     // Equals e HashCode

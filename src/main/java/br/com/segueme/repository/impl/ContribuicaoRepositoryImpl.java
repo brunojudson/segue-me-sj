@@ -56,7 +56,7 @@ public class ContribuicaoRepositoryImpl implements ContribuicaoRepository {
 	                    "LEFT JOIN FETCH t.pessoa p " + // Carrega Pessoa do Trabalhador
 	                    "LEFT JOIN FETCH t.equipe e " + // Carrega Equipe
 	                    "LEFT JOIN FETCH e.encontro en " + // Carrega Encontro
-	                    "ORDER BY c.dataPagamento DESC",
+	                    "ORDER BY c.dataPagamento DESC, t.pessoa.nome ",
 	            Contribuicao.class)
 	            .getResultList();
 	}

@@ -44,15 +44,19 @@
 						<h:outputText value="#{pessoa.cpf}" />
 					</p:column>
 
-					<p:column headerText="Data de Nascimento" style="text-align: center">
+					<!-- <p:column headerText="Data de Nascimento" style="text-align: center">
 						<h:outputText value="#{pessoa.dataNascimento}">
 							<f:converter converterId="localDateConverter" />
 						</h:outputText>
-					</p:column>
+					</p:column> -->
 
 					<!-- <p:column headerText="E-mail" sortBy="#{pessoa.email}">
 						<h:outputText value="#{pessoa.email}" />
 					</p:column> -->
+					
+					<p:column headerText="Idade" style="text-align: center">
+						<h:outputText value="#{pessoa.idade}" rendered="#{not empty pessoa.idade}" />
+					</p:column>
 
 					<p:column headerText="Telefone" style="text-align: center">
 						<h:outputText value="#{pessoa.telefone}" />

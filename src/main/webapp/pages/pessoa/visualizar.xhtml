@@ -54,6 +54,12 @@
 								<h:outputText
 									value="#{pessoaController.pessoa.ativo ? 'Ativo' : 'Inativo'}" />
 
+								<p:outputLabel value="Idade:"
+									rendered="#{not empty pessoaController.pessoa.idade}" />
+								<h:outputText value="#{pessoaController.pessoa.idade} anos"
+									rendered="#{not empty pessoaController.pessoa.idade}" />
+
+
 								<p:outputLabel value="Data de Cadastro:" />
 								<h:outputText value="#{pessoaController.pessoa.dataCadastro}">
 									<f:converter converterId="localDateTimeConverter" />
@@ -62,11 +68,14 @@
 						</div>
 						<!-- Foto do casal -->
 						<div class="form-photo">
-							<p:graphicImage value="#{pessoaController.foto}"
-								alt="Foto" style="max-width: 200px; max-height: 200px;" />
+							<p:graphicImage value="#{pessoaController.foto}" alt="Foto"
+								style="max-width: 200px; max-height: 200px;" />
 						</div>
 					</div>
 					<div class="form-buttons">
+						<p:commandButton value="Gerar Ficha de Inscrição"
+							styleClass="ui-button-success" ajax="false"
+							action="#{pessoaController.gerarFichaInscricao(pessoaController.pessoa)}" />
 						<p:button value="Editar" outcome="/pages/pessoa/cadastro.xhtml"
 							icon="pi pi-pencil" styleClass="ui-button-warning">
 							<f:param name="id" value="#{pessoaController.pessoa.id}" />
@@ -74,6 +83,7 @@
 
 						<p:button value="Voltar" outcome="/pages/pessoa/lista.xhtml"
 							icon="pi pi-arrow-left" styleClass="ui-button-secondary" />
+
 					</div>
 				</h:form>
 			</div>

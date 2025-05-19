@@ -53,7 +53,7 @@ public class EncontristaService implements Serializable {
 		if (encontristaExistente.isPresent()) {
 			throw new IllegalArgumentException("Já existe um encontrista cadastrado para esta pessoa e encontro");
 		}
-
+		encontrista.calcularIdade();
 		// Salvar encontrista
 		return encontristaRepository.save(encontrista);
 	}
@@ -85,7 +85,7 @@ public class EncontristaService implements Serializable {
 	    if (encontro != null && Boolean.FALSE.equals(encontro.getAtivo())) {
 	        throw new IllegalArgumentException("Não é possível atualizar o encontrista, pois o encontro está finalizado.");
 	    }
-
+		encontrista.calcularIdade();
 		// Atualizar encontrista
 		return encontristaRepository.update(encontrista);
 	}

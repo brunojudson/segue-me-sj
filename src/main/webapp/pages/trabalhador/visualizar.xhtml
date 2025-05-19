@@ -37,6 +37,9 @@
                         <h:outputText value="#{trabalhadorController.trabalhador.dataInicio}">
                             <f:converter converterId="localDateConverter" />
                         </h:outputText>
+                        
+                        <p:outputLabel value="Idade:" rendered="#{not empty trabalhadorController.trabalhador.idade}"/>
+						<h:outputText value="#{trabalhadorController.trabalhador.idade} anos" rendered="#{not empty trabalhadorController.trabalhador.idade}" />
 
                         <p:outputLabel value="Coordenador:" />
                         <h:outputText value="#{trabalhadorController.trabalhador.ehCoordenador ? 'Sim' : 'Não'}" />

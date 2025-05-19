@@ -54,6 +54,11 @@
 					<p:column headerText="Coordenador" style="text-align: center" >
 						<h:outputText value="#{trabalhador.ehCoordenador ? 'Sim' : 'Não'}" />
 					</p:column>
+					
+					<p:column headerText="Idade" style="text-align: center" >
+						<h:outputText id="idade" value="#{trabalhador.idade}" rendered="#{not empty trabalhador.idade}" />
+						<p:tooltip for="idade" value="Idade quando trabalhou no encontro"/>
+					</p:column>
 
 					<p:column headerText="Foi Encontrista" style="text-align: center" responsivePriority="6">
 						<h:outputText

@@ -3,10 +3,20 @@ package br.com.segueme.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.HashSet;
+
+import javax.json.bind.annotation.JsonbTransient;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "encontro", schema="public")
@@ -48,12 +58,15 @@ public class Encontro implements Serializable {
     @Column(name = "ativo")
     private Boolean ativo = true;
 
+    @JsonbTransient
     @OneToMany(mappedBy = "encontro", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Encontrista> encontristas = new HashSet<>();
-
+    
+    @JsonbTransient
     @OneToMany(mappedBy = "encontro", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Equipe> equipes = new HashSet<>();
 
+    @JsonbTransient
     @OneToMany(mappedBy = "encontro", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Trabalhador> trabalhadores = new HashSet<>();
 

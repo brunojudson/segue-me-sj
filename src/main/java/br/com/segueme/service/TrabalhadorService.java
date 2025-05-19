@@ -102,7 +102,7 @@ public class TrabalhadorService implements Serializable {
                 throw new IllegalArgumentException("Já existe um trabalhador cadastrado para esta pessoa, equipe e encontro");
             }
         }
-
+        trabalhador.calcularIdade();
         // Salvar trabalhador
         return trabalhadorRepository.save(trabalhador);
     }
@@ -133,7 +133,7 @@ public class TrabalhadorService implements Serializable {
         if (encontro != null && Boolean.FALSE.equals(encontro.getAtivo())) {
         	throw new IllegalArgumentException("Não é possível remover o trabalhador, pois o encontro está finalizado.");
         }
-
+        trabalhador.calcularIdade();
         // Atualizar trabalhador
         return trabalhadorRepository.update(trabalhador);
     }

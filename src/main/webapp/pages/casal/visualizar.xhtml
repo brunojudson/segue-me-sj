@@ -19,51 +19,54 @@
 							if="#{not empty param.id}" />
 					</f:metadata>
 
-					 <div class="form-content">
-            <!-- Atributos do casal -->
-            <div class="form-details">
-                <p:panelGrid columns="2" layout="grid"
-                    styleClass="ui-panelgrid-blank ui-fluid"
-                    columnClasses="ui-grid-col-4, ui-grid-col-8">
+					<div class="form-content">
+						<!-- Atributos do casal -->
+						<div class="form-details">
+							<p:panelGrid columns="2" layout="grid"
+								styleClass="ui-panelgrid-blank ui-fluid"
+								columnClasses="ui-grid-col-4, ui-grid-col-8">
 
-                    <p:outputLabel value="Esposo:" />
-                    <h:outputText value="#{casalController.casal.pessoa1.nome}" />
+								<p:outputLabel value="Esposo:" />
+								<h:outputText value="#{casalController.casal.pessoa1.nome}" />
 
-                    <p:outputLabel value="Telefone do Esposo:" />
-                    <h:outputText value="#{casalController.casal.pessoa1.telefone}" />
+								<p:outputLabel value="Telefone do Esposo:" />
+								<h:outputText value="#{casalController.casal.pessoa1.telefone}" />
 
-                    <p:outputLabel value="Esposa:" />
-                    <h:outputText value="#{casalController.casal.pessoa2.nome}" />
+								<p:outputLabel value="Esposa:" />
+								<h:outputText value="#{casalController.casal.pessoa2.nome}" />
 
-                    <p:outputLabel value="Telefone da Esposa:" />
-                    <h:outputText value="#{casalController.casal.pessoa2.telefone}" />
+								<p:outputLabel value="Telefone da Esposa:" />
+								<h:outputText value="#{casalController.casal.pessoa2.telefone}" />
 
-                    <p:outputLabel value="Data de Casamento:" />
-                    <h:outputText value="#{casalController.casal.dataCasamento}">
-                        <f:converter converterId="localDateConverter" />
-                    </h:outputText>
+								<p:outputLabel value="Data de Casamento:" />
+								<h:outputText value="#{casalController.casal.dataCasamento}">
+									<f:converter converterId="localDateConverter" />
+								</h:outputText>
 
-                    <p:outputLabel value="Observações:" />
-                    <h:outputText value="#{casalController.casal.observacoes}" />
-                </p:panelGrid>
-            </div>
+								<p:outputLabel value="Observações:" />
+								<h:outputText value="#{casalController.casal.observacoes}" />
+							</p:panelGrid>
+						</div>
 
-            <!-- Foto do casal -->
-            <div class="form-photo">
-                <p:graphicImage value="#{casalController.foto}" alt="Foto do Casal"
-                    style="max-width: 200px; max-height: 200px;" />
-            </div>
-        </div>
+						<!-- Foto do casal -->
+						<div class="form-photo">
+							<p:graphicImage value="#{casalController.foto}"
+								alt="Foto do Casal" style="max-width: 200px; max-height: 200px;" />
+						</div>
+					</div>
 
-        <div class="form-buttons">
-            <p:button value="Editar" outcome="/pages/casal/cadastro.xhtml"
-                icon="pi pi-pencil" styleClass="ui-button-warning">
-                <f:param name="id" value="#{casalController.casal.id}" />
-            </p:button>
+					<div class="form-buttons">
+						<p:commandButton value="Gerar Ficha"
+							styleClass="ui-button-success" ajax="false"
+							action="#{casalController.gerarFichaInscricao(casalController.casal)}" />
+						<p:button value="Editar" outcome="/pages/casal/cadastro.xhtml"
+							icon="pi pi-pencil" styleClass="ui-button-warning">
+							<f:param name="id" value="#{casalController.casal.id}" />
+						</p:button>
 
-            <p:button value="Voltar" outcome="/pages/casal/lista.xhtml"
-                icon="pi pi-arrow-left" styleClass="ui-button-secondary" />
-        </div>
+						<p:button value="Voltar" outcome="/pages/casal/lista.xhtml"
+							icon="pi pi-arrow-left" styleClass="ui-button-secondary" />
+					</div>
 				</h:form>
 			</div>
 		</div>

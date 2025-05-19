@@ -8,8 +8,8 @@ import java.util.Set;
 import java.util.HashSet;
 
 @Entity
-@Table(name = "trabalhador", schema="public", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"pessoa_id", "equipe_id", "encontro_id"})
+@Table(name = "trabalhador", schema = "public", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "pessoa_id", "equipe_id", "encontro_id" })
 })
 public class Trabalhador implements Serializable {
 
@@ -58,6 +58,9 @@ public class Trabalhador implements Serializable {
 
     @OneToMany(mappedBy = "trabalhador", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Dirigente> cargos = new HashSet<>();
+
+    @Column(name = "idade")
+    private Integer idade;
 
     @Transient
     private boolean ehCasal;
@@ -189,14 +192,22 @@ public class Trabalhador implements Serializable {
     }
 
     public boolean isAtivo() {
-		return ativo;
-	}
+        return ativo;
+    }
 
-	public void setAtivo(boolean ativo) {
-		this.ativo = ativo;
-	}
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
 
-	// Métodos auxiliares
+    public Integer getIdade() {
+        return idade;
+    }
+
+    public void setIdade(Integer idade) {
+        this.idade = idade;
+    }
+
+    // Métodos auxiliares
     public void adicionarContribuicao(Contribuicao contribuicao) {
         contribuicoes.add(contribuicao);
         contribuicao.setTrabalhador(this);
@@ -216,17 +227,28 @@ public class Trabalhador implements Serializable {
         cargos.remove(dirigente);
         dirigente.setTrabalhador(null);
     }
+    // ...existing code...
+
+    public void calcularIdade() {
+        if (this.pessoa != null && this.pessoa.getDataNascimento() != null && this.dataInicio != null) {
+            this.idade = java.time.Period.between(this.pessoa.getDataNascimento(), this.dataInicio).getYears();
+        } else {
+            this.idade = null;
+        }
+    }
 
     // Equals e HashCode
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Trabalhador that = (Trabalhador) o;
         return Objects.equals(id, that.id) ||
-               (Objects.equals(pessoa, that.pessoa) &&
-                Objects.equals(equipe, that.equipe) &&
-                Objects.equals(encontro, that.encontro));
+                (Objects.equals(pessoa, that.pessoa) &&
+                        Objects.equals(equipe, that.equipe) &&
+                        Objects.equals(encontro, that.encontro));
     }
 
     @Override

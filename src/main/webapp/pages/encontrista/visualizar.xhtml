@@ -35,6 +35,9 @@
                             <f:converter converterId="localDateTimeConverter" />
                         </h:outputText>
                         
+                        <p:outputLabel value="Idade:" rendered="#{not empty encontristaController.encontrista.idade}"/>
+						<h:outputText value="#{encontristaController.encontrista.idade} anos" rendered="#{not empty encontristaController.encontrista.idade}" />
+                        
                         <!-- <p:outputLabel value="Valor Pago:" />
                         <h:outputText value="#{encontristaController.encontrista.valorPago}">
                             <f:convertNumber type="currency" currencySymbol="R$" locale="pt_BR" />

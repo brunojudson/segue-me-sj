@@ -52,7 +52,7 @@ public class EncontristaController implements Serializable {
     }
 
     public void carregarPessoas() {
-        pessoas = pessoaService.buscarTodosExcetoEncotristas();
+        pessoas = pessoaService.buscarTodos();
     }
 
     public void carregarEncontros() {

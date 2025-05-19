@@ -1,5 +1,6 @@
 package br.com.segueme.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -14,8 +15,16 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletResponse;
 
 import org.primefaces.model.file.UploadedFile;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import br.com.segueme.entity.Casal;
 import br.com.segueme.entity.Pessoa;
@@ -62,26 +71,29 @@ public class CasalController implements Serializable {
 		// Retorna uma imagem padrão caso o casal não tenha foto
 		return "/resources/images/default_casal.png?t=" + System.currentTimeMillis();
 	}
-	
+
 	public void carregarPessoas() {
-	    // Buscar todas as pessoas
-	    List<Pessoa> todasPessoas = pessoaService.buscarTodos();
+		// Buscar todas as pessoas
+		List<Pessoa> todasPessoas = pessoaService.buscarTodos();
 
-	    // Obter IDs das pessoas já associadas a casais
-	    List<Long> idsPessoasEmCasais = casais.stream()
-	            .flatMap(c -> List.of(c.getPessoa1().getId(), c.getPessoa2().getId()).stream())
-	            .collect(Collectors.toList());
+		// Obter IDs das pessoas já associadas a casais
+		List<Long> idsPessoasEmCasais = casais.stream()
+				.flatMap(c -> List.of(c.getPessoa1().getId(), c.getPessoa2().getId()).stream())
+				.collect(Collectors.toList());
 
-	    // Filtrar pessoas que não estão associadas a nenhum casal
-		pessoasMasculinas = todasPessoas.stream()
-				.filter(p -> p.getSexo() != null && p.getSexo() == 'M') // Filtrar por sexo masculino
-				//.filter(p -> !idsPessoasEmCasais.contains(p.getId())) // Excluir pessoas já em casais
+		// Filtrar pessoas que não estão associadas a nenhum casal
+		pessoasMasculinas = todasPessoas.stream().filter(p -> p.getSexo() != null && p.getSexo() == 'M') // Filtrar por
+																											// sexo
+																											// masculino
+				// .filter(p -> !idsPessoasEmCasais.contains(p.getId())) // Excluir pessoas já
+				// em casais
 				.sorted((p1, p2) -> p1.getNome().compareToIgnoreCase(p2.getNome())) // Ordenar por nome
 				.collect(Collectors.toList());
 
-		pessoasFemininas = todasPessoas.stream()
-				.filter(p -> p.getSexo() != null && p.getSexo() == 'F') // Filtrar por sexo feminino
-				//.filter(p -> !idsPessoasEmCasais.contains(p.getId())) // Excluir pessoas já em casais
+		pessoasFemininas = todasPessoas.stream().filter(p -> p.getSexo() != null && p.getSexo() == 'F') // Filtrar por
+																										// sexo feminino
+				// .filter(p -> !idsPessoasEmCasais.contains(p.getId())) // Excluir pessoas já
+				// em casais
 				.sorted((p1, p2) -> p1.getNome().compareToIgnoreCase(p2.getNome())) // Ordenar por nome
 				.collect(Collectors.toList());
 	}
@@ -175,9 +187,8 @@ public class CasalController implements Serializable {
 				if (arquivoFoto.exists()) {
 					boolean deletado = arquivoFoto.delete();
 					if (!deletado) {
-						FacesContext.getCurrentInstance().addMessage(null,
-								new FacesMessage(FacesMessage.SEVERITY_WARN, "Aviso",
-										"Não foi possível excluir a foto do casal."));
+						FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+								"Aviso", "Não foi possível excluir a foto do casal."));
 					}
 				}
 			}
@@ -199,6 +210,87 @@ public class CasalController implements Serializable {
 		}
 	}
 
+	public void gerarFichaInscricao(Casal casal) {
+		Document document = new Document();
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			PdfWriter.getInstance(document, baos);
+			document.open();
+
+			// Título
+			Font tituloFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
+			Paragraph titulo = new Paragraph("Ficha de Cadastro do Casal", tituloFont);
+			titulo.setAlignment(Element.ALIGN_CENTER);
+			document.add(titulo);
+
+			document.add(new Paragraph(" ")); // Espaço
+
+			// Foto do casal
+			String caminhoFoto;
+			if (casal.getFoto() != null) {
+				caminhoFoto = CAMINHO_FOTOS + casal.getFoto();
+			} else {
+				// Caminho para a imagem padrão
+				caminhoFoto = FacesContext.getCurrentInstance().getExternalContext()
+					.getRealPath("/resources/images/default_casal.png");
+			}
+			File fotoFile = new File(caminhoFoto);
+			if (fotoFile.exists()) {
+				Image foto = Image.getInstance(caminhoFoto);
+				foto.scaleToFit(150, 150);
+				foto.setAlignment(Element.ALIGN_CENTER);
+				document.add(foto);
+			} else {
+				document.add(new Paragraph("Foto não encontrada."));
+			}
+
+			document.add(new Paragraph(" ")); // Espaço
+
+			// Dados Pessoa 1
+			Font dadosFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
+			Pessoa p1 = casal.getPessoa1();
+			document.add(new Paragraph("Dados do Marido:", dadosFont));
+			document.add(new Paragraph("Nome: " + p1.getNome(), dadosFont));
+			document.add(new Paragraph("CPF: " + p1.getCpf(), dadosFont));
+			document.add(new Paragraph("Data de Nascimento: " + p1.getDataNascimento(), dadosFont));
+			document.add(new Paragraph("Endereço: " + p1.getEndereco(), dadosFont));
+			document.add(new Paragraph("Telefone: " + p1.getTelefone(), dadosFont));
+			document.add(new Paragraph("E-mail: " + p1.getEmail(), dadosFont));
+			document.add(new Paragraph("Sexo: " + (p1.getSexo() != null ? p1.getSexo() : "Não informado"), dadosFont));
+			document.add(
+					new Paragraph("Idade: " + (p1.getIdade() != null ? p1.getIdade() : "Não calculada"), dadosFont));
+
+			document.add(new Paragraph(" ")); // Espaço
+
+			// Dados Pessoa 2
+			Pessoa p2 = casal.getPessoa2();
+			document.add(new Paragraph("Dados da Esposa:", dadosFont));
+			document.add(new Paragraph("Nome: " + p2.getNome(), dadosFont));
+			document.add(new Paragraph("CPF: " + p2.getCpf(), dadosFont));
+			document.add(new Paragraph("Data de Nascimento: " + p2.getDataNascimento(), dadosFont));
+			document.add(new Paragraph("Endereço: " + p2.getEndereco(), dadosFont));
+			document.add(new Paragraph("Telefone: " + p2.getTelefone(), dadosFont));
+			document.add(new Paragraph("E-mail: " + p2.getEmail(), dadosFont));
+			document.add(new Paragraph("Sexo: " + (p2.getSexo() != null ? p2.getSexo() : "Não informado"), dadosFont));
+			document.add(
+					new Paragraph("Idade: " + (p2.getIdade() != null ? p2.getIdade() : "Não calculada"), dadosFont));
+
+			document.close();
+
+			// Enviar PDF para o navegador
+			FacesContext facesContext = FacesContext.getCurrentInstance();
+			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
+			response.reset();
+			response.setContentType("application/pdf");
+			response.setHeader("Content-Disposition",
+					"attachment; filename=Ficha_Inscricao_Casal_" + casal.getId() + ".pdf");
+			response.getOutputStream().write(baos.toByteArray());
+			response.getOutputStream().flush();
+			facesContext.responseComplete();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	// Getters e Setters
 
 	public List<Casal> getCasais() {

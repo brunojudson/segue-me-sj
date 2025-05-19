@@ -47,7 +47,7 @@ public class PessoaService implements Serializable {
 		 * && !pessoaExistente.get().getId().equals(pessoa.getId())) { throw new
 		 * IllegalArgumentException("CPF já cadastrado para outra pessoa"); }
 		 */
-        
+        pessoa.calcularIdade();
         // Salvar pessoa
         return pessoaRepository.save(pessoa);
     }
@@ -80,7 +80,7 @@ public class PessoaService implements Serializable {
 		 * !pessoaPorCpf.get().getId().equals(pessoa.getId())) { throw new
 		 * IllegalArgumentException("CPF já cadastrado para outra pessoa"); }
 		 */
-        
+        pessoa.calcularIdade();
         // Atualizar pessoa
         return pessoaRepository.update(pessoa);
     }

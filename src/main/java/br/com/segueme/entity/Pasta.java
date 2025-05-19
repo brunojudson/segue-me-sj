@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,6 +31,7 @@ public class Pasta implements Serializable {
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 
+    @JsonbTransient
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "equipe_id", nullable = false)
     private Equipe equipe;
@@ -46,6 +48,7 @@ public class Pasta implements Serializable {
     @Column(name = "ativo", nullable = false)
     private boolean ativo;
 
+    @JsonbTransient
     @OneToMany(mappedBy = "pasta", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private java.util.Set<Dirigente> dirigentes = new java.util.HashSet<>();
 

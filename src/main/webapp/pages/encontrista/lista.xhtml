@@ -53,6 +53,10 @@
 						</h:outputText>
 					</p:column>
 					
+					<p:column headerText="Status" style="text-align: center">
+						<h:outputText value="#{encontrista.idade}" />
+					</p:column>
+					
 					<p:column headerText="Encontrando" style="text-align: center" sortBy="#{encontrista.ativo}">
 						<h:outputText value="#{encontrista.ativo ? 'SIM' : 'NÃO'}" />
 					</p:column>
@@ -73,7 +77,7 @@
 							action="#{encontristaController.visualizar(encontrista)}"
 							styleClass="ui-button-info" style="margin-right: 5px;" />
 
-						<p:commandButton icon="pi pi-pencil" title="Editar"
+						<p:commandButton icon="pi pi-pencil" title="Editar" disabled="#{encontrista.ativo ? 'false' : 'true'}"
 							action="#{encontristaController.editar(encontrista)}"
 							styleClass="ui-button-warning" style="margin-right: 5px;" />
 
