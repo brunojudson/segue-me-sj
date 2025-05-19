@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 
 import br.com.segueme.entity.Pessoa;
 import br.com.segueme.repository.PessoaRepository;
@@ -13,10 +14,11 @@ import br.com.segueme.repository.PessoaRepository;
 @ApplicationScoped
 public class PessoaService implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     @Inject
     private PessoaRepository pessoaRepository;
-    
+
+
     /**
      * Salva uma nova pessoa
      * @param pessoa Objeto pessoa a ser salvo
@@ -27,20 +29,20 @@ public class PessoaService implements Serializable {
         if (pessoa == null) {
             throw new IllegalArgumentException("Pessoa não pode ser nula");
         }
-        
+
         if (pessoa.getNome() == null || pessoa.getNome().trim().isEmpty()) {
             throw new IllegalArgumentException("Nome da pessoa é obrigatório");
         }
-        
+
 		/*
 		 * if (pessoa.getCpf() == null || pessoa.getCpf().trim().isEmpty()) { throw new
 		 * IllegalArgumentException("CPF da pessoa é obrigatório"); }
 		 */
-        
+
         if (pessoa.getDataNascimento() == null) {
             throw new IllegalArgumentException("Data de nascimento da pessoa é obrigatória");
         }
-        
+
 		/*
 		 * // Verificar se CPF já existe Optional<Pessoa> pessoaExistente =
 		 * pessoaRepository.findByCpf(pessoa.getCpf()); if (pessoaExistente.isPresent()
@@ -51,7 +53,7 @@ public class PessoaService implements Serializable {
         // Salvar pessoa
         return pessoaRepository.save(pessoa);
     }
-    
+
     /**
      * Atualiza uma pessoa existente
      * @param pessoa Objeto pessoa a ser atualizado
@@ -62,17 +64,17 @@ public class PessoaService implements Serializable {
         if (pessoa == null) {
             throw new IllegalArgumentException("Pessoa não pode ser nula");
         }
-        
+
         if (pessoa.getId() == null) {
             throw new IllegalArgumentException("ID da pessoa é obrigatório para atualização");
         }
-        
+
         // Verificar se pessoa existe
         Optional<Pessoa> pessoaExistente = pessoaRepository.findById(pessoa.getId());
         if (!pessoaExistente.isPresent()) {
             throw new IllegalArgumentException("Pessoa não encontrada com o ID: " + pessoa.getId());
         }
-        
+
         // Verificar se CPF já existe para outra pessoa
 		/*
 		 * Optional<Pessoa> pessoaPorCpf = pessoaRepository.findByCpf(pessoa.getCpf());
@@ -84,7 +86,7 @@ public class PessoaService implements Serializable {
         // Atualizar pessoa
         return pessoaRepository.update(pessoa);
     }
-    
+
     /**
      * Busca uma pessoa pelo ID
      * @param id ID da pessoa
@@ -94,10 +96,10 @@ public class PessoaService implements Serializable {
         if (id == null) {
             throw new IllegalArgumentException("ID da pessoa não pode ser nulo");
         }
-        
+
         return pessoaRepository.findById(id);
     }
-    
+
     /**
      * Busca todas as pessoas cadastradas
      * @return Lista de pessoas
@@ -105,7 +107,7 @@ public class PessoaService implements Serializable {
     public List<Pessoa> buscarTodos() {
         return pessoaRepository.findAll();
     }
-    
+
     /**
 	 * Busca todas as pessoas que não são encontristas ativos
 	 * @return Lista de pessoas
@@ -113,11 +115,11 @@ public class PessoaService implements Serializable {
     public List<Pessoa> buscarTodosEcluindoEncotristasAtivos() {
 		return pessoaRepository.findAllExcludingActiveEncontristas();
 	}
-    
+
     public List<Pessoa> buscarTodosExcetoEncotristas() {
 		return pessoaRepository.findAllExcludingEncontristas();
 	}
-    
+
     /**
      * Busca pessoas pelo nome (busca parcial)
      * @param nome Nome ou parte do nome
@@ -127,10 +129,10 @@ public class PessoaService implements Serializable {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome para busca não pode ser vazio");
         }
-        
+
         return pessoaRepository.findByNome(nome);
     }
-    
+
     /**
      * Busca pessoa pelo CPF (busca exata)
      * @param cpf CPF da pessoa
@@ -140,10 +142,10 @@ public class PessoaService implements Serializable {
         if (cpf == null || cpf.trim().isEmpty()) {
             throw new IllegalArgumentException("CPF para busca não pode ser vazio");
         }
-        
+
         return pessoaRepository.findByCpf(cpf);
     }
-    
+
     /**
      * Remove uma pessoa do banco de dados
      * @param id ID da pessoa a ser removida
@@ -153,21 +155,21 @@ public class PessoaService implements Serializable {
         if (id == null) {
             throw new IllegalArgumentException("ID da pessoa não pode ser nulo");
         }
-        
+
         // Verificar se pessoa existe
         Optional<Pessoa> pessoaExistente = pessoaRepository.findById(id);
         if (!pessoaExistente.isPresent()) {
             throw new IllegalArgumentException("Pessoa não encontrada com o ID: " + id);
         }
-        
+
         // Verificar se pessoa possui associações
         if (pessoaRepository.hasAssociations(id)) {
             throw new IllegalArgumentException("Não é possível remover a pessoa pois ela possui associações");
         }
-        
+
         return pessoaRepository.delete(id);
     }
-    
+
     /**
      * Desativa uma pessoa (exclusão lógica)
      * @param id ID da pessoa a ser desativada
@@ -177,13 +179,13 @@ public class PessoaService implements Serializable {
         if (id == null) {
             throw new IllegalArgumentException("ID da pessoa não pode ser nulo");
         }
-        
+
         // Verificar se pessoa existe
         Optional<Pessoa> pessoaExistente = pessoaRepository.findById(id);
         if (!pessoaExistente.isPresent()) {
             throw new IllegalArgumentException("Pessoa não encontrada com o ID: " + id);
         }
-        
+
         return pessoaRepository.deactivate(id);
     }
 }
