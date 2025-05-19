@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="content">
+		<div class="content-container">
+			<div class="form-container">
+				<h2 class="form-title">Relatórios do Sistema</h2>
+
+				<h:form id="relatorioForm">
+					<p:messages id="messages" showDetail="true" closable="true">
+						<p:autoUpdate />
+					</p:messages>
+
+					<p:tabView id="relatorioTabs">
+						<p:tab title="Encontristas por Encontro">
+							<p:panelGrid columns="2" layout="grid"
+								styleClass="ui-panelgrid-blank ui-fluid"
+								columnClasses="ui-grid-col-4, ui-grid-col-8">
+								<p:outputLabel for="encontro1" value="Encontro:" />
+								<p:selectOneMenu id="encontro1"
+									value="#{relatorioController.encontroSelecionado}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="O encontro é obrigatório">
+									<f:selectItem itemLabel="Selecione" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{relatorioController.encontros}"
+										var="encontro" itemLabel="#{encontro.nome}"
+										itemValue="#{encontro}" />
+								</p:selectOneMenu>
+							</p:panelGrid>
+
+							<div class="form-buttons">
+								<p:commandButton value="Gerar Relatório"
+									process="@this encontro1"
+									action="#{relatorioController.gerarRelatorioEncontristasPorEncontro}"
+									update=":relatorioForm:resultadoPanel" icon="pi pi-file"
+									styleClass="ui-button-success" />
+							</div>
+						</p:tab>
+
+						<p:tab title="Trabalhadores por Equipe">
+							<p:panelGrid columns="2" layout="grid"
+								styleClass="ui-panelgrid-blank ui-fluid"
+								columnClasses="ui-grid-col-4, ui-grid-col-8">
+								<p:outputLabel for="equipe1" value="Equipe:" />
+								<p:selectOneMenu id="equipe1"
+									value="#{relatorioController.equipeSelecionada}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="A equipe é obrigatória">
+									<f:selectItem itemLabel="Selecione" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{relatorioController.equipes}"
+										var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe}" />
+								</p:selectOneMenu>
+							</p:panelGrid>
+
+							<div class="form-buttons">
+								<p:commandButton value="Gerar Relatório" process="@this equipe1"
+									action="#{relatorioController.gerarRelatorioTrabalhadoresPorEquipe}"
+									update=":relatorioForm:resultadoPanel" icon="pi pi-file"
+									styleClass="ui-button-success" />
+							</div>
+						</p:tab>
+
+						<p:tab title="Contribuições por Encontro">
+							<div class="form-buttons">
+								<p:commandButton value="Gerar Relatório" process="@this"
+									action="#{relatorioController.gerarRelatorioContribuicoesPorEncontro}"
+									update=":relatorioForm:resultadoPanel" icon="pi pi-file"
+									styleClass="ui-button-success" />
+							</div>
+						</p:tab>
+
+						<p:tab title="Casais Trabalhadores">
+							<p:panelGrid columns="2" layout="grid"
+								styleClass="ui-panelgrid-blank ui-fluid"
+								columnClasses="ui-grid-col-4, ui-grid-col-8">
+								<p:outputLabel for="encontro2" value="Encontro:" />
+								<p:selectOneMenu id="encontro2"
+									value="#{relatorioController.encontroSelecionado}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="O encontro é obrigatório">
+									<f:selectItem itemLabel="Selecione" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{relatorioController.encontros}"
+										var="encontro" itemLabel="#{encontro.nome}"
+										itemValue="#{encontro}" />
+								</p:selectOneMenu>
+							</p:panelGrid>
+
+							<div class="form-buttons">
+								<p:commandButton value="Gerar Relatório"
+									process="@this encontro2"
+									action="#{relatorioController.gerarRelatorioCasaisTrabalhadores}"
+									update=":relatorioForm:resultadoPanel" icon="pi pi-file"
+									styleClass="ui-button-success" />
+							</div>
+						</p:tab>
+
+						<p:tab title="Encontristas que se tornaram Trabalhadores">
+							<p:panelGrid columns="2" layout="grid"
+								styleClass="ui-panelgrid-blank ui-fluid"
+								columnClasses="ui-grid-col-4, ui-grid-col-8">
+								<p:outputLabel for="encontroAnterior" value="Encontro Anterior:" />
+								<p:selectOneMenu id="encontroAnterior"
+									value="#{relatorioController.encontroAnteriorSelecionado}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="O encontro anterior é obrigatório">
+									<f:selectItem itemLabel="Selecione" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{relatorioController.encontros}"
+										var="encontro" itemLabel="#{encontro.nome}"
+										itemValue="#{encontro}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel for="encontroAtual" value="Encontro Atual:" />
+								<p:selectOneMenu id="encontroAtual"
+									value="#{relatorioController.encontroSelecionado}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="O encontro atual é obrigatório">
+									<f:selectItem itemLabel="Selecione" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{relatorioController.encontros}"
+										var="encontro" itemLabel="#{encontro.nome}"
+										itemValue="#{encontro}" />
+								</p:selectOneMenu>
+							</p:panelGrid>
+
+							<div class="form-buttons">
+								<p:commandButton value="Gerar Relatório"
+									process="@this encontroAnterior encontroAtual"
+									action="#{relatorioController.gerarRelatorioEncontristasQueSeTornaramTrabalhadores}"
+									update=":relatorioForm:resultadoPanel" icon="pi pi-file"
+									styleClass="ui-button-success" />
+							</div>
+						</p:tab>
+
+						<p:tab title="Dirigentes por Pasta">
+							<div class="form-buttons">
+								<p:commandButton value="Gerar Relatório" process="@this"
+									action="#{relatorioController.gerarRelatorioDirigentesPorPasta}"
+									update=":relatorioForm:resultadoPanel" icon="pi pi-file"
+									styleClass="ui-button-success" />
+							</div>
+						</p:tab>
+
+						<p:tab title="Distribuição de Trabalhadores por Equipe">
+							<p:panelGrid columns="2" layout="grid"
+								styleClass="ui-panelgrid-blank ui-fluid"
+								columnClasses="ui-grid-col-4, ui-grid-col-8">
+								<p:outputLabel for="encontro3" value="Encontro:" />
+								<p:selectOneMenu id="encontro3"
+									value="#{relatorioController.encontroSelecionado}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="O encontro é obrigatório">
+									<f:selectItem itemLabel="Selecione" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{relatorioController.encontros}"
+										var="encontro" itemLabel="#{encontro.nome}"
+										itemValue="#{encontro}" />
+								</p:selectOneMenu>
+							</p:panelGrid>
+
+							<div class="form-buttons">
+								<p:commandButton value="Gerar Relatório"
+									process="@this encontro3"
+									action="#{relatorioController.gerarRelatorioDistribuicaoTrabalhadoresPorEquipe}"
+									update=":relatorioForm:resultadoPanel" icon="pi pi-file"
+									styleClass="ui-button-success" />
+							</div>
+						</p:tab>
+
+						<p:tab title="Financeiro de Contribuições">
+							<p:panelGrid columns="2" layout="grid"
+								styleClass="ui-panelgrid-blank ui-fluid"
+								columnClasses="ui-grid-col-4, ui-grid-col-8">
+								<p:outputLabel for="encontro4" value="Encontro:" />
+								<p:selectOneMenu id="encontro4"
+									value="#{relatorioController.encontroSelecionado}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="O encontro é obrigatório">
+									<f:selectItem itemLabel="Selecione" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{relatorioController.encontros}"
+										var="encontro" itemLabel="#{encontro.nome}"
+										itemValue="#{encontro}" />
+								</p:selectOneMenu>
+							</p:panelGrid>
+
+							<div class="form-buttons">
+								<p:commandButton value="Gerar Relatório"
+									process="@this encontro4"
+									action="#{relatorioController.gerarRelatorioFinanceiroContribuicoes}"
+									update=":relatorioForm:resultadoPanel" icon="pi pi-file"
+									styleClass="ui-button-success" />
+							</div>
+						</p:tab>
+
+						<p:tab title="Aniversariantes do Mês">
+							<p:panelGrid columns="2" layout="grid"
+								styleClass="ui-panelgrid-blank ui-fluid"
+								columnClasses="ui-grid-col-4, ui-grid-col-8">
+								<p:outputLabel for="mes" value="Mês:" />
+								<p:selectOneMenu id="mes"
+									value="#{relatorioController.mesSelecionado}" required="true"
+									requiredMessage="O mês é obrigatório">
+									<f:selectItem itemLabel="Selecione" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{relatorioController.meses}" var="mes"
+										itemLabel="#{mes}" itemValue="#{mes}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel for="encontro5" value="Encontro (opcional):" />
+								<p:selectOneMenu id="encontro5"
+									value="#{relatorioController.encontroSelecionado}"
+									converter="omnifaces.SelectItemsConverter">
+									<f:selectItem itemLabel="Selecione" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{relatorioController.encontros}"
+										var="encontro" itemLabel="#{encontro.nome}"
+										itemValue="#{encontro}" />
+								</p:selectOneMenu>
+							</p:panelGrid>
+
+							<div class="form-buttons">
+								<p:commandButton value="Gerar Relatório"
+									process="@this encontro5"
+									action="#{relatorioController.gerarRelatorioAniversariantesMes}"
+									update=":relatorioForm:resultadoPanel" icon="pi pi-file"
+									styleClass="ui-button-success" />
+							</div>
+						</p:tab>
+
+						<p:tab title="Histórico de Participação">
+							<p:panelGrid columns="2" layout="grid"
+								styleClass="ui-panelgrid-blank ui-fluid"
+								columnClasses="ui-grid-col-4, ui-grid-col-8">
+								<p:outputLabel for="pessoa" value="Pessoa:" />
+								<p:selectOneMenu id="pessoa"
+									value="#{relatorioController.pessoaSelecionada}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="A pessoa é obrigatória"
+									filter="true" filterMatchMode="startsWith" filterNormalize="true">
+									<f:selectItem itemLabel="Selecione" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{relatorioController.pessoas}"
+										var="pessoa" itemLabel="#{pessoa.nome}" itemValue="#{pessoa}" />
+								</p:selectOneMenu>
+							</p:panelGrid>
+
+							<div class="form-buttons">
+								<p:commandButton value="Gerar Relatório" process="@this pessoa"
+									action="#{relatorioController.gerarRelatorioHistoricoParticipacao}"
+									update=":relatorioForm:resultadoPanel" icon="pi pi-file"
+									styleClass="ui-button-success" />
+							</div>
+						</p:tab>
+					</p:tabView>
+					<p:panel id="resultadoPanel" styleClass="resultado-panel">
+						<p:outputLabel
+							value="Resultado do Relatório: #{relatorioController.tipoRelatorioSelecionado}"
+							styleClass="resultado-titulo" />
+
+						<p:dataTable id="resultadoRelatorio" reflow="true"
+							value="#{relatorioController.resultadoRelatorio}" var="linha"
+							styleClass="resultado-tabela">
+							<p:columns
+								value="#{relatorioController.resultadoRelatorio[0].keySet().toArray()}"
+								var="coluna" headerText="#{coluna}">
+								<h:outputText value="#{linha[coluna]}" />
+							</p:columns>
+						</p:dataTable>
+					</p:panel>
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>
+</html>

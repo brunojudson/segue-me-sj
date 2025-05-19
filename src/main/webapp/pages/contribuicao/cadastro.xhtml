@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="content">
+        <div class="content-container">
+            <div class="form-container">
+                <h2 class="form-title">#{empty param.id ? 'Cadastrar' : 'Editar'} Contribuição</h2>
+                
+                <h:form id="contribuicaoForm">
+                    <p:messages id="messages" showDetail="true" closable="true">
+                        <p:autoUpdate />
+                    </p:messages>
+                    
+                    <f:metadata>
+                        <f:viewParam name="id" />
+                        <f:viewAction action="#{contribuicaoController.carregarContribuicao}" if="#{not empty param.id}" />
+                    </f:metadata>
+                    
+                    <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid"
+                                 columnClasses="ui-grid-col-4, ui-grid-col-8">
+                        
+                        <p:outputLabel for="trabalhador" value="Trabalhador:" />
+                        <p:selectOneMenu id="trabalhador" value="#{contribuicaoController.contribuicao.trabalhador}" 
+                                         converter="omnifaces.SelectItemsConverter" required="true"
+                                         requiredMessage="O trabalhador é obrigatório">
+                            <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+                            <f:selectItems value="#{contribuicaoController.trabalhadores}" var="trabalhador"
+                                           itemLabel="#{trabalhador.pessoa.nome} - #{trabalhador.equipe.nome}" itemValue="#{trabalhador}" />
+                        </p:selectOneMenu>
+                        
+                        <p:outputLabel for="dataPagamento" value="Data de Pagamento:" />
+                        <p:datePicker id="dataPagamento" value="#{contribuicaoController.contribuicao.dataPagamento}" 
+                                      pattern="dd/MM/yyyy" showIcon="true" required="true" 
+                                      requiredMessage="A data de pagamento é obrigatória" />
+                        
+                        <p:outputLabel for="valor" value="Valor (R$):" />
+                        <p:inputNumber id="valor" value="#{contribuicaoController.contribuicao.valor}" 
+                                       symbol="R$ " symbolPosition="p" decimalSeparator="," thousandSeparator="."
+                                       required="true" requiredMessage="O valor é obrigatório" />
+                        
+                        <p:outputLabel for="formaPagamento" value="Forma de Pagamento:" />
+                        <p:selectOneMenu id="formaPagamento" value="#{contribuicaoController.contribuicao.formaPagamento}" required="true"
+                                         requiredMessage="A forma de pagamento é obrigatória">
+                            <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+                            <f:selectItem itemLabel="Dinheiro" itemValue="Dinheiro" />
+                            <f:selectItem itemLabel="Cartão de Crédito" itemValue="Cartão de Crédito" />
+                            <f:selectItem itemLabel="Cartão de Débito" itemValue="Cartão de Débito" />
+                            <f:selectItem itemLabel="PIX" itemValue="PIX" />
+                            <f:selectItem itemLabel="Transferência Bancária" itemValue="Transferência Bancária" />
+                        </p:selectOneMenu>
+                        
+                        <p:outputLabel for="observacoes" value="Observações:" />
+                        <p:inputTextarea id="observacoes" value="#{contribuicaoController.contribuicao.observacoes}" rows="3" />
+                    </p:panelGrid>
+                    
+                    <div class="form-buttons">
+                        <p:commandButton value="Salvar" action="#{contribuicaoController.salvar}" icon="pi pi-save" 
+                                         update="@form" styleClass="ui-button-success" />
+                        
+                        <p:button value="Cancelar" outcome="/pages/contribuicao/lista.xhtml" icon="pi pi-times" 
+                                  styleClass="ui-button-secondary" />
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+
+</html>

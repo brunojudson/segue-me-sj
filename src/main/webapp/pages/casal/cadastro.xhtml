@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="content">
+        <div class="content-container">
+            <div class="form-container">
+                <h2 class="form-title">#{empty param.id ? 'Cadastrar' : 'Editar'} Casal</h2>
+
+                <h:form id="casalForm" enctype="multipart/form-data">
+                    <p:messages id="messages" showDetail="true" closable="true">
+                        <p:autoUpdate />
+                    </p:messages>
+
+                    <f:metadata>
+                        <f:viewParam name="id" />
+                        <f:viewAction action="#{casalController.carregarCasal}" if="#{not empty param.id}" />
+                    </f:metadata>
+
+                    <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid"
+                        columnClasses="ui-grid-col-4, ui-grid-col-8">
+
+                        <p:outputLabel for="esposo" value="Esposo:" />
+                        <p:selectOneMenu id="esposo" value="#{casalController.casal.pessoa1}"
+                            converter="omnifaces.SelectItemsConverter" required="true"
+                            requiredMessage="O esposo é obrigatório">
+                            <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+                            <f:selectItems value="#{casalController.pessoasMasculinas}" var="pessoa"
+                                itemLabel="#{pessoa.nome}" itemValue="#{pessoa}" />
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="esposa" value="Esposa:" />
+                        <p:selectOneMenu id="esposa" value="#{casalController.casal.pessoa2}"
+                            converter="omnifaces.SelectItemsConverter" required="true"
+                            requiredMessage="A esposa é obrigatória">
+                            <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+                            <f:selectItems value="#{casalController.pessoasFemininas}" var="pessoa"
+                                itemLabel="#{pessoa.nome}" itemValue="#{pessoa}" />
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="dataCasamento" value="Data de Casamento:" />
+                        <p:datePicker id="dataCasamento" value="#{casalController.casal.dataCasamento}"
+                            pattern="dd/MM/yyyy" showIcon="true" showOnFocus="false" />
+
+                        <p:outputLabel for="observacoes" value="Observações:" />
+                        <p:inputTextarea id="observacoes" value="#{casalController.casal.observacoes}" rows="3" />
+
+                        <p:outputLabel for="foto" value="Foto do Casal:" />
+                        <p:fileUpload id="foto" value="#{casalController.uploadedFile}" mode="simple" accept="image/*"
+                            label="Escolher Foto" />
+                        <!--
+                        <p:outputLabel for="ativo" value="Ativo:" />
+                        <p:selectBooleanCheckbox id="ativo" value="#{casalController.casal.ativo}" /> -->
+                    </p:panelGrid>
+
+                    <div class="form-buttons">
+                        <p:commandButton value="Salvar" action="#{casalController.salvar}" icon="pi pi-save"
+                            update="@form" styleClass="ui-button-success" />
+
+                        <p:button value="Cancelar" outcome="/pages/casal/lista.xhtml" icon="pi pi-times"
+                            styleClass="ui-button-secondary" />
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+
+</html>

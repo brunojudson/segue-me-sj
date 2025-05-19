@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="content">
+		<h:form id="listForm" prependId="false">
+			<div class="content-container">
+				<div class="table-header">
+					<h2 class="table-title">Trabalhadores</h2>
+					<div class="table-actions">
+						<p:button value="Novo Trabalhador"
+							outcome="/pages/trabalhador/cadastro.xhtml" icon="pi pi-plus" />
+					</div>
+				</div>
+
+				<p:messages id="messages" showDetail="true" closable="true">
+					<p:autoUpdate />
+				</p:messages>
+
+				<p:dataTable id="trabalhadoresTable" var="trabalhador"
+					value="#{trabalhadorController.trabalhadores}"
+					emptyMessage="Nenhum trabalhador encontrado"
+					styleClass="data-table" paginator="true" rows="10"
+					paginatorPosition="bottom"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+					rowsPerPageTemplate="5,10,15,20">
+
+					<p:column headerText="ID" sortBy="#{trabalhador.id}" width="50" style="text-align: center" responsivePriority="6">
+						<h:outputText value="#{trabalhador.id}" />
+					</p:column>
+
+					<p:column headerText="Pessoa" sortBy="#{trabalhador.pessoa.nome}"
+						filterBy="#{trabalhador.pessoa.nome}" filterMatchMode="contains">
+						<h:outputText value="#{trabalhador.pessoa.nome}" />
+					</p:column>
+
+					<p:column headerText="Equipe" sortBy="#{trabalhador.equipe.nome}"
+						filterBy="#{trabalhador.equipe.nome}" filterMatchMode="contains">
+						<h:outputText value="#{trabalhador.equipe.nome}" />
+					</p:column>
+
+					<p:column headerText="Encontro"
+						sortBy="#{trabalhador.encontro.nome}"
+						filterBy="#{trabalhador.encontro.nome}" filterMatchMode="contains">
+						<h:outputText value="#{trabalhador.encontro.nome}" />
+					</p:column>
+
+					<p:column headerText="Coordenador" style="text-align: center" >
+						<h:outputText value="#{trabalhador.ehCoordenador ? 'Sim' : 'Não'}" />
+					</p:column>
+
+					<p:column headerText="Foi Encontrista" style="text-align: center" responsivePriority="6">
+						<h:outputText
+							value="#{trabalhador.foiEncontrista ? 'Sim' : 'Não'}" />
+					</p:column>
+					
+					 <p:column headerText="Ativo" style="text-align: center" sortBy="#{trabalhador.ativo}" responsivePriority="6">
+                        <h:outputText value="#{trabalhador.ativo ? 'Sim' : 'Não'}" />
+                    </p:column>
+
+					<p:column headerText="Ações" styleClass="action-column" style="text-align: center" width="150">
+						<p:commandButton icon="pi pi-search" title="Visualizar"
+							action="#{trabalhadorController.visualizar(trabalhador)}"
+							styleClass="ui-button-info" style="margin-right: 5px;" />
+
+						<p:commandButton icon="pi pi-pencil" title="Editar"
+							action="#{trabalhadorController.editar(trabalhador)}"
+							styleClass="ui-button-warning" style="margin-right: 5px;" />
+
+						<p:commandButton icon="pi pi-trash" title="Excluir"
+							action="#{trabalhadorController.prepararExclusao(trabalhador)}"
+							styleClass="ui-button-danger" update=":confirmDialog"
+							oncomplete="PF('confirmDialog').show()" />
+					</p:column>
+				</p:dataTable>
+
+				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
+					header="Confirmar Exclusão"
+					message="Tem certeza que deseja excluir este trabalhador?"
+					closeOnEscape="true">
+					<p:commandButton value="Sim"
+						action="#{trabalhadorController.excluir}"
+						oncomplete="PF('confirmDialog').hide()"
+						update="trabalhadoresTable" styleClass="ui-button-danger" />
+					<p:commandButton value="Não" onclick="PF('confirmDialog').hide()"
+						type="button" styleClass="ui-button-secondary" />
+				</p:confirmDialog>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+</html>

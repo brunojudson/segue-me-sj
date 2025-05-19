@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="content">
+        <div class="content-container">
+            <div class="form-container">
+                <h2 class="form-title">Relatório: Contribuições por Encontro</h2>
+                
+                <h:form id="relatorioForm">
+                    <p:messages id="messages" showDetail="true" closable="true">
+                        <p:autoUpdate />
+                    </p:messages>
+                    
+                    <p:panel header="Filtros">
+                        <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid"
+                                     columnClasses="ui-grid-col-4, ui-grid-col-8">
+                            <p:outputLabel for="encontro1" value="Encontro:" />
+                            <p:selectOneMenu id="encontro1" value="#{relatorioController.encontroSelecionado}" 
+                                             converter="omnifaces.SelectItemsConverter" required="true"
+                                             requiredMessage="O encontro é obrigatório">
+                                <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+                                <f:selectItems value="#{relatorioController.encontros}" var="encontro"
+                                               itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                        
+                        <div class="form-buttons">
+                            <p:commandButton value="Gerar Relatório" action="#{relatorioController.gerarRelatorioFinanceiroContribuicoes}" 
+                                             update=":relatorioForm:resultadoPanel" icon="pi pi-file" 
+                                             styleClass="ui-button-success" />
+                        </div>
+                    </p:panel>
+                    
+                    <p:outputPanel id="resultadoPanel" style="margin-top: 20px;">
+                        <p:dataTable var="item" value="#{relatorioController.resultadoRelatorio}" 
+                                     rendered="#{not empty relatorioController.resultadoRelatorio}"
+                                     paginator="true" rows="10" paginatorPosition="bottom"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,15">
+                            
+                            <f:facet name="header">
+                                #{relatorioController.tipoRelatorioSelecionado}
+                            </f:facet>
+                            
+                            <p:column headerText="Forma Pagamento">
+                                <h:outputText value="#{item.forma_pagamento}" />
+                            </p:column>
+                            <p:column headerText="Quantidade">
+                                <h:outputText value="#{item.quantidade}" />
+                            </p:column>
+                            <p:column headerText="Valor Total">
+                                <h:outputText value="#{item.valor_total}">
+                                    <f:convertNumber type="currency" currencySymbol="R$" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Menor Valor">
+                                <h:outputText value="#{item.menor_valor}">
+                                    <f:convertNumber type="currency" currencySymbol="R$" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Maior Valor">
+                                <h:outputText value="#{item.maior_valor}">
+                                    <f:convertNumber type="currency" currencySymbol="R$" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Valor Médio">
+                                <h:outputText value="#{item.valor_medio}">
+                                    <f:convertNumber type="currency" currencySymbol="R$" />
+                                </h:outputText>
+                            </p:column>
+                            
+                        </p:dataTable>
+                    </p:outputPanel>
+                    
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>
+

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="content">
+		<h:form id="listForm" prependId="false">
+			<div class="content-container">
+				<div class="table-header">
+					<h2 class="table-title">Encontristas</h2>
+					<div class="table-actions">
+						<p:button value="Novo Encontrista"
+							outcome="/pages/encontrista/cadastro.xhtml" icon="pi pi-plus" />
+					</div>
+				</div>
+
+				<p:messages id="messages" showDetail="true" closable="true">
+					<p:autoUpdate />
+				</p:messages>
+
+				<p:dataTable id="encontristasTable" var="encontrista"
+					value="#{encontristaController.encontristas}"
+					emptyMessage="Nenhum encontrista encontrado" 
+					styleClass="data-table" paginator="true" rows="10"
+					paginatorPosition="bottom"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+					rowsPerPageTemplate="5,10,15,20">
+
+					<p:column headerText="Código" sortBy="#{encontrista.id}" width="50" responsivePriority="6">
+						<h:outputText value="#{encontrista.pessoa.id}" />
+					</p:column>
+
+					<p:column headerText="Pessoa" sortBy="#{encontrista.pessoa.nome}"
+						filterBy="#{encontrista.pessoa.nome}" filterMatchMode="contains">
+						<h:outputText value="#{encontrista.pessoa.nome}" />
+					</p:column>
+
+					<p:column headerText="Encontro"
+						sortBy="#{encontrista.encontro.nome}"
+						filterBy="#{encontrista.encontro.nome}" filterMatchMode="contains">
+						<h:outputText value="#{encontrista.encontro.nome}" />
+					</p:column>
+
+					<p:column headerText="Data de Inscrição"
+						sortBy="#{encontrista.dataInscricao}" responsivePriority="4">
+						<h:outputText value="#{encontrista.dataInscricao}">
+							<f:converter converterId="localDateTimeConverter" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Encontrando" style="text-align: center" sortBy="#{encontrista.ativo}">
+						<h:outputText value="#{encontrista.ativo ? 'SIM' : 'NÃO'}" />
+					</p:column>
+
+					<!-- <p:column headerText="Valor Pago" sortBy="#{encontrista.valorPago}">
+						<h:outputText value="#{encontrista.valorPago}">
+							<f:convertNumber type="currency" currencySymbol="R$"
+								locale="pt_BR" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Forma de Pagamento">
+						<h:outputText value="#{encontrista.formaPagamento}" />
+					</p:column> -->
+
+					<p:column headerText="Ações" styleClass="action-column" style="text-align: center" width="150">
+						<p:commandButton icon="pi pi-search" title="Visualizar"
+							action="#{encontristaController.visualizar(encontrista)}"
+							styleClass="ui-button-info" style="margin-right: 5px;" />
+
+						<p:commandButton icon="pi pi-pencil" title="Editar"
+							action="#{encontristaController.editar(encontrista)}"
+							styleClass="ui-button-warning" style="margin-right: 5px;" />
+
+						<p:commandButton icon="pi pi-trash" title="Excluir"
+							action="#{encontristaController.prepararExclusao(encontrista)}"
+							styleClass="ui-button-danger" update=":confirmDialog"
+							oncomplete="PF('confirmDialog').show()" />
+					</p:column>
+				</p:dataTable>
+
+				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
+					header="Confirmar Exclusão"
+					message="Tem certeza que deseja excluir este encontrista?"
+					closeOnEscape="true">
+					<p:commandButton value="Sim"
+						action="#{encontristaController.excluir}"
+						oncomplete="PF('confirmDialog').hide()" update="encontristasTable"
+						styleClass="ui-button-danger" />
+					<p:commandButton value="Não" onclick="PF('confirmDialog').hide()"
+						type="button" styleClass="ui-button-secondary" />
+				</p:confirmDialog>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+</html>

@@ -1,0 +1,247 @@
+/* Estilos gerais */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+body .ui-panelgrid .ui-panelgrid-cell {
+  padding: 0.7rem !important;
+}
+/* Estilos do cabeçalho */
+.header-container {
+    background-color: #3f51b5;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.logo h1 {
+    margin: 0;
+    margin-left: 25px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.logo a {
+    text-decoration: none;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-info span {
+    margin-right: 15px;
+}
+
+.logout-btn {
+    margin-left: 10px;
+}
+
+/* Estilos do menu */
+.menu-container {
+    background-color: #fff;
+    width: 250px;
+    padding: 15px 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    /* height: calc(100vh - 80px); */
+    overflow-y: auto;
+}
+
+.main-menu {
+    width: 100%;
+    border: none !important;
+}
+
+/* Estilos do conteúdo */
+.content-container {
+    padding: 20px;
+    min-height: calc(100vh - 170px);
+}
+
+.welcome-panel {
+    text-align: center;
+    padding: 2px;
+    margin-bottom: 20px;
+}
+
+.welcome-panel h2 {
+    color: #3f51b5;
+    margin-bottom: 15px;
+}
+
+/* Estilos do rodapé */
+.footer-container {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 15px;
+    font-size: 14px;
+}
+
+.footer-container p {
+    margin: 5px 0;
+}
+
+/* Layout principal */
+#layout {
+    display: flex; /* Define o layout flexível */
+    min-height: 100vh; /* Garante que o layout ocupe toda a altura da viewport */
+    align-items: stretch; /* Faz com que os filhos (menu e conteúdo) tenham a mesma altura */
+}
+#header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+#menu {
+    flex: 0 0 250px; /* Define o menu com largura fixa */
+    /* padding: 10px 0; Reduz o espaçamento interno */
+    background-color: #f4f4f4; /* Cor de fundo do menu */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Sombra para o menu */
+    overflow-y: auto; /* Permite rolagem vertical no menu */
+}
+
+#content {
+    flex: 1; /* Faz o conteúdo ocupar o espaço restante */
+    /*padding: 20px; /* Espaçamento interno */
+    box-sizing: border-box; /* Inclui o padding no cálculo da largura */
+    /*background-color: #fff; /* Cor de fundo do conteúdo */
+}
+
+#content > div {
+    flex: 1;
+    padding: 10px;
+}
+
+/* Rodapé */
+#footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 15px;
+    font-size: 14px;
+    margin-top: auto; /* Garante que o rodapé fique no final */
+}
+
+/* Estilos para formulários */
+.form-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+    color: #3f51b5;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.form-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.form-buttons .ui-button {
+    margin-left: 10px;
+}
+
+/* Estilos para tabelas */
+.data-table {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.table-title {
+    color: #3f51b5;
+    margin: 0;
+}
+
+.table-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    #layout {
+        flex-direction: column; /* Empilha o menu e o conteúdo */
+    }
+
+    #menu {
+        flex: none;
+        width: 100%; /* O menu ocupa toda a largura */
+        height: auto; /* Altura ajustável */
+        padding: 10px; /* Ajusta o espaçamento interno */
+    }
+
+    #content {
+        margin-left: 0; /* Remove o deslocamento do conteúdo */
+    }
+}
+
+/* Empilhar botões de ação em telas pequenas */
+@media (max-width: 600px) {
+    .action-column {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+}
+
+/* Melhorar visualização do ícone de status */
+.pi-folder-open, .pi-folder {
+    vertical-align: middle;
+}
+/* Ajuste na foto na página de Casal Visualizar */
+.form-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.form-details {
+    flex: 1;
+}
+
+.form-photo {
+    margin-left: 20px;
+    flex-shrink: 0;
+}
+.icon-ativo {
+    color: green;
+}
+
+.icon-inativo {
+    color: red;
+}

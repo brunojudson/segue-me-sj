@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="content">
+        <div class="content-container">
+            <div class="form-container">
+                <h2 class="form-title">Detalhes da Contribuição</h2>
+                
+                <h:form id="visualizarForm">
+                    <f:metadata>
+                        <f:viewParam name="id" />
+                        <f:viewAction action="#{contribuicaoController.carregarContribuicao}" if="#{not empty param.id}" />
+                    </f:metadata>
+                    
+                    <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid"
+                                 columnClasses="ui-grid-col-4, ui-grid-col-8">
+                        
+                        <p:outputLabel value="ID:" />
+                        <h:outputText value="#{contribuicaoController.contribuicao.id}" />
+                        
+                        <p:outputLabel value="Trabalhador:" />
+                        <h:outputText value="#{contribuicaoController.contribuicao.trabalhador.pessoa.nome}" />
+                        
+                        <p:outputLabel value="Equipe:" />
+                        <h:outputText value="#{contribuicaoController.contribuicao.trabalhador.equipe.nome}" />
+                        
+                        <p:outputLabel value="Encontro:" />
+                        <h:outputText value="#{contribuicaoController.contribuicao.trabalhador.encontro.nome}" />
+                        
+                        <p:outputLabel value="Data de Pagamento:" />
+                        <h:outputText value="#{contribuicaoController.contribuicao.dataPagamento}">
+                            <f:converter converterId="localDateTimeConverter" />
+                        </h:outputText>
+                        
+                        <p:outputLabel value="Valor:" />
+                        <h:outputText value="#{contribuicaoController.contribuicao.valor}">
+                            <f:convertNumber type="currency" currencySymbol="R$" locale="pt_BR" />
+                        </h:outputText>
+                        
+                        <p:outputLabel value="Forma de Pagamento:" />
+                        <h:outputText value="#{contribuicaoController.contribuicao.formaPagamento}" />
+                        
+                        <p:outputLabel value="Observações:" />
+                        <h:outputText value="#{contribuicaoController.contribuicao.observacoes}" />
+                        
+                        <!-- <p:outputLabel value="Data de Cadastro:" />
+                        <h:outputText value="#{contribuicaoController.contribuicao.dataCadastro}">
+                            <f:converter converterId="localDateTimeConverter" />
+                        </h:outputText> -->
+                    </p:panelGrid>
+                    
+                    <div class="form-buttons">
+                        <p:button value="Editar" outcome="/pages/contribuicao/cadastro.xhtml" icon="pi pi-pencil" styleClass="ui-button-warning">
+                            <f:param name="id" value="#{contribuicaoController.contribuicao.id}" />
+                        </p:button>
+                        
+                        <p:button value="Voltar" outcome="/pages/contribuicao/lista.xhtml" icon="pi pi-arrow-left" 
+                                  styleClass="ui-button-secondary" />
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+
+</html>

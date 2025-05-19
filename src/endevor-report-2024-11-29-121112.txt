@@ -1,0 +1,75 @@
+//
+// APIMSGS - url: /reports/1732893072-5284707952446815-APIMSGS
+//
+
+1CA Endevor SCM Version 18.1.00        Copyright (C) 1986-2019 Broadcom. All Rights Reserved.      29NOV24 12:11:12     PAGE     1   
+                                       E N D E V O R   A P I   E X E C U T I O N   R E P O R T                                       
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+ 12:11:12  API0101I  BEGINNING OF API ACTION PROCESSING                                                                              
+           API0100I  API SCL REQUEST                                                                                                 
+           API0100I     MESSAGE DDNAME: APIMSGS                                                                                      
+           API0100I     SCL TYPE: C                                                                                                  
+           API0100I  SCL COMMANDS:                                                                                                   
+           API0100I   LIST ELEMENT '*' FROM ENVIRONMENT 'CEFDES' SYSTEM 'SIOPI' SUBSYSTEM                                            
+           API0100I   'SIOPI' TYPE 'COBOL' STAGE NUMBER 1 DATA ALL .                                                                 
+           API0100I                                                                                                                  
+ 12:11:12  API0102I  DISPATCHING API ACTION                                                                                          
+ 12:11:12  API0000W  WARNING(S) DETECTED, PROCESSING COMPLETE                                                                        
+           API0100I                                                                                                                  
+ 12:11:12  API0000I  PROCESSING COMPLETE - RC=00004 REASON=00000                                                                     
+
+//
+// C1MSGS1 - url: /reports/1732893072-5284707952446815-C1MSGS1
+//
+
+1CA Endevor SCM Version 18.1.00        Copyright (C) 1986-2019 Broadcom. All Rights Reserved.      29NOV24 12:11:12     PAGE     1   
+                                      E N D E V O R   S Y N T A X   R E Q U E S T   R E P O R T                                      
+ REQUESTED BY: C137136                                                                                                               
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+            STATEMENT #1                                                                                                             
+             LIST ELEMENT '*' FROM ENVIRONMENT 'CEFDES' SYSTEM 'SIOPI' SUBSYSTEM                                                     
+             'SIOPI' TYPE 'COBOL' STAGE NUMBER 1 DATA ALL .                                                                          
+                                                                                                                                     
+            STATEMENT #2                                                                                                             
+            EOF STATEMENT GENERATED                                                                                                  
+                                                                                                                                     
+            END OF SYNTAX REQUEST REPORT, HIGHEST RC=00                                                                              
+
+//
+// C1MSGSA - url: /reports/1732893072-5284707952446815-C1MSGSA
+//
+
+1CA Endevor SCM Version 18.1.00        Copyright (C) 1986-2019 Broadcom. All Rights Reserved.      29NOV24 12:11:12     PAGE     1   
+                                       E N D E V O R   A P I   E X E C U T I O N   R E P O R T                                       
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+ 12:11:12  API0101I  BEGINNING OF API ACTION PROCESSING                                                                              
+           API0100I  LIST ELEMENT                                                                                                    
+           API0100I     TO DDNAME: APIEXTR                                                                                           
+           API0100I     MESSAGE DDNAME: C1MSGSA                                                                                      
+           API0100I     ENVIRONMENT: CEFDES                                                                                          
+           API0100I     STAGE ID: T                                                                                                  
+           API0100I     SYSTEM: SIOPI                                                                                                
+           API0100I     SUBSYSTEM: SIOPI                                                                                             
+           API0100I     TYPE: COBOL                                                                                                  
+           API0100I     ELEMENT: *                                                                                                   
+           API0100I     OPTIONS                                                                                                      
+           API0100I             PATH: L  RETURN: F  SEARCH: N                                                                        
+           API0100I             DATA: ALL                                                                                            
+           API0100I             RETURN FROM EXTENSION REC: Y                                                                         
+           API0100I             RETURN TARGET EXTENSION REC: Y                                                                       
+           API0100I     WHERE                                                                                                        
+           API0100I             LAST PROC FAILED: N                                                                                  
+           API0100I                                                                                                                  
+           API0100I  API ACTION REQUEST DATA SUCCESSFULLY PRINTED                                                                    
+           API0100I                                                                                                                  
+ 12:11:12  API0102I  DISPATCHING API ACTION                                                                                          
+ 12:11:12  IMGR013W  NO TYPES MATCH COBOL IN SYSTEM SIOPI - STAGE T                                                                  
+ 12:11:12  API0000I                                                                                                                  
+ 12:11:12  API0000I  RETURNED COUNT=00000000, SELECTED COUNT=00000000                                                                
+ 12:11:12  API0000I  PROCESSING COMPLETE - RC=00004 REASON=00005                                                                     
