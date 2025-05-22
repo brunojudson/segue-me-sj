@@ -47,7 +47,14 @@ public class Casal implements Serializable {
         this(pessoa1, pessoa2);
         this.dataCasamento = dataCasamento;
     }
-    
+    // Casal.java
+    @Transient
+    public String getFotoUrl() {
+        if (this.getFoto() != null && !this.getFoto().isEmpty()) {
+            return "/api/casais/" + this.getId() + "/foto";
+        }
+        return null;
+    }
     // Getters e Setters
     public Long getId() {
         return id;
@@ -97,6 +104,7 @@ public class Casal implements Serializable {
         this.foto = foto;
     }
     
+
     // Equals e HashCode
     @Override
     public boolean equals(Object o) {

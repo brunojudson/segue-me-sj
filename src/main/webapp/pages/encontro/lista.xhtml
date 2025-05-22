@@ -22,7 +22,7 @@
 					<p:autoUpdate />
 				</p:messages>
 
-				<p:dataTable id="encontrosTable" var="encontro"
+				<p:dataTable id="encontrosTable" var="encontro" stripeRows="true"
 					value="#{encontroController.encontros}" reflow="true"
 					emptyMessage="Nenhum encontro encontrado" styleClass="data-table"
 					paginator="true" rows="10" paginatorPosition="bottom"
@@ -60,7 +60,8 @@
 					</p:column>
 
 					<p:column headerText="Status">
-						<h:outputText value="#{encontro.ativo ? 'Em Andamento' : 'Finalizado'}" />
+						<i class="#{encontro.ativo ? 'pi pi-spin pi-spinner' : 'pi pi-check-circle'}" title="#{encontro.ativo ? 'Em Andamento' : 'Finalizado'}"
+					       style="font-size: 2rem; color: #{encontro.ativo ? 'green' : 'grey'}"></i>
 					</p:column>
 
 					<p:column headerText="Ações" styleClass="action-column" style="text-align: center" width="150">

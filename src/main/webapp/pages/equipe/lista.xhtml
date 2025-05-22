@@ -23,7 +23,7 @@
                 
                 <p:dataTable id="equipesTable" var="equipe" value="#{equipeController.equipes}"
                              emptyMessage="Nenhuma equipe encontrada" styleClass="data-table"
-                             paginator="true" rows="10" paginatorPosition="bottom"
+                             paginator="true" rows="10" paginatorPosition="bottom" stripeRows="true"
                              paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                              currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
                              rowsPerPageTemplate="5,10,15,20">
@@ -50,7 +50,8 @@
                     </p:column>
                     
                     <p:column headerText="Ativo" style="text-align: center" sortBy="#{equipe.ativo}">
-                        <h:outputText value="#{equipe.ativo ? 'Sim' : 'Não'}" />
+                        <i class="#{equipe.ativo ? 'pi pi-check-circle' : 'pi pi-check-circle'}" title="#{equipe.ativo ? 'Sim' : 'Não'}"
+					       style="font-size: 2rem; color: #{equipe.ativo ? 'green' : 'red'}"></i>
                     </p:column>
                     
                     <p:column headerText="Ações" styleClass="action-column" style="text-align: center" width="150">

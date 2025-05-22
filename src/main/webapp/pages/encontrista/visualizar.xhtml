@@ -1,67 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/templates/template.xhtml">
-    <ui:define name="content">
-        <div class="content-container">
-            <div class="form-container">
-                <h2 class="form-title">Detalhes do Encontrista</h2>
-                
-                <h:form id="visualizarForm">
-                    <f:metadata>
-                        <f:viewParam name="id" />
-                        <f:viewAction action="#{encontristaController.carregarEncontrista}" if="#{not empty param.id}" />
-                    </f:metadata>
-                    
-                    <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid"
-                                 columnClasses="ui-grid-col-4, ui-grid-col-8">
-                        
-                        <p:outputLabel value="ID:" />
-                        <h:outputText value="#{encontristaController.encontrista.id}" />
-                        
-                        <p:outputLabel value="Pessoa:" />
-                        <h:outputText value="#{encontristaController.encontrista.pessoa.nome}" />
-                        
-                        <p:outputLabel value="Encontro:" />
-                        <h:outputText value="#{encontristaController.encontrista.encontro.nome}" />
-                        
-                        <p:outputLabel value="Data de Inscrição:" />
-                        <h:outputText value="#{encontristaController.encontrista.dataInscricao}">
-                            <f:converter converterId="localDateTimeConverter" />
-                        </h:outputText>
-                        
-                        <p:outputLabel value="Idade:" rendered="#{not empty encontristaController.encontrista.idade}"/>
-						<h:outputText value="#{encontristaController.encontrista.idade} anos" rendered="#{not empty encontristaController.encontrista.idade}" />
-                        
-                        <!-- <p:outputLabel value="Valor Pago:" />
-                        <h:outputText value="#{encontristaController.encontrista.valorPago}">
-                            <f:convertNumber type="currency" currencySymbol="R$" locale="pt_BR" />
-                        </h:outputText>
-                        
-                        <p:outputLabel value="Forma de Pagamento:" />
-                        <h:outputText value="#{encontristaController.encontrista.formaPagamento}" /> -->
-                        
-                        <p:outputLabel value="Observações:" />
-                        <h:outputText value="#{encontristaController.encontrista.observacoes}" />
-                    </p:panelGrid>
-                    
-                    <div class="form-buttons">
-                        <p:button value="Editar" outcome="/pages/encontrista/cadastro.xhtml" icon="pi pi-pencil" styleClass="ui-button-warning">
-                            <f:param name="id" value="#{encontristaController.encontrista.id}" />
-                        </p:button>
-                        
-                        <p:button value="Voltar" outcome="/pages/encontrista/lista.xhtml" icon="pi pi-arrow-left" 
-                                  styleClass="ui-button-secondary" />
-                    </div>
-                </h:form>
-            </div>
-        </div>
-    </ui:define>
+	<ui:define name="content">
+		<div class="content-container">
+			<div class="form-container">
+				<h2 class="form-title">Detalhes do Encontrista</h2>
+
+				<h:form id="visualizarForm">
+					<f:metadata>
+						<f:viewParam name="id" />
+						<f:viewAction
+							action="#{encontristaController.carregarEncontrista}"
+							if="#{not empty param.id}" />
+					</f:metadata>
+
+					<p:panelGrid columns="2" layout="grid"
+						styleClass="ui-panelgrid-blank ui-fluid"
+						columnClasses="ui-grid-col-4, ui-grid-col-8">
+
+						<p:outputLabel value="ID:" />
+						<h:outputText value="#{encontristaController.encontrista.pessoa.id}" />
+
+						<!-- Foto -->
+						<p:outputLabel value="" />
+						<p:avatar styleClass="mr-2" size="xlarge" shape="circle">
+						<p:graphicImage value="#{encontristaController.foto}">
+							<f:param name="foto"
+								value="#{encontristaController.encontrista.pessoa.foto}" />
+						</p:graphicImage>
+						</p:avatar>
+						<p:outputLabel value="Nome:" />
+						<h:outputText
+							value="#{encontristaController.encontrista.pessoa.nome}" />
+
+						<p:outputLabel value="Data de Nascimento:" />
+						<h:outputText
+							value="#{encontristaController.encontrista.pessoa.dataNascimento}">
+							<f:converter converterId="localDateConverter" />
+						</h:outputText>
+
+						<p:outputLabel value="Sexo:" />
+						<h:outputText
+							value="#{encontristaController.encontrista.pessoa.sexo}" />
+
+						<p:outputLabel value="Endereço:" />
+						<h:outputText
+							value="#{encontristaController.encontrista.pessoa.endereco}" />
+
+						<p:outputLabel value="Telefone:" />
+						<h:outputText
+							value="#{encontristaController.encontrista.pessoa.telefone}" />
+
+						<p:outputLabel value="Idade:"
+							rendered="#{not empty encontristaController.encontrista.pessoa.idade}" />
+						<h:outputText
+							value="#{encontristaController.encontrista.pessoa.idade} anos"
+							rendered="#{not empty encontristaController.encontrista.pessoa.idade}" />
+
+						<p:outputLabel value="Encontro:" />
+						<h:outputText
+							value="#{encontristaController.encontrista.encontro.nome}" />
+
+						<p:outputLabel value="Data de Inscrição:" />
+						<h:outputText
+							value="#{encontristaController.encontrista.dataInscricao}">
+							<f:converter converterId="localDateTimeConverter" />
+						</h:outputText>
+
+						<p:outputLabel value="Observações:" />
+						<h:outputText
+							value="#{encontristaController.encontrista.observacoes}" />
+					</p:panelGrid>
+
+					<div class="form-buttons">
+						<p:commandButton value="Gerar Ficha de Inscrição"
+							styleClass="ui-button-success" ajax="false"
+							action="#{encontristaController.gerarFichaInscricao(encontristaController.encontrista)}" />
+						<p:button value="Editar"
+							outcome="/pages/encontrista/cadastro.xhtml" icon="pi pi-pencil"
+							styleClass="ui-button-warning">
+							<f:param name="id"
+								value="#{encontristaController.encontrista.id}" />
+						</p:button>
+
+						<p:button value="Voltar" outcome="/pages/encontrista/lista.xhtml"
+							icon="pi pi-arrow-left" styleClass="ui-button-secondary" />
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
 </ui:composition>
 
 </html>

@@ -20,6 +20,7 @@
         <class>br.com.segueme.entity.Dirigente</class>
         <class>br.com.segueme.entity.Usuario</class>
         <class>br.com.segueme.entity.Permissao</class>
+        <class>br.com.segueme.entity.Versiculo</class>
 
         <properties>
             <!-- Configurações do Hibernate -->

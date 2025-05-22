@@ -23,7 +23,7 @@
 				</p:messages>
 
 				<p:dataTable id="dirigentesTable" var="dirigente"
-					value="#{dirigenteController.dirigentes}"
+					value="#{dirigenteController.dirigentes}" stripeRows="true"
 					emptyMessage="Nenhum dirigente encontrado" styleClass="data-table"
 					paginator="true" rows="10" paginatorPosition="bottom"
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -60,7 +60,8 @@
 					</p:column>
 
 					<p:column headerText="Ativo" style="text-align: center">
-						<h:outputText value="#{dirigente.ativo ? 'Sim' : 'Não'}" />
+						<i class="#{dirigente.ativo ? 'pi pi-check-circle' : 'pi pi-check-circle'}" title="#{dirigente.ativo ? 'Sim' : 'Não'}"
+					       style="font-size: 2rem; color: #{dirigente.ativo ? 'green' : 'red'}"></i>
 					</p:column>
 
 					<p:column headerText="Ações" styleClass="action-column" style="text-align: center" width="150">

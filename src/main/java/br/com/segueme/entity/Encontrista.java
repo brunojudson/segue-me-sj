@@ -164,7 +164,7 @@ public class Encontrista implements Serializable {
             this.idade = null;
         }
     }
-
+    
     // Equals e HashCode
     @Override
     public boolean equals(Object o) {

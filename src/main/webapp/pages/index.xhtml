@@ -12,12 +12,20 @@
             <div class="welcome-panel">
                 <h2>Bem-vindo ao Sistema Segue-me</h2>
                 <p>Sistema de gerenciamento para encontros de jovens</p>
-                <!-- <div style="text-align: center; margin: 20px 0;">
+				<p:panel style="margin: 20px 0; background: #f9f9f9;">
+					<h:outputText value="#{dashboardController.versiculoDoDia.texto}"
+						style="font-size: 1.2em; font-style: italic; display: block;" />
+
+					<h:outputText
+						value="#{dashboardController.versiculoDoDia.referencia}"
+						style="font-weight: bold; display: block; text-align: right; margin-top: 4px;" />
+				</p:panel>
+				<!-- <div style="text-align: center; margin: 20px 0;">
                     <h:graphicImage library="images" name="segue-me.png" alt="Segue-me Logo" style="max-width: 100%; height: auto;" />
                 </div> -->
                 <p:panel header="Próximos Encontros" styleClass="dashboard-panel">
                     <p:dataTable id="encontrosTable" var="encontro" value="#{dashboardController.proximosEncontros}"
-                                 emptyMessage="Nenhum encontro agendado" styleClass="data-table" reflow="true">
+                                 stripeRows="true" emptyMessage="Nenhum encontro agendado" styleClass="data-table" reflow="true">
                         <p:column headerText="Nome">
                             <h:outputText value="#{encontro.nome}" />
                         </p:column>
@@ -44,7 +52,7 @@
                         </p:column>
                     </p:dataTable>
                 </p:panel>
-                
+
                 <p:panel header="Estatísticas dos Encontros" styleClass="dashboard-panel">
                     <div class="ui-g dashboard-stats">
                         <div class="ui-g-12 ui-md-3">

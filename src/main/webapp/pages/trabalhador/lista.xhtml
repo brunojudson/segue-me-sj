@@ -23,7 +23,7 @@
 				</p:messages>
 
 				<p:dataTable id="trabalhadoresTable" var="trabalhador"
-					value="#{trabalhadorController.trabalhadores}"
+					value="#{trabalhadorController.trabalhadores}" stripeRows="true"
 					emptyMessage="Nenhum trabalhador encontrado"
 					styleClass="data-table" paginator="true" rows="10"
 					paginatorPosition="bottom"
@@ -55,7 +55,7 @@
 						<h:outputText value="#{trabalhador.ehCoordenador ? 'Sim' : 'Não'}" />
 					</p:column>
 					
-					<p:column headerText="Idade" style="text-align: center" >
+					<p:column headerText="Idade" style="text-align: center" responsivePriority="4" >
 						<h:outputText id="idade" value="#{trabalhador.idade}" rendered="#{not empty trabalhador.idade}" />
 						<p:tooltip for="idade" value="Idade quando trabalhou no encontro"/>
 					</p:column>
@@ -65,8 +65,9 @@
 							value="#{trabalhador.foiEncontrista ? 'Sim' : 'Não'}" />
 					</p:column>
 					
-					 <p:column headerText="Ativo" style="text-align: center" sortBy="#{trabalhador.ativo}" responsivePriority="6">
-                        <h:outputText value="#{trabalhador.ativo ? 'Sim' : 'Não'}" />
+					 <p:column headerText="Ativo" style="text-align: center" sortBy="#{trabalhador.ativo}" responsivePriority="3">                     
+                        <i class="#{trabalhador.ativo ? 'pi pi-circle-on' : 'pi pi-circle-on'}" title="#{trabalhador.ativo ? 'Ativo' : 'Inativo'}"
+					       style="font-size: 2rem; color: #{trabalhador.ativo ? 'green' : 'grey'}"></i>
                     </p:column>
 
 					<p:column headerText="Ações" styleClass="action-column" style="text-align: center" width="150">

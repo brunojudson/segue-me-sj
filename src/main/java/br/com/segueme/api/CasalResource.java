@@ -1,7 +1,7 @@
 package br.com.segueme.api;
 
-import br.com.segueme.entity.Pessoa;
-import br.com.segueme.service.PessoaService;
+import br.com.segueme.entity.Casal;
+import br.com.segueme.service.CasalService;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -10,41 +10,40 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 
-@Path("/pessoas")
+@Path("/casais")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class PessoaResource {
+public class CasalResource {
 
     @Inject
-    private PessoaService pessoaService;
+    private CasalService casalService;
 
     @GET
-    public List<Pessoa> listarTodos() {
-        return pessoaService.buscarTodos();
+    public List<Casal> listarTodos() {
+        return casalService.buscarTodos();
     }
 
     @GET
     @Path("/{id}")
     public Response buscarPorId(@PathParam("id") Long id) {
-        Optional<Pessoa> pessoa = pessoaService.buscarPorId(id);
-        return pessoa.map(Response::ok)
-                     .orElseGet(() -> Response.status(Response.Status.NOT_FOUND))
-                     .build();
+        Optional<Casal> casal = casalService.buscarPorId(id);
+        return casal.map(Response::ok)
+                    .orElseGet(() -> Response.status(Response.Status.NOT_FOUND))
+                    .build();
     }
-    
+
     @GET
     @Path("/{id}/foto")
     @Produces({"image/jpeg", "image/png"})
     public Response buscarFoto(@PathParam("id") Long id) {
-        Optional<Pessoa> pessoa = pessoaService.buscarPorId(id);
-        if (pessoa.isPresent() && pessoa.get().getFoto() != null) {
-            String caminho = "C:\\Desenvovilmento\\fotos\\" + pessoa.get().getFoto();
+        Optional<Casal> casal = casalService.buscarPorId(id);
+        if (casal.isPresent() && casal.get().getFoto() != null) {
+            String caminho = "C:\\Desenvovilmento\\fotos\\" + casal.get().getFoto();
             java.io.File file = new java.io.File(caminho);
             if (file.exists()) {
                 return Response.ok(file).build();
             }
         }
-        // Retorna 404 se não encontrar a foto
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 }

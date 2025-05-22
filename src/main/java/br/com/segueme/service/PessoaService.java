@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 
 import br.com.segueme.entity.Pessoa;
 import br.com.segueme.repository.PessoaRepository;

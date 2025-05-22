@@ -24,9 +24,9 @@
 
 				<p:dataTable id="encontristasTable" var="encontrista"
 					value="#{encontristaController.encontristas}"
-					emptyMessage="Nenhum encontrista encontrado" 
+					emptyMessage="Nenhum encontrista encontrado"
 					styleClass="data-table" paginator="true" rows="10"
-					paginatorPosition="bottom"
+					paginatorPosition="bottom" stripeRows="true"
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
 					rowsPerPageTemplate="5,10,15,20">
@@ -52,13 +52,14 @@
 							<f:converter converterId="localDateTimeConverter" />
 						</h:outputText>
 					</p:column>
-					
-					<p:column headerText="Status" style="text-align: center">
+
+					<p:column headerText="Idade" style="text-align: center">
 						<h:outputText value="#{encontrista.idade}" />
 					</p:column>
-					
+
 					<p:column headerText="Encontrando" style="text-align: center" sortBy="#{encontrista.ativo}">
-						<h:outputText value="#{encontrista.ativo ? 'SIM' : 'NÃO'}" />
+						<i class="#{encontrista.ativo ? 'pi pi-hourglass' : 'pi pi-check-circle'}" title="#{encontrista.ativo ? 'Fazendo o Encontro' : 'Já fez o Encontro'}"
+					       style="font-size: 2rem; color: #{encontrista.ativo ? 'orange' : 'grey'}"></i>
 					</p:column>
 
 					<!-- <p:column headerText="Valor Pago" sortBy="#{encontrista.valorPago}">

@@ -12,11 +12,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import br.com.segueme.entity.Encontro;
+import br.com.segueme.entity.Versiculo;
 import br.com.segueme.service.ContribuicaoService;
 import br.com.segueme.service.EncontristaService;
 import br.com.segueme.service.EncontroService;
 import br.com.segueme.service.EquipeService;
 import br.com.segueme.service.TrabalhadorService;
+import br.com.segueme.service.VersiculoService;
 
 @Named
 @ViewScoped
@@ -39,6 +41,11 @@ public class DashboardController implements Serializable {
     @Inject
     private ContribuicaoService contribuicaoService;
     
+    @Inject
+    private VersiculoService versiculoService;
+
+    private Versiculo versiculoDoDia;
+    
     /*@Inject
     private ContribuicaoService contribuicaoService;*/
     
@@ -52,6 +59,7 @@ public class DashboardController implements Serializable {
     public void init() {
         carregarProximosEncontros();
         carregarEstatisticas();
+        carregarVersiculoDoDia();
     }
     
     private void carregarProximosEncontros() {
@@ -77,8 +85,15 @@ public class DashboardController implements Serializable {
          totalContribuicoes = contribuicaoService.calcularTotalGeral();
     }
     
+    private void carregarVersiculoDoDia() {
+        this.versiculoDoDia = versiculoService.buscarAleatorio();
+    }
+
     // Getters e Setters
-    
+    public Versiculo getVersiculoDoDia() {
+        return versiculoDoDia;
+    }
+        
     public List<Encontro> getProximosEncontros() {
         return proximosEncontros;
     }

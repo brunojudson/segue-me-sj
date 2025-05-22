@@ -158,6 +158,15 @@ public class Pessoa implements Serializable {
     public void setIdade(Integer idade) {
         this.idade = idade;
     }
+    
+    // Pessoa.java para API
+    @Transient
+    public String getFotoUrl() {
+        if (this.getFoto() != null && !this.getFoto().isEmpty()) {
+            return "/api/pessoas/" + this.getId() + "/foto";
+        }
+        return null;
+    }
 
     public void calcularIdade() {
         if (this.dataNascimento != null) {

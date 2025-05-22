@@ -40,7 +40,7 @@
                     <p:outputPanel id="resultadoPanel" style="margin-top: 20px;">
                         <p:dataTable var="item" value="#{relatorioController.resultadoRelatorio}" 
                                      rendered="#{not empty relatorioController.resultadoRelatorio}"
-                                     paginator="true" rows="10" paginatorPosition="bottom"
+                                     paginator="true" rows="10" paginatorPosition="bottom" stripeRows="true"
                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="5,10,15">
                             

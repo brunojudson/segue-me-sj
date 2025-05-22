@@ -23,7 +23,7 @@
                 
                 <p:dataTable id="tiposEquipeTable" var="tipoEquipe" value="#{tipoEquipeController.tiposEquipe}"
                              emptyMessage="Nenhum tipo de equipe encontrado" styleClass="data-table"
-                             paginator="true" rows="10" paginatorPosition="bottom"
+                             paginator="true" rows="10" paginatorPosition="bottom" stripeRows="true"
                              paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                              currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
                              rowsPerPageTemplate="5,10,15,20">

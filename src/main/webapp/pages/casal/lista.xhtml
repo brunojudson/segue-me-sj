@@ -23,7 +23,7 @@
 				</p:messages>
 
 				<p:dataTable id="casaisTable" var="casal"
-					value="#{casalController.casais}"
+					value="#{casalController.casais}" stripeRows="true"
 					emptyMessage="Nenhum casal encontrado" styleClass="data-table"
 					paginator="true" rows="10" paginatorPosition="bottom"
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"

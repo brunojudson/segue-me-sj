@@ -8,14 +8,17 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import br.com.segueme.entity.Permissao;
 import br.com.segueme.entity.Usuario;
 import br.com.segueme.service.UsuarioService;
 
 @Named
 @SessionScoped
 public class LoginController implements Serializable {
-    private String email;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String email;
     private String senha;
     private Usuario usuarioLogado;
 
