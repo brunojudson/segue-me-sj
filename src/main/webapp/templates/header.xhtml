@@ -17,7 +17,7 @@
         </div>
         <div class="user-info">
             <p:outputPanel><!--  rendered="#{not empty loginController.usuarioLogado" -->
-                <span>Bem-vindo, #{loginController.usuarioLogado.nome eq 'Admin' ? 'Administador' : 'Usuário'}</span>
+                <span>Bem-vindo, #{loginController.usuarioLogado.nome}</span>
                 <p:commandButton id="buttonSair" action="#{loginController.logout}" icon="pi pi-sign-out" styleClass="rounded-button"/>
                 <p:tooltip for="buttonSair" value="Sair" showEffect="fade" hideEffect="fade" position="bottom"/>
             </p:outputPanel>

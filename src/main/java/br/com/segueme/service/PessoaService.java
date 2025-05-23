@@ -16,7 +16,12 @@ public class PessoaService implements Serializable {
 
     @Inject
     private PessoaRepository pessoaRepository;
+    
+    @Inject
+    private AuditoriaService auditoriaService;
 
+    @Inject
+    private UsuarioService usuarioService;
 
     /**
      * Salva uma nova pessoa
@@ -50,7 +55,12 @@ public class PessoaService implements Serializable {
 		 */
         pessoa.calcularIdade();
         // Salvar pessoa
-        return pessoaRepository.save(pessoa);
+        
+        Pessoa pessoaSalva = pessoaRepository.save(pessoa);
+        auditoriaService.registrar("Pessoa", pessoaSalva.getId(), "INCLUÍDO", usuarioService.getUsuarioLogadoNome(),
+        		"Dados Salvo: " + pessoa.toString()); 
+        
+        return pessoaSalva;
     }
 
     /**
@@ -81,6 +91,8 @@ public class PessoaService implements Serializable {
 		 * !pessoaPorCpf.get().getId().equals(pessoa.getId())) { throw new
 		 * IllegalArgumentException("CPF já cadastrado para outra pessoa"); }
 		 */
+        auditoriaService.registrar("Pessoa", pessoa.getId(), "ATUALIZADO", usuarioService.getUsuarioLogadoNome(),
+                "Dados atualizados: " + pessoa.toString()); 
         pessoa.calcularIdade();
         // Atualizar pessoa
         return pessoaRepository.update(pessoa);
@@ -165,6 +177,9 @@ public class PessoaService implements Serializable {
         if (pessoaRepository.hasAssociations(id)) {
             throw new IllegalArgumentException("Não é possível remover a pessoa pois ela possui associações");
         }
+        
+        auditoriaService.registrar("Pessoa", id , "EXCLUÍDO", usuarioService.getUsuarioLogadoNome(),
+        		"Dados Excluído: " + pessoaExistente.toString());
 
         return pessoaRepository.delete(id);
     }

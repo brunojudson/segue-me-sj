@@ -66,8 +66,8 @@
 					</p:column>
 					
 					 <p:column headerText="Ativo" style="text-align: center" sortBy="#{trabalhador.ativo}" responsivePriority="3">                     
-                        <i class="#{trabalhador.ativo ? 'pi pi-circle-on' : 'pi pi-circle-on'}" title="#{trabalhador.ativo ? 'Ativo' : 'Inativo'}"
-					       style="font-size: 2rem; color: #{trabalhador.ativo ? 'green' : 'grey'}"></i>
+					    <p:tag value="#{trabalhador.ativo ? ' SIM ' : 'NÃO'}"
+									style="background: #{trabalhador.ativo ? '#689f38' : 'grey'}" />
                     </p:column>
 
 					<p:column headerText="Ações" styleClass="action-column" style="text-align: center" width="150">

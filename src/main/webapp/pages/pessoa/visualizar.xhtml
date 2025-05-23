@@ -14,7 +14,7 @@
 
 				<h:form id="visualizarForm">
 					<f:metadata>
-						<f:viewParam name="id" />
+						<f:viewParam name="id" converter="javax.faces.Long" />
 						<f:viewAction action="#{pessoaController.carregarPessoa}"
 							if="#{not empty param.id}" />
 					</f:metadata>
@@ -48,7 +48,8 @@
 								<h:outputText value="#{pessoaController.pessoa.email}" />
 
 								<p:outputLabel value="Sexo:" />
-								<h:outputText value="#{pessoaController.pessoa.sexo}" />
+								<h:outputText value="#{pessoaController.pessoa.sexo != null and
+								pessoaController.pessoa.sexo.toString() eq 'F' ? 'Feminino' : 'Masculino'}" />
 
 								<p:outputLabel value="Status:" />
 								<h:outputText

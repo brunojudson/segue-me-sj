@@ -257,13 +257,13 @@ public class Trabalhador implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return "Trabalhador{" +
-                "id=" + id +
-                ", pessoa=" + (pessoa != null ? pessoa.getNome() : "null") +
-                ", equipe=" + (equipe != null ? equipe.getNome() : "null") +
-                ", encontro=" + (encontro != null ? encontro.getNome() : "null") +
-                ", ehCoordenador=" + ehCoordenador +
-                '}';
-    }
+	public String toString() {
+		return "Trabalhador [pessoa=" + pessoa + ", equipe=" + equipe + ", encontro=" + encontro + ", ehCoordenador="
+				+ ehCoordenador + ", foiEncontrista=" + foiEncontrista + ", encontrista=" + encontrista
+				+ ", dataInicio=" + dataInicio + ", dataFim=" + dataFim + ", observacoes=" + observacoes + ", ativo="
+				+ ativo + ", contribuicoes=" + contribuicoes + ", cargos=" + cargos + ", idade=" + idade + ", ehCasal="
+				+ ehCasal + "]";
+	}
+    
+    
 }

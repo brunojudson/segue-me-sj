@@ -36,6 +36,12 @@ public class TrabalhadorService implements Serializable {
 
     @Inject
     private EncontristaRepository encontristaRepository;
+    
+    @Inject
+    private AuditoriaService auditoriaService;
+
+    @Inject
+    private UsuarioService usuarioService;
 
     /**
      * Salva um novo trabalhador
@@ -104,7 +110,13 @@ public class TrabalhadorService implements Serializable {
         }
         trabalhador.calcularIdade();
         // Salvar trabalhador
-        return trabalhadorRepository.save(trabalhador);
+        
+        Trabalhador trabalhadorSalvo = trabalhadorRepository.save(trabalhador);
+        
+        auditoriaService.registrar("Trabalhador", trabalhadorSalvo.getId(), "INCLUÍDO", usuarioService.getUsuarioLogadoNome(),
+        		"Dados Salvo: " + trabalhador.toString()); 
+        
+        return trabalhadorSalvo;
     }
 
     /**
@@ -134,6 +146,10 @@ public class TrabalhadorService implements Serializable {
         	throw new IllegalArgumentException("Não é possível remover o trabalhador, pois o encontro está finalizado.");
         }
         trabalhador.calcularIdade();
+        
+        auditoriaService.registrar("Trabalhador", trabalhador.getId(), "ATUALIZADO", usuarioService.getUsuarioLogadoNome(),
+                "Dados atualizados: " + trabalhador.toString()); 
+        
         // Atualizar trabalhador
         return trabalhadorRepository.update(trabalhador);
     }
@@ -264,7 +280,9 @@ public class TrabalhadorService implements Serializable {
             throw new IllegalArgumentException("Não é possível remover o trabalhador pois ele possui associações");
         }
         
-
+        auditoriaService.registrar("Trabalhador", id , "EXCLUÍDO", usuarioService.getUsuarioLogadoNome(),
+        		"Dados Excluído: " + trabalhadorExistente.toString());
+        
         return trabalhadorRepository.delete(id);
     }
 

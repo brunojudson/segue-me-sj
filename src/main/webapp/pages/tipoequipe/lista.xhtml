@@ -44,8 +44,9 @@
                      	<i class="#{tipoEquipe.ehDirigente ? 'pi pi-check' : ''}" style="font-size: 1.5rem"></i>
                     </p:column>
                     
-                    <p:column headerText="Ativo" style="text-align: center; width: 50px" responsivePriority="6">
-                        <h:outputText value="#{tipoEquipe.ativo ? 'Sim' : 'Não'}" />
+                    <p:column headerText="Ativo" style="text-align: center; width: 50px" responsivePriority="6">                      
+                        <p:tag value="#{tipoEquipe.ativo ? ' SIM ' : 'NÃO'}"
+									style="background: #{tipoEquipe.ativo ? '#689f38' : 'grey'}" />
                     </p:column>
                     
                     <p:column headerText="Ações" styleClass="action-column" style="text-align: center" width="150">

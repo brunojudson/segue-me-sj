@@ -62,9 +62,9 @@
 						<h:outputText value="#{pessoa.telefone}" />
 					</p:column>
 
-					<p:column headerText="Status" style="text-align: center">
-						<i class="#{pessoa.ativo ? 'pi pi-circle-on' : 'pi pi-circle-on'}" title="#{pessoa.ativo ? 'Ativo' : 'Inativo'}"
-					       style="font-size: 2rem; color: #{pessoa.ativo ? 'green' : 'grey'}"></i>
+					<p:column headerText="Status" style="text-align: center">					       
+					    <p:tag value="#{pessoa.ativo ? ' SIM ' : 'NÃO'}"
+									style="background: #{pessoa.ativo ? '#689f38' : 'grey'}" />
 					</p:column>
 
 					<p:column headerText="Ações" styleClass="action-column" style="text-align: center" width="150">

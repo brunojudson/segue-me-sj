@@ -3,6 +3,7 @@ package br.com.segueme.service;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -17,9 +18,12 @@ public class EncontristaService implements Serializable {
 
 	@Inject
 	private EncontristaRepository encontristaRepository;
-
 	
+	@Inject
+    private AuditoriaService auditoriaService;
 
+    @Inject
+    private UsuarioService usuarioService;
 	/**
 	 * Salva um novo encontrista
 	 * 
@@ -54,8 +58,13 @@ public class EncontristaService implements Serializable {
 			throw new IllegalArgumentException("Já existe um encontrista cadastrado para esta pessoa e encontro");
 		}
 		encontrista.calcularIdade();
+		Encontrista encontristaSalva = encontristaRepository.save(encontrista);
+		
+		auditoriaService.registrar("Encontrista", encontristaSalva.getId(), "INCLUÍDO", usuarioService.getUsuarioLogadoNome(),
+        		"Dados Salvo: " + encontrista.toString()); 
+		
 		// Salvar encontrista
-		return encontristaRepository.save(encontrista);
+		return encontristaSalva;
 	}
 
 	/**
@@ -79,13 +88,17 @@ public class EncontristaService implements Serializable {
 		if (!encontristaExistente.isPresent()) {
 			throw new IllegalArgumentException("Encontrista não encontrado com o ID: " + encontrista.getId());
 		}
-		
+
 		// Verificar se o encontro está ativo
-	    Encontro encontro = encontristaExistente.get().getEncontro();
-	    if (encontro != null && Boolean.FALSE.equals(encontro.getAtivo())) {
-	        throw new IllegalArgumentException("Não é possível atualizar o encontrista, pois o encontro está finalizado.");
-	    }
+		Encontro encontro = encontristaExistente.get().getEncontro();
+		if (encontro != null && Boolean.FALSE.equals(encontro.getAtivo())) {
+			throw new IllegalArgumentException(
+					"Não é possível atualizar o encontrista, pois o encontro está finalizado.");
+		}
 		encontrista.calcularIdade();
+		
+		auditoriaService.registrar("Encontrista", encontrista.getId(), "ATUALIZADO", usuarioService.getUsuarioLogadoNome(),
+        		"Dados atualizados: " + encontrista.toString()); 
 		// Atualizar encontrista
 		return encontristaRepository.update(encontrista);
 	}
@@ -182,28 +195,37 @@ public class EncontristaService implements Serializable {
 			throw new IllegalArgumentException("Encontrista não encontrado com o ID: " + id);
 		}
 
-		 // Verificar se o encontro está ativo
-		 Encontro encontro = encontristaExistente.get().getEncontro();
-		 if (encontro != null && Boolean.FALSE.equals(encontro.getAtivo())) {
-			 throw new IllegalArgumentException("Não é possível remover o encontrista, pois o encontro está finalizado.");
-		 }
+		// Verificar se o encontro está ativo
+		Encontro encontro = encontristaExistente.get().getEncontro();
+		if (encontro != null && Boolean.FALSE.equals(encontro.getAtivo())) {
+			throw new IllegalArgumentException(
+					"Não é possível remover o encontrista, pois o encontro está finalizado.");
+		}
 
 		// Verificar se encontrista possui associações
 		if (encontristaRepository.hasAssociations(id)) {
 			throw new IllegalArgumentException("Não é possível remover o encontrista pois ele possui associações");
 		}
-
+		auditoriaService.registrar("Encontrista", id , "EXCLUÍDO", usuarioService.getUsuarioLogadoNome(),
+        		"Dados Excluído: " + encontristaExistente.toString());
 		return encontristaRepository.deleteDirect(id);
 	}
-		public void desativarPorEncontro(Long encontroId) {
-		    if (encontroId == null) {
-		        throw new IllegalArgumentException("ID do encontro não pode ser nulo");
-		    }
-	
-		    List<Encontrista> encontristas = encontristaRepository.findByEncontro(encontroId);
-		    for (Encontrista encontrista : encontristas) {
-		        encontrista.setAtivo(false);
-		        encontristaRepository.update(encontrista);
-		    }
+
+	public void desativarPorEncontro(Long encontroId) {
+		if (encontroId == null) {
+			throw new IllegalArgumentException("ID do encontro não pode ser nulo");
 		}
+
+		List<Encontrista> encontristas = encontristaRepository.findByEncontro(encontroId);
+		for (Encontrista encontrista : encontristas) {
+			encontrista.setAtivo(false);
+			encontristaRepository.update(encontrista);
+		}
+	}
+	public List<Encontrista> buscarAtivos() {
+		return encontristaRepository.findAll()
+			.stream()
+			.filter(Encontrista::getAtivo)
+			.collect(Collectors.toList());
+	}
 }

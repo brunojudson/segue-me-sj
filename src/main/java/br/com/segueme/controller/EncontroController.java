@@ -11,10 +11,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import br.com.segueme.entity.Encontro;
+import br.com.segueme.service.AuditoriaService;
 import br.com.segueme.service.EncontristaService;
 import br.com.segueme.service.EncontroService;
 import br.com.segueme.service.EquipeService;
 import br.com.segueme.service.TrabalhadorService;
+import br.com.segueme.service.UsuarioService;
 
 @Named
 @ViewScoped
@@ -33,6 +35,12 @@ public class EncontroController implements Serializable {
     
     @Inject
     private EncontristaService encontristaService;
+    
+    @Inject
+    private AuditoriaService auditoriaService;
+
+    @Inject
+    private UsuarioService usuarioService;
     
 
     private List<Encontro> encontros;
@@ -69,6 +77,9 @@ public class EncontroController implements Serializable {
 
             // Desativar encontristas associados ao encontro
             encontristaService.desativarPorEncontro(encontro.getId());
+            
+            auditoriaService.registrar("Encontro", encontro.getId() , "DESATIVADO", usuarioService.getUsuarioLogadoNome(),
+            		"Encontro desativado juntamento com seus trabalhadores, equipes e encontristas"); 
 
             FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Encontro e relacionados desativados com sucesso!"));

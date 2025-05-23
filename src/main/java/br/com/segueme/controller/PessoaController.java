@@ -119,7 +119,6 @@ public class PessoaController implements Serializable {
 
 	public String visualizar(Pessoa pessoa) {
 		this.pessoaSelecionada = pessoa;
-		System.out.println(pessoa.getSexo());
 		return "visualizar?faces-redirect=true&id=" + pessoa.getId();
 	}
 

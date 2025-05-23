@@ -19,8 +19,11 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import br.com.segueme.entity.Circulo;
 import br.com.segueme.entity.Encontrista;
 import br.com.segueme.entity.Encontro;
 import br.com.segueme.entity.Pessoa;
@@ -51,7 +54,7 @@ public class EncontristaController implements Serializable {
     private List<Encontro> encontros;
 
     private static final String CAMINHO_FOTOS = "C:\\Desenvovilmento\\fotos\\";
-    
+
     @PostConstruct
     public void init() {
         carregarEncontristas();
@@ -81,11 +84,11 @@ public class EncontristaController implements Serializable {
             if (encontrista.getId() == null) {
                 encontristaService.salvar(encontrista);
                 FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Encontrista cadastrado com sucesso!"));
+                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Encontrista cadastrado com sucesso!"));
             } else {
                 encontristaService.atualizar(encontrista);
                 FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Encontrista atualizado com sucesso!"));
+                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Encontrista atualizado com sucesso!"));
             }
 
             carregarEncontristas();
@@ -93,7 +96,7 @@ public class EncontristaController implements Serializable {
             return "lista?faces-redirect=true";
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
             return null;
         }
     }
@@ -116,11 +119,11 @@ public class EncontristaController implements Serializable {
         try {
             encontristaService.remover(encontristaSelecionado.getId());
             FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Encontrista excluído com sucesso!"));
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Encontrista excluído com sucesso!"));
             carregarEncontristas();
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
         }
     }
 
@@ -131,18 +134,20 @@ public class EncontristaController implements Serializable {
             encontristaService.buscarPorId(id).ifPresent(e -> this.encontrista = e);
         }
     }
-    
-	    public String getFoto() {
-			if (encontrista.getPessoa() != null && encontrista.getPessoa().getFoto() != null && !encontrista.getPessoa().getFoto().isEmpty()) {
-				// Adiciona um parâmetro único (timestamp) para evitar cache
-				return "/fotos/" + encontrista.getPessoa().getFoto() + "?t=" + System.currentTimeMillis();
-			}
-			// Retorna uma imagem padrão caso o casal não tenha foto
-			return "/resources/images/default_avatar.png?t=" + System.currentTimeMillis();
-		}
- // ...existing code...
+
+    public String getFoto() {
+        if (encontrista.getPessoa() != null && encontrista.getPessoa().getFoto() != null
+                && !encontrista.getPessoa().getFoto().isEmpty()) {
+            // Adiciona um parâmetro único (timestamp) para evitar cache
+            return "/fotos/" + encontrista.getPessoa().getFoto() + "?t=" + System.currentTimeMillis();
+        }
+        // Retorna uma imagem padrão caso o casal não tenha foto
+        return "/resources/images/default_avatar.png?t=" + System.currentTimeMillis();
+    }
+
+    // ...existing code...
     public void gerarFichaInscricao(Encontrista encontrista) {
-        
+
         Document document = new Document();
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -163,7 +168,7 @@ public class EncontristaController implements Serializable {
                 caminhoFoto = CAMINHO_FOTOS + encontrista.getPessoa().getFoto();
             } else {
                 caminhoFoto = FacesContext.getCurrentInstance().getExternalContext()
-                    .getRealPath("/resources/images/default_avatar.png");
+                        .getRealPath("/resources/images/default_avatar.png");
             }
             File fotoFile = new File(caminhoFoto);
             if (fotoFile.exists()) {
@@ -185,7 +190,8 @@ public class EncontristaController implements Serializable {
                 // Data de nascimento formatada
                 String dataNasc = "";
                 if (encontrista.getPessoa().getDataNascimento() != null) {
-                    dataNasc = new SimpleDateFormat("dd/MM/yyyy").format(java.sql.Date.valueOf(encontrista.getPessoa().getDataNascimento()));
+                    dataNasc = new SimpleDateFormat("dd/MM/yyyy")
+                            .format(java.sql.Date.valueOf(encontrista.getPessoa().getDataNascimento()));
                 }
                 document.add(new Paragraph("Data de Nascimento: " + dataNasc, dadosFont));
                 document.add(new Paragraph("Endereço: " + encontrista.getPessoa().getEndereco(), dadosFont));
@@ -193,10 +199,14 @@ public class EncontristaController implements Serializable {
                 document.add(new Paragraph("E-mail: " + encontrista.getPessoa().getEmail(), dadosFont));
                 String sexo = "Não informado";
                 if (encontrista.getPessoa().getSexo() != null) {
-                    sexo = String.valueOf(encontrista.getPessoa().getSexo()).equalsIgnoreCase("M") ? "Masculino" : "Feminino";
+                    sexo = String.valueOf(encontrista.getPessoa().getSexo()).equalsIgnoreCase("M") ? "Masculino"
+                            : "Feminino";
                 }
                 document.add(new Paragraph("Sexo: " + sexo, dadosFont));
-                document.add(new Paragraph("Idade: " + (encontrista.getPessoa().getIdade() != null ? encontrista.getPessoa().getIdade() : "Não calculada"), dadosFont));
+                document.add(new Paragraph(
+                        "Idade: " + (encontrista.getPessoa().getIdade() != null ? encontrista.getPessoa().getIdade()
+                                : "Não calculada"),
+                        dadosFont));
             }
 
             document.add(new Paragraph(" ")); // Espaço
@@ -207,14 +217,16 @@ public class EncontristaController implements Serializable {
                 // Data do encontro formatada
                 String dataEncontro = "";
                 if (encontrista.getEncontro().getDataInicio() != null) {
-                    dataEncontro = new SimpleDateFormat("dd/MM/yyyy").format(java.sql.Date.valueOf(encontrista.getEncontro().getDataInicio()));
+                    dataEncontro = new SimpleDateFormat("dd/MM/yyyy")
+                            .format(java.sql.Date.valueOf(encontrista.getEncontro().getDataInicio()));
                 }
                 document.add(new Paragraph("Data do Encontro: " + dataEncontro, dadosFont));
             }
 
             // Data da inscrição formatada
             if (encontrista.getDataInscricao() != null) {
-                String dataInscricao = encontrista.getDataInscricao().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                String dataInscricao = encontrista.getDataInscricao()
+                        .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                 document.add(new Paragraph("Data da Inscrição: " + dataInscricao, dadosFont));
             }
 
@@ -238,6 +250,99 @@ public class EncontristaController implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void gerarRelatorioEncontristasAtivos() {
+        Document document = new Document();
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PdfWriter.getInstance(document, baos);
+            document.open();
+
+            // Título
+            Font tituloFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
+            Paragraph titulo = new Paragraph("Relatório de Encontristas", tituloFont);
+            titulo.setAlignment(Element.ALIGN_CENTER);
+            document.add(titulo);
+            document.add(new Paragraph(" ")); // Espaço
+
+            // Tabela (agora com 6 colunas)
+            PdfPTable table = new PdfPTable(6);
+            table.setWidthPercentage(100);
+
+            // Cabeçalho
+            Font cabecalhoFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+            table.addCell(new PdfPCell(new Paragraph("Nome", cabecalhoFont)));
+            table.addCell(new PdfPCell(new Paragraph("CPF", cabecalhoFont)));
+            table.addCell(new PdfPCell(new Paragraph("Encontro", cabecalhoFont)));
+            PdfPCell dataInscricaoHeader = new PdfPCell(new Paragraph("Data de Inscrição", cabecalhoFont));
+            dataInscricaoHeader.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(dataInscricaoHeader);
+            PdfPCell idadeHeader = new PdfPCell(new Paragraph("Idade", cabecalhoFont));
+            idadeHeader.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(idadeHeader);
+            PdfPCell circuloHeader = new PdfPCell(new Paragraph("Círculo", cabecalhoFont));
+            circuloHeader.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(circuloHeader);
+
+            // Dados
+            List<Encontrista> ativos = encontristaService.buscarAtivos();
+            // Ordena por nome
+            ativos.sort((a, b) -> {
+                String nomeA = a.getPessoa() != null && a.getPessoa().getNome() != null ? a.getPessoa().getNome() : "";
+                String nomeB = b.getPessoa() != null && b.getPessoa().getNome() != null ? b.getPessoa().getNome() : "";
+                return nomeA.compareToIgnoreCase(nomeB);
+            });
+
+            Font dadosFont = new Font(Font.FontFamily.HELVETICA, 11, Font.NORMAL);
+
+            for (Encontrista e : ativos) {
+                table.addCell(
+                        new PdfPCell(new Paragraph(e.getPessoa() != null ? e.getPessoa().getNome() : "", dadosFont)));
+                table.addCell(
+                        new PdfPCell(new Paragraph(e.getPessoa() != null ? e.getPessoa().getCpf() : "", dadosFont)));
+                table.addCell(new PdfPCell(
+                        new Paragraph(e.getEncontro() != null ? e.getEncontro().getNome() : "", dadosFont)));
+                String dataInscricao = e.getDataInscricao() != null
+                        ? e.getDataInscricao().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                        : "";
+                PdfPCell dataInscricaoCell = new PdfPCell(new Paragraph(dataInscricao, dadosFont));
+                dataInscricaoCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(dataInscricaoCell);
+
+                PdfPCell idadeCell = new PdfPCell(
+                        new Paragraph(e.getIdade() != null ? e.getIdade().toString() : "", dadosFont));
+                idadeCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(idadeCell);
+
+                // Adiciona o círculo (cor)
+                PdfPCell circuloCell = new PdfPCell(
+                        new Paragraph(e.getCirculo() != null ? e.getCirculo().name() : "", dadosFont));
+                circuloCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(circuloCell);
+            }
+
+            document.add(table);
+            document.close();
+
+            // Enviar PDF para o navegador
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+            HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
+            response.reset();
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=Relatorio_Encontristas_Ativos.pdf");
+            response.getOutputStream().write(baos.toByteArray());
+            response.getOutputStream().flush();
+            facesContext.responseComplete();
+        } catch (Exception e) {
+            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro ao gerar relatório", e.getMessage()));
+        }
+    }
+
+    public Circulo[] getCirculos() {
+        return Circulo.values();
     }
     // ...existing code...
     // Getters e Setters

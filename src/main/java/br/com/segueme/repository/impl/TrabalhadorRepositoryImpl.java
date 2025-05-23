@@ -33,11 +33,12 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 		try {
 			Trabalhador trabalhador = entityManager.createQuery(
 					"SELECT t FROM Trabalhador t " +
-							"LEFT JOIN FETCH t.encontro e " + // Carrega a entidade Encontro
-							"LEFT JOIN FETCH t.equipe eq " + // Carrega a entidade Equipe
-							"LEFT JOIN FETCH eq.tipoEquipe " + // Carrega TipoEquipe
-							"LEFT JOIN FETCH t.contribuicoes c " + // Carrega a coleção Contribuicoes
-							"WHERE t.id = :id",
+            "LEFT JOIN FETCH t.encontro e " +
+            "LEFT JOIN FETCH t.equipe eq " +
+            "LEFT JOIN FETCH eq.tipoEquipe " +
+            "LEFT JOIN FETCH t.contribuicoes c " +
+            "LEFT JOIN FETCH t.cargos cg " + // Adicione esta linha para carregar cargos
+            "WHERE t.id = :id",
 					Trabalhador.class)
 					.setParameter("id", id)
 					.getSingleResult();

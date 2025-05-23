@@ -203,7 +203,10 @@ body .ui-panelgrid .ui-panelgrid-cell {
         height: auto; /* Altura ajustável */
         padding: 10px; /* Ajusta o espaçamento interno */
     }
-
+     .menu-container {
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
     #content {
         margin-left: 0; /* Remove o deslocamento do conteúdo */
     }
@@ -216,6 +219,10 @@ body .ui-panelgrid .ui-panelgrid-cell {
         flex-direction: column;
         align-items: center;
         gap: 4px;
+    }
+     .menu-container {
+        padding: 0 !important;
+        box-shadow: none !important;
     }
 }
 

@@ -7,6 +7,7 @@
 
     <persistence-unit name="seguemePU" transaction-type="JTA">
         <jta-data-source>java:jboss/datasources/SeguemeDS</jta-data-source>
+        <!-- <jta-data-source>java:comp/env/jdbc/SeguemeDS</jta-data-source> -->
 
         <class>br.com.segueme.entity.Pessoa</class>
         <class>br.com.segueme.entity.Encontro</class>
@@ -21,21 +22,22 @@
         <class>br.com.segueme.entity.Usuario</class>
         <class>br.com.segueme.entity.Permissao</class>
         <class>br.com.segueme.entity.Versiculo</class>
+        <class>br.com.segueme.entity.Auditoria</class>
 
         <properties>
             <!-- Configurações do Hibernate -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-            <property name="hibernate.show_sql" value="true"/>
+            <!-- <property name="hibernate.show_sql" value="true"/> -->
             <!-- <property name="hibernate.format_sql" value="true"/> -->
             <!-- <property name="hibernate.use_sql_comments" value="true"/> -->
             <property name="hibernate.hbm2ddl.auto" value="update"/>
 
             <!-- Configurações de pool de conexões -->
-            <property name="hibernate.c3p0.min_size" value="5"/>
+            <!-- <property name="hibernate.c3p0.min_size" value="5"/>
             <property name="hibernate.c3p0.max_size" value="20"/>
             <property name="hibernate.c3p0.timeout" value="300"/>
             <property name="hibernate.c3p0.max_statements" value="50"/>
-            <property name="hibernate.c3p0.idle_test_period" value="3000"/>
+            <property name="hibernate.c3p0.idle_test_period" value="3000"/> -->
 
             <!-- Configurações específicas do PostgreSQL -->
             <property name="hibernate.jdbc.batch_size" value="50"/>

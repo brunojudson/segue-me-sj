@@ -31,4 +31,22 @@ public class UsuarioService {
 
         return usuario;
     }
+
+    @SuppressWarnings("unused")
+	public String getUsuarioLogadoNome() {
+        Object loginController = javax.faces.context.FacesContext.getCurrentInstance()
+            .getExternalContext().getSessionMap().get("loginController");
+        if (loginController != null) {
+            try {
+                br.com.segueme.controller.LoginController controller = 
+                    (br.com.segueme.controller.LoginController) loginController;
+                if (controller.getUsuarioLogado() != null) {
+                    return controller.getUsuarioLogado().getNome();
+                }
+            } catch (Exception e) {
+                // log ou trate o erro se necessário
+            }
+        }
+        return "Desconhecido";
+    }
 }

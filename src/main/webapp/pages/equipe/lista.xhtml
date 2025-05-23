@@ -49,9 +49,9 @@
                         <h:outputText value="#{equipe.ehEquipeDirigente() ? 'Sim' : 'Não'}" />
                     </p:column>
                     
-                    <p:column headerText="Ativo" style="text-align: center" sortBy="#{equipe.ativo}">
-                        <i class="#{equipe.ativo ? 'pi pi-check-circle' : 'pi pi-check-circle'}" title="#{equipe.ativo ? 'Sim' : 'Não'}"
-					       style="font-size: 2rem; color: #{equipe.ativo ? 'green' : 'red'}"></i>
+                    <p:column headerText="Ativo" style="text-align: center" sortBy="#{equipe.ativo}">			       
+					     <p:tag value="#{equipe.ativo ? ' SIM ' : 'NÃO'}"
+									style="background: #{equipe.ativo ? '#689f38' : 'grey'}" />
                     </p:column>
                     
                     <p:column headerText="Ações" styleClass="action-column" style="text-align: center" width="150">

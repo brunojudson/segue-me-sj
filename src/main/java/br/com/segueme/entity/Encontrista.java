@@ -9,6 +9,8 @@ import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -60,6 +62,10 @@ public class Encontrista implements Serializable {
     
     @Column(name = "idade")
     private Integer idade;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "circulo", length = 10)
+    private Circulo circulo;
 
     // Construtores
     public Encontrista() {
@@ -153,6 +159,14 @@ public class Encontrista implements Serializable {
     public void setIdade(Integer idade) {
         this.idade = idade;
     }
+    
+    public Circulo getCirculo() {
+        return circulo;
+    }
+
+    public void setCirculo(Circulo circulo) {
+        this.circulo = circulo;
+    }
 
     public void calcularIdade() {
         if (this.pessoa != null && this.pessoa.getDataNascimento() != null) {
@@ -182,11 +196,10 @@ public class Encontrista implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return "Encontrista{" +
-                "id=" + id +
-                ", pessoa=" + (pessoa != null ? pessoa.getNome() : "null") +
-                ", encontro=" + (encontro != null ? encontro.getNome() : "null") +
-                '}';
-    }
+	public String toString() {
+		return "Encontrista [id=" + id + ", pessoa=" + pessoa + ", encontro=" + encontro + ", dataInscricao="
+				+ dataInscricao + ", valorPago=" + valorPago + ", formaPagamento=" + formaPagamento + ", observacoes="
+				+ observacoes + ", ativo=" + ativo + ", trabalhador=" + trabalhador + ", idade=" + idade + ", circulo="
+				+ circulo + "]";
+	}
 }
