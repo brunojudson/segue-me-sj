@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">
+        #{empty param.id ? 'Cadastrar' : 'Editar'} Contribuição - Sistema Segue-me
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="content-container">
+            <!-- Cabeçalho da página -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">
+                            <i class="pi pi-dollar page-icon"></i>
+                            <span class="title-text">#{empty param.id ? 'Cadastrar' : 'Editar'} Contribuição</span>
+                        </h1>
+                        <p class="page-subtitle">
+                            #{empty param.id ? 'Registre uma nova contribuição financeira' : 'Atualize os dados da contribuição'}
+                        </p>
+                    </div>
+                    <div class="page-actions">
+                        <p:button value="Voltar à Lista" 
+                                  outcome="/pages/contribuicao/lista.xhtml"
+                                  icon="pi pi-arrow-left" 
+                                  styleClass="action-button-primary" />
+                    </div>
+                </div>
+            </div>
+
+            <h:form id="contribuicaoForm" enctype="multipart/form-data" styleClass="modern-form">
+                <p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages"
+                onshow="scrollToTopOnError()">
+                    <p:autoUpdate />
+                </p:messages>
+
+                <f:metadata>
+                    <f:viewParam name="id" />
+                    <f:viewAction action="#{contribuicaoController.carregarContribuicao}" if="#{not empty param.id}" />
+                </f:metadata>
+
+                <!-- Seção: Dados da Contribuição -->
+                <div class="form-section">
+                    <p:fieldset legend="💰 Dados da Contribuição" styleClass="modern-fieldset" toggleable="true">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="trabalhador" value="Trabalhador" styleClass="required-field" />
+                                <p:selectOneMenu id="trabalhador" value="#{contribuicaoController.contribuicao.trabalhador}" 
+                                                converter="omnifaces.SelectItemsConverter" required="true"
+                                                requiredMessage="O trabalhador é obrigatório"
+                                                filter="true" filterMatchMode="contains">
+                                    <f:selectItem itemLabel="Selecione um trabalhador" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{contribuicaoController.trabalhadores}" var="trabalhador"
+                                                  itemLabel="#{trabalhador.pessoa.nome} - #{trabalhador.equipe.nome}" 
+                                                  itemValue="#{trabalhador}" />
+                                </p:selectOneMenu>
+                                <small class="field-hint">Trabalhador que está fazendo a contribuição</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="dataPagamento" value="Data do Pagamento" styleClass="required-field" />
+                                <p:datePicker id="dataPagamento" value="#{contribuicaoController.contribuicao.dataPagamento}"
+                                             pattern="dd/MM/yyyy" showIcon="true" showOnFocus="false" required="true" 
+                                             requiredMessage="A data de pagamento é obrigatória" />
+                                <small class="field-hint">Data em que o pagamento foi realizado</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="valor" value="Valor da Contribuição" styleClass="required-field" />
+                                <p:inputNumber id="valor" value="#{contribuicaoController.contribuicao.valor}" 
+                                              symbol="R$ " symbolPosition="p" decimalSeparator="," thousandSeparator="." 
+                                              required="true" requiredMessage="O valor é obrigatório"
+                                              placeholder="0,00" />
+                                <small class="field-hint">Valor em reais da contribuição</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="formaPagamento" value="Forma de Pagamento" styleClass="required-field" />
+                                <p:selectOneMenu id="formaPagamento" value="#{contribuicaoController.contribuicao.formaPagamento}" 
+                                                required="true" requiredMessage="A forma de pagamento é obrigatória">
+                                    <f:selectItem itemLabel="Selecione a forma de pagamento" itemValue="" noSelectionOption="true" />
+                                    <f:selectItem itemLabel="💵 Dinheiro" itemValue="Dinheiro" />
+                                    <f:selectItem itemLabel="💳 Cartão de Crédito" itemValue="Cartão de Crédito" />
+                                    <f:selectItem itemLabel="💳 Cartão de Débito" itemValue="Cartão de Débito" />
+                                    <f:selectItem itemLabel="📱 PIX" itemValue="PIX" />
+                                    <f:selectItem itemLabel="🏦 Transferência Bancária" itemValue="Transferência Bancária" />
+                                </p:selectOneMenu>
+                                <small class="field-hint">Método utilizado para realizar o pagamento</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção: Observações -->
+                <div class="form-section">
+                    <p:fieldset legend="📝 Observações" styleClass="modern-fieldset" toggleable="true" collapsed="true">
+                        <div class="field-grid">
+                            <div class="field-group full-width">
+                                <p:outputLabel for="observacoes" value="Observações" />
+                                <p:inputTextarea id="observacoes" 
+                                                value="#{contribuicaoController.contribuicao.observacoes}"
+                                                maxlength="255" rows="4"
+                                                placeholder="Adicione observações sobre a contribuição..." />
+                                <small class="field-hint">Informações adicionais sobre a contribuição (máximo 255 caracteres)</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+                
+                <!-- Botões de Ação -->
+                <div class="form-actions">
+                    <div class="action-buttons">
+                        <p:commandButton value="💾 Salvar Dados"
+                                       oncomplete="handleSaveComplete(args);" 
+                                       action="#{contribuicaoController.salvar}" 
+                                       update="@form" 
+                                       styleClass="ui-button-success action-button-primary"
+                                       validateClient="true" />
+
+                        <p:commandButton value="📋 Salvar e Continuar"
+								action="#{contribuicaoController.salvarEContinuar}"
+                                update="@form messages"
+                                process="@form"
+                                styleClass="ui-button-info action-button-secondary"
+                                validateClient="true"
+                                oncomplete="handleSaveComplete(args);" />
+
+                        <p:button value="❌ Cancelar" 
+                                outcome="/pages/contribuicao/lista.xhtml"
+                                styleClass="ui-button-secondary action-button-cancel" />
+                    </div>
+                    
+                    <div class="form-help">
+                        <small>
+                            <i class="pi pi-info-circle"></i>
+                            Campos marcados com * são obrigatórios. 
+                            Use Tab para navegar entre os campos.
+                        </small>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+        <h:outputScript library="js" name="scrollUp.js" target="head" />
+    </ui:define>
+</ui:composition>
+
+</html>

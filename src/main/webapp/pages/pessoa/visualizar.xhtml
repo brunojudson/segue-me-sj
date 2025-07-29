@@ -1,0 +1,691 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Visualizar Seguidor - #{pessoaController.pessoa.nome}</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="content">
+		<style>
+			/* Layout principal melhorado */
+			.person-header {
+				background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+				color: white;
+				padding: 2rem;
+				border-radius: 20px 20px 0 0;
+				margin: -1rem -1rem 0 -1rem;
+				box-shadow: 0 8px 32px rgba(33, 150, 243, 0.3);
+				position: relative;
+				overflow: hidden;
+			}
+
+			.person-header::before {
+				content: '';
+				position: absolute;
+				top: -50%;
+				right: -20%;
+				width: 300px;
+				height: 300px;
+				background: rgba(255, 255, 255, 0.1);
+				border-radius: 50%;
+				backdrop-filter: blur(10px);
+			}
+
+			.person-header h2 {
+				margin: 0;
+				font-size: 2rem;
+				font-weight: 700;
+				position: relative;
+				z-index: 2;
+			}
+
+			.person-subtitle {
+				opacity: 0.9;
+				font-size: 1.1rem;
+				margin-top: 0.5rem;
+				position: relative;
+				z-index: 2;
+			}
+
+			.person-status {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.5rem 1rem;
+				border-radius: 25px;
+				font-weight: 600;
+				font-size: 0.9rem;
+				margin-top: 1rem;
+				backdrop-filter: blur(10px);
+				position: relative;
+				z-index: 2;
+			}
+
+			.person-status.ativo {
+				background: rgba(76, 175, 80, 0.2);
+				border: 2px solid rgba(255, 255, 255, 0.5);
+			}
+
+			.person-status.inativo {
+				background: rgba(244, 67, 54, 0.2);
+				border: 2px solid rgba(255, 255, 255, 0.5);
+			}
+
+			/* Layout principal com foto */
+			.person-content {
+				display: grid;
+				grid-template-columns: 1fr 250px;
+				gap: 2rem;
+				background: white;
+				border-radius: 0 0 20px 20px;
+				padding: 2rem;
+				box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+				margin: 0 -1rem -1rem -1rem;
+			}
+
+			.person-photo-section {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 1rem;
+				background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+				padding: 2rem 1rem;
+				border-radius: 20px;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+			}
+
+			.person-photo {
+				width: 180px !important;
+				height: 180px !important;
+				border-radius: 50% !important;
+				object-fit: cover !important;
+				border: 6px solid #fff !important;
+				box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+				transition: all 0.3s ease !important;
+			}
+
+			.person-photo:hover {
+				transform: scale(1.05);
+				box-shadow: 0 12px 35px rgba(0,0,0,0.25) !important;
+			}
+
+			.photo-placeholder {
+				width: 180px;
+				height: 180px;
+				border-radius: 50%;
+				background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: #1976d2;
+				font-size: 4rem;
+				border: 6px solid #fff;
+				box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+			}
+
+			/* Melhorias no TabView */
+			.custom-tabview .ui-tabs-nav {
+				background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+				border-radius: 15px 15px 0 0;
+				border: none;
+				box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+				padding: 0.5rem;
+			}
+
+			.custom-tabview .ui-tabs-nav li {
+				margin-right: 0.5rem;
+			}
+
+			.custom-tabview .ui-tabs-nav li a {
+				padding: 1rem 1.5rem;
+				font-weight: 600;
+				color: #424242 !important;
+				transition: all 0.3s ease;
+				border-radius: 10px;
+				background: transparent;
+				border: none;
+				text-decoration: none !important;
+				display: flex !important;
+				align-items: center !important;
+			}
+
+			.custom-tabview .ui-tabs-nav li:hover a {
+				background: rgba(33, 150, 243, 0.1);
+				color: #1976d2 !important;
+			}
+
+			.custom-tabview .ui-tabs-nav li.ui-state-active a {
+				background: #2196f3;
+				color: white !important;
+				box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+			}
+
+			.custom-tabview .ui-tabs-nav li.ui-state-active a .tab-icon {
+				color: white !important;
+			}
+
+			.custom-tabview .ui-tabs-panels {
+				background: #fff;
+				border: 1px solid #e3f2fd;
+				border-radius: 0 0 15px 15px;
+				padding: 2rem;
+				min-height: 400px;
+			}
+
+			/* Melhorias adicionais para visibilidade das abas */
+			.custom-tabview .ui-tabs-nav li.ui-state-active a,
+			.custom-tabview .ui-tabs-nav li.ui-state-active a:hover,
+			.custom-tabview .ui-tabs-nav li.ui-state-active a:focus {
+				color: white !important;
+				text-shadow: none !important;
+			}
+
+			.custom-tabview .ui-tabs-nav li.ui-state-active .tab-icon,
+			.custom-tabview .ui-tabs-nav li.ui-state-active a .tab-icon {
+				color: white !important;
+			}
+
+			/* Grid de informações melhorado */
+			.info-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+				gap: 1.5rem;
+				margin-top: 1rem;
+			}
+
+			.info-item {
+				background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+				padding: 1.5rem;
+				border-radius: 15px;
+				border-left: 5px solid #2196f3;
+				transition: all 0.3s ease;
+				box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+			}
+
+			.info-item:hover {
+				background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+				transform: translateY(-2px);
+				box-shadow: 0 8px 25px rgba(33, 150, 243, 0.15);
+			}
+
+			.info-label {
+				font-weight: 700;
+				color: #424242;
+				font-size: 0.85rem;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+				margin-bottom: 0.75rem;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.info-value {
+				font-size: 1.1rem;
+				color: #212121;
+				font-weight: 500;
+				word-break: break-word;
+				line-height: 1.4;
+			}
+
+			.info-value.highlight {
+				color: #1976d2;
+				font-weight: 600;
+			}
+
+			/* Sacramentos melhorados */
+			.sacramentos-container {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+				margin-top: 0.5rem;
+			}
+
+			.sacramento-tag {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.5rem 1rem;
+				border-radius: 20px;
+				color: white;
+				font-weight: 600;
+				font-size: 0.9rem;
+				box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+				transition: all 0.3s ease;
+			}
+
+			.sacramento-tag:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+			}
+
+			.sacramento-batismo { background: linear-gradient(135deg, #007ad9 0%, #4fc3f7 100%); }
+			.sacramento-eucaristia { background: linear-gradient(135deg, #43a047 0%, #81c784 100%); }
+			.sacramento-crisma { background: linear-gradient(135deg, #fbc02d 0%, #fff176 100%); }
+			.sacramento-matrimonio { background: linear-gradient(135deg, #8e24aa 0%, #ba68c8 100%); }
+
+			/* Botões melhorados */
+			.form-buttons {
+				display: flex;
+				gap: 1rem;
+				justify-content: center;
+				margin-top: 2rem;
+				padding: 2rem;
+				background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+				border-radius: 15px;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+			}
+
+			.form-buttons .ui-button {
+				padding: 1rem 2rem;
+				border-radius: 25px;
+				font-weight: 600;
+				transition: all 0.3s ease;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+				border: none;
+			}
+
+			.form-buttons .ui-button:hover {
+				transform: translateY(-3px);
+				box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+			}
+
+			/* Ícones para as abas */
+			.tab-icon {
+				margin-right: 0.5rem;
+				font-size: 1.1rem;
+			}
+
+			/* Estados vazios */
+			.empty-value {
+				color: #9e9e9e;
+				font-style: italic;
+				font-size: 0.95rem;
+			}
+
+			/* Responsividade */
+			@media (max-width: 768px) {
+				.person-content {
+					grid-template-columns: 1fr;
+					gap: 1.5rem;
+					padding: 1.5rem;
+				}
+
+				.person-photo-section {
+					order: -1;
+					padding: 1.5rem 1rem;
+				}
+
+				.info-grid {
+					grid-template-columns: 1fr;
+					gap: 1rem;
+				}
+
+				.form-buttons {
+					flex-direction: column;
+					align-items: stretch;
+				}
+
+				.person-header {
+					padding: 1.5rem;
+					margin: -0.5rem -0.5rem 0 -0.5rem;
+				}
+
+				.person-header h2 {
+					font-size: 1.5rem;
+				}
+			}
+
+			/* Animações */
+			@keyframes fadeInUp {
+				from {
+					opacity: 0;
+					transform: translateY(30px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
+			.info-item,
+			.person-photo-section {
+				animation: fadeInUp 0.6s ease-out;
+			}
+
+			/* Print styles */
+			@media print {
+				.form-buttons {
+					display: none !important;
+				}
+				
+				.person-header {
+					background: #fff !important;
+					color: #000 !important;
+					box-shadow: none !important;
+				}
+			}
+		</style>
+
+		<div class="content-container">
+			<div class="form-container">
+				<!-- Cabeçalho da Pessoa -->
+				<div class="person-header">
+					<h2>
+						<i class="pi pi-user"></i>
+						#{pessoaController.pessoa.nome}
+					</h2>
+					<div class="person-subtitle">
+						ID: #{pessoaController.pessoa.id} | 
+						<h:outputText value="#{pessoaController.pessoa.idade} anos" rendered="#{pessoaController.pessoa.idade != null}" />
+						<h:outputText value="Idade não informada" rendered="#{pessoaController.pessoa.idade == null}" />
+					</div>
+					<div class="person-status #{pessoaController.pessoa.ativo ? 'ativo' : 'inativo'}">
+						<i class="pi #{pessoaController.pessoa.ativo ? 'pi-check-circle' : 'pi-times-circle'}"></i>
+						#{pessoaController.pessoa.ativo ? 'Seguidor Ativo' : 'Seguidor Inativo'}
+					</div>
+				</div>
+
+				<h:form id="visualizarForm">
+					<f:metadata>
+						<f:viewParam name="id" converter="javax.faces.Long" />
+						<f:viewAction action="#{pessoaController.carregarPessoa}"
+							if="#{not empty param.id}" />
+					</f:metadata>
+
+					<!-- Conteúdo Principal -->
+					<div class="person-content">
+						<!-- Seção de Informações -->
+						<div class="person-info">
+							<p:tabView styleClass="custom-tabview">
+								<p:tab title="Dados Pessoais">
+									<f:facet name="title">
+										<i class="pi pi-user tab-icon"></i>Dados Pessoais
+									</f:facet>
+									<div class="info-grid">
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-id-card"></i>Identificação
+											</div>
+											<div class="info-value highlight">#{pessoaController.pessoa.id}</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-calendar"></i>Data de Nascimento
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{pessoaController.pessoa.dataNascimento}">
+													<f:converter converterId="localDateConverter" />
+												</h:outputText>
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-users"></i>Sexo
+											</div>
+											<div class="info-value">
+												#{pessoaController.pessoa.sexo != null and pessoaController.pessoa.sexo.toString() eq 'F' ? 'Feminino' : 'Masculino'}
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-map-marker"></i>Naturalidade
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{pessoaController.pessoa.naturalidade}" 
+													styleClass="#{empty pessoaController.pessoa.naturalidade ? 'empty-value' : ''}" />
+												<h:outputText value="Não informado" 
+													rendered="#{empty pessoaController.pessoa.naturalidade}"
+													styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-clock"></i>Data de Cadastro
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{pessoaController.pessoa.dataCadastro}">
+													<f:converter converterId="localDateTimeConverter" />
+												</h:outputText>
+											</div>
+										</div>
+									</div>
+								</p:tab>
+								<p:tab title="Contato">
+									<f:facet name="title">
+										<i class="pi pi-phone tab-icon"></i>Contato
+									</f:facet>
+									<div class="info-grid">
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-home"></i>Endereço
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{pessoaController.pessoa.endereco}" 
+													rendered="#{not empty pessoaController.pessoa.endereco}" />
+												<h:outputText value="Não informado" 
+													rendered="#{empty pessoaController.pessoa.endereco}"
+													styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-phone"></i>Telefone
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{pessoaController.pessoa.telefone}" 
+													rendered="#{not empty pessoaController.pessoa.telefone}" />
+												<h:outputText value="Não informado" 
+													rendered="#{empty pessoaController.pessoa.telefone}"
+													styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-envelope"></i>E-mail
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{pessoaController.pessoa.email}" 
+													rendered="#{not empty pessoaController.pessoa.email}" />
+												<h:outputText value="Não informado" 
+													rendered="#{empty pessoaController.pessoa.email}"
+													styleClass="empty-value" />
+											</div>
+										</div>
+									</div>
+								</p:tab>
+								
+								<p:tab title="Família">
+									<f:facet name="title">
+										<i class="pi pi-users tab-icon"></i>Família
+									</f:facet>
+									<div class="info-grid">
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-user"></i>Pai
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{pessoaController.pessoa.filiacaoPai}" 
+													rendered="#{not empty pessoaController.pessoa.filiacaoPai}" />
+												<h:outputText value="Não informado" 
+													rendered="#{empty pessoaController.pessoa.filiacaoPai}"
+													styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-user"></i>Mãe
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{pessoaController.pessoa.filiacaoMae}" 
+													rendered="#{not empty pessoaController.pessoa.filiacaoMae}" />
+												<h:outputText value="Não informado" 
+													rendered="#{empty pessoaController.pessoa.filiacaoMae}"
+													styleClass="empty-value" />
+											</div>
+										</div>
+									</div>
+								</p:tab>
+								
+								<p:tab title="Formação">
+									<f:facet name="title">
+										<i class="pi pi-book tab-icon"></i>Formação
+									</f:facet>
+									<div class="info-grid">
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-graduation-cap"></i>Escolaridade
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{pessoaController.pessoa.escolaridade.descricao}" 
+													rendered="#{not empty pessoaController.pessoa.escolaridade}" />
+												<h:outputText value="Não informado" 
+													rendered="#{empty pessoaController.pessoa.escolaridade}"
+													styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-book"></i>Curso
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{pessoaController.pessoa.curso}" 
+													rendered="#{not empty pessoaController.pessoa.curso}" />
+												<h:outputText value="Não informado" 
+													rendered="#{empty pessoaController.pessoa.curso}"
+													styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-building"></i>Instituição de Ensino
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{pessoaController.pessoa.instituicaoEnsino}" 
+													rendered="#{not empty pessoaController.pessoa.instituicaoEnsino}" />
+												<h:outputText value="Não informado" 
+													rendered="#{empty pessoaController.pessoa.instituicaoEnsino}"
+													styleClass="empty-value" />
+											</div>
+										</div>
+									</div>
+								</p:tab>
+								<p:tab title="Religioso">
+									<f:facet name="title">
+										<i class="pi pi-heart tab-icon"></i>Religioso
+									</f:facet>
+									<div class="info-grid">
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-star"></i>Religião
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{pessoaController.pessoa.religiao}" 
+													rendered="#{not empty pessoaController.pessoa.religiao}" />
+												<h:outputText value="Não informado" 
+													rendered="#{empty pessoaController.pessoa.religiao}"
+													styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-home"></i>Igreja que Frequenta
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{pessoaController.pessoa.igrejaFrequenta}" 
+													rendered="#{not empty pessoaController.pessoa.igrejaFrequenta}" />
+												<h:outputText value="Não informado" 
+													rendered="#{empty pessoaController.pessoa.igrejaFrequenta}"
+													styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-users"></i>Movimento que Participou
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{pessoaController.pessoa.movimentoParticipou}" 
+													rendered="#{not empty pessoaController.pessoa.movimentoParticipou}" />
+												<h:outputText value="Não informado" 
+													rendered="#{empty pessoaController.pessoa.movimentoParticipou}"
+													styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item" style="grid-column: 1 / -1;">
+											<div class="info-label">
+												<i class="pi pi-bookmark"></i>Sacramentos
+											</div>
+											<div class="sacramentos-container">
+												<ui:repeat value="#{pessoaController.pessoa.sacramentos}" var="sacramento">
+													<span class="sacramento-tag sacramento-#{sacramento.toString().toLowerCase()}">
+														<i class="pi pi-check"></i>
+														<h:outputText value="#{sacramento eq 'BATISMO' ? 'Batismo' :
+															sacramento eq 'EUCARISTIA' ? 'Eucaristia' :
+															sacramento eq 'CRISMA' ? 'Crisma' : 
+															sacramento eq 'MATRIMONIO' ? 'Matrimônio' : sacramento}" />
+													</span>
+												</ui:repeat>
+												<h:outputText value="Nenhum sacramento informado" 
+													rendered="#{empty pessoaController.pessoa.sacramentos}"
+													styleClass="empty-value" />
+											</div>
+										</div>
+									</div>
+								</p:tab>
+							</p:tabView>
+						</div>
+						
+						<!-- Seção de Foto -->
+						<div class="person-photo-section">
+							<h:panelGroup rendered="#{not empty pessoaController.foto}">
+								<p:graphicImage value="#{pessoaController.foto}" 
+									alt="Foto de #{pessoaController.pessoa.nome}"
+									styleClass="person-photo" rendered="#{pessoaController.foto != null}"/>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{empty pessoaController.foto}">
+								<div class="photo-placeholder">
+									<i class="pi pi-user"></i>
+								</div>
+							</h:panelGroup>
+							<div style="text-align: center; margin-top: 1rem; color: #666; font-size: 0.9rem;">
+								Foto de #{pessoaController.pessoa.nome}
+							</div>
+						</div>
+					</div>
+					<div class="form-buttons">
+						<p:commandButton value="Gerar Ficha de Inscrição"
+							styleClass="ui-button-success" ajax="false"
+							action="#{pessoaController.gerarFichaInscricao(pessoaController.pessoa)}" />
+						<p:button value="Editar" outcome="/pages/pessoa/cadastro.xhtml"
+							icon="pi pi-pencil" styleClass="ui-button-warning">
+							<f:param name="id" value="#{pessoaController.pessoa.id}" />
+						</p:button>
+
+						<p:button value="Voltar" outcome="/pages/pessoa/lista.xhtml"
+							icon="pi pi-arrow-left" styleClass="ui-button-secondary" />
+
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>
+
+</html>

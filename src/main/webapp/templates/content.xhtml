@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+    <div class="content-container">
+        <p:panel styleClass="welcome-panel">
+            <h2>Bem-vindo ao Sistema Segue-me</h2>
+            <p>Sistema de gerenciamento para encontros de jovens</p>
+            <div class="header-container">
+					<!-- ...seu conteúdo do cabeçalho... -->
+					<button onclick="document.body.classList.toggle('dark-mode')"
+						title="Alternar modo escuro"
+						style="margin-left: auto; background: none; border: none; cursor: pointer; color: #fff; font-size: 1.3em;">
+						<i class="pi pi-moon"></i>
+					</button>
+				</div>
+        </p:panel>
+    </div>
+</ui:composition>
+
+</html>

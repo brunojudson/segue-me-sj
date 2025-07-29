@@ -1,0 +1,714 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" lang="pt-BR" xml:lang="pt-BR">
+<head>
+	<title>Relatórios - Sistema Segue-me São José</title>
+</head>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="title">
+		Relatórios do Sistema - Sistema Segue-me
+	</ui:define>
+
+	<ui:define name="content">
+		<div class="content-container">
+			<!-- Cabeçalho da página -->
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-chart-bar page-icon"></i>
+							<span class="title-text">Relatórios do Sistema</span>
+						</h1>
+						<p class="page-subtitle">
+							Gere relatórios detalhados sobre encontristas, trabalhadores, contribuições e dados gerais
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<h:form id="relatorioForm" styleClass="modern-form">
+				<p:messages id="messages" showDetail="true" closable="true" />
+
+				<!-- Instruções de uso -->
+				<div class="form-section">
+					<p:fieldset legend="ℹ️ Como usar os relatórios" styleClass="modern-fieldset info-fieldset" toggleable="true" collapsed="true">
+						<div class="info-content">
+							<p><strong>Instruções:</strong></p>
+							<ul>
+								<li>Escolha o tipo de relatório na aba correspondente</li>
+								<li>Preencha os filtros necessários (campos obrigatórios estão marcados)</li>
+								<li>Clique em "Gerar Relatório" para visualizar os dados</li>
+								<li>Use os recursos da tabela para filtrar, ordenar e exportar os resultados</li>
+							</ul>
+						</div>
+					</p:fieldset>
+				</div>
+
+				<p:tabView id="relatorioTabs" styleClass="modern-tabview">&lt;
+					<p:tab title="👥 Encontristas por Encontro">
+						<div class="tab-content">
+							<div class="tab-description">
+								<p class="description-text">
+									<i class="pi pi-info-circle"></i>
+									Liste todos os encontristas participantes de um encontro específico
+								</p>
+							</div>
+							
+							<div class="form-section">
+								<p:fieldset legend="Filtros do Relatório" styleClass="modern-fieldset">
+									<div class="field-grid">
+										<div class="field-group">
+											<p:outputLabel for="encontro1" value="Encontro" styleClass="required-field" />
+											<p:selectOneMenu id="encontro1" value="#{relatorioController.encontroSelecionado}"
+												converter="omnifaces.SelectItemsConverter" required="true"
+												requiredMessage="O encontro é obrigatório"
+												filter="true" filterMatchMode="startsWith" filterNormalize="true">
+												<f:selectItem itemLabel="Selecione um encontro" itemValue="" noSelectionOption="true" />
+												<f:selectItems value="#{relatorioController.encontros}" var="encontro"
+													itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
+											</p:selectOneMenu>
+											<small class="field-hint">Escolha o encontro para gerar o relatório de encontristas</small>
+										</div>
+									</div>
+								</p:fieldset>
+							</div>
+
+							<div class="form-actions">
+								<div class="action-buttons">
+									<p:commandButton value="📊 Gerar Relatório" 
+										process="@this encontro1"
+										action="#{relatorioController.gerarRelatorioEncontristasPorEncontro}"
+										update=":relatorioForm:resultadoPanel" 
+										icon="pi pi-chart-line"
+										styleClass="ui-button-success action-button-primary" 
+										oncomplete="setTimeout(function(){
+                                        var panel = PF('resultadoPanelWidget').jq[0];
+                                        if(panel){
+                                            panel.scrollIntoView({behavior: 'smooth', block: 'start'});
+                                        }
+                                    }, 200);"/>
+								</div>
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="⚡ Trabalhadores por Equipe">
+						<div class="tab-content">
+							<div class="tab-description">
+								<p class="description-text">
+									<i class="pi pi-info-circle"></i>
+									Visualize todos os trabalhadores de uma equipe específica
+								</p>
+							</div>
+							
+							<div class="form-section">
+								<p:fieldset legend="Filtros do Relatório" styleClass="modern-fieldset">
+									<div class="field-grid">
+										<div class="field-group">
+											<p:outputLabel for="equipe1" value="Equipe" styleClass="required-field" />
+											<p:selectOneMenu id="equipe1" value="#{relatorioController.equipeSelecionada}"
+												converter="omnifaces.SelectItemsConverter" required="true"
+												requiredMessage="A equipe é obrigatória"
+												filter="true" filterMatchMode="startsWith" filterNormalize="true">
+												<f:selectItem itemLabel="Selecione uma equipe" itemValue="" noSelectionOption="true" />
+												<f:selectItems value="#{relatorioController.equipes}" var="equipe"
+													itemLabel="#{equipe.nome}" itemValue="#{equipe}" />
+											</p:selectOneMenu>
+											<small class="field-hint">Escolha a equipe para visualizar seus trabalhadores</small>
+										</div>
+									</div>
+								</p:fieldset>
+							</div>
+
+							<div class="form-actions">
+								<div class="action-buttons">
+									<p:commandButton value="📊 Gerar Relatório" 
+										process="@this equipe1"
+										action="#{relatorioController.gerarRelatorioTrabalhadoresPorEquipe}"
+										update=":relatorioForm:resultadoPanel" 
+										icon="pi pi-chart-line"
+										styleClass="ui-button-success action-button-primary" />
+								</div>
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="💰 Contribuições por Encontro">
+						<div class="tab-content">
+							<div class="tab-description">
+								<p class="description-text">
+									<i class="pi pi-info-circle"></i>
+									Relatório geral de todas as contribuições registradas no sistema
+								</p>
+							</div>
+							
+							<div class="form-section">
+								<p:fieldset legend="Informações" styleClass="modern-fieldset">
+									<div class="info-content">
+										<p>Este relatório não requer filtros específicos e mostra todas as contribuições cadastradas.</p>
+									</div>
+								</p:fieldset>
+							</div>
+
+							<div class="form-actions">
+								<div class="action-buttons">
+									<p:commandButton value="📊 Gerar Relatório" 
+										process="@this"
+										action="#{relatorioController.gerarRelatorioContribuicoesPorEncontro}"
+										update=":relatorioForm:resultadoPanel" 
+										icon="pi pi-chart-line"
+										styleClass="ui-button-success action-button-primary" />
+								</div>
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="💑 Casais Trabalhadores">
+						<div class="tab-content">
+							<div class="tab-description">
+								<p class="description-text">
+									<i class="pi pi-info-circle"></i>
+									Visualize os casais que trabalham juntos em um encontro específico
+								</p>
+							</div>
+							
+							<div class="form-section">
+								<p:fieldset legend="Filtros do Relatório" styleClass="modern-fieldset">
+									<div class="field-grid">
+										<div class="field-group">
+											<p:outputLabel for="encontro2" value="Encontro" styleClass="required-field" />
+											<p:selectOneMenu id="encontro2" value="#{relatorioController.encontroSelecionado}"
+												converter="omnifaces.SelectItemsConverter" required="true"
+												requiredMessage="O encontro é obrigatório"
+												filter="true" filterMatchMode="startsWith" filterNormalize="true">
+												<f:selectItem itemLabel="Selecione um encontro" itemValue="" noSelectionOption="true" />
+												<f:selectItems value="#{relatorioController.encontros}" var="encontro"
+													itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
+											</p:selectOneMenu>
+											<small class="field-hint">Escolha o encontro para visualizar os casais trabalhadores</small>
+										</div>
+									</div>
+								</p:fieldset>
+							</div>
+
+							<div class="form-actions">
+								<div class="action-buttons">
+									<p:commandButton value="📊 Gerar Relatório" 
+										process="@this encontro2"
+										action="#{relatorioController.gerarRelatorioCasaisTrabalhadores}"
+										update=":relatorioForm:resultadoPanel" 
+										icon="pi pi-chart-line"
+										styleClass="ui-button-success action-button-primary" />
+								</div>
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="🔄 Encontristas → Trabalhadores">
+						<div class="tab-content">
+							<div class="tab-description">
+								<p class="description-text">
+									<i class="pi pi-info-circle"></i>
+									Compare encontristas de um encontro anterior que se tornaram trabalhadores em um encontro atual
+								</p>
+							</div>
+							
+							<div class="form-section">
+								<p:fieldset legend="Filtros de Comparação" styleClass="modern-fieldset">
+									<div class="field-grid">
+										<div class="field-group">
+											<p:outputLabel for="encontroAnterior" value="Encontro Anterior" styleClass="required-field" />
+											<p:selectOneMenu id="encontroAnterior"
+												value="#{relatorioController.encontroAnteriorSelecionado}"
+												converter="omnifaces.SelectItemsConverter" required="true"
+												requiredMessage="O encontro anterior é obrigatório"
+												filter="true" filterMatchMode="startsWith" filterNormalize="true">
+												<f:selectItem itemLabel="Selecione o encontro anterior" itemValue="" noSelectionOption="true" />
+												<f:selectItems value="#{relatorioController.encontros}" var="encontro"
+													itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
+											</p:selectOneMenu>
+											<small class="field-hint">Encontro onde as pessoas eram encontristas</small>
+										</div>
+
+										<div class="field-group">
+											<p:outputLabel for="encontroAtual" value="Encontro Atual" styleClass="required-field" />
+											<p:selectOneMenu id="encontroAtual" value="#{relatorioController.encontroSelecionado}"
+												converter="omnifaces.SelectItemsConverter" required="true"
+												requiredMessage="O encontro atual é obrigatório"
+												filter="true" filterMatchMode="startsWith" filterNormalize="true">
+												<f:selectItem itemLabel="Selecione o encontro atual" itemValue="" noSelectionOption="true" />
+												<f:selectItems value="#{relatorioController.encontros}" var="encontro"
+													itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
+											</p:selectOneMenu>
+											<small class="field-hint">Encontro onde as pessoas agora são trabalhadores</small>
+										</div>
+									</div>
+								</p:fieldset>
+							</div>
+
+							<div class="form-actions">
+								<div class="action-buttons">
+									<p:commandButton value="📊 Gerar Relatório" 
+										process="@this encontroAnterior encontroAtual"
+										action="#{relatorioController.gerarRelatorioEncontristasQueSeTornaramTrabalhadores}"
+										update=":relatorioForm:resultadoPanel" 
+										icon="pi pi-chart-line"
+										styleClass="ui-button-success action-button-primary" />
+								</div>
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="📋 Dirigentes por Pasta">
+						<div class="tab-content">
+							<div class="tab-description">
+								<p class="description-text">
+									<i class="pi pi-info-circle"></i>
+									Visualize todos os dirigentes organizados por suas respectivas pastas
+								</p>
+							</div>
+							
+							<div class="form-section">
+								<p:fieldset legend="Informações" styleClass="modern-fieldset">
+									<div class="info-content">
+										<p>Este relatório mostra todos os dirigentes cadastrados no sistema, organizados por pasta.</p>
+									</div>
+								</p:fieldset>
+							</div>
+
+							<div class="form-actions">
+								<div class="action-buttons">
+									<p:commandButton value="📊 Gerar Relatório" 
+										process="@this"
+										action="#{relatorioController.gerarRelatorioDirigentesPorPasta}"
+										update=":relatorioForm:resultadoPanel" 
+										icon="pi pi-chart-line"
+										styleClass="ui-button-success action-button-primary" />
+								</div>
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="📊 Distribuição por Equipe">
+						<div class="tab-content">
+							<div class="tab-description">
+								<p class="description-text">
+									<i class="pi pi-info-circle"></i>
+									Visualize como os trabalhadores estão distribuídos entre as equipes de um encontro
+								</p>
+							</div>
+							
+							<div class="form-section">
+								<p:fieldset legend="Filtros do Relatório" styleClass="modern-fieldset">
+									<div class="field-grid">
+										<div class="field-group">
+											<p:outputLabel for="encontro3" value="Encontro" styleClass="required-field" />
+											<p:selectOneMenu id="encontro3" value="#{relatorioController.encontroSelecionado}"
+												converter="omnifaces.SelectItemsConverter" required="true"
+												requiredMessage="O encontro é obrigatório"
+												filter="true" filterMatchMode="startsWith" filterNormalize="true">
+												<f:selectItem itemLabel="Selecione um encontro" itemValue="" noSelectionOption="true" />
+												<f:selectItems value="#{relatorioController.encontros}" var="encontro"
+													itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
+											</p:selectOneMenu>
+											<small class="field-hint">Escolha o encontro para analisar a distribuição de trabalhadores</small>
+										</div>
+									</div>
+								</p:fieldset>
+							</div>
+
+							<div class="form-actions">
+								<div class="action-buttons">
+									<p:commandButton value="📊 Gerar Relatório" 
+										process="@this encontro3"
+										action="#{relatorioController.gerarRelatorioDistribuicaoTrabalhadoresPorEquipe}"
+										update=":relatorioForm:resultadoPanel" 
+										icon="pi pi-chart-line"
+										styleClass="ui-button-success action-button-primary" />
+								</div>
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="💵 Financeiro de Contribuições">
+						<div class="tab-content">
+							<div class="tab-description">
+								<p class="description-text">
+									<i class="pi pi-info-circle"></i>
+									Análise financeira detalhada das contribuições de um encontro específico
+								</p>
+							</div>
+							
+							<div class="form-section">
+								<p:fieldset legend="Filtros do Relatório" styleClass="modern-fieldset">
+									<div class="field-grid">
+										<div class="field-group">
+											<p:outputLabel for="encontro4" value="Encontro" styleClass="required-field" />
+											<p:selectOneMenu id="encontro4" value="#{relatorioController.encontroSelecionado}"
+												converter="omnifaces.SelectItemsConverter" required="true"
+												requiredMessage="O encontro é obrigatório"
+												filter="true" filterMatchMode="startsWith" filterNormalize="true">
+												<f:selectItem itemLabel="Selecione um encontro" itemValue="" noSelectionOption="true" />
+												<f:selectItems value="#{relatorioController.encontros}" var="encontro"
+													itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
+											</p:selectOneMenu>
+											<small class="field-hint">Escolha o encontro para análise financeira das contribuições</small>
+										</div>
+									</div>
+								</p:fieldset>
+							</div>
+
+							<div class="form-actions">
+								<div class="action-buttons">
+									<p:commandButton value="📊 Gerar Relatório" 
+										process="@this encontro4"
+										action="#{relatorioController.gerarRelatorioFinanceiroContribuicoes}"
+										update=":relatorioForm:resultadoPanel" 
+										icon="pi pi-chart-line"
+										styleClass="ui-button-success action-button-primary" />
+								</div>
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="🎂 Aniversariantes do Mês">
+						<div class="tab-content">
+							<div class="tab-description">
+								<p class="description-text">
+									<i class="pi pi-info-circle"></i>
+									Lista de aniversariantes de um mês específico, com filtro opcional por encontro
+								</p>
+							</div>
+							
+							<div class="form-section">
+								<p:fieldset legend="Filtros do Relatório" styleClass="modern-fieldset">
+									<div class="field-grid">
+										<div class="field-group">
+											<p:outputLabel for="mes" value="Mês" styleClass="required-field" />
+											<p:selectOneMenu id="mes" value="#{relatorioController.mesSelecionado}" 
+												required="true" requiredMessage="O mês é obrigatório">
+												<f:selectItem itemLabel="Selecione um mês" itemValue="" noSelectionOption="true" />
+												<f:selectItems value="#{relatorioController.meses}" var="mes" 
+													itemLabel="#{mes}" itemValue="#{mes}" />
+											</p:selectOneMenu>
+											<small class="field-hint">Mês para consultar os aniversariantes</small>
+										</div>
+
+										<div class="field-group">
+											<p:outputLabel for="encontro5" value="Encontro (opcional)" />
+											<p:selectOneMenu id="encontro5" value="#{relatorioController.encontroSelecionado}"
+												converter="omnifaces.SelectItemsConverter"
+												filter="true" filterMatchMode="startsWith" filterNormalize="true">
+												<f:selectItem itemLabel="Todos os encontros" itemValue="" noSelectionOption="true" />
+												<f:selectItems value="#{relatorioController.encontros}" var="encontro"
+													itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
+											</p:selectOneMenu>
+											<small class="field-hint">Deixe em branco para incluir todos os encontros</small>
+										</div>
+									</div>
+								</p:fieldset>
+							</div>
+
+							<div class="form-actions">
+								<div class="action-buttons">
+									<p:commandButton value="📊 Gerar Relatório" 
+										process="@this mes encontro5"
+										action="#{relatorioController.gerarRelatorioAniversariantesMes}"
+										update=":relatorioForm:resultadoPanel" 
+										icon="pi pi-chart-line"
+										styleClass="ui-button-success action-button-primary" />
+								</div>
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="📜 Histórico de Participação">
+						<div class="tab-content">
+							<div class="tab-description">
+								<p class="description-text">
+									<i class="pi pi-info-circle"></i>
+									Visualize o histórico completo de participação de uma pessoa específica
+								</p>
+							</div>
+							
+							<div class="form-section">
+								<p:fieldset legend="Filtros do Relatório" styleClass="modern-fieldset">
+									<div class="field-grid">
+										<div class="field-group">
+											<p:outputLabel for="pessoa" value="Pessoa" styleClass="required-field" />
+											<p:selectOneMenu id="pessoa" value="#{relatorioController.pessoaSelecionada}"
+												converter="omnifaces.SelectItemsConverter" required="true"
+												requiredMessage="A pessoa é obrigatória" 
+												filter="true" filterMatchMode="startsWith" filterNormalize="true">
+												<f:selectItem itemLabel="Digite para buscar uma pessoa" itemValue="" noSelectionOption="true" />
+												<f:selectItems value="#{relatorioController.pessoas}" var="pessoa"
+													itemLabel="#{pessoa.nome}" itemValue="#{pessoa}" />
+											</p:selectOneMenu>
+											<small class="field-hint">Busque e selecione a pessoa para ver seu histórico</small>
+										</div>
+									</div>
+								</p:fieldset>
+							</div>
+
+							<div class="form-actions">
+								<div class="action-buttons">
+									<p:commandButton value="📊 Gerar Relatório" 
+										process="@this pessoa"
+										action="#{relatorioController.gerarRelatorioHistoricoParticipacao}"
+										update=":relatorioForm:resultadoPanel" 
+										icon="pi pi-chart-line"
+										styleClass="ui-button-success action-button-primary" />
+								</div>
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="👨‍💼 Coordenadores por Encontro">
+						<div class="tab-content">
+							<div class="tab-description">
+								<p class="description-text">
+									<i class="pi pi-info-circle"></i>
+									Liste todos os coordenadores de equipes de um encontro específico
+								</p>
+							</div>
+							
+							<div class="form-section">
+								<p:fieldset legend="Filtros do Relatório" styleClass="modern-fieldset">
+									<div class="field-grid">
+										<div class="field-group">
+											<p:outputLabel for="encontroCoord" value="Encontro" styleClass="required-field" />
+											<p:selectOneMenu id="encontroCoord" value="#{relatorioController.encontroSelecionado}"
+												converter="omnifaces.SelectItemsConverter" required="true"
+												requiredMessage="O encontro é obrigatório"
+												filter="true" filterMatchMode="startsWith" filterNormalize="true">
+												<f:selectItem itemLabel="Selecione um encontro" itemValue="" noSelectionOption="true" />
+												<f:selectItems value="#{relatorioController.encontros}" var="encontro"
+													itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
+											</p:selectOneMenu>
+											<small class="field-hint">Escolha o encontro para listar seus coordenadores</small>
+										</div>
+									</div>
+								</p:fieldset>
+							</div>
+
+							<div class="form-actions">
+								<div class="action-buttons">
+									<p:commandButton value="📊 Gerar Relatório" 
+										process="@this encontroCoord"
+										action="#{relatorioController.gerarRelatorioCoordenadoresPorEncontro}"
+										update=":relatorioForm:resultadoPanel" 
+										icon="pi pi-chart-line"
+										styleClass="ui-button-success action-button-primary" />
+								</div>
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="🎤 Palestras por Encontro">
+						<div class="tab-content">
+							<div class="tab-description">
+								<p class="description-text">
+									<i class="pi pi-info-circle"></i>
+									Visualize todas as palestras programadas para um encontro específico
+								</p>
+							</div>
+							
+							<div class="form-section">
+								<p:fieldset legend="Filtros do Relatório" styleClass="modern-fieldset">
+									<div class="field-grid">
+										<div class="field-group">
+											<p:outputLabel for="encontroPalestras" value="Encontro" styleClass="required-field" />
+											<p:selectOneMenu id="encontroPalestras" value="#{relatorioController.encontroSelecionado}"
+												converter="omnifaces.SelectItemsConverter" required="true"
+												requiredMessage="O encontro é obrigatório para este relatório."
+												filter="true" filterMatchMode="startsWith" filterNormalize="true">
+												<f:selectItem itemLabel="Selecione um encontro" itemValue="" noSelectionOption="true" />
+												<f:selectItems value="#{relatorioController.encontros}" var="encontro"
+													itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
+											</p:selectOneMenu>
+											<small class="field-hint">Escolha o encontro para listar suas palestras</small>
+										</div>
+									</div>
+								</p:fieldset>
+							</div>
+
+							<div class="form-actions">
+								<div class="action-buttons">
+									<p:commandButton value="📊 Gerar Relatório" 
+										process="@this encontroPalestras"
+										action="#{relatorioController.gerarRelatorioPalestrasPorEncontro}"
+										update=":relatorioForm:resultadoPanel" 
+										icon="pi pi-chart-line"
+										styleClass="ui-button-success action-button-primary" />
+								</div>
+							</div>
+						</div>
+					</p:tab>
+				</p:tabView>
+				<!-- Seção de Resultados -->
+				<div class="form-section" style="margin-top: 2rem;">
+					<p:panel id="resultadoPanel" styleClass="modern-panel resultado-panel" widgetVar="resultadoPanelWidget">
+						<f:facet name="header">
+							<div class="panel-header">
+								<h3 class="panel-title">
+									<i class="pi pi-chart-bar"></i>
+									Resultado: #{relatorioController.tipoRelatorioSelecionado}
+								</h3>
+								<div class="panel-actions">
+									<p:commandButton value="📥 Excel" 
+										icon="pi pi-file-excel"
+										styleClass="ui-button-success ui-button-sm export-button"
+										style="margin-right: 0.75rem;"
+										title="Exportar para Excel"
+										ajax="false"
+										type="button"
+										rendered="#{not empty relatorioController.resultadoRelatorio}">
+										<p:dataExporter type="xlsx" target="resultadoRelatorio" 
+											fileName="relatorio_#{relatorioController.tipoRelatorioSelecionado}" />
+									</p:commandButton>
+									
+									<p:commandButton value="📄 PDF" 
+										icon="pi pi-file-pdf"
+										styleClass="ui-button-danger ui-button-sm export-button"
+										title="Exportar para PDF"
+										ajax="false"
+										type="button"
+										rendered="#{not empty relatorioController.resultadoRelatorio}">
+										<p:dataExporter type="pdf" target="resultadoRelatorio" 
+											fileName="relatorio_#{relatorioController.tipoRelatorioSelecionado}" />
+									</p:commandButton>
+								</div>
+							</div>
+						</f:facet>
+
+						<div class="resultado-content" >
+							<div class="resultado-stats" rendered="#{not empty relatorioController.resultadoRelatorio}" style="margin-bottom: 1rem;">
+								<div class="stat-item">
+									<i class="pi pi-list"></i>
+									<span class="stat-label">Total de registros:</span>
+									<span class="stat-value">#{relatorioController.resultadoRelatorio.size()}</span>
+								</div>
+							</div>
+
+							<p:dataTable id="resultadoRelatorio" 
+								value="#{relatorioController.resultadoRelatorio}" 
+								var="linha" 
+								styleClass="modern-datatable resultado-tabela"
+								reflow="true" 
+								striped="true" 
+								paginator="#{relatorioController.resultadoRelatorio.size() > 10}"
+								rows="20"
+								paginatorPosition="both"
+								paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								currentPageReportTemplate="Exibindo {startRecord} - {endRecord} de {totalRecords} registros"
+								rowsPerPageTemplate="10,20,50"
+								emptyMessage="Nenhum resultado encontrado. Selecione os filtros e clique em 'Gerar Relatório'."
+								rendered="#{not empty relatorioController.resultadoRelatorio}">
+								
+								<p:columns value="#{relatorioController.resultadoRelatorio[0].keySet().toArray()}"
+									var="coluna" 
+									headerText="#{coluna}"
+									sortBy="#{linha[coluna]}"
+									filterBy="#{linha[coluna]}"
+									filterMatchMode="contains">
+									<h:outputText value="#{linha[coluna]}" />
+								</p:columns>
+							</p:dataTable>
+
+							<h:panelGroup layout="block" styleClass="empty-results" rendered="#{empty relatorioController.resultadoRelatorio}">
+								<div class="empty-state">
+									<i class="pi pi-chart-bar" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+									<h3>Nenhum relatório gerado ainda</h3>
+									<p>Selecione uma aba acima, preencha os filtros necessários e clique em "Gerar Relatório" para visualizar os dados.</p>
+								</div>
+							</h:panelGroup>
+						</div>
+					</p:panel>
+				</div>
+			</h:form>
+		</div>
+		
+		<!-- Estilos específicos da página -->
+		<style>
+			/* Botões de exportação */
+			.panel-actions {
+				display: flex;
+				gap: 0.5rem;
+				align-items: center;
+			}
+			
+			.export-button {
+				white-space: nowrap;
+				padding: 0.375rem 0.75rem !important;
+				font-size: 0.875rem !important;
+			}
+			
+			.export-button .ui-button-text {
+				display: flex;
+				align-items: center;
+				gap: 0.25rem;
+			}
+			
+			/* Garantir que os botões não submetam o formulário */
+			.export-button[type="button"] {
+				pointer-events: auto;
+			}
+			
+			/* Melhorar responsividade dos botões em telas pequenas */
+			@media (max-width: 768px) {
+				.panel-actions {
+					flex-direction: column;
+					gap: 0.25rem;
+					width: 100%;
+				}
+				
+				.export-button {
+					width: 100%;
+					margin-right: 0 !important;
+				}
+			}
+			
+			/* Estilos para o painel de resultados */
+			.panel-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 1rem;
+			}
+			
+			.panel-title {
+				margin: 0;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				color: #2c3e50;
+			}
+			
+			/* Estado vazio */
+			.empty-state {
+				text-align: center;
+				padding: 3rem 1rem;
+				color: #6c757d;
+			}
+			
+			.empty-state h3 {
+				margin: 0.5rem 0;
+				color: #495057;
+			}
+			
+			.empty-state p {
+				margin: 0;
+				max-width: 400px;
+				margin-left: auto;
+				margin-right: auto;
+				line-height: 1.5;
+			}
+		</style>
+	</ui:define>
+</ui:composition>
+
+</html>

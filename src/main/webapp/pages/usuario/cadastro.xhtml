@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">
+        #{empty param.id ? 'Cadastrar' : 'Editar'} Usuário - Sistema Segue-me
+    </ui:define>
+
+    <ui:define name="content">
+        <ui:fragment rendered="#{loginController.hasPermission('ADMIN')}">
+            <div class="content-container">
+                <!-- Cabeçalho da página -->
+                <div class="page-header">
+                    <div class="page-header-content">
+                        <div class="page-title-section">
+                            <h1 class="page-title">
+                                <i class="pi pi-users page-icon"></i>
+                                <span class="title-text">#{empty param.id ? 'Cadastrar' : 'Editar'} Usuário</span>
+                            </h1>
+                            <p class="page-subtitle">
+                                #{empty param.id ? 'Adicione um novo usuário ao sistema' : 'Atualize os dados do usuário'}
+                            </p>
+                        </div>
+                        <div class="page-actions">
+                            <p:button value="Voltar à Lista" 
+                                      outcome="/pages/usuario/lista.xhtml"
+                                      icon="pi pi-arrow-left" 
+                                      styleClass="action-button-primary" />
+                        </div>
+                    </div>
+                </div>
+
+                <h:form id="cadastroUsuarioForm" styleClass="modern-form">
+                    <p:messages id="msgs" showDetail="true" closable="true" styleClass="modern-messages">
+                        <p:autoUpdate />
+                    </p:messages>
+
+                    <f:metadata>
+                        <f:viewParam name="id" />
+                        <f:viewAction action="#{usuarioController.carregarUsuario}"
+                                      if="#{not empty param.id}" />
+                    </f:metadata>
+
+                    <!-- Seção: Dados do Usuário -->
+                    <div class="form-section">
+                        <p:fieldset legend="👤 Dados do Usuário" styleClass="modern-fieldset" toggleable="true">
+                            <div class="field-grid">
+                                <div class="field-group">
+                                    <p:outputLabel for="nome" value="Nome Completo" styleClass="required-field" />
+                                    <p:inputText id="nome" value="#{usuarioController.usuario.nome}"
+                                                required="true" 
+                                                requiredMessage="O nome é obrigatório"
+                                                placeholder="Digite o nome completo do usuário"
+                                                maxlength="100" />
+                                    <small class="field-hint">Nome que será exibido no sistema</small>
+                                </div>
+
+                                <div class="field-group">
+                                    <p:outputLabel for="email" value="E-mail/Login" styleClass="required-field" />
+                                    <p:inputText id="email" value="#{usuarioController.usuario.email}"
+                                                required="true" 
+                                                type="email"
+                                                requiredMessage="O e-mail é obrigatório"
+                                                placeholder="exemplo@email.com"
+                                                maxlength="100" />
+                                    <small class="field-hint">E-mail que será usado para fazer login</small>
+                                </div>
+                            </div>
+                        </p:fieldset>
+                    </div>
+
+                    <!-- Seção: Segurança -->
+                    <div class="form-section">
+                        <p:fieldset legend="🔒 Dados de Segurança" styleClass="modern-fieldset" toggleable="true">
+                            <div class="field-grid">
+                                <div class="field-group">
+                                    <p:outputLabel for="senha" value="Senha" styleClass="required-field" />
+                                    <p:password id="senha" value="#{usuarioController.usuario.senha}"
+                                               required="true" 
+                                               requiredMessage="A senha é obrigatória"
+                                               toggleMask="true" redisplay="true" match="confirma"
+                                               label="Senha" 
+                                               placeholder="Digite uma senha segura"
+                                               validatorMessage="As senhas não coincidem." />
+                                    <small class="field-hint">Mínimo 6 caracteres, combine letras e números</small>
+                                </div>
+
+                                <div class="field-group">
+                                    <p:outputLabel for="confirma" value="Confirmar Senha" styleClass="required-field" />
+                                    <p:password id="confirma" value="#{usuarioController.usuario.senha}"
+                                               required="true" 
+                                               requiredMessage="A confirmação de senha é obrigatória"
+                                               toggleMask="true" redisplay="true"
+                                               placeholder="Digite a senha novamente"
+                                               label="Confirmação de Senha" />
+                                    <small class="field-hint">Repita a senha digitada acima</small>
+                                </div>
+                            </div>
+                        </p:fieldset>
+                    </div>
+
+                    <!-- Seção: Permissões -->
+                    <div class="form-section">
+                        <p:fieldset legend="🛡️ Permissões e Acesso" styleClass="modern-fieldset" toggleable="true">
+                            <div class="field-grid">
+                                <div class="field-group full-width">
+                                    <p:outputLabel for="permissoes" value="Permissões do Sistema" styleClass="required-field" />
+                                    <p:selectCheckboxMenu id="permissoes"
+                                                         value="#{usuarioController.permissoesSelecionadas}"
+                                                         label="Selecione as permissões" 
+                                                         converter="omnifaces.SelectItemsConverter"
+                                                         required="true"
+                                                         multiple="true"
+                                                         panelStyle="width:400px"
+                                                         scrollHeight="200"
+                                                         requiredMessage="Selecione ao menos uma permissão">
+                                        <f:selectItems value="#{usuarioController.permissoes}" 
+                                                      var="permissao" itemLabel="#{permissao.nome}"
+                                                      itemValue="#{permissao}" />
+                                    </p:selectCheckboxMenu>
+                                    <small class="field-hint">
+                                        <i class="pi pi-info-circle"></i>
+                                        Defina quais funcionalidades o usuário poderá acessar
+                                    </small>
+                                </div>
+                            </div>
+                        </p:fieldset>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="form-actions">
+                        <div class="action-buttons">
+                            <p:commandButton value="💾 Salvar Dados"
+                                           oncomplete="handleSaveComplete(args);" 
+                                           action="#{usuarioController.salvar}"
+                                           update="@form" 
+                                           styleClass="ui-button-success action-button-primary"
+                                           validateClient="true" />
+
+                            <p:button value="📋 Salvar e Continuar"
+                                    outcome="/pages/usuario/cadastro.xhtml"
+                                    styleClass="ui-button-info action-button-secondary" />
+
+                            <p:button value="❌ Cancelar" 
+                                    outcome="/pages/usuario/lista.xhtml" 
+                                    styleClass="ui-button-secondary action-button-cancel" />
+                        </div>
+                        
+                        <div class="form-help">
+                            <small>
+                                <i class="pi pi-info-circle"></i>
+                                Campos marcados com * são obrigatórios. 
+                                Use Tab para navegar entre os campos.
+                            </small>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+        </ui:fragment>
+        
+        <ui:fragment rendered="#{not loginController.hasPermission('ADMIN')}">
+            <div class="content-container">
+                <div class="access-denied">
+                    <h2 class="access-denied-title">
+                        <i class="pi pi-lock"></i>
+                        Acesso Negado
+                    </h2>
+                    <p class="access-denied-message">
+                        Você não possui permissão para acessar esta funcionalidade.
+                    </p>
+                    <p:button value="Voltar ao Início" 
+                              outcome="/pages/index.xhtml"
+                              icon="pi pi-home" 
+                              styleClass="ui-button-outlined" />
+                </div>
+            </div>
+        </ui:fragment>
+	</ui:define>
+</ui:composition>
+
+</html>

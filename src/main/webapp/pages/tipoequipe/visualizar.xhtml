@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Visualizar Tipo de Equipe - #{tipoEquipeController.tipoEquipe.nome}</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="content">
+        <style>
+            /* Cabeçalho do tipo de equipe */
+            .tipo-equipe-header {
+                background: linear-gradient(135deg, #ff5722 0%, #ff7043 100%);
+                color: white;
+                padding: 2rem;
+                border-radius: 20px 20px 0 0;
+                margin: -1rem -1rem 0 -1rem;
+                box-shadow: 0 8px 32px rgba(255, 87, 34, 0.3);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .tipo-equipe-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -20%;
+                width: 300px;
+                height: 300px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                backdrop-filter: blur(10px);
+            }
+
+            .tipo-equipe-header h2 {
+                margin: 0;
+                font-size: 2rem;
+                font-weight: 700;
+                position: relative;
+                z-index: 2;
+            }
+
+            .tipo-equipe-subtitle {
+                opacity: 0.9;
+                font-size: 1.1rem;
+                margin-top: 0.5rem;
+                position: relative;
+                z-index: 2;
+            }
+
+            .tipo-equipe-meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1rem;
+                margin-top: 1rem;
+                position: relative;
+                z-index: 2;
+            }
+
+            .meta-badge {
+                background: rgba(255, 255, 255, 0.2);
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-size: 0.9rem;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            /* Conteúdo principal */
+            .tipo-equipe-content {
+                background: white;
+                border-radius: 0 0 20px 20px;
+                padding: 2rem;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                margin: 0 -1rem -1rem -1rem;
+            }
+
+            /* Grid de informações */
+            .info-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .info-item {
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                padding: 1.5rem;
+                border-radius: 15px;
+                border-left: 5px solid #ff5722;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                animation: fadeInUp 0.6s ease-out;
+            }
+
+            .info-item:hover {
+                background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(255, 87, 34, 0.15);
+            }
+
+            .info-label {
+                font-weight: 700;
+                color: #424242;
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 0.75rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .info-value {
+                font-size: 1.1rem;
+                color: #212121;
+                font-weight: 500;
+                word-break: break-word;
+                line-height: 1.4;
+            }
+
+            .info-value.highlight {
+                color: #ff5722;
+                font-weight: 600;
+            }
+
+            /* Status badges */
+            .status-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 0.9rem;
+            }
+
+            .status-ativo {
+                background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+                color: white;
+            }
+
+            .status-inativo {
+                background: linear-gradient(135deg, #f44336 0%, #e57373 100%);
+                color: white;
+            }
+
+            .dirigente-badge {
+                background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+                color: white;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 0.9rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            /* Botões melhorados */
+            .form-buttons {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                margin-top: 2rem;
+                padding: 2rem;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            }
+
+            .form-buttons .ui-button {
+                padding: 1rem 2rem;
+                border-radius: 25px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                border: none;
+            }
+
+            .form-buttons .ui-button:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            }
+
+            /* Estados vazios */
+            .empty-value {
+                color: #9e9e9e;
+                font-style: italic;
+                font-size: 0.95rem;
+            }
+
+            /* Responsividade */
+            @media (max-width: 768px) {
+                .info-grid {
+                    grid-template-columns: 1fr;
+                    gap: 1rem;
+                }
+
+                .form-buttons {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .tipo-equipe-header {
+                    padding: 1.5rem;
+                    margin: -0.5rem -0.5rem 0 -0.5rem;
+                }
+
+                .tipo-equipe-header h2 {
+                    font-size: 1.5rem;
+                }
+
+                .tipo-equipe-meta {
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+
+                .tipo-equipe-content {
+                    padding: 1.5rem;
+                }
+            }
+
+            /* Animações */
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* Print styles */
+            @media print {
+                .form-buttons {
+                    display: none !important;
+                }
+                
+                .tipo-equipe-header {
+                    background: #fff !important;
+                    color: #000 !important;
+                    box-shadow: none !important;
+                }
+            }
+        </style>
+
+        <div class="content-container">
+            <div class="form-container">
+                <!-- Cabeçalho do Tipo de Equipe -->
+                <div class="tipo-equipe-header">
+                    <h2>
+                        <i class="pi pi-tags"></i>
+                        #{tipoEquipeController.tipoEquipe.nome}
+                    </h2>
+                    <div class="tipo-equipe-subtitle">
+                        ID: #{tipoEquipeController.tipoEquipe.id}
+                    </div>
+                    <div class="tipo-equipe-meta">
+                        <div class="meta-badge">
+                            <i class="pi pi-#{tipoEquipeController.tipoEquipe.ativo ? 'check-circle' : 'times-circle'}"></i>
+                            #{tipoEquipeController.tipoEquipe.ativo ? 'Ativo' : 'Inativo'}
+                        </div>
+                        <h:panelGroup rendered="#{tipoEquipeController.tipoEquipe.ehDirigente}">
+                            <div class="meta-badge">
+                                <i class="pi pi-star"></i>
+                                Equipe Dirigente
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </div>
+                
+                <h:form id="visualizarForm">
+                    <f:metadata>
+                        <f:viewParam name="id" />
+                        <f:viewAction action="#{tipoEquipeController.carregarTipoEquipe}" if="#{not empty param.id}" />
+                    </f:metadata>
+                    
+                    <!-- Conteúdo Principal -->
+                    <div class="tipo-equipe-content">
+                        <!-- Grid de Informações -->
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="pi pi-id-card"></i>Identificação
+                                </div>
+                                <div class="info-value highlight">#{tipoEquipeController.tipoEquipe.id}</div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="pi pi-tag"></i>Nome
+                                </div>
+                                <div class="info-value highlight">#{tipoEquipeController.tipoEquipe.nome}</div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="pi pi-file-text"></i>Descrição
+                                </div>
+                                <div class="info-value">
+                                    <h:outputText value="#{tipoEquipeController.tipoEquipe.descricao}" rendered="#{tipoEquipeController.tipoEquipe.descricao != null and not empty tipoEquipeController.tipoEquipe.descricao}" />
+                                    <h:outputText value="Sem descrição" rendered="#{tipoEquipeController.tipoEquipe.descricao == null or empty tipoEquipeController.tipoEquipe.descricao}" styleClass="empty-value" />
+                                </div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="pi pi-star"></i>Tipo de Equipe
+                                </div>
+                                <div class="info-value">
+                                    <h:panelGroup rendered="#{tipoEquipeController.tipoEquipe.ehDirigente}">
+                                        <span class="dirigente-badge">
+                                            <i class="pi pi-crown"></i>
+                                            Equipe Dirigente
+                                        </span>
+                                    </h:panelGroup>
+                                    <h:outputText value="Equipe Regular" rendered="#{not tipoEquipeController.tipoEquipe.ehDirigente}" styleClass="empty-value" />
+                                </div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="pi pi-circle"></i>Status
+                                </div>
+                                <div class="info-value">
+                                    <span class="status-badge #{tipoEquipeController.tipoEquipe.ativo ? 'status-ativo' : 'status-inativo'}">
+                                        <i class="pi pi-#{tipoEquipeController.tipoEquipe.ativo ? 'check' : 'times'}"></i>
+                                        #{tipoEquipeController.tipoEquipe.ativo ? 'Ativo' : 'Inativo'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botões de Ação -->
+                    <div class="form-buttons">
+                        <p:button value="Editar" outcome="/pages/tipoequipe/cadastro.xhtml" icon="pi pi-pencil" styleClass="ui-button-warning">
+                            <f:param name="id" value="#{tipoEquipeController.tipoEquipe.id}" />
+                        </p:button>
+                        <p:button value="Voltar" outcome="/pages/tipoequipe/lista.xhtml" icon="pi pi-arrow-left" 
+                                  styleClass="ui-button-secondary" />
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+
+</html>

@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<div class="menu-wrapper">
+		<!-- Botão toggle para mobile -->
+		<button type="button" class="menu-toggle" onclick="toggleMenu()" 
+			aria-label="Alternar menu" title="Abrir/Fechar menu">
+			<i class="pi pi-bars"></i>
+		</button>
+		
+		<!-- Overlay para mobile -->
+		<button class="menu-overlay" onclick="closeMenu()" aria-label="Fechar menu" type="button"></button>
+		
+		<!-- Container do menu -->
+		<div class="menu-container" id="main-navigation">
+			<ul class="main-menu">
+				<!-- Home -->
+				<li class="mobile-only">
+					<div class="menu-section">
+						<span class="submenu-label">
+							<i class="pi pi-home section-icon"></i>
+							Home
+						</span>
+						<ul class="submenu">
+							<li>
+								<h:link outcome="/pages/index.xhtml" styleClass="menu-link">
+									<i class="pi pi-home"></i> 
+									<span>Início</span>
+								</h:link>
+							</li>
+						</ul>
+					</div>
+				</li>
+				
+				<!-- Cadastros -->
+				<li>
+					<div class="menu-section">
+						<span class="submenu-label">
+							<i class="pi pi-plus-circle section-icon"></i>
+							Cadastros
+						</span>
+						<ul class="submenu">
+							<li>
+								<h:link outcome="/pages/pessoa/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-users"></i> 
+									<span>Seguidor</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/encontro/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-calendar"></i> 
+									<span>Encontros</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/encontrista/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-user-plus"></i> 
+									<span>Encontristas</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/casal/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-heart"></i> 
+									<span>Casais</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/tipoequipe/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-tags"></i> 
+									<span>Tipos de Equipe</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/equipe/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-users"></i> 
+									<span>Equipes</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/pasta/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-folder"></i> 
+									<span>Pastas Dirigência</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/palestrante/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-megaphone"></i> 
+									<span>Palestrantes</span>
+								</h:link>
+							</li>
+						</ul>
+					</div>
+				</li>
+				
+				<!-- Gestão -->
+				<li>
+					<div class="menu-section">
+						<span class="submenu-label">
+							<i class="pi pi-cog section-icon"></i>
+							Gestão
+						</span>
+						<ul class="submenu">
+							<li>
+								<h:link outcome="/pages/trabalhador/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-id-card"></i> 
+									<span>Trabalhadores</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/contribuicao/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-money-bill"></i> 
+									<span>Contribuições</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/dirigente/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-star"></i> 
+									<span>Dirigentes</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/palestra/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-megaphone"></i> 
+									<span>Palestra</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/relatorios/circulos.xhtml" styleClass="menu-link">
+									<i class="pi pi-circle"></i> 
+									<span>Círculos</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/usuario/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-user"></i> 
+									<span>Usuários</span>
+								</h:link>
+							</li>
+						</ul>
+					</div>
+				</li>
+				
+				<!-- Relatórios -->
+				<li>
+					<div class="menu-section">
+						<span class="submenu-label">
+							<i class="pi pi-chart-bar section-icon"></i>
+							Relatórios
+						</span>
+						<ul class="submenu">
+							<li>
+								<h:link outcome="/pages/relatorios/encontristas-por-encontro.xhtml" styleClass="menu-link">
+									<i class="pi pi-chart-bar"></i> 
+									<span>Encontristas por Encontro</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/relatorios/trabalhadores-por-equipe.xhtml" styleClass="menu-link">
+									<i class="pi pi-chart-bar"></i> 
+									<span>Trabalhadores por Equipe</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/relatorios/contribuicoes.xhtml" styleClass="menu-link">
+									<i class="pi pi-chart-bar"></i> 
+									<span>Contribuições</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/relatorios/relatorios.xhtml" styleClass="menu-link">
+									<i class="pi pi-chart-bar"></i> 
+									<span>Relatórios do Sistema</span>
+								</h:link>
+							</li>
+						</ul>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	
+	<h:outputScript>
+		// JavaScript simplificado compatível com o CSS existente
+		function toggleMenu() {
+			const container = document.querySelector('.menu-container');
+			const overlay = document.querySelector('.menu-overlay');
+			const body = document.body;
+			
+			if (!container || !overlay) return;
+			
+			const isActive = container.classList.contains('active');
+			
+			if (isActive) {
+				// Fecha menu
+				container.classList.remove('active');
+				overlay.style.display = 'none';
+				body.classList.remove('menu-open');
+				body.style.overflow = '';
+			} else {
+				// Abre menu
+				container.classList.add('active');
+				overlay.style.display = 'block';
+				body.classList.add('menu-open');
+				body.style.overflow = 'hidden';
+			}
+		}
+		
+		function closeMenu() {
+			const container = document.querySelector('.menu-container');
+			const overlay = document.querySelector('.menu-overlay');
+			const body = document.body;
+			
+			if (container &amp;&amp; overlay) {
+				container.classList.remove('active');
+				overlay.style.display = 'none';
+				body.classList.remove('menu-open');
+				body.style.overflow = '';
+			}
+		}
+		
+		// Fecha menu ao redimensionar para desktop
+		window.addEventListener('resize', function() {
+			if (window.innerWidth > 768) {
+				closeMenu();
+			}
+		});
+		
+		// Configura eventos quando o DOM estiver carregado
+		document.addEventListener('DOMContentLoaded', function() {
+			// Fecha menu ao clicar em links
+			const menuLinks = document.querySelectorAll('.menu-link');
+			menuLinks.forEach(function(link) {
+				link.addEventListener('click', function() {
+					if (window.innerWidth &lt;= 768) {
+						// Força o fechamento imediatamente
+						closeMenu();
+					}
+				});
+			});
+			
+			// Fecha menu ao clicar no overlay
+			const overlay = document.querySelector('.menu-overlay');
+			if (overlay) {
+				overlay.addEventListener('click', function() {
+					closeMenu();
+				});
+			}
+			
+			// Destaca página atual
+			highlightCurrentPage();
+		});
+		
+		// Função para destacar página atual
+		function highlightCurrentPage() {
+			const currentPath = window.location.pathname;
+			const menuLinks = document.querySelectorAll('.menu-link');
+			
+			menuLinks.forEach(function(link) {
+				link.classList.remove('active');
+				const href = link.getAttribute('href');
+				
+				if (href &amp;&amp; currentPath.includes(href.replace(/^.*\/pages/, '/pages'))) {
+					link.classList.add('active');
+				}
+			});
+		}
+	</h:outputScript>
+</ui:composition>

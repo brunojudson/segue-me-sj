@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Visualizar Pasta - #{pastaController.pasta.nome}</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="content">
+        <style>
+            /* Layout principal melhorado */
+            .pasta-header {
+                background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+                color: white;
+                padding: 2rem;
+                border-radius: 20px 20px 0 0;
+                margin: -1rem -1rem 0 -1rem;
+                box-shadow: 0 8px 32px rgba(255, 152, 0, 0.3);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .pasta-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -20%;
+                width: 300px;
+                height: 300px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                backdrop-filter: blur(10px);
+            }
+
+            .pasta-header h2 {
+                margin: 0;
+                font-size: 2rem;
+                font-weight: 700;
+                position: relative;
+                z-index: 2;
+            }
+
+            .pasta-subtitle {
+                opacity: 0.9;
+                font-size: 1.1rem;
+                margin-top: 0.5rem;
+                position: relative;
+                z-index: 2;
+            }
+
+            .header-icon {
+                margin-right: 0.5rem;
+                font-size: 1.8rem;
+            }
+
+            /* Grid de informações */
+            .info-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+                margin: 2rem 0;
+            }
+
+            .info-card {
+                background: #ffffff;
+                border: 1px solid #e0e0e0;
+                border-radius: 16px;
+                padding: 1.5rem;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .info-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 4px;
+                height: 100%;
+                background: linear-gradient(to bottom, #ff9800, #ffb74d);
+            }
+
+            .info-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            }
+
+            .info-card h3 {
+                color: #ff9800;
+                font-size: 1.1rem;
+                font-weight: 600;
+                margin: 0 0 1rem 0;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .info-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                padding: 0.75rem 0;
+                border-bottom: 1px solid #f5f5f5;
+            }
+
+            .info-item:last-child {
+                border-bottom: none;
+            }
+
+            .info-label {
+                font-weight: 600;
+                color: #424242;
+                min-width: 120px;
+                flex-shrink: 0;
+            }
+
+            .info-value {
+                color: #666;
+                text-align: right;
+                flex: 1;
+                margin-left: 1rem;
+            }
+
+            .info-value.empty {
+                color: #999;
+                font-style: italic;
+            }
+
+            /* Status badge */
+            .status-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
+                padding: 0.375rem 0.75rem;
+                border-radius: 20px;
+                font-size: 0.875rem;
+                font-weight: 500;
+            }
+
+            .status-badge.ativo {
+                background-color: #e8f5e8;
+                color: #2e7d32;
+                border: 1px solid #c8e6c9;
+            }
+
+            .status-badge.inativo {
+                background-color: #ffebee;
+                color: #c62828;
+                border: 1px solid #ffcdd2;
+            }
+
+            /* Seção de dirigentes */
+            .dirigentes-section {
+                margin-top: 2rem;
+                background: white;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }
+
+            .dirigentes-header {
+                background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+                color: white;
+                padding: 1.5rem;
+                font-size: 1.2rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .ui-datatable .ui-datatable-thead > tr > th {
+                background: #fafafa !important;
+                color: #424242 !important;
+                font-weight: 600 !important;
+                border: 1px solid #e0e0e0 !important;
+                padding: 1rem !important;
+            }
+
+            .ui-datatable .ui-datatable-tbody > tr > td {
+                padding: 1rem !important;
+                border: 1px solid #f0f0f0 !important;
+                vertical-align: middle !important;
+            }
+
+            .ui-datatable .ui-datatable-tbody > tr:hover {
+                background-color: #f8f9fa !important;
+            }
+
+            /* Empty state */
+            .ui-datatable-empty-message {
+                text-align: center !important;
+                color: #666 !important;
+                font-style: italic !important;
+                padding: 2rem !important;
+            }
+
+            /* Botões */
+            .action-buttons {
+                display: flex;
+                gap: 1rem;
+                margin-top: 2rem;
+                flex-wrap: wrap;
+            }
+
+            .ui-button {
+                padding: 0.75rem 1.5rem !important;
+                border-radius: 10px !important;
+                font-weight: 500 !important;
+                transition: all 0.3s ease !important;
+            }
+
+            .ui-button:hover {
+                transform: translateY(-1px) !important;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+            }
+
+            /* Responsividade */
+            @media (max-width: 768px) {
+                .pasta-header {
+                    padding: 1.5rem 1rem;
+                    margin: -1rem -1rem 0 -1rem;
+                }
+
+                .pasta-header h2 {
+                    font-size: 1.5rem;
+                }
+
+                .info-grid {
+                    grid-template-columns: 1fr;
+                    gap: 1rem;
+                    margin: 1.5rem 0;
+                }
+
+                .info-card {
+                    padding: 1rem;
+                }
+
+                .info-item {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 0.25rem;
+                }
+
+                .info-value {
+                    text-align: left;
+                    margin-left: 0;
+                }
+
+                .action-buttons {
+                    flex-direction: column;
+                }
+
+                .ui-button {
+                    width: 100% !important;
+                }
+            }
+
+            /* Animações */
+            .info-card-animation {
+                animation: fadeInUp 0.6s ease-out;
+            }
+
+            .info-card-animation:nth-child(2) {
+                animation-delay: 0.1s;
+            }
+
+            .info-card-animation:nth-child(3) {
+                animation-delay: 0.2s;
+            }
+
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        </style>
+
+        <div class="content-container">
+            <div class="form-container">
+                <!-- Cabeçalho moderno -->
+                <div class="pasta-header">
+                    <h2>
+                        <i class="pi pi-folder header-icon"></i>
+                        <h:outputText value="#{pastaController.pasta.nome}" 
+                                      rendered="#{not empty pastaController.pasta.nome}"/>
+                        <h:outputText value="Pasta sem nome" 
+                                      rendered="#{empty pastaController.pasta.nome}"/>
+                    </h2>
+                    <div class="pasta-subtitle">
+                        <h:outputText value="Equipe: #{pastaController.pasta.equipe.nome}" 
+                                      rendered="#{not empty pastaController.pasta.equipe.nome}"/>
+                        <h:outputText value="Sem equipe definida" 
+                                      rendered="#{empty pastaController.pasta.equipe.nome}"/>
+                    </div>
+                </div>
+
+                <h:form id="visualizarForm">
+                    <f:metadata>
+                        <f:viewParam name="id" />
+                        <f:viewAction action="#{pastaController.carregarPasta}" if="#{not empty param.id}" />
+                    </f:metadata>
+
+                    <!-- Grid de informações principais -->
+                    <div class="info-grid">
+                        <!-- Card de Informações Básicas -->
+                        <div class="info-card info-card-animation">
+                            <h3><i class="pi pi-info-circle"></i> Informações Básicas</h3>
+                            
+                            <div class="info-item">
+                                <span class="info-label">ID:</span>
+                                <span class="info-value">#{pastaController.pasta.id}</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Nome:</span>
+                                <span class="info-value">
+                                    <h:outputText value="#{pastaController.pasta.nome}" 
+                                                  rendered="#{not empty pastaController.pasta.nome}"/>
+                                    <h:outputText value="Não informado" styleClass="empty"
+                                                  rendered="#{empty pastaController.pasta.nome}"/>
+                                </span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Equipe Dirigente:</span>
+                                <span class="info-value">
+                                    <h:outputText value="#{pastaController.pasta.equipe.nome}" 
+                                                  rendered="#{not empty pastaController.pasta.equipe.nome}"/>
+                                    <h:outputText value="Não informada" styleClass="empty"
+                                                  rendered="#{empty pastaController.pasta.equipe.nome}"/>
+                                </span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Status:</span>
+                                <span class="info-value">
+                                    <span class="status-badge #{pastaController.pasta.ativo ? 'ativo' : 'inativo'}">
+                                        <i class="pi #{pastaController.pasta.ativo ? 'pi-check-circle' : 'pi-times-circle'}"></i>
+                                        #{pastaController.pasta.ativo ? 'Ativo' : 'Inativo'}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Card de Período -->
+                        <div class="info-card info-card-animation">
+                            <h3><i class="pi pi-calendar"></i> Período do Mandato</h3>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Data de Início:</span>
+                                <span class="info-value">
+                                    <h:outputText value="#{pastaController.pasta.dataInicio}" 
+                                                  rendered="#{not empty pastaController.pasta.dataInicio}">
+                                        <f:converter converterId="localDateConverter" />
+                                    </h:outputText>
+                                    <h:outputText value="Não informada" styleClass="empty"
+                                                  rendered="#{empty pastaController.pasta.dataInicio}"/>
+                                </span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Data de Fim:</span>
+                                <span class="info-value">
+                                    <h:outputText value="#{pastaController.pasta.dataFim}" 
+                                                  rendered="#{not empty pastaController.pasta.dataFim}">
+                                        <f:converter converterId="localDateConverter" />
+                                    </h:outputText>
+                                    <h:outputText value="Não informada" styleClass="empty"
+                                                  rendered="#{empty pastaController.pasta.dataFim}"/>
+                                </span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Duração:</span>
+                                <span class="info-value">
+                                    <h:outputText value="#{pastaController.pasta.calcularDuracaoMandato()} dias" 
+                                                  rendered="#{pastaController.pasta.calcularDuracaoMandato() gt 0}"/>
+                                    <h:outputText value="Não calculável" styleClass="empty"
+                                                  rendered="#{pastaController.pasta.calcularDuracaoMandato() le 0}"/>
+                                </span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Descrição:</span>
+                                <span class="info-value">
+                                    <h:outputText value="#{pastaController.pasta.descricao}" 
+                                                  rendered="#{not empty pastaController.pasta.descricao}"/>
+                                    <h:outputText value="Sem descrição" styleClass="empty"
+                                                  rendered="#{empty pastaController.pasta.descricao}"/>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seção de Dirigentes -->
+                    <div class="dirigentes-section">
+                        <div class="dirigentes-header">
+                            <i class="pi pi-users"></i>
+                            Dirigentes da Pasta
+                        </div>
+                        
+                        <p:dataTable value="#{pastaController.pasta.dirigentes}" var="dirigente"
+                                     emptyMessage="Nenhum dirigente cadastrado para esta pasta"
+                                     styleClass="modern-datatable"
+                                     paginator="true" rows="10" paginatorPosition="bottom">
+                            <p:column headerText="Nome" sortBy="#{dirigente.trabalhador.pessoa.nome}">
+                                <h:outputText value="#{dirigente.trabalhador.pessoa.nome}" />
+                            </p:column>
+                            <p:column headerText="Data de Início" sortBy="#{dirigente.dataInicio}">
+                                <h:outputText value="#{dirigente.dataInicio}" 
+                                              rendered="#{not empty dirigente.dataInicio}">
+                                    <f:converter converterId="localDateConverter" />
+                                </h:outputText>
+                                <h:outputText value="Não informada" styleClass="empty"
+                                              rendered="#{empty dirigente.dataInicio}"/>
+                            </p:column>
+                            <p:column headerText="Data de Fim" sortBy="#{dirigente.dataFim}">
+                                <h:outputText value="#{dirigente.dataFim}" 
+                                              rendered="#{not empty dirigente.dataFim}">
+                                    <f:converter converterId="localDateConverter" />
+                                </h:outputText>
+                                <h:outputText value="Em exercício" styleClass="empty"
+                                              rendered="#{empty dirigente.dataFim}"/>
+                            </p:column>
+                            <p:column headerText="Status" styleClass="text-center">
+                                <span class="status-badge #{dirigente.ativo ? 'ativo' : 'inativo'}">
+                                    <i class="pi #{dirigente.ativo ? 'pi-check-circle' : 'pi-times-circle'}"></i>
+                                    #{dirigente.ativo ? 'Ativo' : 'Inativo'}
+                                </span>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+
+                    <!-- Botões de ação -->
+                    <div class="action-buttons">
+                        <p:button value="Editar" outcome="/pages/pasta/cadastro.xhtml" 
+                                  icon="pi pi-pencil" styleClass="ui-button-warning">
+                            <f:param name="id" value="#{pastaController.pasta.id}" />
+                        </p:button>
+
+                        <p:button value="Voltar" outcome="/pages/pasta/lista.xhtml" 
+                                  icon="pi pi-arrow-left" styleClass="ui-button-secondary" />
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+
+</html>

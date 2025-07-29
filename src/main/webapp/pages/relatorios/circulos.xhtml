@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	lang="pt-BR" xml:lang="pt-BR">
+
+<head>
+	<title>Relatórios de Círculos - Sistema Segue-me</title>
+	<meta name="description" content="Visualização e relatórios dos círculos de encontristas por encontro" />
+</head>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="title">Relatórios de Círculos - Sistema Segue-me</ui:define>
+	
+	<ui:define name="content">
+		<style>
+			/* ===== ESTILOS ESPECÍFICOS PARA PÁGINA DE CÍRCULOS ===== */
+			/* Baseado no padrão da página visualizar.xhtml */
+
+			/* CABEÇALHO DA PÁGINA - PADRÃO DO SISTEMA */
+			.page-header {
+				background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+				color: white;
+				padding: 2rem;
+				border-radius: 15px 15px 0 0;
+				margin: -1rem -1rem 2rem -1rem;
+				box-shadow: 0 4px 20px rgba(25, 118, 210, 0.3);
+			}
+
+			.page-header h2 {
+				margin: 0;
+				font-size: 1.8rem;
+				font-weight: 600;
+			}
+
+			.page-header .subtitle {
+				opacity: 0.9;
+				font-size: 1rem;
+				margin-top: 0.5rem;
+			}
+
+			/* SEÇÃO DE FILTROS - PADRÃO DO SISTEMA */
+			.dashboard-section {
+				background: #fff;
+				border-radius: 15px;
+				padding: 2rem;
+				margin: 2rem 0;
+				box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+				border: 1px solid #e3f2fd;
+			}
+
+			.section-title {
+				color: #1976d2;
+				margin-bottom: 1.5rem;
+				font-size: 1.4rem;
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+				font-weight: 600;
+			}
+
+			.field-group {
+				margin-bottom: 0;
+			}
+
+			.field-label {
+				display: block;
+				font-weight: 500;
+				color: #374151;
+				margin-bottom: 8px;
+				font-size: 0.9rem;
+			}
+
+			.modern-select {
+				width: 100% !important;
+				padding: 12px 16px !important;
+				border: 2px solid #d1d5db !important;
+				border-radius: 8px !important;
+				background: white !important;
+				font-size: 1rem !important;
+				font-family: inherit !important;
+				transition: all 0.2s ease !important;
+				box-sizing: border-box !important;
+			}
+
+			.modern-select:focus {
+				border-color: #1976d2 !important;
+				box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1) !important;
+				outline: none !important;
+			}
+
+			/* DASHBOARD DE CÍRCULOS - PADRÃO DO SISTEMA */
+			.dashboard-cards {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 1.5rem;
+				margin: 1.5rem 0;
+			}
+
+			.dashboard-card {
+				padding: 1.5rem;
+				border-radius: 20px;
+				color: #fff;
+				text-align: center;
+				box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+				transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+				cursor: pointer;
+				position: relative;
+				border: 3px solid transparent;
+				min-height: 180px;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+			}
+
+			.dashboard-card:hover {
+				transform: translateY(-8px) scale(1.05);
+				box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+				border: 3px solid rgba(255,255,255,0.8);
+			}
+
+			.dashboard-card.rosa    { background: linear-gradient(135deg, #e91e63 0%, #f06292 100%); }
+			.dashboard-card.azul    { background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%); }
+			.dashboard-card.verde   { background: linear-gradient(135deg, #4caf50 0%, #81c784 100%); }
+			.dashboard-card.vermelho{ background: linear-gradient(135deg, #f44336 0%, #ef5350 100%); }
+			.dashboard-card.amarelo { background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%); color: #fff; }
+			.dashboard-card.roxo    { background: linear-gradient(135deg, #9c27b0 0%, #ba68c8 100%); }
+
+			.card-header {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.card-header i {
+				font-size: 2.5rem;
+				opacity: 0.9;
+			}
+
+			.card-title {
+				font-weight: 700;
+				font-size: 1.1rem;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+			}
+
+			.card-count {
+				background: rgba(255,255,255,0.25);
+				backdrop-filter: blur(10px);
+				border-radius: 50%;
+				width: 70px;
+				height: 70px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 2rem;
+				font-weight: 700;
+				margin: 1rem auto;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+				border: 2px solid rgba(255,255,255,0.3);
+			}
+
+			/* ESTADO VAZIO */
+			.empty-state {
+				text-align: center;
+				padding: 3rem;
+				color: #757575;
+			}
+
+			.empty-state i {
+				font-size: 4rem;
+				color: #e0e0e0;
+				margin-bottom: 1rem;
+				display: block;
+			}
+
+			.empty-state p {
+				font-size: 1rem;
+				margin: 0;
+				line-height: 1.6;
+			}
+
+			/* DIALOG DE INTEGRANTES - PADRÃO DO SISTEMA */
+			.integrante-list {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+				max-height: 400px;
+				overflow-y: auto;
+			}
+
+			.integrante-list li {
+				padding: 1rem 1.5rem;
+				margin-bottom: 0.75rem;
+				background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+				border-radius: 12px;
+				border-left: 4px solid #2196f3;
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+				transition: all 0.3s ease;
+				box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+			}
+
+			.integrante-list li:hover {
+				background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+				transform: translateX(8px);
+				box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
+			}
+
+			.integrante-list li i {
+				color: #2196f3;
+				font-size: 1.2rem;
+			}
+
+			/* DIALOG COM CORES DOS CÍRCULOS */
+			.custom-dialog .ui-dialog {
+				border-radius: 15px !important;
+				box-shadow: 0 10px 40px rgba(0,0,0,0.15) !important;
+				border: none !important;
+			}
+
+			.custom-dialog .ui-dialog-titlebar {
+				border-radius: 15px 15px 0 0 !important;
+				padding: 1.5rem 2rem !important;
+				border: none !important;
+				background: #1976d2 !important;
+				color: white !important;
+				font-weight: 600 !important;
+				font-size: 1.1rem !important;
+			}
+
+			.custom-dialog .ui-dialog-title {
+				color: white !important;
+				font-weight: 600 !important;
+			}
+
+			.custom-dialog .ui-dialog-titlebar-icon {
+				color: white !important;
+				opacity: 0.9 !important;
+			}
+
+			.custom-dialog .ui-dialog-titlebar-icon:hover {
+				background: rgba(255,255,255,0.1) !important;
+				color: white !important;
+			}
+
+			.custom-dialog .ui-dialog-content {
+				padding: 2rem !important;
+				background: white !important;
+			}
+
+			.dialog-rosa .ui-dialog-titlebar {
+				background: linear-gradient(135deg, #e91e63 0%, #f06292 100%) !important;
+				box-shadow: 0 2px 10px rgba(233, 30, 99, 0.3) !important;
+			}
+
+			.dialog-rosa .ui-dialog {
+				background: linear-gradient(135deg, rgba(233, 30, 99, 0.02) 0%, rgba(240, 98, 146, 0.01) 100%) !important;
+				border: 2px solid rgba(233, 30, 99, 0.1) !important;
+			}
+
+			.dialog-rosa .integrante-list li {
+				border-left-color: #e91e63 !important;
+				background: linear-gradient(135deg, rgba(233, 30, 99, 0.03) 0%, rgba(240, 98, 146, 0.02) 100%) !important;
+			}
+
+			.dialog-rosa .integrante-list li:hover {
+				background: linear-gradient(135deg, rgba(233, 30, 99, 0.08) 0%, rgba(240, 98, 146, 0.05) 100%) !important;
+			}
+
+			.dialog-rosa .integrante-list li i {
+				color: #e91e63 !important;
+			}
+
+			.dialog-azul .ui-dialog-titlebar {
+				background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%) !important;
+				box-shadow: 0 2px 10px rgba(33, 150, 243, 0.3) !important;
+			}
+
+			.dialog-azul .ui-dialog {
+				background: linear-gradient(135deg, rgba(33, 150, 243, 0.02) 0%, rgba(100, 181, 246, 0.01) 100%) !important;
+				border: 2px solid rgba(33, 150, 243, 0.1) !important;
+			}
+
+			.dialog-azul .integrante-list li {
+				border-left-color: #2196f3 !important;
+				background: linear-gradient(135deg, rgba(33, 150, 243, 0.03) 0%, rgba(100, 181, 246, 0.02) 100%) !important;
+			}
+
+			.dialog-azul .integrante-list li:hover {
+				background: linear-gradient(135deg, rgba(33, 150, 243, 0.08) 0%, rgba(100, 181, 246, 0.05) 100%) !important;
+			}
+
+			.dialog-azul .integrante-list li i {
+				color: #2196f3 !important;
+			}
+
+			.dialog-verde .ui-dialog-titlebar {
+				background: linear-gradient(135deg, #4caf50 0%, #81c784 100%) !important;
+				box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3) !important;
+			}
+
+			.dialog-verde .ui-dialog {
+				background: linear-gradient(135deg, rgba(76, 175, 80, 0.02) 0%, rgba(129, 199, 132, 0.01) 100%) !important;
+				border: 2px solid rgba(76, 175, 80, 0.1) !important;
+			}
+
+			.dialog-verde .integrante-list li {
+				border-left-color: #4caf50 !important;
+				background: linear-gradient(135deg, rgba(76, 175, 80, 0.03) 0%, rgba(129, 199, 132, 0.02) 100%) !important;
+			}
+
+			.dialog-verde .integrante-list li:hover {
+				background: linear-gradient(135deg, rgba(76, 175, 80, 0.08) 0%, rgba(129, 199, 132, 0.05) 100%) !important;
+			}
+
+			.dialog-verde .integrante-list li i {
+				color: #4caf50 !important;
+			}
+
+			.dialog-vermelho .ui-dialog-titlebar {
+				background: linear-gradient(135deg, #f44336 0%, #ef5350 100%) !important;
+				box-shadow: 0 2px 10px rgba(244, 67, 54, 0.3) !important;
+			}
+
+			.dialog-vermelho .ui-dialog {
+				background: linear-gradient(135deg, rgba(244, 67, 54, 0.02) 0%, rgba(239, 83, 80, 0.01) 100%) !important;
+				border: 2px solid rgba(244, 67, 54, 0.1) !important;
+			}
+
+			.dialog-vermelho .integrante-list li {
+				border-left-color: #f44336 !important;
+				background: linear-gradient(135deg, rgba(244, 67, 54, 0.03) 0%, rgba(239, 83, 80, 0.02) 100%) !important;
+			}
+
+			.dialog-vermelho .integrante-list li:hover {
+				background: linear-gradient(135deg, rgba(244, 67, 54, 0.08) 0%, rgba(239, 83, 80, 0.05) 100%) !important;
+			}
+
+			.dialog-vermelho .integrante-list li i {
+				color: #f44336 !important;
+			}
+
+			.dialog-amarelo .ui-dialog-titlebar {
+				background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%) !important;
+				box-shadow: 0 2px 10px rgba(255, 152, 0, 0.3) !important;
+			}
+
+			.dialog-amarelo .ui-dialog {
+				background: linear-gradient(135deg, rgba(255, 152, 0, 0.02) 0%, rgba(255, 183, 77, 0.01) 100%) !important;
+				border: 2px solid rgba(255, 152, 0, 0.1) !important;
+			}
+
+			.dialog-amarelo .integrante-list li {
+				border-left-color: #ff9800 !important;
+				background: linear-gradient(135deg, rgba(255, 152, 0, 0.03) 0%, rgba(255, 183, 77, 0.02) 100%) !important;
+			}
+
+			.dialog-amarelo .integrante-list li:hover {
+				background: linear-gradient(135deg, rgba(255, 152, 0, 0.08) 0%, rgba(255, 183, 77, 0.05) 100%) !important;
+			}
+
+			.dialog-amarelo .integrante-list li i {
+				color: #ff9800 !important;
+			}
+
+			.dialog-roxo .ui-dialog-titlebar {
+				background: linear-gradient(135deg, #9c27b0 0%, #ba68c8 100%) !important;
+				box-shadow: 0 2px 10px rgba(156, 39, 176, 0.3) !important;
+			}
+
+			.dialog-roxo .ui-dialog {
+				background: linear-gradient(135deg, rgba(156, 39, 176, 0.02) 0%, rgba(186, 104, 200, 0.01) 100%) !important;
+				border: 2px solid rgba(156, 39, 176, 0.1) !important;
+			}
+
+			.dialog-roxo .integrante-list li {
+				border-left-color: #9c27b0 !important;
+				background: linear-gradient(135deg, rgba(156, 39, 176, 0.03) 0%, rgba(186, 104, 200, 0.02) 100%) !important;
+			}
+
+			.dialog-roxo .integrante-list li:hover {
+				background: linear-gradient(135deg, rgba(156, 39, 176, 0.08) 0%, rgba(186, 104, 200, 0.05) 100%) !important;
+			}
+
+			.dialog-roxo .integrante-list li i {
+				color: #9c27b0 !important;
+			}
+
+			/* MENSAGENS DO SISTEMA */
+			.ui-messages {
+				border-radius: 8px !important;
+				border: 1px solid #e5e7eb !important;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+				margin-bottom: 1.5rem !important;
+			}
+
+			.ui-messages-error {
+				background: #fef2f2 !important;
+				color: #991b1b !important;
+				border-color: #fecaca !important;
+			}
+
+			.ui-messages-info {
+				background: #eff6ff !important;
+				color: #1e40af !important;
+				border-color: #dbeafe !important;
+			}
+
+			.ui-messages-success {
+				background: #f0fdf4 !important;
+				color: #166534 !important;
+				border-color: #bbf7d0 !important;
+			}
+
+			/* UTILITÁRIOS */
+			.hidden {
+				display: none !important;
+			}
+
+			/* RESPONSIVIDADE */
+			@media (max-width: 768px) {
+				.page-header {
+					padding: 1.5rem;
+					margin: -0.5rem -0.5rem 1.5rem -0.5rem;
+				}
+				
+				.dashboard-section {
+					padding: 1.5rem;
+					margin: 1.5rem 0;
+				}
+				
+				.dashboard-cards {
+					grid-template-columns: 1fr;
+					gap: 1rem;
+				}
+			}
+
+			@media (max-width: 480px) {
+				.dashboard-cards {
+					grid-template-columns: 1fr;
+				}
+				
+				.dashboard-card {
+					min-height: 150px;
+					padding: 1rem;
+				}
+				
+				.card-count {
+					width: 60px;
+					height: 60px;
+					font-size: 1.5rem;
+				}
+			}
+		</style>
+
+		<div class="content-container">
+			<div class="form-container">
+				<!-- Cabeçalho melhorado -->
+				<div class="page-header">
+					<h2>
+						<i class="pi pi-chart-pie"></i>
+						Relatórios de Círculos
+					</h2>
+					<div class="subtitle">
+						Visualização da distribuição de encontristas por círculos de cores
+					</div>
+				</div>
+
+			<h:form id="dashboardForm" prependId="false">
+				<!-- Mensagens -->
+				<p:messages id="msgs" 
+					showDetail="true" 
+					closable="true">
+				</p:messages>
+
+				<!-- Seção de Filtros -->
+				<div class="dashboard-section">
+					<h3 class="section-title">
+						<i class="pi pi-filter"></i>
+						Filtros do Relatório
+					</h3>
+					<div class="field-group">
+						<label for="encontro" class="field-label required-field">
+							<i class="pi pi-calendar"></i>
+							Selecione o Encontro
+						</label>
+						<p:selectOneMenu id="encontro"
+							value="#{relatorioController.encontroSelecionadoCirculos}"
+							styleClass="modern-select"
+							converter="omnifaces.SelectItemsConverter"
+							required="true" 
+							requiredMessage="Por favor, selecione um encontro">
+							<f:selectItem itemLabel="Escolha um encontro..." itemValue="#{null}" />
+							<f:selectItems value="#{relatorioController.encontros}" 
+								var="enc"
+								itemLabel="#{enc.nome}" 
+								itemValue="#{enc}" />
+							<p:ajax update="circulosSection,emptySection" 
+								oncomplete="updateCirculosDisplay()" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<!-- Dashboard de Círculos -->
+				<p:outputPanel id="circulosSection">
+					<div class="dashboard-section #{relatorioController.encontroSelecionadoCirculos == null ? 'hidden' : ''}">
+						<h3 class="section-title">
+							<i class="pi pi-chart-pie"></i>
+							Distribuição por Círculos
+						</h3>
+						<div id="dashboardCards" class="dashboard-cards">
+							<ui:repeat value="#{relatorioController.circulos}" var="circulo">
+								<div class="dashboard-card #{circulo.name().toLowerCase()}">
+									<div class="card-header">
+										<i class="pi pi-circle-fill"></i>
+										<span class="card-title">#{circulo.name()}</span>
+									</div>
+									<div class="card-count">
+										#{relatorioController.contarIntegrantesPorCirculo(circulo)}
+									</div>
+									<p:commandButton value="Ver Integrantes" icon="pi pi-users"
+										styleClass="p-button-rounded p-button-outlined"
+										style="background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.5);"
+										actionListener="#{relatorioController.selecionarCirculo(circulo)}"
+										update=":dialogIntegrantes"
+										oncomplete="PF('dlgIntegrantes').show()"
+										disabled="#{relatorioController.encontroSelecionadoCirculos == null or relatorioController.contarIntegrantesPorCirculo(circulo) == 0}"
+										title="Visualizar lista de integrantes do círculo #{circulo.name()}" />
+								</div>
+							</ui:repeat>
+						</div>
+					</div>
+				</p:outputPanel>
+
+				<!-- Estado Vazio -->
+				<p:outputPanel id="emptySection">
+					<div class="empty-state #{relatorioController.encontroSelecionadoCirculos != null ? 'hidden' : ''}">
+						<i class="pi pi-chart-pie"></i>
+						<h3>Selecione um Encontro</h3>
+						<p>Escolha um encontro para visualizar a distribuição dos círculos de encontristas.</p>
+					</div>
+				</p:outputPanel>
+
+				<!-- Dialog dos Integrantes -->
+				<p:dialog
+					header="#{relatorioController.circuloSelecionado != null ? 'Integrantes do Círculo '.concat(relatorioController.circuloSelecionado) : 'Integrantes'}"
+					closeOnEscape="true" widgetVar="dlgIntegrantes" modal="true"
+					id="dialogIntegrantes" resizable="false" width="600" height="500"
+					styleClass="custom-dialog #{relatorioController.circuloSelecionado != null ? 'dialog-'.concat(relatorioController.circuloSelecionado.toString().toLowerCase()) : ''}">
+					
+					<div>
+						<h:panelGroup rendered="#{not empty relatorioController.integrantesSelecionados}">
+							<p style="color: #666; margin-bottom: 1rem; font-size: 0.95rem;">
+								<i class="pi pi-info-circle" style="margin-right: 0.5rem;"></i>
+								Total de #{relatorioController.integrantesSelecionados.size()} integrante(s) neste círculo
+							</p>
+						</h:panelGroup>
+						
+						<ul class="integrante-list">
+							<ui:repeat value="#{relatorioController.integrantesSelecionados}" var="integrante">
+								<li>
+									<i class="pi pi-user"></i>
+									<div>
+										<strong>#{integrante.pessoa.nome}</strong>
+										<br/>
+										<small style="color: #666;">
+											<h:outputText rendered="#{integrante.encontro.ativo}"
+												value="Fazendo o encontro com #{integrante.idade} anos" />
+											<h:outputText rendered="#{not integrante.encontro.ativo}"
+												value="Fez o encontro com #{integrante.idade} anos" />
+										</small>
+									</div>
+								</li>
+							</ui:repeat>
+							
+							<ui:fragment rendered="#{empty relatorioController.integrantesSelecionados}">
+								<div class="empty-state">
+									<i class="pi pi-users"></i>
+									<p>Nenhum integrante cadastrado neste círculo.</p>
+								</div>
+							</ui:fragment>
+						</ul>
+					</div>
+					
+					<f:facet name="footer">
+						<p:commandButton value="Fechar" icon="pi pi-times"
+							styleClass="p-button-secondary"
+							onclick="PF('dlgIntegrantes').hide(); return false;" />
+					</f:facet>
+				</p:dialog>
+			</h:form>
+			</div>
+		</div>
+
+		<script>
+			// JavaScript para página de círculos
+			function updateCirculosDisplay() {
+				console.log('Dashboard de círculos atualizado');
+				
+				// Verificar se os elementos existem
+				const circulosSection = document.querySelector('#circulosSection');
+				const emptySection = document.querySelector('#emptySection');
+				
+				console.log('Seção de círculos:', circulosSection);
+				console.log('Seção vazia:', emptySection);
+				
+				// Forçar re-render se necessário
+				setTimeout(function() {
+					const cards = document.querySelectorAll('.dashboard-card');
+					console.log('Cards encontrados:', cards.length);
+				}, 100);
+			}
+		</script>
+	</ui:define>
+</ui:composition>
+
+</html>

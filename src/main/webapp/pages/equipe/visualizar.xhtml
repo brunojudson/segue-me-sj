@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Visualizar Equipe - #{equipeController.equipe.nome}</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="content">
+        <style>
+            /* Cabeçalho da equipe */
+            .equipe-header {
+                background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+                color: white;
+                padding: 2rem;
+                border-radius: 20px 20px 0 0;
+                margin: -1rem -1rem 0 -1rem;
+                box-shadow: 0 8px 32px rgba(103, 58, 183, 0.3);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .equipe-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -20%;
+                width: 300px;
+                height: 300px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                backdrop-filter: blur(10px);
+            }
+
+            .equipe-header h2 {
+                margin: 0;
+                font-size: 2rem;
+                font-weight: 700;
+                position: relative;
+                z-index: 2;
+            }
+
+            .equipe-subtitle {
+                opacity: 0.9;
+                font-size: 1.1rem;
+                margin-top: 0.5rem;
+                position: relative;
+                z-index: 2;
+            }
+
+            .equipe-meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1rem;
+                margin-top: 1rem;
+                position: relative;
+                z-index: 2;
+            }
+
+            .meta-badge {
+                background: rgba(255, 255, 255, 0.2);
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-size: 0.9rem;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            /* Conteúdo principal */
+            .equipe-content {
+                background: white;
+                border-radius: 0 0 20px 20px;
+                padding: 2rem;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                margin: 0 -1rem -1rem -1rem;
+            }
+
+            /* Grid de informações */
+            .info-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .info-item {
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                padding: 1.5rem;
+                border-radius: 15px;
+                border-left: 5px solid #673ab7;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            }
+
+            .info-item:hover {
+                background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(103, 58, 183, 0.15);
+            }
+
+            .info-label {
+                font-weight: 700;
+                color: #424242;
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 0.75rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .info-value {
+                font-size: 1.1rem;
+                color: #212121;
+                font-weight: 500;
+                word-break: break-word;
+                line-height: 1.4;
+            }
+
+            .info-value.highlight {
+                color: #673ab7;
+                font-weight: 600;
+            }
+
+            /* Status badges */
+            .status-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 0.9rem;
+            }
+
+            .status-ativo {
+                background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+                color: white;
+            }
+
+            .status-inativo {
+                background: linear-gradient(135deg, #f44336 0%, #e57373 100%);
+                color: white;
+            }
+
+            /* TabView melhorado */
+            .custom-tabview .ui-tabs-nav {
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                border-radius: 15px 15px 0 0;
+                border: none;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                padding: 0.5rem;
+            }
+
+            .custom-tabview .ui-tabs-nav li {
+                margin-right: 0.5rem;
+            }
+
+            .custom-tabview .ui-tabs-nav li a {
+                padding: 1rem 1.5rem;
+                font-weight: 600;
+                color: #424242 !important;
+                transition: all 0.3s ease;
+                border-radius: 10px;
+                background: transparent;
+                border: none;
+                text-decoration: none !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+
+            .custom-tabview .ui-tabs-nav li:hover a {
+                background: rgba(103, 58, 183, 0.1);
+                color: #673ab7 !important;
+            }
+
+            .custom-tabview .ui-tabs-nav li.ui-state-active a,
+            .custom-tabview .ui-tabs-nav li.ui-state-active a:hover,
+            .custom-tabview .ui-tabs-nav li.ui-state-active a:focus {
+                background: #673ab7 !important;
+                color: white !important;
+                box-shadow: 0 4px 15px rgba(103, 58, 183, 0.3);
+                text-shadow: none !important;
+            }
+
+            .custom-tabview .ui-tabs-nav li.ui-state-active a .ui-icon,
+            .custom-tabview .ui-tabs-nav li.ui-state-active a i {
+                color: white !important;
+            }
+
+            .custom-tabview .ui-tabs-nav li.ui-state-active a * {
+                color: white !important;
+            }
+
+            .custom-tabview .ui-tabs-panels {
+                background: #fff;
+                border: 1px solid #f3e5f5;
+                border-radius: 0 0 15px 15px;
+                padding: 2rem;
+                min-height: 300px;
+            }
+
+            /* DataTable melhorado */
+            .trabalhadores-table .ui-datatable-header {
+                background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+                color: white;
+                font-weight: 600;
+                border-radius: 10px 10px 0 0;
+            }
+
+            .trabalhadores-table .ui-datatable thead th {
+                background: #f8f9fa;
+                color: #424242;
+                font-weight: 600;
+                border-bottom: 2px solid #673ab7;
+            }
+
+            .trabalhadores-table .ui-datatable tbody tr:hover {
+                background: rgba(103, 58, 183, 0.05);
+            }
+
+            .trabalhadores-table .column-center {
+                text-align: center;
+            }
+
+            .trabalhadores-table .column-coordenador {
+                text-align: center; 
+                width: 150px;
+            }
+
+            .trabalhadores-table .column-data {
+                text-align: center; 
+                width: 120px;
+            }
+
+            .trabalhadores-table .column-casal {
+                text-align: center; 
+                width: 80px;
+            }
+
+            .tab-icon {
+                margin-right: 0.5rem;
+            }
+
+            /* Ícones de status */
+            .coordenador-badge {
+                background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+                color: white;
+                padding: 0.25rem 0.75rem;
+                border-radius: 15px;
+                font-size: 0.8rem;
+                font-weight: 600;
+            }
+
+            .casal-icon {
+                color: #e91e63;
+                font-size: 1.2rem;
+            }
+
+            /* Botões melhorados */
+            .form-buttons {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                margin-top: 2rem;
+                padding: 2rem;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            }
+
+            .form-buttons .ui-button {
+                padding: 1rem 2rem;
+                border-radius: 25px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                border: none;
+            }
+
+            .form-buttons .ui-button:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            }
+
+            /* Estados vazios */
+            .empty-value {
+                color: #9e9e9e;
+                font-style: italic;
+                font-size: 0.95rem;
+            }
+
+            /* Responsividade */
+            @media (max-width: 768px) {
+                .info-grid {
+                    grid-template-columns: 1fr;
+                    gap: 1rem;
+                }
+
+                .form-buttons {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .equipe-header {
+                    padding: 1.5rem;
+                    margin: -0.5rem -0.5rem 0 -0.5rem;
+                }
+
+                .equipe-header h2 {
+                    font-size: 1.5rem;
+                }
+
+                .equipe-meta {
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+
+                .equipe-content {
+                    padding: 1.5rem;
+                }
+            }
+
+            /* Animações */
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .info-item-animation {
+                animation: fadeInUp 0.6s ease-out;
+            }
+
+            /* Print styles */
+            @media print {
+                .form-buttons {
+                    display: none !important;
+                }
+                
+                .equipe-header {
+                    background: #fff !important;
+                    color: #000 !important;
+                    box-shadow: none !important;
+                }
+            }
+        </style>
+        
+        <div class="content-container">
+            <div class="form-container">
+                <!-- Cabeçalho da Equipe -->
+                <div class="equipe-header">
+                    <h2>
+                        <i class="pi pi-users"></i>
+                        #{equipeController.equipe.nome}
+                    </h2>
+                    <div class="equipe-subtitle">
+                        #{equipeController.equipe.tipoEquipe.nome}
+                    </div>
+                    <div class="equipe-meta">
+                        <div class="meta-badge">
+                            <i class="pi pi-calendar"></i>
+                            #{equipeController.equipe.encontro.nome}
+                        </div>
+                        <div class="meta-badge">
+                            <i class="pi pi-#{equipeController.equipe.ativo ? 'check-circle' : 'times-circle'}"></i>
+                            #{equipeController.equipe.ativo ? 'Ativa' : 'Inativa'}
+                        </div>
+                    </div>
+                </div>
+
+                <h:form id="visualizarForm">
+                    <f:metadata>
+                        <f:viewParam name="id" />
+                        <f:viewAction action="#{equipeController.carregarEquipe}" if="#{not empty param.id}" />
+                    </f:metadata>
+
+                    <!-- Conteúdo Principal -->
+                    <div class="equipe-content">
+                        <!-- Grid de Informações -->
+                        <div class="info-grid">
+                            <div class="info-item info-item-animation">
+                                <div class="info-label">
+                                    <i class="pi pi-tag"></i>Nome da Equipe
+                                </div>
+                                <div class="info-value highlight">#{equipeController.equipe.nome}</div>
+                            </div>
+                            
+                            <div class="info-item info-item-animation">
+                                <div class="info-label">
+                                    <i class="pi pi-bookmark"></i>Tipo de Equipe
+                                </div>
+                                <div class="info-value">
+                                    <h:outputText value="#{equipeController.equipe.tipoEquipe.nome}" rendered="#{equipeController.equipe.tipoEquipe != null}" />
+                                    <h:outputText value="Não informado" rendered="#{equipeController.equipe.tipoEquipe == null}" styleClass="empty-value" />
+                                </div>
+                            </div>
+                            
+                            <div class="info-item info-item-animation">
+                                <div class="info-label">
+                                    <i class="pi pi-calendar"></i>Encontro
+                                </div>
+                                <div class="info-value">
+                                    <h:outputText value="#{equipeController.equipe.encontro.nome}" rendered="#{equipeController.equipe.encontro != null}" />
+                                    <h:outputText value="Não informado" rendered="#{equipeController.equipe.encontro == null}" styleClass="empty-value" />
+                                </div>
+                            </div>
+                            
+                            <div class="info-item info-item-animation">
+                                <div class="info-label">
+                                    <i class="pi pi-file-text"></i>Descrição
+                                </div>
+                                <div class="info-value">
+                                    <h:outputText value="#{equipeController.equipe.descricao}" rendered="#{equipeController.equipe.descricao != null and not empty equipeController.equipe.descricao}" />
+                                    <h:outputText value="Sem descrição" rendered="#{equipeController.equipe.descricao == null or empty equipeController.equipe.descricao}" styleClass="empty-value" />
+                                </div>
+                            </div>
+                            
+                            <div class="info-item info-item-animation">
+                                <div class="info-label">
+                                    <i class="pi pi-star"></i>Equipe Dirigente
+                                </div>
+                                <div class="info-value">
+                                    <span class="#{equipeController.equipe.ehEquipeDirigente() ? 'coordenador-badge' : 'empty-value'}">
+                                        #{equipeController.equipe.ehEquipeDirigente() ? 'Sim' : 'Não'}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item info-item-animation">
+                                <div class="info-label">
+                                    <i class="pi pi-circle"></i>Status
+                                </div>
+                                <div class="info-value">
+                                    <span class="status-badge #{equipeController.equipe.ativo ? 'status-ativo' : 'status-inativo'}">
+                                        <i class="pi pi-#{equipeController.equipe.ativo ? 'check' : 'times'}"></i>
+                                        #{equipeController.equipe.ativo ? 'Ativo' : 'Inativo'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TabView de Trabalhadores -->
+                        <p:tabView styleClass="custom-tabview">
+                            <p:tab title="Trabalhadores">
+                                <f:facet name="title">
+                                    <i class="pi pi-users tab-icon"></i>Trabalhadores
+                                </f:facet>
+                                <p:dataTable value="#{equipeController.equipe.trabalhadores}" var="trabalhador"
+                                    emptyMessage="Nenhum trabalhador cadastrado para esta equipe"
+                                    styleClass="trabalhadores-table">
+                                    <p:column headerText="Nome" sortBy="#{trabalhador.pessoa.nome}">
+                                        <h:outputText value="#{trabalhador.pessoa.nome}" />
+                                    </p:column>
+                                    <p:column headerText="Coordenador" styleClass="column-coordenador">
+                                        <h:panelGroup rendered="#{trabalhador.ehCoordenador}">
+                                            <span class="coordenador-badge">
+                                                <i class="pi pi-star"></i>
+                                                Coordenador
+                                            </span>
+                                        </h:panelGroup>
+                                        <h:outputText value="Membro" rendered="#{not trabalhador.ehCoordenador}" styleClass="empty-value" />
+                                    </p:column>
+                                    <p:column headerText="Data de Início" styleClass="column-data">
+                                        <h:outputText value="#{trabalhador.dataInicio}" rendered="#{trabalhador.dataInicio != null}">
+                                            <f:converter converterId="localDateConverter" />
+                                        </h:outputText>
+                                        <h:outputText value="Não informado" rendered="#{trabalhador.dataInicio == null}" styleClass="empty-value" />
+                                    </p:column>
+                                    <p:column headerText="Casal" styleClass="column-casal">
+                                        <h:panelGroup rendered="#{trabalhador.ehCasal}">
+                                            <i class="pi pi-heart casal-icon" title="É casal"></i>
+                                        </h:panelGroup>
+                                        <h:outputText value="-" rendered="#{not trabalhador.ehCasal}" styleClass="empty-value" />
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                        </p:tabView>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="form-buttons">
+                        <p:button value="Editar" outcome="/pages/equipe/cadastro.xhtml" icon="pi pi-pencil"
+                            styleClass="ui-button-warning">
+                            <f:param name="id" value="#{equipeController.equipe.id}" />
+                        </p:button>
+                        <p:button value="Voltar" outcome="/pages/equipe/lista.xhtml" icon="pi pi-arrow-left"
+                            styleClass="ui-button-secondary" />
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+
+</html>
