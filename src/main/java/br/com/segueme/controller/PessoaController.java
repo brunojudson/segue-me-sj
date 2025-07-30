@@ -362,6 +362,17 @@ public class PessoaController implements Serializable {
         }
         // Não é necessário chamar PrimeFaces.current().ajax().update() aqui se o p:fileUpload já tem o update.
     }
+	
+	// Autocomplete para nomes de pessoas (pai/mãe)
+	public List<String> autocompleteNomePessoa(String query) {
+		List<String> nomes = new ArrayList<>();
+		for (Pessoa p : pessoaService.buscarTodos()) {
+			if (p.getNome() != null && p.getNome().toLowerCase().contains(query.toLowerCase())) {
+				nomes.add(p.getNome());
+			}
+		}
+		return nomes;
+	}
 	public Sacramento[] getTodosSacramentos() {
 		return Sacramento.values();
 	}

@@ -135,18 +135,34 @@
                         <div class="field-grid">
                             <div class="field-group">
                                 <p:outputLabel for="filiacaoPai" value="Nome do Pai" />
-                                <p:inputText id="filiacaoPai" 
-                                           value="#{pessoaController.pessoa.filiacaoPai}"
-                                           placeholder="Nome completo do pai"
-                                           maxlength="100" />
+                                <p:autoComplete id="filiacaoPai"
+                                    value="#{pessoaController.pessoa.filiacaoPai}"
+                                    completeMethod="#{pessoaController.autocompleteNomePessoa}"
+                                    forceSelection="false"
+                                    dropdown="false"
+                                    var="sugestao"
+                                    itemLabel="#{sugestao}"
+                                    itemValue="#{sugestao}"
+                                    placeholder="Nome completo do pai"
+                                    maxlength="100"
+                                    minQueryLength="4"
+                                    panelStyle="display:none;"/>
                             </div>
 
                             <div class="field-group">
                                 <p:outputLabel for="filiacaoMae" value="Nome da Mãe" />
-                                <p:inputText id="filiacaoMae" 
-                                           value="#{pessoaController.pessoa.filiacaoMae}"
-                                           placeholder="Nome completo da mãe"
-                                           maxlength="100" />
+                                <p:autoComplete id="filiacaoMae"
+                                    value="#{pessoaController.pessoa.filiacaoMae}"
+                                    completeMethod="#{pessoaController.autocompleteNomePessoa}"
+                                    forceSelection="false"
+                                    dropdown="false"
+                                    var="sugestao"
+                                    itemLabel="#{sugestao}"
+                                    itemValue="#{sugestao}"
+                                    placeholder="Nome completo da mãe"
+                                    maxlength="100"
+                                    minQueryLength="4"
+                                    panelStyle="display:none;"/>
                             </div>
 
                             <div class="field-group">
@@ -301,7 +317,7 @@
                 </div>
             </h:form>
         </div>
-        <h:outputScript library="js" name="scrollUp.js" target="head" />
+      
     </ui:define>
 </ui:composition>
 
