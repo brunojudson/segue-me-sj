@@ -38,7 +38,7 @@
             <h:form id="trabalhadorForm" styleClass="modern-form">
                 <p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages"
                 onshow="scrollToTopOnError()">
-                    <p:autoUpdate />
+                
                 </p:messages>
 
                 <f:metadata>
@@ -89,7 +89,9 @@
                                     <f:selectItem itemLabel="Selecione a equipe" itemValue="" noSelectionOption="true" />
                                     <f:selectItems value="#{trabalhadorController.equipes}" var="equipe"
                                                    itemLabel="#{equipe.nome}" itemValue="#{equipe}" />
+                                    <p:ajax event="change" listener="#{trabalhadorController.verificarParentescoEquipe}" update="equipeMsg" />
                                 </p:selectOneMenu>
+                                <p:message id="equipeMsg" for="equipe" display="text" />
                                 <small class="field-hint">Defina a equipe de trabalho.</small>
                             </div>
 
@@ -136,7 +138,7 @@
                                        validateClient="true" />
 
                         <p:commandButton value="📋 Salvar e Continuar"
-								action="#{trabalhadorController.salvarEContinuar}"
+                                action="#{trabalhadorController.salvarEContinuar}"
                                 update="@form messages"
                                 process="@form"
                                 styleClass="ui-button-info action-button-secondary"

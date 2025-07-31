@@ -17,6 +17,19 @@ import br.com.segueme.repository.TipoEquipeRepository;
 
 @ApplicationScoped
 public class EquipeService implements Serializable {
+
+    @Inject
+    private TrabalhadorService trabalhadorService;
+
+    /**
+     * Busca todos os membros de uma equipe pelo id da equipe
+     */
+    public List<br.com.segueme.entity.Pessoa> buscarMembrosDaEquipe(Long equipeId) {
+        // Supondo que existe um método no repositório ou lógica para buscar membros
+        // Aqui, para exemplo, retorna todos trabalhadores da equipe e extrai as pessoas
+        List<br.com.segueme.entity.Trabalhador> trabalhadores = trabalhadorService.buscarPorEquipe(equipeId);
+        return trabalhadores.stream().map(br.com.segueme.entity.Trabalhador::getPessoa).collect(java.util.stream.Collectors.toList());
+    }
     private static final long serialVersionUID = 1L;
     
     @Inject

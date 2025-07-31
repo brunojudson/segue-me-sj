@@ -16,6 +16,22 @@ import br.com.segueme.repository.PessoaRepository;
 @Stateless
 public class PessoaRepositoryImpl implements PessoaRepository {
 
+    @Override
+    public List<Pessoa> findByPai(String nomePai) {
+        if (nomePai == null || nomePai.trim().isEmpty()) return java.util.Collections.emptyList();
+        return entityManager.createQuery("SELECT p FROM Pessoa p WHERE p.filiacaoPai = :nomePai", Pessoa.class)
+                .setParameter("nomePai", nomePai)
+                .getResultList();
+    }
+
+    @Override
+    public List<Pessoa> findByMae(String nomeMae) {
+        if (nomeMae == null || nomeMae.trim().isEmpty()) return java.util.Collections.emptyList();
+        return entityManager.createQuery("SELECT p FROM Pessoa p WHERE p.filiacaoMae = :nomeMae", Pessoa.class)
+                .setParameter("nomeMae", nomeMae)
+                .getResultList();
+    }
+
     @PersistenceContext(unitName = "seguemePU")
     private EntityManager entityManager;
 

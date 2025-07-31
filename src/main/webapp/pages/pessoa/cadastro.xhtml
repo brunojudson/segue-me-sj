@@ -77,7 +77,9 @@
 
                             <div class="field-group">
                                 <p:outputLabel for="sexo" value="Sexo" />
-                                <p:selectOneMenu id="sexo" value="#{pessoaController.pessoa.sexo}">
+                                <p:selectOneMenu id="sexo" value="#{pessoaController.pessoa.sexo}" required="true"
+                                                requiredMessage="O sexo é obrigatório" 
+                                                styleClass="modern-select">
                                     <f:selectItem itemLabel="Selecione o sexo" itemValue="" noSelectionOption="true" />
                                     <f:selectItem itemLabel="Masculino" itemValue="M" />
                                     <f:selectItem itemLabel="Feminino" itemValue="F" />

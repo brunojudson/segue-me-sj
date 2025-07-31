@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PessoaRepository {
+
+    List<Pessoa> findByPai(String nomePai);
+    List<Pessoa> findByMae(String nomeMae);
     
     /**
      * Salva uma pessoa no banco de dados

@@ -12,6 +12,19 @@ import br.com.segueme.repository.PessoaRepository;
 
 @ApplicationScoped
 public class PessoaService implements Serializable {
+	/**
+	 * Busca pessoas pelo nome do pai
+	 */
+	public List<Pessoa> buscarPorPai(String nomePai) {
+		return pessoaRepository.findByPai(nomePai);
+	}
+
+	/**
+	 * Busca pessoas pelo nome da mãe
+	 */
+	public List<Pessoa> buscarPorMae(String nomeMae) {
+		return pessoaRepository.findByMae(nomeMae);
+	}
 	private static final long serialVersionUID = 1L;
 
 	@Inject
@@ -49,12 +62,12 @@ public class PessoaService implements Serializable {
 		}
 		
 		// Verificar se telefone já existe
-        if (pessoa.getTelefone() != null && !pessoa.getTelefone().trim().isEmpty()) {
-            Optional<Pessoa> pessoaPorTelefone = pessoaRepository.findByTelefone(pessoa.getTelefone());
-            if (pessoaPorTelefone.isPresent()) {
+		if (pessoa.getTelefone() != null && !pessoa.getTelefone().trim().isEmpty()) {
+			Optional<Pessoa> pessoaPorTelefone = pessoaRepository.findByTelefone(pessoa.getTelefone());
+			if (pessoaPorTelefone.isPresent()) {
 				throw new IllegalArgumentException("Telefone já cadastrado para outro seguidor id: " + pessoaPorTelefone.get().getId()+" - Nome: " + pessoaPorTelefone.get().getNome());
-            }
-        }
+			}
+		}
 
 		/*
 		 * // Verificar se CPF já existe Optional<Pessoa> pessoaExistente =
@@ -95,14 +108,14 @@ public class PessoaService implements Serializable {
 		}
 		
 		// Verificar se telefone já existe
-        if (pessoa.getTelefone() != null && !pessoa.getTelefone().trim().isEmpty()) {
-            Optional<Pessoa> pessoaPorTelefone = pessoaRepository.findByTelefone(pessoa.getTelefone());
-            if (pessoaPorTelefone.isPresent() && !pessoaPorTelefone.get().getId().equals(pessoa.getId())) {
+		if (pessoa.getTelefone() != null && !pessoa.getTelefone().trim().isEmpty()) {
+			Optional<Pessoa> pessoaPorTelefone = pessoaRepository.findByTelefone(pessoa.getTelefone());
+			if (pessoaPorTelefone.isPresent() && !pessoaPorTelefone.get().getId().equals(pessoa.getId())) {
 				throw new IllegalArgumentException("Telefone já cadastrado para outra pessoa id: " + pessoaPorTelefone.get().getId()+" - Nome: " + pessoaPorTelefone.get().getNome());
-            }
-        }
-        
-       	// Verificar se CPF já existe para outra pessoa
+			}
+		}
+		
+		// Verificar se CPF já existe para outra pessoa
 		/*
 		 * Optional<Pessoa> pessoaPorCpf = pessoaRepository.findByCpf(pessoa.getCpf());
 		 * if (pessoaPorCpf.isPresent() &&

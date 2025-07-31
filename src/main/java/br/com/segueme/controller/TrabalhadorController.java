@@ -22,6 +22,8 @@ import br.com.segueme.service.EquipeService;
 import br.com.segueme.service.PessoaService;
 import br.com.segueme.service.TrabalhadorService;
 
+import java.util.stream.Collectors;
+
 @Named
 @ViewScoped
 public class TrabalhadorController implements Serializable {
@@ -64,10 +66,10 @@ public class TrabalhadorController implements Serializable {
 		trabalhadores = trabalhadorService.buscarTodos();
 	}
 	public void atualizarDataInicio() {
-	    if (trabalhador.getEncontro() != null) {
-	        // Define a data de início do encontro selecionado no trabalhador
-	        trabalhador.setDataInicio(trabalhador.getEncontro().getDataInicio());
-	    }
+		if (trabalhador.getEncontro() != null) {
+			// Define a data de início do encontro selecionado no trabalhador
+			trabalhador.setDataInicio(trabalhador.getEncontro().getDataInicio());
+		}
 	}
 
 	public void carregarPessoas() {
@@ -187,6 +189,61 @@ public class TrabalhadorController implements Serializable {
 	}
 
 	// Getters e Setters
+
+	/**
+	 * Verifica se os pais do trabalhador já estão na equipe selecionada e se o trabalhador possui filhos cadastrados.
+	 * Exibe mensagem no selectOneMenu se necessário.
+	 */
+	public void verificarParentescoEquipe() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		// Limpa mensagens anteriores do select
+		context.getMessages("trabalhadorForm:equipe").forEachRemaining(m -> {}); // força limpeza
+
+		if (trabalhador == null || trabalhador.getPessoa() == null || trabalhador.getEquipe() == null) {
+			return;
+		}
+
+		Pessoa pessoa = trabalhador.getPessoa();
+		Equipe equipe = trabalhador.getEquipe();
+
+		// Verificação 1: pais na equipe
+		String nomePai = pessoa.getFiliacaoPai();
+		String nomeMae = pessoa.getFiliacaoMae();
+		List<Pessoa> membrosEquipe = equipeService.buscarMembrosDaEquipe(equipe.getId());
+		boolean paiNaEquipe = false;
+		boolean maeNaEquipe = false;
+		if (nomePai != null && !nomePai.trim().isEmpty()) {
+			paiNaEquipe = membrosEquipe.stream().anyMatch(p -> nomePai.equalsIgnoreCase(p.getNome()));
+		}
+		if (nomeMae != null && !nomeMae.trim().isEmpty()) {
+			maeNaEquipe = membrosEquipe.stream().anyMatch(p -> nomeMae.equalsIgnoreCase(p.getNome()));
+		}
+		if (paiNaEquipe || maeNaEquipe) {
+			String msg = "Atenção: " + (paiNaEquipe ? "O pai " + nomePai : "") + (paiNaEquipe && maeNaEquipe ? " e " : "") + (maeNaEquipe ? "a mãe " + nomeMae : "") + " já faz(em) parte da equipe.";
+			context.addMessage("trabalhadorForm:equipe", new FacesMessage(FacesMessage.SEVERITY_WARN, msg, null));
+		}
+
+		// Verificação 2: filhos cadastrados
+		Character sexo = pessoa.getSexo();
+		String nomeTrabalhador = pessoa.getNome();
+		List<Pessoa> filhos = null;
+		if (sexo != null && (sexo == 'M' || sexo == 'm')) {
+			filhos = pessoaService.buscarPorPai(nomeTrabalhador);
+		} else if (sexo != null && (sexo == 'F' || sexo == 'f')) {
+			filhos = pessoaService.buscarPorMae(nomeTrabalhador);
+		}
+		if (filhos != null && !filhos.isEmpty()) {
+			// Filtrar filhos que estão na mesma equipe
+			List<Pessoa> filhosNaEquipe = filhos.stream()
+				.filter(filho -> membrosEquipe.stream().anyMatch(m -> m.getId().equals(filho.getId())))
+				.collect(Collectors.toList());
+			if (!filhosNaEquipe.isEmpty()) {
+				String nomesFilhos = filhosNaEquipe.stream().map(Pessoa::getNome).collect(Collectors.joining(", "));
+				String msg = "Atenção, filho(s): " + nomesFilhos + " já faz(em) parte da equipe.";
+				context.addMessage("trabalhadorForm:equipe", new FacesMessage(FacesMessage.SEVERITY_WARN, msg, null));
+			}
+		}
+	}
 
 	public List<Trabalhador> getTrabalhadores() {
 		return trabalhadores;
