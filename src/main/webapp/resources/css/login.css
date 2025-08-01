@@ -11,6 +11,14 @@
     font-family: 'Inter', Arial, Helvetica, sans-serif !important;
 }
 
+/* Garantir que PrimeIcons sempre usem a fonte correta, mesmo após reset global */
+.pi, [class^="pi-"], [class*=" pi-"] {
+    font-family: 'PrimeIcons' !important;
+    font-style: normal;
+    font-weight: normal;
+    speak: never;
+}
+
 /* Página de login */
 body.login-page {
     font-family: 'Inter', Arial, Helvetica, sans-serif !important;
@@ -63,7 +71,7 @@ body.login-page {
     color: #888;
 }
     text-align: center;
-    margin-bottom: 36px;
+    margin-bottom: 16px;
 }
 
 .login-logo {
@@ -251,7 +259,7 @@ body.login-page {
 .login-footer {
     text-align: center;
     border-top: 1px solid rgba(160, 174, 192, 0.15);
-    padding-top: 24px;
+    padding-top: 4px;
     animation: fadeInUp 0.6s ease 0.6s forwards;
     opacity: 0;
 }

@@ -80,61 +80,70 @@
 				Próximos Encontros
 			</h2>
 			
-			<div class="dashboard-grid">
-				<ui:repeat value="#{dashboardController.proximosEncontros}" var="encontro">
-					<div class="encontro-card-modern index-page">
-						<div class="encontro-header index-header">
-							<div>
-								<h3 class="encontro-title index-title">#{encontro.nome}</h3>
-								<div class="encontro-status index-status #{encontro.ativo ? 'status-active' : 'status-inactive'}">
-									<h:outputText value="#{encontro.ativo ? 'Ativo' : 'Encerrado'}" />
-								</div>
-							</div>
-						</div>
-						
-						<div class="encontro-details index-details">
-							<div class="encontro-detail index-detail">
-								<i class="pi pi-tag"></i>
-								<span>#{encontro.tema}</span>
-							</div>
-							
-							<div class="encontro-detail index-detail">
-								<i class="pi pi-calendar"></i>
-								<span>
-									<h:outputText value="#{encontro.dataInicio}">
-										<f:converter converterId="localDateConverter" />
-									</h:outputText>
-									a 
-									<h:outputText value="#{encontro.dataFim}">
-										<f:converter converterId="localDateConverter" />
-									</h:outputText>
-								</span>
-							</div>
-							
-							<div class="encontro-detail index-detail">
-								<i class="pi pi-map-marker"></i>
-								<span>#{encontro.local}</span>
-							</div>
-						</div>
-						
-						<div class="encontro-actions index-actions">
-							<p:button value="Ver Detalhes"
-								outcome="/pages/encontro/visualizar.xhtml" 
-								icon="pi pi-search"
-								styleClass="ui-button-info ui-button-outlined">
-								<f:param name="id" value="#{encontro.id}" />
-							</p:button>
-							
-							<h:outputText rendered="#{encontro.ativo}">
-								<p:button value="Gerenciar"
-									outcome="/pages/encontro/lista.xhtml" 
-									icon="pi pi-cog"
-									styleClass="ui-button-success ui-button-outlined" />
-							</h:outputText>
-						</div>
-					</div>
-				</ui:repeat>
+<style>
+   .dashboard-grid {
+	  display: grid;
+	  grid-template-columns: repeat(2, 1fr);
+	  gap: 2rem;
+	  margin-bottom: 2rem;
+   }
+   @media (max-width: 900px) {
+	  .dashboard-grid {
+		 grid-template-columns: 1fr;
+	  }
+   }
+</style>
+<div class="dashboard-grid">
+   <ui:repeat value="#{dashboardController.proximosEncontros}" var="encontro">
+	  <div class="encontro-card-modern index-page">
+		 <!-- ...existing code... -->
+		 <div class="encontro-header index-header">
+			<div>
+			   <h3 class="encontro-title index-title">#{encontro.nome}</h3>
+			   <div class="encontro-status index-status #{encontro.ativo ? 'status-active' : 'status-inactive'}">
+				  <h:outputText value="#{encontro.ativo ? 'Ativo' : 'Encerrado'}" />
+			   </div>
 			</div>
+		 </div>
+		 <div class="encontro-details index-details">
+			<div class="encontro-detail index-detail">
+			   <i class="pi pi-tag"></i>
+			   <span>#{encontro.tema}</span>
+			</div>
+			<div class="encontro-detail index-detail">
+			   <i class="pi pi-calendar"></i>
+			   <span>
+				  <h:outputText value="#{encontro.dataInicio}">
+					 <f:converter converterId="localDateConverter" />
+				  </h:outputText>
+				  a 
+				  <h:outputText value="#{encontro.dataFim}">
+					 <f:converter converterId="localDateConverter" />
+				  </h:outputText>
+			   </span>
+			</div>
+			<div class="encontro-detail index-detail">
+			   <i class="pi pi-map-marker"></i>
+			   <span>#{encontro.local}</span>
+			</div>
+		 </div>
+		 <div class="encontro-actions index-actions">
+			<p:button value="Ver Detalhes"
+			   outcome="/pages/encontro/visualizar.xhtml" 
+			   icon="pi pi-search"
+			   styleClass="ui-button-info ui-button-outlined">
+			   <f:param name="id" value="#{encontro.id}" />
+			</p:button>
+			<h:outputText rendered="#{encontro.ativo}">
+			   <p:button value="Gerenciar"
+				  outcome="/pages/encontro/lista.xhtml" 
+				  icon="pi pi-cog"
+				  styleClass="ui-button-success ui-button-outlined" />
+			</h:outputText>
+		 </div>
+	  </div>
+   </ui:repeat>
+</div>
 			<!-- Ações Rápidas -->
 			<div class="quick-actions index-page">
 				<h2 class="section-title">

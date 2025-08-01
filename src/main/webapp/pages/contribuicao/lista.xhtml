@@ -49,7 +49,9 @@
 					emptyMessage="Nenhuma contribuição foi encontrada com os filtros aplicados."
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 					currentPageReportTemplate="Exibindo {startRecord}-{endRecord} de {totalRecords} contribuições"
-					rowsPerPageTemplate="10,15,25,50" sortMode="multiple">
+					rowsPerPageTemplate="10,15,25,50" sortMode="multiple"
+					filterable="true"
+					filterDelay="300">
 
 					<!-- Estado vazio personalizado -->
 					<f:facet name="emptyMessage">
@@ -79,11 +81,6 @@
 						sortBy="#{contribuicao.trabalhador.pessoa.nome}"
 						filterBy="#{contribuicao.trabalhador.pessoa.nome}"
 						filterMatchMode="contains" priority="1" exportable="true">
-						<f:facet name="filter">
-							<p:inputText placeholder="Nome do trabalhador..."
-								styleClass="filter-input"
-								title="Filtrar por nome do trabalhador" />
-						</f:facet>
 						<div class="user-info"
 							title="Trabalhador: #{contribuicao.trabalhador.pessoa.nome}">
 							<div class="user-avatar">
@@ -97,10 +94,6 @@
 						sortBy="#{contribuicao.trabalhador.encontro.nome}"
 						filterBy="#{contribuicao.trabalhador.encontro.nome}"
 						filterMatchMode="contains" priority="3" exportable="true">
-						<f:facet name="filter">
-							<p:inputText placeholder="Nome do encontro..."
-								styleClass="filter-input" title="Filtrar por nome do encontro" />
-						</f:facet>
 						<span class="encontro-tag"
 							title="Encontro: #{contribuicao.trabalhador.encontro.nome}">
 							<i class="pi pi-calendar"></i>

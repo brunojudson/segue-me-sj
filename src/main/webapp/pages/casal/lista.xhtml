@@ -53,7 +53,10 @@
 						paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 						currentPageReportTemplate="Exibindo {startRecord} a {endRecord} de {totalRecords} casais"
 						rowsPerPageTemplate="10,15,25,50" sortMode="multiple"
-						resizableColumns="true" reflow="true">
+						resizableColumns="true" reflow="true"
+						filterable="true"
+						filterDelay="300"
+						widgetVar="casaisTableWidget">
 						<!-- Empty State -->
 						<f:facet name="emptyMessage">
 							<div class="casal-empty-state">
@@ -78,9 +81,6 @@
 						<p:column headerText="Esposo" sortBy="#{casal.pessoa1.nome}"
 							responsivePriority="1" filterBy="#{casal.pessoa1.nome}"
 							filterMatchMode="contains" filterStyleClass="filter-input">
-							<f:facet name="filter">
-								<p:inputText placeholder="Filtrar por esposo..." />
-							</f:facet>
 							<div class="person-info husband">
 								<div class="person-avatar husband-avatar">
 									<i class="pi pi-user"></i> <span class="avatar-initial">#{fn:substring(casal.pessoa1.nome,
@@ -97,9 +97,6 @@
 						<p:column headerText="Esposa" sortBy="#{casal.pessoa2.nome}"
 							responsivePriority="1" filterBy="#{casal.pessoa2.nome}"
 							filterMatchMode="contains" filterStyleClass="filter-input">
-							<f:facet name="filter">
-								<p:inputText placeholder="Filtrar por esposa..." />
-							</f:facet>
 							<div class="person-info wife">
 								<div class="person-avatar wife-avatar">
 									<i class="pi pi-user"></i> <span class="avatar-initial">#{fn:substring(casal.pessoa2.nome,

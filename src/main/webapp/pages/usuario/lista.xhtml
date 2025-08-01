@@ -46,7 +46,10 @@
 						paginator="true" rows="20" paginatorPosition="bottom" stripeRows="true"
 						paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 						currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
-						rowsPerPageTemplate="20,50,100">
+						rowsPerPageTemplate="20,50,100"
+						filterable="true"
+						filterDelay="300"
+						widgetVar="usuariosTableWidget">
 						
 						<p:column headerText="ID" sortBy="#{u.id}" 
 								  styleClass="text-center" width="80">
@@ -58,9 +61,6 @@
 						<p:column headerText="Nome" sortBy="#{u.nome}"
 								  filterBy="#{u.nome}" filterMatchMode="contains"
 								  styleClass="text-left" width="250">
-							<f:facet name="filter">
-								<p:inputText placeholder="Nome do usuário" styleClass="filter-input"/>
-							</f:facet>
 							<div class="user-info">
 								<div class="user-avatar">
 									<i class="pi pi-user"></i>
@@ -72,9 +72,6 @@
 						<p:column headerText="Email/Login" sortBy="#{u.email}"
 								  filterBy="#{u.email}" filterMatchMode="contains"
 								  styleClass="text-left" width="250">
-							<f:facet name="filter">
-								<p:inputText placeholder="Email" styleClass="filter-input"/>
-							</f:facet>
 							<span class="email-display">
 								<i class="pi pi-envelope"></i>
 								#{u.email}

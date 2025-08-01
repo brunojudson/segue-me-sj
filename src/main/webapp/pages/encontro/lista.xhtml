@@ -45,7 +45,10 @@
 					paginator="true" rows="20" paginatorPosition="bottom" stripeRows="true"
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
-					rowsPerPageTemplate="20,50,100">
+					rowsPerPageTemplate="20,50,100"
+					filterable="true"
+					filterDelay="300"
+					widgetVar="encontrosTableWidget">
 
 					<p:column headerText="ID" sortBy="#{encontro.id}" 
 							  styleClass="text-center" width="80" responsivePriority="6">
@@ -57,9 +60,6 @@
 					<p:column headerText="Nome" sortBy="#{encontro.nome}"
 							  filterBy="#{encontro.nome}" filterMatchMode="contains"
 							  styleClass="text-left">
-						<f:facet name="filter">
-							<p:inputText placeholder="Nome do encontro" styleClass="filter-input"/>
-						</f:facet>
 						<div class="event-info">
 							<div class="event-icon">
 								<i class="pi pi-calendar-plus"></i>

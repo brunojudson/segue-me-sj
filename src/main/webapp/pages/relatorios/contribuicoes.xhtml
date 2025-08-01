@@ -126,8 +126,6 @@
                                         styleClass="ui-button-success ui-button-sm export-button"
                                         style="margin-right: 0.75rem;"
                                         title="Exportar para Excel"
-                                        ajax="false"
-                                        type="button"
                                         rendered="#{not empty relatorioController.resultadoRelatorio}">
                                         <p:dataExporter type="xlsx" target="resultadoRelatorio" 
                                             fileName="relatorio_contribuicoes_financeiro" />
@@ -137,8 +135,6 @@
                                         icon="pi pi-file-pdf"
                                         styleClass="ui-button-danger ui-button-sm export-button"
                                         title="Exportar para PDF"
-                                        ajax="false"
-                                        type="button"
                                         rendered="#{not empty relatorioController.resultadoRelatorio}">
                                         <p:dataExporter type="pdf" target="resultadoRelatorio" 
                                             fileName="relatorio_contribuicoes_financeiro" />
@@ -204,7 +200,8 @@
                                     filterBy="#{item.forma_pagamento}"
                                     filterMatchMode="contains"
                                     styleClass="text-left" 
-                                    priority="1">
+                                    priority="1"
+                                    exportValue="#{item.forma_pagamento}">
                                     <div class="payment-method payment-method-left">
                                         <span class="payment-emoji">
                                             <ui:fragment rendered="#{item.forma_pagamento eq 'Dinheiro'}">💵</ui:fragment>
@@ -220,7 +217,8 @@
                                 <p:column headerText="📊 Quantidade" 
                                     sortBy="#{item.quantidade}"
                                     styleClass="text-center"
-                                    priority="2">
+                                    priority="2"
+                                    exportValue="#{item.quantidade}">
                                     <div class="quantity-cell">
                                         <span class="quantity-badge">#{item.quantidade}</span>
                                         <small class="quantity-label">contribuições</small>
@@ -230,7 +228,8 @@
                                 <p:column headerText="💰 Valor Total" 
                                     sortBy="#{item.valor_total}"
                                     styleClass="text-right currency-column"
-                                    priority="1">
+                                    priority="1"
+                                    exportValue="#{item.valor_total}">
                                     <h:outputText value="#{item.valor_total}" styleClass="currency-value total-value">
                                         <f:convertNumber type="currency" currencySymbol="R$ " />
                                     </h:outputText>
@@ -239,7 +238,8 @@
                                 <p:column headerText="📉 Menor Valor" 
                                     sortBy="#{item.menor_valor}"
                                     styleClass="text-right currency-column"
-                                    priority="3">
+                                    priority="3"
+                                    exportValue="#{item.menor_valor}">
                                     <h:outputText value="#{item.menor_valor}" styleClass="currency-value min-value">
                                         <f:convertNumber type="currency" currencySymbol="R$ " />
                                     </h:outputText>
@@ -248,7 +248,8 @@
                                 <p:column headerText="📈 Maior Valor" 
                                     sortBy="#{item.maior_valor}"
                                     styleClass="text-right currency-column"
-                                    priority="3">
+                                    priority="3"
+                                    exportValue="#{item.maior_valor}">
                                     <h:outputText value="#{item.maior_valor}" styleClass="currency-value max-value">
                                         <f:convertNumber type="currency" currencySymbol="R$ " />
                                     </h:outputText>
@@ -257,7 +258,8 @@
                                 <p:column headerText="📊 Valor Médio" 
                                     sortBy="#{item.valor_medio}"
                                     styleClass="text-right currency-column"
-                                    priority="2">
+                                    priority="2"
+                                    exportValue="#{item.valor_medio}">
                                     <h:outputText value="#{item.valor_medio}" styleClass="currency-value avg-value">
                                         <f:convertNumber type="currency" currencySymbol="R$ " />
                                     </h:outputText>

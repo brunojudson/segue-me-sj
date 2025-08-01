@@ -126,8 +126,6 @@
                                         styleClass="ui-button-success ui-button-sm export-button"
                                         style="margin-right: 0.75rem;"
                                         title="Exportar para Excel"
-                                        ajax="false"
-                                        type="button"
                                         rendered="#{not empty relatorioController.resultadoRelatorio}">
                                         <p:dataExporter type="xlsx" target="resultadoRelatorio" 
                                             fileName="relatorio_trabalhadores_por_equipe" />
@@ -137,8 +135,6 @@
                                         icon="pi pi-file-pdf"
                                         styleClass="ui-button-danger ui-button-sm export-button"
                                         title="Exportar para PDF"
-                                        ajax="false"
-                                        type="button"
                                         rendered="#{not empty relatorioController.resultadoRelatorio}">
                                         <p:dataExporter type="pdf" target="resultadoRelatorio" 
                                             fileName="relatorio_trabalhadores_por_equipe" />
@@ -191,7 +187,8 @@
                                     sortBy="#{item.trabalhador_id}"
                                     styleClass="text-center id-column"
                                     priority="6"
-                                    width="70">
+                                    width="70"
+                                    exportValue="#{item.trabalhador_id}">
                                     <div class="id-badge">
                                         #{item.trabalhador_id}
                                     </div>
@@ -201,7 +198,8 @@
                                     sortBy="#{item.nome}"
                                     filterBy="#{item.nome}"
                                     filterMatchMode="contains"
-                                    priority="1">
+                                    priority="1"
+                                    exportValue="#{item.nome}">
                                     <div class="name-cell">
                                         <i class="pi pi-user name-icon"></i>
                                         <span class="name-text">#{item.nome}</span>
@@ -212,7 +210,8 @@
                                     sortBy="#{item.email}"
                                     filterBy="#{item.email}"
                                     filterMatchMode="contains"
-                                    priority="2">
+                                    priority="2"
+                                    exportValue="#{item.email}">
                                     <div class="email-cell">
                                         <i class="pi pi-envelope email-icon"></i>
                                         <span class="email-text">#{item.email}</span>
@@ -224,7 +223,8 @@
                                     filterBy="#{item.telefone}"
                                     filterMatchMode="contains"
                                     styleClass="text-center"
-                                    priority="4">
+                                    priority="4"
+                                    exportValue="#{item.telefone}">
                                     <div class="phone-cell">
                                         <i class="pi pi-phone phone-icon"></i>
                                         <span class="phone-text">#{item.telefone}</span>
@@ -236,7 +236,8 @@
                                     filterBy="#{item.coordenador}"
                                     filterMatchMode="exact"
                                     styleClass="text-center"
-                                    priority="3">
+                                    priority="3"
+                                    exportValue="#{item.coordenador}">
                                     <div class="coordinator-cell">
                                         <h:outputText value="#{item.coordenador == 'Sim' ? 'Sim' : 'Não'}" 
                                             styleClass="#{item.coordenador == 'Sim' ? 'coordinator-yes' : 'coordinator-no'}" />
@@ -247,7 +248,8 @@
                                 <p:column headerText="📅 Data Início" 
                                     sortBy="#{item.data_inicio}"
                                     styleClass="text-center"
-                                    priority="5">
+                                    priority="5"
+                                    exportValue="#{item.data_inicio}">
                                     <div class="date-cell">
                                         <h:outputText value="#{item.data_inicio}" styleClass="date-text">
                                             <f:convertDateTime pattern="dd/MM/yyyy" />
@@ -260,7 +262,8 @@
                                     filterBy="#{item.foi_encontrista}"
                                     filterMatchMode="exact"
                                     styleClass="text-center"
-                                    priority="4">
+                                    priority="4"
+                                    exportValue="#{item.foi_encontrista}">
                                     <div class="encontrista-cell">
                                         <span class="#{item.foi_encontrista == 'Sim' ? 'encontrista-yes' : 'encontrista-no'}">
                                             #{item.foi_encontrista}

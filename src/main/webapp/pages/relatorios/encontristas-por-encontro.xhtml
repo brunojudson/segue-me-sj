@@ -126,10 +126,8 @@
                                         styleClass="ui-button-success ui-button-sm export-button"
                                         style="margin-right: 0.75rem;"
                                         title="Exportar para Excel"
-                                        ajax="false"
-                                        type="button"
                                         rendered="#{not empty relatorioController.resultadoRelatorio}">
-                                        <p:dataExporter type="xlsx" target="resultadoRelatorio" 
+                                        <p:dataExporter type="xls" target="resultadoRelatorio" pageOnly="true"
                                             fileName="relatorio_encontristas_por_encontro" />
                                     </p:commandButton>
                                     
@@ -137,8 +135,6 @@
                                         icon="pi pi-file-pdf"
                                         styleClass="ui-button-danger ui-button-sm export-button"
                                         title="Exportar para PDF"
-                                        ajax="false"
-                                        type="button"
                                         rendered="#{not empty relatorioController.resultadoRelatorio}">
                                         <p:dataExporter type="pdf" target="resultadoRelatorio" 
                                             fileName="relatorio_encontristas_por_encontro" />
@@ -189,7 +185,8 @@
                                     sortBy="#{item.encontrista_id}"
                                     styleClass="text-center id-column"
                                     priority="6"
-                                    width="60">
+                                    width="60"
+                                    exportValue="#{item.encontrista_id}">
                                     <div class="id-badge">
                                         #{item.encontrista_id}
                                     </div>
@@ -199,7 +196,8 @@
                                     sortBy="#{item.nome}"
                                     filterBy="#{item.nome}"
                                     filterMatchMode="contains"
-                                    priority="1">
+                                    priority="1"
+                                    exportValue="#{item.nome}">
                                     <div class="name-cell">
                                         <i class="pi pi-user name-icon"></i>
                                         <span class="name-text">#{item.nome}</span>
@@ -210,7 +208,8 @@
                                     sortBy="#{item.email}"
                                     filterBy="#{item.email}"
                                     filterMatchMode="contains"
-                                    priority="2">
+                                    priority="2"
+                                    exportValue="#{item.email}">
                                     <div class="email-cell">
                                         <i class="pi pi-envelope email-icon"></i>
                                         <span class="email-text">#{item.email}</span>
@@ -222,7 +221,8 @@
                                     filterBy="#{item.telefone}"
                                     filterMatchMode="contains"
                                     styleClass="text-center"
-                                    priority="4">
+                                    priority="4"
+                                    exportValue="#{item.telefone}">
                                     <div class="phone-cell">
                                         <i class="pi pi-phone phone-icon"></i>
                                         <span class="phone-text">#{item.telefone}</span>
@@ -232,7 +232,8 @@
                                 <p:column headerText="🎂 Data Nasc." 
                                     sortBy="#{item.data_nascimento}"
                                     styleClass="text-center"
-                                    priority="5">
+                                    priority="5"
+                                    exportValue="#{item.data_nascimento}">
                                     <div class="date-cell">
                                         <h:outputText value="#{item.data_nascimento}" styleClass="date-text">
                                             <f:convertDateTime pattern="dd/MM/yyyy" />
@@ -243,7 +244,8 @@
                                 <p:column headerText="💰 Valor Pago" 
                                     sortBy="#{item.valor_pago}"
                                     styleClass="text-right currency-column"
-                                    priority="3">
+                                    priority="3"
+                                    exportValue="#{item.valor_pago}">
                                     <h:outputText value="#{item.valor_pago}" styleClass="currency-value">
                                         <f:convertNumber type="currency" currencySymbol="R$ " />
                                     </h:outputText>
@@ -253,7 +255,8 @@
                                     sortBy="#{item.forma_pagamento}"
                                     filterBy="#{item.forma_pagamento}"
                                     filterMatchMode="exact"
-                                    priority="4">
+                                    priority="4"
+                                    exportValue="#{item.forma_pagamento}">
                                     <div class="payment-method">
                                         <i class="pi pi-credit-card payment-icon"></i>
                                         <span class="payment-text">#{item.forma_pagamento}</span>
@@ -263,7 +266,8 @@
                                 <p:column headerText="📅 Data Inscrição" 
                                     sortBy="#{item.data_inscricao}"
                                     styleClass="text-center"
-                                    priority="5">
+                                    priority="5"
+                                    exportValue="#{item.data_inscricao}">
                                     <div class="date-cell">
                                         <h:outputText value="#{item.data_inscricao}" styleClass="datetime-text">
                                             <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />

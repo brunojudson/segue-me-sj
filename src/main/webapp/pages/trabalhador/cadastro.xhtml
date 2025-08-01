@@ -104,6 +104,15 @@
                                 <small class="field-hint">Data em que o trabalho no encontro se inicia.</small>
                             </div>
 
+                            <div class="field-group">
+                                <p:outputLabel for="observacao" value="Observação" />
+                                <p:inputTextarea id="observacao" value="#{trabalhadorController.trabalhador.observacoes}"
+                                                 autoResize="true" rows="3" maxlength="255"
+                                                 styleClass="modern-textarea"
+                                                 placeholder="Digite uma observação (opcional)"/>
+                                <small class="field-hint">Campo opcional para observações gerais sobre o trabalhador.</small>
+                            </div>
+
                             <div class="field-group checkbox-group">
                                 <p:outputLabel for="coordenador" value="Coordenação" />
                                 <div class="checkbox-container">

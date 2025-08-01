@@ -41,7 +41,10 @@
 					rows="20" paginatorPosition="bottom" stripeRows="true"
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
-					rowsPerPageTemplate="20,50,100">
+					rowsPerPageTemplate="20,50,100"
+					filterable="true"
+					filterDelay="300"
+					widgetVar="encontristasTableWidget">
 
 					<p:column headerText="Código" sortBy="#{encontrista.id}"
 						styleClass="text-center" width="5%" responsivePriority="6">
@@ -51,10 +54,6 @@
 					<p:column headerText="Pessoa" sortBy="#{encontrista.pessoa.nome}"
 						filterBy="#{encontrista.pessoa.nome}" filterMatchMode="contains"
 						styleClass="text-left" width="25%">
-						<f:facet name="filter">
-							<p:inputText placeholder="Nome da pessoa"
-								styleClass="filter-input" />
-						</f:facet>
 						<div class="participant-info">
 							<div class="participant-avatar">
 								<i class="pi pi-user-plus"></i>
@@ -68,10 +67,6 @@
 						sortBy="#{encontrista.encontro.nome}"
 						filterBy="#{encontrista.encontro.nome}" filterMatchMode="contains"
 						styleClass="text-left" width="15%" responsivePriority="4">
-						<f:facet name="filter">
-							<p:inputText placeholder="Nome do encontro"
-								styleClass="filter-input" />
-						</f:facet>
 						<span class="event-badge"> <i class="pi pi-calendar"></i>
 							#{encontrista.encontro.nome}
 						</span>

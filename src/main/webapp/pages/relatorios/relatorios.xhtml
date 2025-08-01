@@ -85,11 +85,11 @@
 										icon="pi pi-chart-line"
 										styleClass="ui-button-success action-button-primary" 
 										oncomplete="setTimeout(function(){
-                                        var panel = PF('resultadoPanelWidget').jq[0];
-                                        if(panel){
-                                            panel.scrollIntoView({behavior: 'smooth', block: 'start'});
-                                        }
-                                    }, 200);"/>
+										var panel = PF('resultadoPanelWidget').jq[0];
+										if(panel){
+											panel.scrollIntoView({behavior: 'smooth', block: 'start'});
+										}
+									}, 200);"/>
 								</div>
 							</div>
 						</div>
@@ -563,19 +563,22 @@
 										styleClass="ui-button-success ui-button-sm export-button"
 										style="margin-right: 0.75rem;"
 										title="Exportar para Excel"
-										ajax="false"
-										type="button"
 										rendered="#{not empty relatorioController.resultadoRelatorio}">
 										<p:dataExporter type="xlsx" target="resultadoRelatorio" 
 											fileName="relatorio_#{relatorioController.tipoRelatorioSelecionado}" />
 									</p:commandButton>
-									
+									<p:commandButton value="📊 CSV" 
+                                        icon="pi pi-file"
+                                        styleClass="ui-button-info ui-button-sm export-button"
+                                        title="Exportar para CSV"
+                                        rendered="#{not empty relatorioController.resultadoRelatorio}">
+                                        <p:dataExporter type="csv" target="resultadoRelatorio" 
+                                            fileName="relatorio_#{relatorioController.tipoRelatorioSelecionado}" />
+                                    </p:commandButton>
 									<p:commandButton value="📄 PDF" 
 										icon="pi pi-file-pdf"
 										styleClass="ui-button-danger ui-button-sm export-button"
 										title="Exportar para PDF"
-										ajax="false"
-										type="button"
 										rendered="#{not empty relatorioController.resultadoRelatorio}">
 										<p:dataExporter type="pdf" target="resultadoRelatorio" 
 											fileName="relatorio_#{relatorioController.tipoRelatorioSelecionado}" />
@@ -613,7 +616,8 @@
 									headerText="#{coluna}"
 									sortBy="#{linha[coluna]}"
 									filterBy="#{linha[coluna]}"
-									filterMatchMode="contains">
+									filterMatchMode="contains"
+									exportValue="#{linha[coluna]}">
 									<h:outputText value="#{linha[coluna]}" />
 								</p:columns>
 							</p:dataTable>

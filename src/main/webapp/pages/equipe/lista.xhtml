@@ -44,7 +44,10 @@
 					paginator="true" rows="20" paginatorPosition="bottom" stripeRows="true"
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
-					rowsPerPageTemplate="20,50,100">
+					rowsPerPageTemplate="20,50,100"
+					filterable="true"
+					filterDelay="300"
+					widgetVar="equipesTableWidget">
 					
 					<p:column headerText="ID" sortBy="#{equipe.id}" 
 							  styleClass="text-center" width="80" responsivePriority="6">
@@ -56,9 +59,6 @@
 					<p:column headerText="Nome" sortBy="#{equipe.nome}" 
 							  filterBy="#{equipe.nome}" filterMatchMode="contains"
 							  styleClass="text-left">
-						<f:facet name="filter">
-							<p:inputText placeholder="Nome da equipe" styleClass="filter-input"/>
-						</f:facet>
 						<div class="team-info">
 							<div class="team-icon">
 								<i class="pi pi-sitemap"></i>
@@ -70,9 +70,6 @@
 					<p:column headerText="Tipo de Equipe" sortBy="#{equipe.tipoEquipe.nome}" 
 							  filterBy="#{equipe.tipoEquipe.nome}" filterMatchMode="contains"
 							  styleClass="text-left" responsivePriority="4">
-						<f:facet name="filter">
-							<p:inputText placeholder="Tipo de equipe" styleClass="filter-input"/>
-						</f:facet>
 						<span class="team-type-badge">
 							<i class="pi pi-tag"></i>
 							#{equipe.tipoEquipe.nome}
@@ -82,9 +79,6 @@
 					<p:column headerText="Encontro" sortBy="#{equipe.encontro.nome}" 
 							  filterBy="#{equipe.encontro.nome}" filterMatchMode="contains"
 							  styleClass="text-left" responsivePriority="5">
-						<f:facet name="filter">
-							<p:inputText placeholder="Nome do encontro" styleClass="filter-input"/>
-						</f:facet>
 						<span class="event-badge">
 							<i class="pi pi-calendar"></i>
 							#{equipe.encontro.nome}

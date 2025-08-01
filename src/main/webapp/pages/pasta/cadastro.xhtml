@@ -197,6 +197,39 @@
                 </p:confirmDialog>
             </h:form>
         </div>
+          <style>
+/* Ajuste específico para botões de datePicker - alinha com altura dos campos */
+button.ui-datepicker-trigger {
+    min-height: 35px !important;
+    height: 35px !important;
+    max-height: 35px !important;
+    width: 35px !important;
+    min-width: 35px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    vertical-align: top !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1rem !important;
+    line-height: 1 !important;
+}
+
+/* Ajusta o campo de input do datePicker para manter consistência */
+input.ui-inputfield.ui-datepicker-input {
+    min-height: 29px !important;
+    height: 29px !important;
+    max-height: 29px !important;
+    vertical-align: top !important;
+}
+
+/* Container inline do datePicker - APENAS para o input e botão */
+.ui-datepicker-group {
+    display: inline-flex !important;
+    align-items: stretch !important;
+}
+        </style>
     </ui:define>
 </ui:composition>
 

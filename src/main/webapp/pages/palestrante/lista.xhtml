@@ -48,7 +48,10 @@
 					paginator="true" rows="20" paginatorPosition="bottom" stripeRows="true"
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
-					rowsPerPageTemplate="20,50,100">
+					rowsPerPageTemplate="20,50,100"
+					filterable="true"
+					filterDelay="300"
+					widgetVar="palestrantesTableWidget">
 					
 					<p:column headerText="ID" sortBy="#{palestrante.id}" 
 							  styleClass="text-center" width="80" responsivePriority="6">
@@ -60,9 +63,6 @@
 					<p:column headerText="Tipo" sortBy="#{palestrante.tipoPalestrante.nomeExibicao}"
 							  filterBy="#{palestrante.tipoPalestrante.nomeExibicao}" filterMatchMode="contains"
 							  styleClass="text-left" width="150">
-						<f:facet name="filter">
-							<p:inputText placeholder="Tipo" styleClass="filter-input"/>
-						</f:facet>
 						<span class="type-badge">
 							<i class="pi pi-microphone"></i>
 							#{palestrante.tipoPalestrante.nomeExibicao}
@@ -72,9 +72,6 @@
 					<p:column headerText="Nome(s)" sortBy="#{palestrante.nomeDisplay}"
 							  filterBy="#{palestrante.nomeDisplay}" filterMatchMode="contains"
 							  styleClass="text-left">
-						<f:facet name="filter">
-							<p:inputText placeholder="Nome do palestrante" styleClass="filter-input"/>
-						</f:facet>
 						<div class="speaker-info">
 							<div class="speaker-avatar">
 								<i class="pi pi-user"></i>

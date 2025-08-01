@@ -46,7 +46,10 @@
 						paginator="true" rows="20" paginatorPosition="bottom" stripeRows="true"
 						paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 						currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
-						rowsPerPageTemplate="20,50,100">
+						rowsPerPageTemplate="20,50,100"
+						filterable="true"
+						filterDelay="300"
+						widgetVar="dirigentesTableWidget">
 
 						<p:column headerText="ID" sortBy="#{dirigente.id}" 
 								  styleClass="text-center" width="80" responsivePriority="6">
@@ -58,9 +61,6 @@
 						<p:column headerText="Trabalhador" sortBy="#{dirigente.trabalhador.pessoa.nome}"
 								  filterBy="#{dirigente.trabalhador.pessoa.nome}" filterMatchMode="contains"
 								  styleClass="text-left" width="300">
-							<f:facet name="filter">
-								<p:inputText placeholder="Nome do trabalhador" styleClass="filter-input"/>
-							</f:facet>
 							<div class="leader-info">
 								<div class="leader-avatar">
 									<i class="pi pi-crown"></i>
@@ -72,9 +72,6 @@
 						<p:column headerText="Pasta" sortBy="#{dirigente.pasta.nome}" 
 								  filterBy="#{dirigente.pasta.nome}" filterMatchMode="contains"
 								  styleClass="text-left" width="180" responsivePriority="4">
-							<f:facet name="filter">
-								<p:inputText placeholder="Nome da pasta" styleClass="filter-input"/>
-							</f:facet>
 							<span class="folder-badge">
 								<i class="pi pi-folder"></i>
 								#{dirigente.pasta.nome}

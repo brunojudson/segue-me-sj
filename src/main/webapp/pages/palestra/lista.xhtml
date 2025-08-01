@@ -49,14 +49,13 @@
 					paginator="true" rows="20" paginatorPosition="bottom" stripeRows="true"
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
-					rowsPerPageTemplate="20,50,100">
+					rowsPerPageTemplate="20,50,100"
+					filterable="true"
+					filterDelay="300">
 
 					<p:column headerText="Título" sortBy="#{palestra.titulo}"
 							  filterBy="#{palestra.titulo}" filterMatchMode="contains"
 							  styleClass="text-left" width="200">
-						<f:facet name="filter">
-							<p:inputText placeholder="Título da palestra" styleClass="filter-input"/>
-						</f:facet>
 						<div class="lecture-info">
 							<div class="lecture-icon enhanced-lecture-icon">
 								<i class="pi pi-presentation"></i>
@@ -67,17 +66,8 @@
 					</p:column>
 
 					<p:column headerText="Tema" sortBy="#{palestra.tema.nomeExibicao}"
-							  filterBy="#{palestra.tema}" filterMatchMode="exact"
+							  filterBy="#{palestra.tema.nomeExibicao}" filterMatchMode="contains"
 							  styleClass="text-left" width="150">
-						<f:facet name="filter">
-							<p:selectOneMenu onchange="PF('tabelaPalestras').filter()"
-								styleClass="filter-input" converter="temaPalestraConverter">
-								<f:selectItem itemLabel="Todos" itemValue="#{null}"
-									noSelectionOption="true" />
-								<f:selectItems value="#{palestraController.temasPalestra}"
-									var="tema" itemLabel="#{tema.nomeExibicao}" itemValue="#{tema}" />
-							</p:selectOneMenu>
-						</f:facet>
 						<span class="theme-badge">
 							<i class="pi pi-tag"></i>
 							#{palestra.tema.nomeExibicao}
@@ -95,17 +85,8 @@
 					</p:column>
 
 					<p:column headerText="Encontro" sortBy="#{palestra.encontro.nome}"
-							  filterBy="#{palestra.encontro}" filterMatchMode="exact"
+							  filterBy="#{palestra.encontro.nome}" filterMatchMode="contains"
 							  styleClass="text-left" width="180" responsivePriority="4">
-						<f:facet name="filter">
-							<p:selectOneMenu onchange="PF('tabelaPalestras').filter()"
-								styleClass="filter-input" converter="encontroConverter">
-								<f:selectItem itemLabel="Todos" itemValue="#{null}"
-									noSelectionOption="true" />
-								<f:selectItems value="#{palestraController.encontrosDisponiveisParaFiltro}"
-									var="encontroFiltro" itemLabel="#{encontroFiltro.nome}" itemValue="#{encontroFiltro}" />
-							</p:selectOneMenu>
-						</f:facet>
 						<span class="event-badge">
 							<i class="pi pi-calendar"></i>
 							#{palestra.encontro.nome}

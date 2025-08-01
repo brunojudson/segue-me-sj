@@ -41,7 +41,10 @@
 					rows="20" paginatorPosition="bottom" stripeRows="true"
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
-					rowsPerPageTemplate="20,50,100">
+					rowsPerPageTemplate="20,50,100"
+					filterable="true"
+					filterDelay="300"
+					widgetVar="trabalhadoresTableWidget">
 
 					<p:column headerText="ID" sortBy="#{trabalhador.id}"
 						styleClass="text-center" width="5%" responsivePriority="6">
@@ -51,10 +54,6 @@
 					<p:column headerText="Pessoa" sortBy="#{trabalhador.pessoa.nome}"
 						filterBy="#{trabalhador.pessoa.nome}" filterMatchMode="contains"
 						styleClass="text-left" width="25%">
-						<f:facet name="filter">
-							<p:inputText placeholder="Nome da pessoa"
-								styleClass="filter-input" />
-						</f:facet>
 						<div class="worker-info">
 							<div class="worker-avatar">
 								<i class="pi pi-user"></i>
@@ -65,11 +64,7 @@
 					</p:column>
 					<p:column headerText="Equipe" sortBy="#{trabalhador.equipe.nome}"
 						filterBy="#{trabalhador.equipe.nome}" filterMatchMode="contains"
-						styleClass="text-left" width="15%" responsivePriority="2">
-						<f:facet name="filter">
-							<p:inputText placeholder="Nome da equipe"
-								styleClass="filter-input" />
-						</f:facet>
+						styleClass="text-left" width="13%" responsivePriority="2">
 						<span class="team-badge"> <i class="pi pi-users"></i>
 							#{trabalhador.equipe.nome}
 						</span>
@@ -79,10 +74,6 @@
 						sortBy="#{trabalhador.encontro.nome}"
 						filterBy="#{trabalhador.encontro.nome}" filterMatchMode="contains"
 						styleClass="text-left" width="15%" responsivePriority="4">
-						<f:facet name="filter">
-							<p:inputText placeholder="Nome do encontro"
-								styleClass="filter-input" />
-						</f:facet>
 						<h:outputText value="#{trabalhador.encontro.nome}" />
 					</p:column>
 

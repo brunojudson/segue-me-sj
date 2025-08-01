@@ -32,26 +32,23 @@ import br.com.segueme.service.PessoaService;
 @Named
 @ViewScoped
 public class RelatorioController implements Serializable {
-    // Retorna a soma do valor arrecadado no relatório financeiro de contribuições
-    public Double getSomaValorArrecadado() {
-        if (resultadoRelatorio == null || resultadoRelatorio.isEmpty()) return 0.0;
-        double soma = 0.0;
-        for (Map<String, Object> item : resultadoRelatorio) {
-            Object valor = item.get("valor_total");
-            if (valor instanceof Number) {
-                soma += ((Number) valor).doubleValue();
-            } else if (valor != null) {
-                try {
-                    soma += Double.parseDouble(valor.toString());
-                } catch (NumberFormatException e) {
-                    // ignora valores inválidos
-                }
-            }
-        }
-        return soma;
-    }
 
     private static final long serialVersionUID = 1L;
+
+    // Formata valores monetários para exportação (R$ 2.500,00)
+    public String formatarMoedaExport(Object value) {
+        if (value == null) return "";
+        try {
+            java.text.NumberFormat nf = java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("pt", "BR"));
+            if (value instanceof Number) {
+                return nf.format(value);
+            }
+            // Tenta converter se vier como String
+            return nf.format(Double.parseDouble(value.toString().replace(",", ".")));
+        } catch (Exception e) {
+            return value.toString();
+        }
+    }
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -92,6 +89,26 @@ public class RelatorioController implements Serializable {
         carregarMeses(); // Inicializa a lista de meses
     }
 
+
+    
+    // Retorna a soma do valor arrecadado no relatório financeiro de contribuições
+    public Double getSomaValorArrecadado() {
+        if (resultadoRelatorio == null || resultadoRelatorio.isEmpty()) return 0.0;
+        double soma = 0.0;
+        for (Map<String, Object> item : resultadoRelatorio) {
+            Object valor = item.get("valor_total");
+            if (valor instanceof Number) {
+                soma += ((Number) valor).doubleValue();
+            } else if (valor != null) {
+                try {
+                    soma += Double.parseDouble(valor.toString());
+                } catch (NumberFormatException e) {
+                    // ignora valores inválidos
+                }
+            }
+        }
+        return soma;
+    }
     public void carregarMeses() {
         meses = Arrays.stream(Month.values())
                 .map(Month::name)
