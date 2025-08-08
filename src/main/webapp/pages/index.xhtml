@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	lang="pt-BR" xml:lang="pt-BR">
+
+<head>
+	<title>Dashboard - Sistema Segue-me</title>
+	<meta name="description" content="Dashboard principal do Sistema Segue-me - Visão geral dos encontros de jovens" />
+</head>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="title">Dashboard - Sistema Segue-me</ui:define>
+	
+	<ui:define name="content">
+		<div class="dashboard-container">
+			<!-- Seção de Boas-vindas com Estatísticas -->
+			<div class="welcome-section">
+				<h1>
+					<i class="pi pi-home"></i>
+					Bem-vindo ao Sistema Segue-me-SJ
+				</h1>
+				<p>Sistema de gerenciamento para encontros de jovens - Painel de controle</p>
+				
+				<!-- Estatísticas Integradas -->
+				<div class="welcome-stats">
+					<div class="welcome-stat-card">
+						<div class="welcome-stat-icon users">
+							<i class="pi pi-users"></i>
+						</div>
+						<div class="welcome-stat-info">
+							<div class="welcome-stat-value">#{dashboardController.totalEncontristas}</div>
+							<div class="welcome-stat-label">Encontristas</div>
+						</div>
+					</div>
+
+					<div class="welcome-stat-card">
+						<div class="welcome-stat-icon workers">
+							<i class="pi pi-briefcase"></i>
+						</div>
+						<div class="welcome-stat-info">
+							<div class="welcome-stat-value">#{dashboardController.totalTrabalhadores}</div>
+							<div class="welcome-stat-label">Trabalhadores</div>
+						</div>
+					</div>
+
+					<div class="welcome-stat-card">
+						<div class="welcome-stat-icon teams">
+							<i class="pi pi-sitemap"></i>
+						</div>
+						<div class="welcome-stat-info">
+							<div class="welcome-stat-value">#{dashboardController.totalEquipes}</div>
+							<div class="welcome-stat-label">Equipes</div>
+						</div>
+					</div>
+
+					<div class="welcome-stat-card">
+						<div class="welcome-stat-icon money">
+							<i class="pi pi-dollar"></i>
+						</div>
+						<div class="welcome-stat-info">
+							<div class="welcome-stat-value">
+								<h:outputText value="#{dashboardController.totalContribuicoes}">
+									<f:convertNumber type="currency" currencySymbol="R$" locale="pt_BR" />
+								</h:outputText>
+							</div>
+							<div class="welcome-stat-label">Contribuições</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<!-- Próximos Encontros -->
+			<h2 class="section-title">
+				<i class="pi pi-calendar"></i>
+				Próximos Encontros
+			</h2>
+			
+<style>
+   .dashboard-grid {
+	  display: grid;
+	  grid-template-columns: repeat(2, 1fr);
+	  gap: 2rem;
+	  margin-bottom: 2rem;
+   }
+   @media (max-width: 900px) {
+	  .dashboard-grid {
+		 grid-template-columns: 1fr;
+	  }
+   }
+</style>
+<div class="dashboard-grid">
+   <ui:repeat value="#{dashboardController.proximosEncontros}" var="encontro">
+	  <div class="encontro-card-modern index-page">
+		 <!-- ...existing code... -->
+		 <div class="encontro-header index-header">
+			<div>
+			   <h3 class="encontro-title index-title">#{encontro.nome}</h3>
+			   <div class="encontro-status index-status #{encontro.ativo ? 'status-active' : 'status-inactive'}">
+				  <h:outputText value="#{encontro.ativo ? 'Ativo' : 'Encerrado'}" />
+			   </div>
+			</div>
+		 </div>
+		 <div class="encontro-details index-details">
+			<div class="encontro-detail index-detail">
+			   <i class="pi pi-tag"></i>
+			   <span>#{encontro.tema}</span>
+			</div>
+			<div class="encontro-detail index-detail">
+			   <i class="pi pi-calendar"></i>
+			   <span>
+				  <h:outputText value="#{encontro.dataInicio}">
+					 <f:converter converterId="localDateConverter" />
+				  </h:outputText>
+				  a 
+				  <h:outputText value="#{encontro.dataFim}">
+					 <f:converter converterId="localDateConverter" />
+				  </h:outputText>
+			   </span>
+			</div>
+			<div class="encontro-detail index-detail">
+			   <i class="pi pi-map-marker"></i>
+			   <span>#{encontro.local}</span>
+			</div>
+		 </div>
+		 <div class="encontro-actions index-actions">
+			<p:button value="Ver Detalhes"
+			   outcome="/pages/encontro/visualizar.xhtml" 
+			   icon="pi pi-search"
+			   styleClass="ui-button-info ui-button-outlined">
+			   <f:param name="id" value="#{encontro.id}" />
+			</p:button>
+			<h:outputText rendered="#{encontro.ativo}">
+			   <p:button value="Gerenciar"
+				  outcome="/pages/encontro/lista.xhtml" 
+				  icon="pi pi-cog"
+				  styleClass="ui-button-success ui-button-outlined" />
+			</h:outputText>
+		 </div>
+	  </div>
+   </ui:repeat>
+</div>
+			<!-- Ações Rápidas -->
+			<div class="quick-actions index-page">
+				<h2 class="section-title">
+					<i class="pi pi-bolt"></i>
+					Ações Essenciais
+				</h2>
+				<div class="quick-actions-grid">
+					<!-- Principais Cadastros -->
+					<div class="quick-action-group">
+						<h3 class="quick-group-title">Cadastros</h3>
+						<p:link outcome="/pages/encontro/cadastro.xhtml" styleClass="quick-action-btn primary">
+							<i class="pi pi-calendar-plus"></i>
+							<span>Novo Encontro</span>
+						</p:link>
+						
+						<p:link outcome="/pages/encontrista/cadastro.xhtml" styleClass="quick-action-btn">
+							<i class="pi pi-users"></i>
+							<span>Novo Encontrista</span>
+						</p:link>
+					</div>
+
+					<!-- Gerenciamento Essencial -->
+					<div class="quick-action-group">
+						<h3 class="quick-group-title">Gerenciar</h3>
+						<p:link outcome="/pages/encontro/lista.xhtml" styleClass="quick-action-btn primary">
+							<i class="pi pi-calendar"></i>
+							<span>Encontros</span>
+						</p:link>
+						
+						<p:link outcome="/pages/encontrista/lista.xhtml" styleClass="quick-action-btn">
+							<i class="pi pi-users"></i>
+							<span>Encontristas</span>
+						</p:link>
+					</div>
+					
+					<!-- Utilitários -->
+					<div class="quick-action-group">
+						<h3 class="quick-group-title">Ferramentas</h3>
+						<p:link outcome="/pages/relatorios/relatorios.xhtml" styleClass="quick-action-btn primary">
+							<i class="pi pi-chart-line"></i>
+							<span>Relatórios</span>
+						</p:link>
+						
+						<p:link outcome="/pages/usuario/lista.xhtml" styleClass="quick-action-btn">
+							<i class="pi pi-cog"></i>
+							<span>Configurações</span>
+						</p:link>
+					</div>
+				</div>
+				
+				<!-- Link para todas as funcionalidades -->
+				<div class="quick-actions-footer">
+					<p:link outcome="/pages/usuario/lista.xhtml" styleClass="all-actions-link">
+						<i class="pi pi-th-large"></i>
+						<span>Ver todas as funcionalidades</span>
+						<i class="pi pi-angle-right"></i>
+					</p:link>
+				</div>
+			</div>
+			<!-- Estado vazio para encontros -->
+			<h:panelGroup rendered="#{empty dashboardController.proximosEncontros}">
+				<div class="empty-state-card">
+					<div class="empty-icon">
+						<i class="pi pi-calendar-times"></i>
+					</div>
+					<h3>Nenhum encontro agendado</h3>
+					<p>Não há encontros próximos cadastrados no sistema.</p>
+					<p:button value="Cadastrar primeiro encontro"
+						outcome="/pages/encontro/cadastro.xhtml" 
+						icon="pi pi-plus" 
+						styleClass="ui-button-success" />
+				</div>
+			</h:panelGroup>
+
+
+		</div>
+	</ui:define>
+</ui:composition>
+
+</html>

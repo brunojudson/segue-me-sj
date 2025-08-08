@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://xmlns.jcp.org/jsf/html"
+	  xmlns:f="http://xmlns.jcp.org/jsf/core"
+	  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	  xmlns:p="http://primefaces.org/ui"
+	  lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Equipes - Sistema Segue-me</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="content">
+		<div class="content-container">
+			<!-- Cabeçalho moderno da página -->
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-sitemap page-icon"></i>
+							<span class="title-text">Equipes</span>
+						</h1>
+						<p class="page-subtitle">
+							Gerencie as equipes do sistema
+						</p>
+					</div>
+					<div class="header-actions">
+						<p:button value="Nova Equipe" 
+								  outcome="/pages/equipe/cadastro.xhtml" 
+								  icon="pi pi-plus"
+								  styleClass="action-button-primary"
+								  title="Cadastrar nova equipe" />
+					</div>
+				</div>
+			</div>
+
+			<h:form id="listForm" prependId="false">
+				<p:messages id="messages" showDetail="true" closable="true" />
+				
+				<!-- Tabela moderna de equipes -->
+				<p:dataTable id="equipesTable" var="equipe" value="#{equipeController.equipes}"
+					emptyMessage="Nenhuma equipe encontrada"
+					styleClass="modern-datatable datatable-animation"
+					paginator="true" rows="20" paginatorPosition="bottom" stripeRows="true"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+					rowsPerPageTemplate="20,50,100"
+					filterable="true"
+					filterDelay="300"
+					widgetVar="equipesTableWidget">
+					
+					<p:column headerText="ID" sortBy="#{equipe.id}" 
+							  styleClass="text-center" width="80" responsivePriority="6">
+						<div class="id-badge">
+							#{equipe.id}
+						</div>
+					</p:column>
+					
+					<p:column headerText="Nome" sortBy="#{equipe.nome}" 
+							  filterBy="#{equipe.nome}" filterMatchMode="contains"
+							  styleClass="text-left">
+						<div class="team-info">
+							<div class="team-icon">
+								<i class="pi pi-sitemap"></i>
+							</div>
+							<h:outputText value="#{equipe.nome}" styleClass="team-name" />
+						</div>
+					</p:column>
+					
+					<p:column headerText="Tipo de Equipe" sortBy="#{equipe.tipoEquipe.nome}" 
+							  filterBy="#{equipe.tipoEquipe.nome}" filterMatchMode="contains"
+							  styleClass="text-left" responsivePriority="4">
+						<span class="team-type-badge">
+							<i class="pi pi-tag"></i>
+							#{equipe.tipoEquipe.nome}
+						</span>
+					</p:column>
+					
+					<p:column headerText="Encontro" sortBy="#{equipe.encontro.nome}" 
+							  filterBy="#{equipe.encontro.nome}" filterMatchMode="contains"
+							  styleClass="text-left" responsivePriority="5">
+						<span class="event-badge">
+							<i class="pi pi-calendar"></i>
+							#{equipe.encontro.nome}
+						</span>
+					</p:column>
+					
+					<p:column headerText="Dirigente" styleClass="text-center" 
+							  width="120" responsivePriority="6">
+						<div class="status-indicator">
+							<i class="pi #{equipe.ehEquipeDirigente() ? 'pi-check-circle status-active2' : 'pi-minus-circle status-inactive2'}"></i>
+						</div>
+					</p:column>
+					
+					<p:column headerText="Status" styleClass="text-center" 
+							  width="100" sortBy="#{equipe.ativo}">
+						<span class="status-badge #{equipe.ativo ? 'ativo' : 'inativo'}">
+							<i class="pi #{equipe.ativo ? 'pi-check-circle' : 'pi-times-circle'}"></i>
+							#{equipe.ativo ? 'Ativo' : 'Inativo'}
+						</span>
+					</p:column>
+					
+					<p:column headerText="Ações" styleClass="text-center" width="140">
+						<div class="table-action-buttons">
+							<p:commandButton icon="pi pi-eye" title="Visualizar" 
+								action="#{equipeController.visualizar(equipe)}"
+								styleClass="action-button-secondary-table action-btn" />
+							
+							<p:commandButton icon="pi pi-pencil" title="Editar" 
+								action="#{equipeController.editar(equipe)}"
+								styleClass="action-button-warn-table action-btn" />
+							
+							<p:commandButton icon="pi pi-trash" title="Excluir" 
+								action="#{equipeController.prepararExclusao(equipe)}"
+								styleClass="action-button-danger-table action-btn"
+								update=":confirmDialog" 
+								oncomplete="PF('confirmDialog').show()">
+								<p:confirm header="Confirmação Exclusão"
+										   message="Tem certeza que deseja excluir esta equipe?"
+										   icon="pi pi-exclamation-triangle"/>
+							</p:commandButton>
+						</div>
+					</p:column>
+				</p:dataTable>
+			
+				<!-- Diálogo de confirmação -->
+				<p:confirmDialog global="true" id="confirmDialog" widgetVar="confirmDialog" 
+								 showEffect="fade" hideEffect="fade" styleClass="modern-dialog"
+								 closeOnEscape="true">
+					<p:commandButton value="Sim, excluir" 
+									 action="#{equipeController.excluir}" 
+									 oncomplete="PF('confirmDialog').hide()" 
+									 update="equipesTable messages" 
+									 styleClass="ui-button-danger ui-confirmdialog-yes"
+									 icon="pi pi-trash" />
+					<p:commandButton value="Cancelar" 
+									 onclick="PF('confirmDialog').hide()" 
+									 type="button" 
+									 styleClass="ui-button-secondary ui-confirmdialog-no"
+									 icon="pi pi-times" />
+				</p:confirmDialog>
+			</h:form>
+		</div>
+
+		<style>
+		/* Badges de status modernos */
+			.status-badge {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.25rem;
+				padding: 0.375rem 0.75rem;
+				border-radius: 20px;
+				font-size: 0.75rem;
+				font-weight: 600;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+			}
+
+			.status-badge.ativo {
+				background-color: #e8f5e8;
+				color: #2e7d32;
+				border: 1px solid #c8e6c9;
+			}
+
+			.status-badge.inativo {
+				background-color: #ffebee;
+				color: #c62828;
+				border: 1px solid #ffcdd2;
+			}
+			/* Estilos específicos para equipes */
+			.team-info {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+			}
+
+			.team-icon {
+				width: 32px;
+				height: 32px;
+				background: linear-gradient(135deg, #10b981, #059669);
+				border-radius: 8px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: white;
+				flex-shrink: 0;
+			}
+
+			.team-name {
+				font-weight: 600;
+				color: #333;
+			}
+
+			.team-type-badge {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.25rem 0.75rem;
+				border-radius: 12px;
+				font-size: 0.875rem;
+				font-weight: 500;
+				background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+				color: white;
+			}
+		</style>
+	</ui:define>
+</ui:composition>
+
+</html>

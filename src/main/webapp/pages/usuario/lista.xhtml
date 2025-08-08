@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Usuários - Sistema Segue-me</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="content">
+		<div class="content-container">
+			<ui:fragment rendered="#{loginController.hasPermission('ADMIN')}">
+				<!-- Cabeçalho moderno da página -->
+				<div class="page-header">
+					<div class="page-header-content">
+						<div class="page-title-section">
+							<h1 class="page-title">
+								<i class="pi pi-shield page-icon"></i>
+								<span class="title-text">Administração de Usuários</span>
+							</h1>
+							<p class="page-subtitle">
+								Gerencie usuários e permissões do sistema
+							</p>
+						</div>
+						<div class="header-actions">
+							<p:button value="Novo Usuário"
+									  outcome="/pages/usuario/cadastro.xhtml" 
+									  icon="pi pi-plus"
+									  styleClass="action-button-primary"
+									  title="Cadastrar novo usuário" />
+						</div>
+					</div>
+				</div>
+
+				<h:form id="usuarioForm">
+					<p:messages id="msgs" showDetail="true" closable="true"/>
+
+					<!-- Tabela moderna de usuários -->
+					<p:dataTable id="usuariosTable"
+						value="#{usuarioController.usuarios}" var="u"
+						emptyMessage="Nenhum usuário encontrado"
+						styleClass="modern-datatable datatable-animation"
+						paginator="true" rows="20" paginatorPosition="bottom" stripeRows="true"
+						paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+						rowsPerPageTemplate="20,50,100"
+						filterable="true"
+						filterDelay="300"
+						widgetVar="usuariosTableWidget">
+						
+						<p:column headerText="ID" sortBy="#{u.id}" 
+								  styleClass="text-center" width="80">
+							<div class="id-badge">
+								#{u.id}
+							</div>
+						</p:column>
+
+						<p:column headerText="Nome" sortBy="#{u.nome}"
+								  filterBy="#{u.nome}" filterMatchMode="contains"
+								  styleClass="text-left" width="250">
+							<div class="user-info">
+								<div class="user-avatar">
+									<i class="pi pi-user"></i>
+								</div>
+								<h:outputText value="#{u.nome}" styleClass="user-name" />
+							</div>
+						</p:column>
+
+						<p:column headerText="Email/Login" sortBy="#{u.email}"
+								  filterBy="#{u.email}" filterMatchMode="contains"
+								  styleClass="text-left" width="250">
+							<span class="email-display">
+								<i class="pi pi-envelope"></i>
+								#{u.email}
+							</span>
+						</p:column>
+
+						<p:column headerText="Status" styleClass="text-center" 
+								  width="100" sortBy="#{u.ativo}">
+							<span class="status-badge #{u.ativo ? 'ativo' : 'inativo'}">
+								<i class="pi #{u.ativo ? 'pi-check-circle' : 'pi-times-circle'}"></i>
+								#{u.ativo ? 'Ativo' : 'Inativo'}
+							</span>
+						</p:column>
+
+						<p:column headerText="Permissões" styleClass="text-left" width="200">
+							<div class="permissions-list">
+								<ui:repeat value="#{u.permissoes}" var="p">
+									<span class="permission-tag">
+										<i class="pi pi-key"></i>
+										#{p.nome}
+									</span>
+								</ui:repeat>
+								<h:outputText value="Sem permissões" 
+									rendered="#{empty u.permissoes}" 
+									styleClass="empty-value" />
+							</div>
+						</p:column>
+
+					<p:column headerText="Ações" styleClass="text-center" width="120">
+						<div class="table-action-buttons">
+							<p:commandButton icon="pi pi-pencil" title="Editar"
+								action="#{usuarioController.editar(u)}"
+								styleClass="action-button-warn-table action-btn"
+								process="@this" />
+							<p:commandButton icon="pi pi-trash" title="Excluir"
+								styleClass="action-button-danger-table action-btn"
+								update="usuariosTable usuarioForm:msgs" process="@this"
+								oncomplete="PF('confirmDialog').show()" />
+						</div>
+					</p:column>
+					</p:dataTable>
+
+					<!-- Diálogo de confirmação -->
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" 
+									 widgetVar="confirmDialog" styleClass="modern-dialog"
+									 header="Confirmar Exclusão"
+									 message="Tem certeza que deseja excluir este usuário?"
+									 closeOnEscape="true">
+						<p:commandButton value="Sim, excluir" type="button" 
+										 action="#{usuarioController.excluir(u)}"
+										 styleClass="ui-confirmdialog-yes ui-button-danger" 
+										 icon="pi pi-trash" 
+										 update="usuariosTable msgs"/>
+						<p:commandButton value="Cancelar" type="button"
+										 styleClass="ui-confirmdialog-no ui-button-secondary" 
+										 icon="pi pi-times" />
+					</p:confirmDialog>
+				</h:form>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{not loginController.hasPermission('ADMIN')}">
+				<div class="access-denied">
+					<div class="access-denied-content">
+						<i class="pi pi-lock access-denied-icon"></i>
+						<h2 class="access-denied-title">Acesso Negado</h2>
+						<p class="access-denied-message">
+							Você não possui permissão para acessar esta funcionalidade.
+						</p>
+					</div>
+				</div>
+			</ui:fragment>
+		</div>
+
+		<style>
+			/* Estilos específicos para usuários */
+			.user-info {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+			}
+
+			.user-avatar {
+				width: 32px;
+				height: 32px;
+				background: linear-gradient(135deg, #dc2626, #b91c1c);
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: white;
+				flex-shrink: 0;
+			}
+
+			.user-name {
+				font-weight: 600;
+				color: #333;
+			}
+
+			.email-display {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				color: #6b7280;
+				font-family: 'Courier New', monospace;
+				font-size: 0.875rem;
+			}
+
+			.permissions-list {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.25rem;
+			}
+
+			.permission-tag {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.25rem;
+				padding: 0.125rem 0.5rem;
+				background: #fef3c7;
+				border: 1px solid #f59e0b;
+				border-radius: 12px;
+				font-size: 0.75rem;
+				color: #92400e;
+				font-weight: 500;
+			}
+
+			.permission-tag i {
+				font-size: 0.625rem;
+			}
+
+			.access-denied {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				min-height: 400px;
+				padding: 2rem;
+			}
+
+			.access-denied-content {
+				text-align: center;
+				max-width: 400px;
+			}
+
+			.access-denied-icon {
+				font-size: 4rem;
+				color: #dc2626;
+				margin-bottom: 1rem;
+			}
+
+			.access-denied-title {
+				color: #dc2626;
+				margin-bottom: 0.5rem;
+				font-size: 1.5rem;
+			}
+
+			.access-denied-message {
+				color: #6b7280;
+				font-size: 1rem;
+				line-height: 1.5;
+			}
+		</style>
+	</ui:define>
+</ui:composition>
+</html>

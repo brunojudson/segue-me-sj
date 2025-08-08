@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">
+        #{empty param.id ? 'Cadastrar' : 'Editar'} Trabalhador - Sistema Segue-me
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="content-container">
+            <!-- Cabeçalho da página -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">
+                            <i class="pi pi-id-card page-icon"></i>
+                            <span class="title-text">#{empty param.id ? 'Cadastrar' : 'Editar'} Trabalhador</span>
+                        </h1>
+                        <p class="page-subtitle">
+                            #{empty param.id ? 'Adicione um novo trabalhador ao sistema' : 'Atualize os dados do trabalhador'}
+                        </p>
+                    </div>
+                    <div class="page-actions">
+                        <p:button value="Voltar à Lista" 
+                                 outcome="/pages/trabalhador/lista.xhtml"
+                                 icon="pi pi-arrow-left" 
+                                 styleClass="action-button-primary" />
+                    </div>
+                </div>
+            </div>
+
+            <h:form id="trabalhadorForm" styleClass="modern-form">
+                <p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages"
+                onshow="scrollToTopOnError()">
+                
+                </p:messages>
+
+                <f:metadata>
+                    <f:viewParam name="id" />
+                    <f:viewAction action="#{trabalhadorController.carregarTrabalhador}" if="#{not empty param.id}" />
+                </f:metadata>
+
+                <!-- Seção: Dados do Trabalhador -->
+                <div class="form-section">
+                    <p:fieldset legend="👥 Dados do Trabalhador" styleClass="modern-fieldset" toggleable="true">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="pessoa" value="Pessoa" styleClass="required-field" />
+                                <p:selectOneMenu id="pessoa" value="#{trabalhadorController.trabalhador.pessoa}"
+                                                 converter="omnifaces.SelectItemsConverter" required="true"
+                                                 requiredMessage="A pessoa é obrigatória"
+                                                 disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}"
+                                                 filter="true" filterMatchMode="startsWith" filterNormalize="true">
+                                    <f:selectItem itemLabel="Selecione a pessoa" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{trabalhadorController.pessoas}" var="pessoa"
+                                                   itemLabel="#{pessoa.nome}" itemValue="#{pessoa}" />
+                                    <p:ajax event="change" listener="#{trabalhadorController.verificarSeEncontrista}"
+                                            update="foiEncontrista" />
+                                </p:selectOneMenu>
+                                <small class="field-hint">Selecione a pessoa que será o trabalhador.</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="encontro" value="Encontro" styleClass="required-field" />
+                                <p:selectOneMenu id="encontro" value="#{trabalhadorController.trabalhador.encontro}"
+                                                 converter="omnifaces.SelectItemsConverter" required="true"
+                                                 requiredMessage="O encontro é obrigatório"
+                                                 disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}">
+                                    <f:selectItem itemLabel="Selecione o encontro" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{trabalhadorController.encontros}" var="encontro"
+                                                   itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
+                                    <p:ajax event="change" listener="#{trabalhadorController.atualizarDataInicio}" update="dataInicio" />
+                                </p:selectOneMenu>
+                                <small class="field-hint">Selecione o encontro ao qual o trabalhador está vinculado.</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="equipe" value="Equipe" styleClass="required-field" />
+                                <p:selectOneMenu id="equipe" value="#{trabalhadorController.trabalhador.equipe}"
+                                                 converter="omnifaces.SelectItemsConverter" required="true"
+                                                 requiredMessage="A equipe é obrigatória"
+                                                 disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}">
+                                    <f:selectItem itemLabel="Selecione a equipe" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{trabalhadorController.equipes}" var="equipe"
+                                                   itemLabel="#{equipe.nome}" itemValue="#{equipe}" />
+                                    <p:ajax event="change" listener="#{trabalhadorController.verificarParentescoEquipe}" update="equipeMsg" />
+                                </p:selectOneMenu>
+                                <p:message id="equipeMsg" for="equipe" display="text" />
+                                <small class="field-hint">Defina a equipe de trabalho.</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="dataInicio" value="Data de Início" styleClass="required-field" />
+                                <p:datePicker id="dataInicio" value="#{trabalhadorController.trabalhador.dataInicio}"
+                                              pattern="dd/MM/yyyy" showIcon="true" required="true" showOnFocus="false"
+                                              requiredMessage="A data de início é obrigatória"
+                                              disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}" />
+                                <small class="field-hint">Data em que o trabalho no encontro se inicia.</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="observacao" value="Observação" />
+                                <p:inputTextarea id="observacao" value="#{trabalhadorController.trabalhador.observacoes}"
+                                                 autoResize="true" rows="3" maxlength="255"
+                                                 styleClass="modern-textarea"
+                                                 placeholder="Digite uma observação (opcional)"/>
+                                <small class="field-hint">Campo opcional para observações gerais sobre o trabalhador.</small>
+                            </div>
+
+                            <div class="field-group checkbox-group">
+                                <p:outputLabel for="coordenador" value="Coordenação" />
+                                <div class="checkbox-container">
+                                    <p:selectBooleanCheckbox id="coordenador" value="#{trabalhadorController.trabalhador.ehCoordenador}" 
+                                                             disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}"/>
+                                    <span class="checkbox-label">É coordenador da equipe</span>
+                                </div>
+                                <small class="field-hint">Marque se o trabalhador coordena esta equipe.</small>
+                            </div>
+
+                            <div class="field-group checkbox-group">
+                                <p:outputLabel for="foiEncontrista" value="Histórico" />
+                                <div class="checkbox-container">
+                                    <p:selectBooleanCheckbox id="foiEncontrista" value="#{trabalhadorController.trabalhador.foiEncontrista}"
+                                                             disabled="true" />
+                                    <span class="checkbox-label">Já participou como encontrista</span>
+                                </div>
+                                <small class="field-hint">Indica se a pessoa já foi encontrista (preenchido automaticamente).</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="form-actions">
+                    <div class="action-buttons">
+                        <p:commandButton value="💾 Salvar Dados"
+                                       oncomplete="handleSaveComplete(args);" 
+                                       action="#{trabalhadorController.salvar}" 
+                                       update="@form" 
+                                       styleClass="ui-button-success action-button-primary" 
+                                       validateClient="true" />
+
+                        <p:commandButton value="📋 Salvar e Continuar"
+                                action="#{trabalhadorController.salvarEContinuar}"
+                                update="@form messages"
+                                process="@form"
+                                styleClass="ui-button-info action-button-secondary"
+                                validateClient="true"
+                                oncomplete="handleSaveComplete(args);" />
+
+                        <p:button value="❌ Cancelar" 
+                                outcome="/pages/trabalhador/lista.xhtml"
+                                styleClass="ui-button-secondary action-button-cancel" />
+                    </div>
+                    
+                    <div class="form-help">
+                        <small>
+                            <i class="pi pi-info-circle"></i>
+                            Campos marcados com * são obrigatórios. 
+                            Use Tab para navegar entre os campos.
+                        </small>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+        <h:outputScript library="js" name="scrollUp.js" target="head" />
+          <style>
+/* Ajuste específico para botões de datePicker - alinha com altura dos campos */
+button.ui-datepicker-trigger {
+    min-height: 35px !important;
+    height: 35px !important;
+    max-height: 35px !important;
+    width: 35px !important;
+    min-width: 35px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    vertical-align: top !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1rem !important;
+    line-height: 1 !important;
+}
+
+/* Ajusta o campo de input do datePicker para manter consistência */
+input.ui-inputfield.ui-datepicker-input {
+    min-height: 29px !important;
+    height: 29px !important;
+    max-height: 29px !important;
+    vertical-align: top !important;
+}
+
+/* Container inline do datePicker - APENAS para o input e botão */
+.ui-datepicker-group {
+    display: inline-flex !important;
+    align-items: stretch !important;
+}
+        </style>
+    </ui:define>
+</ui:composition>
+
+</html>

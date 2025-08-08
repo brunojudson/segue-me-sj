@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Encontros - Sistema Segue-me</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="content">
+		<div class="content-container">
+			<!-- Cabeçalho moderno da página -->
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-calendar-plus page-icon"></i>
+							<span class="title-text">Encontros</span>
+						</h1>
+						<p class="page-subtitle">
+							Gerencie os encontros do sistema
+						</p>
+					</div>
+					<div class="header-actions">
+						<p:button value="Novo Encontro"
+								  outcome="/pages/encontro/cadastro.xhtml" 
+								  icon="pi pi-plus"
+								  styleClass="action-button-primary"
+								  title="Cadastrar novo encontro" />
+					</div>
+				</div>
+			</div>
+
+			<h:form id="listForm" prependId="false">
+				<p:messages id="messages" showDetail="true" closable="true" />
+
+				<!-- Tabela moderna de encontros -->
+				<p:dataTable id="encontrosTable" var="encontro" 
+					value="#{encontroController.encontros}"
+					emptyMessage="Nenhum encontro encontrado"
+					styleClass="modern-datatable datatable-animation"
+					paginator="true" rows="20" paginatorPosition="bottom" stripeRows="true"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+					rowsPerPageTemplate="20,50,100"
+					filterable="true"
+					filterDelay="300"
+					widgetVar="encontrosTableWidget">
+
+					<p:column headerText="ID" sortBy="#{encontro.id}" 
+							  styleClass="text-center" width="80" responsivePriority="6">
+						<div class="id-badge">
+							#{encontro.id}
+						</div>
+					</p:column>
+
+					<p:column headerText="Nome" sortBy="#{encontro.nome}"
+							  filterBy="#{encontro.nome}" filterMatchMode="contains"
+							  styleClass="text-left">
+						<div class="event-info">
+							<div class="event-icon">
+								<i class="pi pi-calendar-plus"></i>
+							</div>
+							<h:outputText value="#{encontro.nome}" styleClass="event-name" />
+						</div>
+					</p:column>
+
+					<p:column headerText="Tema" sortBy="#{encontro.tema}"
+							  styleClass="text-left" responsivePriority="4">
+						<h:outputText value="#{encontro.tema}" 
+									  rendered="#{not empty encontro.tema}" />
+						<span class="empty-value" 
+							  rendered="#{empty encontro.tema}">
+							Sem tema definido
+						</span>
+					</p:column>
+
+					<p:column headerText="Data Início" sortBy="#{encontro.dataInicio}"
+							  styleClass="text-center" width="120" responsivePriority="5">
+						<div class="date-display">
+							<i class="pi pi-calendar"></i>
+							<h:outputText value="#{encontro.dataInicio}">
+								<f:converter converterId="localDateConverter" />
+							</h:outputText>
+						</div>
+					</p:column>
+
+					<p:column headerText="Data Fim" sortBy="#{encontro.dataFim}"
+							  styleClass="text-center" width="120" responsivePriority="5">
+						<div class="date-display">
+							<i class="pi pi-calendar"></i>
+							<h:outputText value="#{encontro.dataFim}">
+								<f:converter converterId="localDateConverter" />
+							</h:outputText>
+						</div>
+					</p:column>
+
+					<p:column headerText="Local" sortBy="#{encontro.local}"
+							  styleClass="text-left" responsivePriority="4">
+						<div class="location-info">
+							<i class="pi pi-map-marker"></i>
+							<h:outputText value="#{encontro.local}" 
+										  rendered="#{not empty encontro.local}" />
+							<h:outputText value="#{encontro.local}" rendered="#{not empty encontro.local}" />
+							<h:outputText value="Local não definido" styleClass="empty-value" rendered="#{empty encontro.local}" />
+						</div>
+					</p:column>
+
+					<p:column headerText="Status" styleClass="text-center" width="100">
+						<div class="event-status">
+							<i class="pi #{encontro.ativo ? 'pi-play-circle status-active2' : 'pi-check-circle status-inactive2'}" 
+							   title="#{encontro.ativo ? 'Em Andamento' : 'Finalizado'}"></i>
+						</div>
+					</p:column>
+
+<p:column headerText="Ações" styleClass="text-center" width="140">
+	<div class="table-action-buttons">
+		<p:commandButton icon="pi pi-eye" title="Visualizar"
+			action="#{encontroController.visualizar(encontro)}"
+			styleClass="action-button-secondary-table action-btn" />
+
+		<p:commandButton icon="pi pi-pencil" title="Editar"
+			action="#{encontroController.editar(encontro)}"
+			styleClass="action-button-warn-table action-btn" />
+
+		<p:commandButton icon="pi pi-trash" title="Excluir"
+			action="#{encontroController.prepararExclusao(encontro)}"
+			styleClass="action-button-danger-table action-btn"
+			update=":confirmDialog"
+			oncomplete="PF('confirmDialog').show()" />
+	</div>
+					</p:column>
+				</p:dataTable>
+
+				<!-- Diálogo de confirmação -->
+				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
+					header="Confirmar Exclusão" styleClass="modern-dialog"
+					message="Tem certeza que deseja excluir este encontro?"
+					closeOnEscape="true" width="450" height="200">
+					<p:commandButton value="Sim, excluir" 
+						action="#{encontroController.excluir}"
+						oncomplete="PF('confirmDialog').hide()" 
+						update="encontrosTable messages"
+						styleClass="ui-button-danger"
+						icon="pi pi-trash" />
+					<p:commandButton value="Cancelar" 
+						onclick="PF('confirmDialog').hide()"
+						type="button" styleClass="ui-button-secondary"
+						icon="pi pi-times" />
+				</p:confirmDialog>
+			</h:form>
+		</div>
+
+		<style>
+			/* Estilos específicos para encontros */
+			.event-info {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+			}
+
+			.event-icon {
+				width: 32px;
+				height: 32px;
+				background: linear-gradient(135deg, #f59e0b, #d97706);
+				border-radius: 8px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: white;
+				flex-shrink: 0;
+			}
+
+			.event-name {
+				font-weight: 600;
+				color: #333;
+			}
+
+			.event-status {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.event-status i {
+				font-size: 2rem;
+			}
+
+			.location-info {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				color: #6b7280;
+			}
+
+			.location-info i {
+				color: #ef4444;
+			}
+		</style>
+	</ui:define>
+</ui:composition>
+
+</html>

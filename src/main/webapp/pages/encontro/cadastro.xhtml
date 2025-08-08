@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="title">
+		#{empty param.id ? 'Cadastrar' : 'Editar'} Encontro - Sistema Segue-me
+	</ui:define>
+
+	<ui:define name="content">
+		<div class="content-container">
+			<!-- Cabeçalho da página -->
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-calendar-plus page-icon"></i> <span
+								class="title-text">#{empty param.id ? 'Cadastrar' :
+								'Editar'} Encontro</span>
+						</h1>
+						<p class="page-subtitle">#{empty param.id ? 'Crie um novo
+							encontro do Sistema Segue-me' : 'Atualize os dados do encontro'}
+						</p>
+					</div>
+					<div class="page-actions">
+						<p:button value="Voltar à Lista"
+							outcome="/pages/encontro/lista.xhtml" icon="pi pi-arrow-left"
+							styleClass="action-button-primary" />
+					</div>
+				</div>
+			</div>
+
+			<h:form id="encontroForm" styleClass="modern-form">
+				<p:messages id="messages" showDetail="true" closable="true"
+					styleClass="modern-messages">
+					<p:autoUpdate />
+				</p:messages>
+
+				<f:metadata>
+					<f:viewParam name="id" />
+					<f:viewAction action="#{encontroController.carregarEncontro}"
+						if="#{not empty param.id}" />
+				</f:metadata>
+
+				<!-- Seção: Informações Básicas -->
+				<div class="form-section">
+					<p:fieldset legend="📅 Informações Básicas"
+						styleClass="modern-fieldset" toggleable="true">
+						<div class="field-grid">
+							<div class="field-group">
+								<p:outputLabel for="nome" value="Nome do Encontro"
+									styleClass="required-field" />
+								<p:inputText id="nome"
+									value="#{encontroController.encontro.nome}" required="true"
+									requiredMessage="O nome é obrigatório"
+									placeholder="Digite o nome do encontro" maxlength="100"
+									disabled="#{not encontroController.encontro.ativo}" />
+								<small class="field-hint">Nome que identificará o
+									encontro no sistema</small>
+							</div>
+
+							<div class="field-group">
+								<p:outputLabel for="tema" value="Tema do Encontro" />
+								<p:inputText id="tema"
+									value="#{encontroController.encontro.tema}"
+									placeholder="Tema central do encontro" maxlength="150"
+									disabled="#{not encontroController.encontro.ativo}" />
+								<small class="field-hint">Tema ou slogan do encontro</small>
+							</div>
+
+							<div class="field-group full-width">
+								<p:outputLabel for="descricao" value="Descrição" />
+								<p:inputTextarea id="descricao"
+									value="#{encontroController.encontro.descricao}" rows="3"
+									placeholder="Descreva os objetivos e características do encontro"
+									maxlength="500"
+									disabled="#{not encontroController.encontro.ativo}" />
+								<small class="field-hint">Descrição detalhada do
+									encontro (máximo 500 caracteres)</small>
+							</div>
+
+							<div class="field-group checkbox-group">
+								<p:outputLabel value="Status do Encontro" />
+								<div class="status-display">
+									<i
+										class="pi #{encontroController.encontro.ativo ? 'pi-play-circle status-active' : 'pi-check-circle status-completed'}"></i>
+									<span class="status-text">#{encontroController.encontro.ativo
+										? 'Em Andamento' : 'Finalizado'}</span>
+								</div>
+								<small class="field-hint">Status atual do encontro no
+									sistema</small>
+							</div>
+						</div>
+					</p:fieldset>
+				</div>
+
+				<!-- Seção: Cronograma -->
+				<div class="form-section">
+					<p:fieldset legend="🗓️ Cronograma" styleClass="modern-fieldset"
+						toggleable="true">
+						<div class="field-grid">
+							<div class="field-group">
+								<p:outputLabel for="dataInicio" value="Data de Início"
+									styleClass="required-field" />
+								<p:datePicker id="dataInicio" showOnFocus="false"
+									value="#{encontroController.encontro.dataInicio}"
+									pattern="dd/MM/yyyy" showIcon="true" required="true"
+									requiredMessage="A data de início é obrigatória"
+									yearRange="c-1:c+5"
+									onchange="PF('dataFimWidget').setViewDate(this.value)"
+									disabled="#{not encontroController.encontro.ativo}" />
+								<small class="field-hint">Data de início do encontro</small>
+							</div>
+
+							<div class="field-group">
+								<p:outputLabel for="dataFim" value="Data de Fim"
+									styleClass="required-field" />
+								<p:datePicker id="dataFim" showOnFocus="false"
+									value="#{encontroController.encontro.dataFim}"
+									pattern="dd/MM/yyyy" showIcon="true" required="true"
+									requiredMessage="A data de fim é obrigatória"
+									widgetVar="dataFimWidget" yearRange="c-1:c+5"
+									disabled="#{not encontroController.encontro.ativo}" />
+								<small class="field-hint">Data de encerramento do
+									encontro</small>
+							</div>
+
+							<div class="field-group">
+								<p:outputLabel for="local" value="Local do Encontro"
+									styleClass="required-field" />
+								<p:inputText id="local"
+									value="#{encontroController.encontro.local}" required="true"
+									requiredMessage="O local é obrigatório"
+									placeholder="Endereço ou nome do local" maxlength="200"
+									disabled="#{not encontroController.encontro.ativo}" />
+								<small class="field-hint">Local onde será realizado o
+									encontro</small>
+							</div>
+						</div>
+					</p:fieldset>
+				</div>
+
+				<!-- Seção: Capacidade e Valores -->
+				<div class="form-section">
+					<p:fieldset legend="💰 Capacidade e Valores"
+						styleClass="modern-fieldset" toggleable="true">
+						<div class="field-grid">
+							<div class="field-group">
+								<p:outputLabel for="capacidadeMaxima" value="Capacidade Máxima" />
+								<p:inputNumber id="capacidadeMaxima"
+									value="#{encontroController.encontro.capacidadeMaxima}"
+									decimalPlaces="0" minValue="1" maxValue="9999"
+									placeholder="Ex: 100"
+									disabled="#{not encontroController.encontro.ativo}" />
+								<small class="field-hint">Número máximo de participantes</small>
+							</div>
+
+							<div class="field-group">
+								<p:outputLabel for="valorInscricao" value="Valor da Inscrição" />
+								<p:inputNumber id="valorInscricao"
+									value="#{encontroController.encontro.valorInscricao}"
+									symbol="R$ " symbolPosition="p" decimalSeparator=","
+									thousandSeparator="." minValue="0" placeholder="R$ 0,00"
+									disabled="#{not encontroController.encontro.ativo}" />
+								<small class="field-hint">Valor cobrado dos encontristas
+									para participar</small>
+							</div>
+
+							<div class="field-group">
+								<p:outputLabel for="valorContribuicao"
+									value="Valor da Contribuição dos Trabalhadores" />
+								<p:inputNumber id="valorContribuicao"
+									value="#{encontroController.encontro.valorContribuicaoTrabalhador}"
+									symbol="R$ " symbolPosition="p" decimalSeparator=","
+									thousandSeparator="." minValue="0" placeholder="R$ 0,00"
+									disabled="#{not encontroController.encontro.ativo}" />
+								<small class="field-hint">Valor da contribuição dos
+									trabalhadores para o encontro</small>
+							</div>
+						</div>
+					</p:fieldset>
+				</div>
+
+				<!-- Botões de Ação -->
+				<div class="form-actions">
+					<div class="action-buttons">
+						<p:commandButton value="💾 Salvar Encontro"
+							oncomplete="handleSaveComplete(args);"
+							action="#{encontroController.salvar}" update="@form"
+							styleClass="ui-button-success action-button-primary"
+							validateClient="true"
+							disabled="#{not encontroController.encontro.ativo}" />
+
+						<p:commandButton value="🏁 Finalizar Encontro"
+							styleClass="ui-button-warning action-button-secondary"
+							rendered="#{not empty param.id and encontroController.encontro.ativo}"
+							oncomplete="PF('confirmDialog').show()" />
+
+						<p:button value="❌ Cancelar" outcome="/pages/encontro/lista.xhtml"
+							icon="pi pi-times"
+							styleClass="ui-button-secondary action-button-cancel" />
+					</div>
+
+					<div class="form-help">
+						<small> <i class="pi pi-info-circle"></i> Campos marcados
+							com * são obrigatórios. #{encontroController.encontro.ativo ?
+							'Encontro em andamento - todos os campos são editáveis.' :
+							'Encontro finalizado - dados não podem ser alterados.'}
+						</small>
+					</div>
+				</div>
+
+				<!-- Diálogo de confirmação de finalização -->
+				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
+					header="⚠️ Confirmar Finalização do Encontro"
+					styleClass="modern-dialog"
+					message="Tem certeza que deseja finalizar este encontro? Esta ação não pode ser desfeita e impedirá futuras edições."
+					closeOnEscape="true" showEffect="fade" hideEffect="fade"
+					width="500">
+					<div class="confirm-dialog-content">
+						<p>
+							<strong>Consequências da finalização:</strong>
+						</p>
+						<ul>
+							<li>O encontro não poderá mais ser editado</li>
+							<li>Novos encontristas não poderão ser inscritos</li>
+							<li>O status mudará para "Finalizado"</li>
+						</ul>
+					</div>
+					<p:commandButton value="✅ Sim, Finalizar"
+						action="#{encontroController.desativar}"
+						oncomplete="PF('confirmDialog').hide()" update="@form"
+						styleClass="ui-button-danger" />
+					<p:commandButton value="❌ Cancelar"
+						onclick="PF('confirmDialog').hide()" type="button"
+						styleClass="ui-button-secondary" />
+				</p:confirmDialog>
+			</h:form>
+		</div>
+
+		<style>
+/* Estilos específicos para o cadastro de encontro */
+.status-display {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem;
+	border-radius: 8px;
+	background-color: #f8f9fa;
+}
+
+.status-active {
+	color: #28a745 !important;
+	animation: pulse 2s infinite;
+}
+
+.status-completed {
+	color: #6c757d !important;
+}
+
+.status-text {
+	font-weight: 600;
+	color: #495057;
+}
+
+.confirm-dialog-content {
+	margin: 1rem 0;
+}
+
+.confirm-dialog-content ul {
+	margin: 0.5rem 0;
+	padding-left: 1.5rem;
+}
+
+.confirm-dialog-content li {
+	margin: 0.25rem 0;
+	color: #666;
+}
+
+@
+keyframes pulse { 0%, 100% {
+	opacity: 1;
+}
+
+50
+%
+{
+opacity
+:
+0.7;
+}
+}
+
+/* Melhorias nos campos de valor */
+.ui-inputnumber input {
+	text-align: right;
+}
+
+/* Campos desabilitados mais claros */
+.ui-state-disabled {
+	opacity: 0.6;
+	background-color: #f8f9fa !important;
+}
+
+/* Responsividade específica */
+@media ( max-width : 768px) {
+	.field-grid {
+		grid-template-columns: 1fr;
+	}
+	.action-buttons {
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+	.action-buttons .ui-button {
+		width: 100%;
+	}
+}
+
+/* Ajuste específico para botões de datePicker - alinha com altura dos campos */
+button.ui-datepicker-trigger {
+	min-height: 35px !important;
+	height: 35px !important;
+	max-height: 35px !important;
+	width: 35px !important;
+	min-width: 35px !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	box-sizing: border-box !important;
+	vertical-align: top !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	font-size: 1rem !important;
+	line-height: 1 !important;
+}
+
+/* Ajusta o campo de input do datePicker para manter consistência */
+input.ui-inputfield.ui-datepicker-input {
+	min-height: 29px !important;
+	height: 29px !important;
+	max-height: 29px !important;
+	vertical-align: top !important;
+}
+
+/* Container inline do datePicker - APENAS para o input e botão */
+.ui-datepicker-group {
+	display: inline-flex !important;
+	align-items: stretch !important;
+}
+</style>
+	</ui:define>
+</ui:composition>
+
+</html>

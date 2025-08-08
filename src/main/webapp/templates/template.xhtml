@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	lang="pt-BR" xml:lang="pt-BR">
+
+<h:head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="theme-color" content="#3f51b5" />
+	<meta name="description" content="Sistema de gerenciamento de encontros de jovens" />
+	<title>
+		<ui:insert name="title">Sistema Segue-me</ui:insert>
+	</title>
+	<h:outputStylesheet name="css/style.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+	<link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css" />
+	<h:outputScript library="js" name="locale.primefaces.js" />
+	<h:outputScript library="js" name="main.js" />
+	
+	<link href="favicon.ico" rel="shortcut icon" />
+<style>
+    .compact-content {
+        font-size: 0.92rem;
+    }
+    .compact-content .modern-form,
+    .compact-content .form-section,
+    .compact-content .field-group,
+    .compact-content .ui-inputfield,
+    .compact-content .ui-selectonemenu,
+    .compact-content .ui-button,
+    .compact-content .ui-messages,
+    .compact-content .ui-datatable,
+    .compact-content .ui-fileupload {
+        font-size: 0.92rem !important;
+        padding: 0.4rem 0.7rem !important;
+    }
+    .compact-content .page-title {
+        font-size: 1.3rem !important;
+    }
+    .compact-content .page-subtitle {
+        font-size: 1rem !important;
+    }
+    .compact-content .ui-selectonemenu .ui-selectonemenu-label {
+        padding: 0.4rem 0.7rem !important;
+    }
+    .compact-content .ui-button {
+        min-height: 32px !important;
+        font-size: 0.95rem !important;
+    }
+    .compact-content .ui-inputfield {
+        min-height: 28px !important;
+    }
+    .compact-content .ui-datatable-tablewrapper {
+        font-size: 0.92rem !important;
+    }
+    .compact-content .ui-messages {
+        font-size: 0.92rem !important;
+    }
+</style>
+	
+</h:head>
+
+<h:body>
+	<!-- Loading indicator para melhorar feedback ao usuário -->
+	<div id="loader" class="global-loader" style="display: none;">
+		<div class="loader-content">
+			<i class="pi pi-spin pi-spinner" aria-label="Carregando"></i>
+			<span>Carregando...</span>
+		</div>
+	</div>
+
+	<div id="header">
+		<h:form>
+			<ui:insert name="header">
+				<ui:include src="/templates/header.xhtml" />
+			</ui:insert>
+		</h:form>
+	</div>
+
+	<div id="layout">
+		<nav id="menu" role="navigation">
+			<h:form>
+				<ui:insert name="menu">
+					<ui:include src="/templates/menu.xhtml" />
+				</ui:insert>
+			</h:form>
+		</nav>
+
+		<main id="content" role="main" class="compact-content">
+			<ui:insert name="content">
+				<ui:include src="/templates/content.xhtml" />
+			</ui:insert>
+		</main>
+	</div>
+
+	<footer id="footer" role="contentinfo">
+		<ui:insert name="footer">
+			<ui:include src="/templates/footer.xhtml" />
+		</ui:insert>
+	</footer>
+
+	<h:outputScript>
+		// Função para scroll suave ao topo quando há mensagens de erro
+		function handleSaveComplete(args) {
+			if ((args &amp;&amp; args.validationFailed) || 
+				(PrimeFaces.widgets['messagesWidget'] &amp;&amp; 
+				 PrimeFaces.widgets['messagesWidget'].jq.find('.ui-message-error').length > 0)) {
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+			}
+		}
+
+		// Controle do loader
+		window.addEventListener('beforeunload', function () {
+			const loader = document.getElementById('loader');
+			if (loader) {
+				loader.style.display = 'flex';
+			}
+		});
+	</h:outputScript>
+</h:body>
+
+</html>

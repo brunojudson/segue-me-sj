@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Pastas - Sistema Segue-me</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="content">
+		<div class="content-container">
+			<!-- Cabeçalho moderno da página -->
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-folder page-icon"></i>
+							<span class="title-text">Pastas</span>
+						</h1>
+						<p class="page-subtitle">
+							Gerencie as pastas do sistema
+						</p>
+					</div>
+					<div class="header-actions">
+						<p:button value="Nova Pasta" 
+								  outcome="/pages/pasta/cadastro.xhtml"
+								  icon="pi pi-plus"
+								  styleClass="action-button-primary"
+								  title="Cadastrar nova pasta" />
+					</div>
+				</div>
+			</div>
+
+			<h:form id="listForm" prependId="false">
+				<p:messages id="messages" showDetail="true" closable="true" />
+
+				<!-- Tabela moderna de pastas -->
+				<p:dataTable id="pastasTable" var="pasta" 
+					value="#{pastaController.pastas}"
+					emptyMessage="Nenhuma pasta encontrada"
+					styleClass="modern-datatable datatable-animation"
+					paginator="true" rows="20" paginatorPosition="bottom" stripeRows="true"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+					rowsPerPageTemplate="20,50,100"
+					filterable="true"
+					filterDelay="300"
+					widgetVar="pastasTableWidget">
+
+					<p:column headerText="ID" sortBy="#{pasta.id}" 
+							  styleClass="text-center" width="80" responsivePriority="6">
+						<div class="id-badge">
+							#{pasta.id}
+						</div>
+					</p:column>
+
+					<p:column headerText="Nome" sortBy="#{pasta.nome}"
+							  filterBy="#{pasta.nome}" filterMatchMode="contains"
+							  styleClass="text-left">
+						<div class="folder-info">
+							<div class="folder-icon">
+								<i class="pi pi-folder"></i>
+							</div>
+							<h:outputText value="#{pasta.nome}" styleClass="folder-name" />
+						</div>
+					</p:column>
+
+					<p:column headerText="Equipe" sortBy="#{pasta.equipe.nome}"
+							  filterBy="#{pasta.equipe.nome}" filterMatchMode="contains"
+							  styleClass="text-left" responsivePriority="4">
+						<span class="team-badge">
+							<i class="pi pi-users"></i>
+							#{pasta.equipe.nome}
+						</span>
+					</p:column>
+
+					<p:column headerText="Data Início" sortBy="#{pasta.dataInicio}"
+							  styleClass="text-center" width="120" responsivePriority="5">
+						<div class="date-display">
+							<i class="pi pi-calendar"></i>
+							<h:outputText value="#{pasta.dataInicio}">
+								<f:converter converterId="localDateConverter" />
+							</h:outputText>
+						</div>
+					</p:column>
+
+					<p:column headerText="Data Fim" sortBy="#{pasta.dataFim}"
+							  styleClass="text-center" width="120" responsivePriority="5">
+						<div class="date-display">
+							<i class="pi pi-calendar"></i>
+							<h:outputText value="#{pasta.dataFim}">
+								<f:converter converterId="localDateConverter" />
+							</h:outputText>
+						</div>
+					</p:column>
+
+					<p:column headerText="Status" styleClass="text-center" width="100">
+						<div class="folder-status">
+							<i class="pi #{pasta.ativo ? 'pi-folder-open status-active2' : 'pi-folder status-inactive2'}" 
+							   title="#{pasta.ativo ? 'Pasta Ativa' : 'Pasta Inativa'}"></i>
+						</div>
+					</p:column>
+
+					<p:column headerText="Ações" styleClass="text-center" width="140">
+						<div class="table-action-buttons">
+							<p:commandButton icon="pi pi-eye" title="Visualizar"
+								action="#{pastaController.visualizar(pasta)}"
+								styleClass="action-button-secondary-table action-btn" />
+
+							<p:commandButton icon="pi pi-pencil" title="Editar"
+								action="#{pastaController.editar(pasta)}"
+								styleClass="action-button-warn-table action-btn" />
+
+							<p:commandButton icon="pi pi-trash" title="Excluir"
+								action="#{pastaController.prepararExclusao(pasta)}"
+								styleClass="action-button-danger-table action-btn"
+								update=":confirmDialog"
+								oncomplete="PF('confirmDialog').show()" />
+						</div>
+					</p:column>
+				</p:dataTable>
+
+				<!-- Diálogo de confirmação -->
+				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
+					header="Confirmar Exclusão" styleClass="modern-dialog"
+					message="Tem certeza que deseja excluir esta pasta?"
+					closeOnEscape="true" width="450" height="200">
+					<p:commandButton value="Sim, excluir" 
+						action="#{pastaController.excluir}"
+						oncomplete="PF('confirmDialog').hide()" 
+						update="pastasTable messages"
+						styleClass="ui-button-danger"
+						icon="pi pi-trash" />
+					<p:commandButton value="Cancelar" 
+						onclick="PF('confirmDialog').hide()"
+						type="button" styleClass="ui-button-secondary"
+						icon="pi pi-times" />
+				</p:confirmDialog>
+			</h:form>
+		</div>
+
+		<style>
+			/* Estilos específicos para pastas */
+			.folder-info {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+			}
+
+			.folder-icon {
+				width: 32px;
+				height: 32px;
+				background: linear-gradient(135deg, #f59e0b, #d97706);
+				border-radius: 8px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: white;
+				flex-shrink: 0;
+			}
+
+			.folder-name {
+				font-weight: 600;
+				color: #333;
+			}
+
+			.folder-status {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.folder-status i {
+				font-size: 2rem;
+			}
+
+			.date-display {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 0.5rem;
+				font-size: 0.875rem;
+				color: #6b7280;
+			}
+
+			.date-display i {
+				color: #9ca3af;
+			}
+		</style>
+		<h:outputScript library="js" name="scrollUpParaLista.js" target="head" />
+	</ui:define>
+</ui:composition>
+
+</html>

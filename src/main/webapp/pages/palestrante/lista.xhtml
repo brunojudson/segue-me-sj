@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Palestrantes - Sistema Segue-me</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="content">
+		<div class="content-container">
+			<!-- Cabeçalho moderno da página -->
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-microphone page-icon"></i>
+							<span class="title-text">Palestrantes</span>
+						</h1>
+						<p class="page-subtitle">
+							Gerencie os palestrantes do sistema
+						</p>
+					</div>
+					<div class="header-actions">
+						<h:form id="formBotaoPalestrante">
+							<p:commandButton value="Novo Palestrante" 
+											 icon="pi pi-plus"
+											 styleClass="action-button-primary"
+											 title="Cadastrar novo palestrante"
+											 actionListener="#{palestranteController.prepararNovoCadastro}"
+											 update=":formCadastroPalestrante"
+											 oncomplete="PF('dialogCadastroPalestrante').show()" />
+						</h:form>
+					</div>
+				</div>
+			</div>
+
+			<h:form id="formListaPalestrantes">
+				<p:messages id="messages" showDetail="true" closable="true" />
+				<!-- Tabela moderna de palestrantes -->
+				<p:dataTable id="tabelaPalestrantes" var="palestrante"
+					value="#{palestranteController.palestrantes}" 
+					emptyMessage="Nenhum palestrante encontrado"
+					styleClass="modern-datatable datatable-animation"
+					paginator="true" rows="20" paginatorPosition="bottom" stripeRows="true"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+					rowsPerPageTemplate="20,50,100"
+					filterable="true"
+					filterDelay="300"
+					widgetVar="palestrantesTableWidget">
+					
+					<p:column headerText="ID" sortBy="#{palestrante.id}" 
+							  styleClass="text-center" width="80" responsivePriority="6">
+						<div class="id-badge">
+							#{palestrante.id}
+						</div>
+					</p:column>
+
+					<p:column headerText="Tipo" sortBy="#{palestrante.tipoPalestrante.nomeExibicao}"
+							  filterBy="#{palestrante.tipoPalestrante.nomeExibicao}" filterMatchMode="contains"
+							  styleClass="text-left" width="150">
+						<span class="type-badge">
+							<i class="pi pi-microphone"></i>
+							#{palestrante.tipoPalestrante.nomeExibicao}
+						</span>
+					</p:column>
+
+					<p:column headerText="Nome(s)" sortBy="#{palestrante.nomeDisplay}"
+							  filterBy="#{palestrante.nomeDisplay}" filterMatchMode="contains"
+							  styleClass="text-left">
+						<div class="speaker-info">
+							<div class="speaker-avatar">
+								<i class="pi pi-user"></i>
+							</div>
+							<h:outputText value="#{palestrante.nomeDisplay}" styleClass="speaker-name" />
+						</div>
+					</p:column>
+
+					<p:column headerText="Palestras Associadas" styleClass="text-left" width="300">
+						<div class="palestras-container" id="palestras-#{palestrante.id}">
+							<!-- Contador de palestras -->
+							<div class="palestras-counter" 
+								 rendered="#{not empty palestrante.palestras}">
+								<i class="pi pi-calendar"></i>
+								<span>#{palestrante.palestras.size()} palestra#{palestrante.palestras.size() gt 1 ? 's' : ''}</span>
+							</div>
+							
+							<!-- Lista de palestras -->
+							<div class="palestras-list">
+								<ui:repeat value="#{palestrante.palestras.toArray()}" var="palestraItem" varStatus="status">
+									<span class="palestra-tag #{status.index ge 3 ? 'extra-palestra hidden' : ''}"
+										  data-toggle="tooltip"
+										  title="Palestra: #{palestraItem.titulo}">
+										<i class="pi pi-presentation"></i>
+										<span class="palestra-title">#{palestraItem.titulo}</span>
+										<span class="palestra-status active">●</span>
+									</span>
+								</ui:repeat>
+								
+								<!-- Botão "mostrar mais" -->
+								<button type="button" 
+										class="show-more-btn #{palestrante.palestras.size() le 3 ? 'hidden' : ''}"
+										onclick="toggleExtraPalestras('#{palestrante.id}')"
+										rendered="#{palestrante.palestras.size() gt 3}">
+									<i class="pi pi-plus"></i>
+									<span class="show-more-text">+#{palestrante.palestras.size() - 3} mais</span>
+								</button>
+							</div>
+							
+							<!-- Estado vazio -->
+							<h:panelGroup rendered="#{empty palestrante.palestras}">
+								<div class="empty-palestras">
+									<i class="pi pi-calendar-times"></i>
+									<span>Nenhuma palestra associada</span>
+								</div>
+							</h:panelGroup>
+						</div>
+					</p:column>
+
+					<p:column headerText="Ações" styleClass="text-center" width="120">
+						<div class="table-action-buttons">
+<p:commandButton icon="pi pi-trash" title="Excluir"
+	actionListener="#{palestranteController.excluir(palestrante.id)}"
+	update="tabelaPalestrantes :formListaPalestrantes:messages"
+	styleClass="action-button-danger-table action-btn">
+	<p:confirm header="Confirmação"
+		message="Tem certeza que deseja retirar #{palestrante.nomeDisplay} do cadastro de palestrantes?"
+		icon="pi pi-exclamation-triangle" />
+</p:commandButton>
+						</div>
+					</p:column>
+				</p:dataTable>
+
+				<!-- Diálogo de confirmação -->
+				<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" 
+								 styleClass="modern-dialog" closeOnEscape="true">
+					<p:commandButton value="Sim, excluir" type="button" 
+						styleClass="ui-confirmdialog-yes ui-button-danger" 
+						icon="pi pi-trash" />
+					<p:commandButton value="Cancelar" type="button"
+						styleClass="ui-confirmdialog-no ui-button-secondary" 
+						icon="pi pi-times" />
+				</p:confirmDialog>
+			</h:form>
+		</div>
+
+		<style>
+			/* Estilos específicos para palestrantes */
+			.speaker-info {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+			}
+
+			.speaker-avatar {
+				width: 32px;
+				height: 32px;
+				background: linear-gradient(135deg, #ff6b35, #f7931e);
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: white;
+				flex-shrink: 0;
+			}
+
+			.speaker-name {
+				font-weight: 600;
+				color: #333;
+			}
+
+			.type-badge {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.25rem 0.75rem;
+				border-radius: 12px;
+				font-size: 0.875rem;
+				font-weight: 500;
+				background: linear-gradient(135deg, #6366f1, #8b5cf6);
+				color: white;
+			}
+
+			/* Container de palestras aprimorado */
+			.palestras-container {
+				display: flex;
+				flex-direction: column;
+				gap: 0.5rem;
+			}
+
+			.palestras-counter {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.375rem;
+				padding: 0.25rem 0.5rem;
+				background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+				border-radius: 8px;
+				font-size: 0.75rem;
+				font-weight: 500;
+				color: white;
+				width: fit-content;
+				box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
+			}
+
+			.palestras-counter i {
+				font-size: 0.75rem;
+			}
+
+			.palestras-list {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.375rem;
+				align-items: center;
+			}
+
+			.palestra-tag {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.375rem;
+				padding: 0.375rem 0.625rem;
+				background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+				border: 1px solid #e2e8f0;
+				border-radius: 8px;
+				font-size: 0.8rem;
+				color: #475569;
+				position: relative;
+				cursor: pointer;
+				transition: all 0.2s ease;
+				max-width: 180px;
+				overflow: hidden;
+			}
+
+			.palestra-tag:hover {
+				background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+				border-color: #94a3b8;
+				transform: translateY(-1px);
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			}
+
+			.palestra-tag i {
+				font-size: 0.75rem;
+				color: #64748b;
+				flex-shrink: 0;
+			}
+
+			.palestra-title {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				flex: 1;
+			}
+
+			.palestra-status {
+				font-size: 0.625rem;
+				margin-left: auto;
+				flex-shrink: 0;
+			}
+
+			.palestra-status.active {
+				color: #10b981;
+			}
+
+			.palestra-status.inactive {
+				color: #f59e0b;
+			}
+
+			.extra-palestra.hidden {
+				display: none;
+				opacity: 0;
+				transform: scale(0.8);
+			}
+
+			.extra-palestra.visible {
+				display: inline-flex;
+				opacity: 1;
+				transform: scale(1);
+				animation: fadeInScale 0.3s ease;
+			}
+
+			@keyframes fadeInScale {
+				from {
+					opacity: 0;
+					transform: scale(0.8);
+				}
+				to {
+					opacity: 1;
+					transform: scale(1);
+				}
+			}
+
+			.show-more-btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.25rem;
+				padding: 0.25rem 0.5rem;
+				background: linear-gradient(135deg, #6366f1, #8b5cf6);
+				border: none;
+				border-radius: 6px;
+				color: white;
+				font-size: 0.75rem;
+				font-weight: 500;
+				cursor: pointer;
+				transition: all 0.2s ease;
+			}
+
+			.show-more-btn:hover {
+				background: linear-gradient(135deg, #5b21b6, #7c3aed);
+				transform: translateY(-1px);
+				box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+			}
+
+			.show-more-btn.hidden {
+				display: none;
+			}
+
+			.show-more-btn i {
+				font-size: 0.625rem;
+				transition: transform 0.2s ease;
+			}
+
+			.show-more-btn.expanded i {
+				transform: rotate(45deg);
+			}
+
+			.empty-palestras {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.75rem;
+				background: #f9fafb;
+				border: 1px dashed #d1d5db;
+				border-radius: 8px;
+				color: #9ca3af;
+				font-size: 0.875rem;
+				font-style: italic;
+			}
+
+			.empty-palestras i {
+				font-size: 1rem;
+				color: #d1d5db;
+			}
+
+			/* Responsividade */
+			@media (max-width: 768px) {
+				.palestras-container {
+					gap: 0.375rem;
+				}
+				
+				.palestra-tag {
+					max-width: 140px;
+					font-size: 0.75rem;
+					padding: 0.25rem 0.5rem;
+				}
+				
+				.palestras-counter {
+					font-size: 0.7rem;
+				}
+			}
+		</style>
+
+		<script>
+			function toggleExtraPalestras(palestranteId) {
+				const container = document.getElementById('palestras-' + palestranteId);
+				const extraPalestras = container.querySelectorAll('.extra-palestra');
+				const showMoreBtn = container.querySelector('.show-more-btn');
+				const showMoreText = showMoreBtn.querySelector('.show-more-text');
+				const showMoreIcon = showMoreBtn.querySelector('i');
+				
+				const isExpanded = showMoreBtn.classList.contains('expanded');
+				
+				if (isExpanded) {
+					// Colapsar
+					extraPalestras.forEach((el, index) => {
+						setTimeout(() => {
+							el.classList.remove('visible');
+							el.classList.add('hidden');
+						}, index * 50);
+					});
+					
+					showMoreBtn.classList.remove('expanded');
+					showMoreIcon.classList.remove('pi-minus');
+					showMoreIcon.classList.add('pi-plus');
+					
+					setTimeout(() => {
+						const hiddenCount = extraPalestras.length;
+						showMoreText.textContent = '+' + hiddenCount + ' mais';
+					}, 200);
+					
+				} else {
+					// Expandir
+					extraPalestras.forEach((el, index) => {
+						setTimeout(() => {
+							el.classList.remove('hidden');
+							el.classList.add('visible');
+						}, index * 50);
+					});
+					
+					showMoreBtn.classList.add('expanded');
+					showMoreIcon.classList.remove('pi-plus');
+					showMoreIcon.classList.add('pi-minus');
+					showMoreText.textContent = 'mostrar menos';
+				}
+			}
+			
+			// Inicializar tooltips
+			document.addEventListener('DOMContentLoaded', function() {
+				// Adicionar funcionalidade de tooltip personalizada
+				const palestratTags = document.querySelectorAll('.palestra-tag[data-toggle="tooltip"]');
+				
+				palestratTags.forEach(tag => {
+					let tooltip = null;
+					
+					tag.addEventListener('mouseenter', function(e) {
+						const title = this.getAttribute('title');
+						if (title) {
+							tooltip = document.createElement('div');
+							tooltip.className = 'custom-tooltip';
+							tooltip.textContent = title;
+							document.body.appendChild(tooltip);
+							
+							const rect = this.getBoundingClientRect();
+							tooltip.style.left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + 'px';
+							tooltip.style.top = rect.top - tooltip.offsetHeight - 8 + 'px';
+							
+							// Remover o atributo title para evitar tooltip nativo
+							this.removeAttribute('title');
+							this.setAttribute('data-original-title', title);
+						}
+					});
+					
+					tag.addEventListener('mouseleave', function() {
+						if (tooltip) {
+							tooltip.remove();
+							tooltip = null;
+							
+							// Restaurar o título
+							const originalTitle = this.getAttribute('data-original-title');
+							if (originalTitle) {
+								this.setAttribute('title', originalTitle);
+								this.removeAttribute('data-original-title');
+							}
+						}
+					});
+				});
+			});
+		</script>
+
+		<style>
+			.custom-tooltip {
+				position: absolute;
+				background: rgba(0, 0, 0, 0.9);
+				color: white;
+				padding: 0.5rem 0.75rem;
+				border-radius: 6px;
+				font-size: 0.875rem;
+				font-weight: 500;
+				z-index: 10000;
+				pointer-events: none;
+				opacity: 0;
+				animation: tooltipFadeIn 0.2s ease forwards;
+				max-width: 300px;
+				word-wrap: break-word;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+			}
+			
+			.custom-tooltip::after {
+				content: '';
+				position: absolute;
+				top: 100%;
+				left: 50%;
+				transform: translateX(-50%);
+				border: 5px solid transparent;
+				border-top-color: rgba(0, 0, 0, 0.9);
+			}
+			
+			@keyframes tooltipFadeIn {
+				from {
+					opacity: 0;
+					transform: translateY(-5px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+		</style>
+
+		<ui:include src="cadastro.xhtml" />
+
+	</ui:define>
+
+</ui:composition>
+</html>

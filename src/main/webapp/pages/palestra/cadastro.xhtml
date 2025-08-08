@@ -1,0 +1,164 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog closeOnEscape="true" 
+              header="#{palestraController.palestra.id ne null ? '📝 Editar Palestra' : '📝 Nova Palestra'}"
+              widgetVar="dialogCadastroPalestra" modal="true" showEffect="fade"
+              hideEffect="fade" resizable="false" width="1000" height="600"
+              styleClass="modern-dialog">
+        
+        <h:form id="formCadastroPalestra" styleClass="modern-form">
+            <p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages">
+                <p:autoUpdate />
+            </p:messages>
+
+            <!-- Seção: Informações Básicas -->
+            <div class="form-section">
+                <p:fieldset legend="📋 Informações Básicas" styleClass="modern-fieldset" toggleable="false">
+                    <div class="field-grid">
+                        <div class="field-group">
+                            <p:outputLabel for="titulo" value="Título da Palestra" styleClass="required-field" />
+                            <p:inputText id="titulo"
+                                        value="#{palestraController.palestra.titulo}" 
+                                        required="true"
+                                        requiredMessage="O título da palestra é obrigatório"
+                                        placeholder="Digite o título da palestra"
+                                        maxlength="200" />
+                            <small class="field-hint">Nome que identificará a palestra</small>
+                        </div>
+
+                        <div class="field-group">
+                            <p:outputLabel for="tema" value="Tema" styleClass="required-field" />
+                            <p:selectOneMenu id="tema"
+                                           value="#{palestraController.palestra.tema}" 
+                                           required="true"
+                                           requiredMessage="O tema é obrigatório">
+                                <f:selectItem itemLabel="Selecione o tema da palestra" itemValue="#{null}"
+                                             noSelectionOption="true" />
+                                <f:selectItems value="#{palestraController.temasPalestra}"
+                                              var="temaItem" itemLabel="#{temaItem.nomeExibicao}"
+                                              itemValue="#{temaItem}" />
+                            </p:selectOneMenu>
+                            <small class="field-hint">Categoria ou assunto principal da palestra</small>
+                        </div>
+
+                        <div class="field-group">
+                            <p:outputLabel for="encontro" value="Encontro" styleClass="required-field" />
+                            <p:selectOneMenu id="encontro"
+                                           value="#{palestraController.palestra.encontro.id}" 
+                                           required="true"
+                                           requiredMessage="O encontro é obrigatório">
+                                <f:selectItem itemLabel="Selecione o encontro" itemValue="#{null}"
+                                             noSelectionOption="true" />
+                                <f:selectItems value="#{palestraController.encontrosDisponiveis}"
+                                              var="encontroItem"
+                                              itemLabel="#{encontroItem.nome} (#{encontroItem.dataInicio})"
+                                              itemValue="#{encontroItem.id}" />
+                            </p:selectOneMenu>
+                            <small class="field-hint">Encontro onde a palestra será apresentada</small>
+                        </div>
+
+                        <div class="field-group">
+                            <p:outputLabel for="dataHora" value="Data e Hora" styleClass="required-field" />
+                            <p:calendar id="dataHora"
+                                       value="#{palestraController.palestra.dataHora}"
+                                       pattern="dd/MM/yyyy HH:mm" mask="true" 
+                                       required="true"
+                                       requiredMessage="Data e hora são obrigatórias"
+                                       placeholder="DD/MM/AAAA HH:MM"
+                                       showIcon="true" />
+                            <small class="field-hint">Data e horário de apresentação da palestra</small>
+                        </div>
+                    </div>
+                </p:fieldset>
+            </div>
+
+            <!-- Seção: Palestrantes -->
+            <div class="form-section">
+                <p:fieldset legend="🎤 Palestrantes" styleClass="modern-fieldset" toggleable="false">
+                    <div class="field-grid">
+                        <div class="field-group full-width">
+                            <p:outputLabel for="palestrantes" value="Palestrantes Selecionados" />
+                            <div class="palestrantes-selection">
+                                <div class="palestrantes-field">
+                                    <p:selectCheckboxMenu id="palestrantes"
+                                                         value="#{palestraController.palestrantesSelecionadosIds}"
+                                                         label="Selecione os palestrantes" 
+                                                         multiple="true" 
+                                                         filter="true"
+                                                         filterMatchMode="contains"
+                                                         panelStyle="width:500px"
+                                                         scrollHeight="250">
+                                        <f:selectItems value="#{palestraController.palestrantesDisponiveis}"
+                                                      var="palestranteItem" itemLabel="#{palestranteItem.nomeDisplay}"
+                                                      itemValue="#{palestranteItem.id}" />
+                                    </p:selectCheckboxMenu>
+                                </div>
+                                <div class="palestrantes-refresh">
+                                    <p:commandButton icon="pi pi-refresh" 
+                                                   title="Atualizar lista de palestrantes"
+                                                   actionListener="#{palestraController.carregarPalestrantesDisponiveis}"
+                                                   update="palestrantes" 
+                                                   process="@this"
+                                                   styleClass="ui-button-outlined ui-button-secondary refresh-button" />
+                                </div>
+                            </div>
+                            <small class="field-hint">
+                                <i class="pi pi-info-circle"></i>
+                                Selecione um ou mais palestrantes. Use o botão de atualizar para carregar novos palestrantes.
+                            </small>
+                        </div>
+                    </div>
+                </p:fieldset>
+            </div>
+
+            <!-- Seção: Descrição -->
+            <div class="form-section">
+                <p:fieldset legend="📝 Descrição e Detalhes" styleClass="modern-fieldset" toggleable="true" collapsed="true">
+                    <div class="field-grid">
+                        <div class="field-group full-width">
+                            <p:outputLabel for="descricao" value="Descrição da Palestra" />
+                            <p:inputTextarea id="descricao"
+                                           value="#{palestraController.palestra.descricao}" 
+                                           rows="6" 
+                                           placeholder="Descreva o conteúdo, objetivos e pontos principais da palestra..."
+                                           maxlength="1000" />
+                            <small class="field-hint">Resumo do conteúdo e objetivos da palestra (máximo 1000 caracteres)</small>
+                        </div>
+                    </div>
+                </p:fieldset>
+            </div>
+
+            <!-- Botões de Ação do Diálogo -->
+            <div class="dialog-actions">
+                <div class="action-buttons">
+                    <p:commandButton value="💾 Salvar"
+                                   action="#{palestraController.salvar}" 
+                                   ajax="false"
+                                   styleClass="ui-button-success action-button-primary"
+                                   update=":formListaPalestras:tabelaPalestras :formListaPalestras:messages"
+                                   oncomplete="if (!args.validationFailed) PF('dialogCadastroPalestra').hide();" 
+                                   validateClient="true" />
+                    
+                    <p:commandButton value="❌ Cancelar" 
+                                   immediate="true"
+                                   onclick="PF('dialogCadastroPalestra').hide(); return false;"
+                                   styleClass="ui-button-secondary action-button-cancel" 
+                                   process="@none" />
+                </div>
+                
+                <div class="form-help">
+                    <small>
+                        <i class="pi pi-info-circle"></i>
+                        Campos marcados com * são obrigatórios.
+                    </small>
+                </div>
+            </div>
+        </h:form>
+    </p:dialog>
+
+</ui:composition>
+

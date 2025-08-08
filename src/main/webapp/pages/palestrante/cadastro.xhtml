@@ -1,0 +1,150 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog closeOnEscape="true"
+          header="#{empty palestranteController.palestrante.id ? '🎤 Novo Palestrante' : '🎤 Editar Palestrante'}"
+          width="800" height="600" widgetVar="dialogCadastroPalestrante" modal="true"
+          showEffect="fade" hideEffect="fade" resizable="false"
+          styleClass="modern-dialog">
+   
+    <h:form id="formCadastroPalestrante" styleClass="modern-form">
+        <p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages">
+            <p:autoUpdate />
+        </p:messages>
+
+        <!-- Seção: Tipo de Palestrante -->
+        <div class="form-section">
+            <p:fieldset legend="👤 Tipo de Palestrante" styleClass="modern-fieldset" toggleable="false">
+                <div class="field-grid">
+                    <div class="field-group full-width">
+                        <p:outputLabel for="tipo" value="Tipo de Palestrante" styleClass="required-field" />
+                        <p:selectOneMenu id="tipo"
+                                       value="#{palestranteController.palestrante.tipoPalestrante}"
+                                       required="true" requiredMessage="O tipo de palestrante é obrigatório">
+                            <f:selectItem itemLabel="Selecione o tipo de palestrante" itemValue="#{null}"
+                                         noSelectionOption="true" />
+                            <f:selectItems value="#{palestranteController.tiposPalestrante}"
+                                          var="tipoItem" itemLabel="#{tipoItem.nomeExibicao}"
+                                          itemValue="#{tipoItem}" />
+                            <p:ajax update="painelDinamico" oncomplete="PF('dialogCadastroPalestrante').show();" />
+                        </p:selectOneMenu>
+                        <small class="field-hint">Defina se o palestrante será individual, casal ou grupo</small>
+                    </div>
+                </div>
+            </p:fieldset>
+        </div>
+
+        <!-- Painel dinâmico que contém os painéis específicos -->
+        <p:outputPanel id="painelDinamico">
+            <!-- Seção: Palestrante Individual -->
+            <div class="form-section"
+                 rendered="#{palestranteController.palestrante.tipoPalestrante.name() == 'INDIVIDUAL'}">
+                <p:fieldset legend="🎯 Seleção de Pessoa" styleClass="modern-fieldset" toggleable="false">
+                    <div class="field-grid">
+                        <div class="field-group full-width">
+                            <p:outputLabel for="pessoaIndividual" value="Pessoa" styleClass="required-field" />
+                            <p:selectOneMenu id="pessoaIndividual"
+                                           value="#{palestranteController.pessoaSelecionadaId}"
+                                           required="#{palestranteController.palestrante.tipoPalestrante == 'INDIVIDUAL'}"
+                                           requiredMessage="A pessoa é obrigatória para tipo Individual"
+                                           disabled="#{palestranteController.palestrante.tipoPalestrante.name() != 'INDIVIDUAL'}"
+                                           filter="true" filterMatchMode="contains" filterNormalize="true">
+                                <f:selectItem itemLabel="Selecione uma pessoa" itemValue="#{null}"
+                                             noSelectionOption="true" />
+                                <f:selectItems value="#{palestranteController.pessoasDisponiveis}"
+                                              var="pessoaItem" itemLabel="#{pessoaItem.nome}"
+                                              itemValue="#{pessoaItem.id}" />
+                            </p:selectOneMenu>
+                            <small class="field-hint">Escolha a pessoa que será palestrante individual</small>
+                        </div>
+                    </div>
+                </p:fieldset>
+            </div>
+
+            <!-- Seção: Palestrante Casal -->
+            <div class="form-section"
+                 rendered="#{palestranteController.palestrante.tipoPalestrante.name() == 'CASAL'}">
+                <p:fieldset legend="👫 Seleção de Casal" styleClass="modern-fieldset" toggleable="false">
+                    <div class="field-grid">
+                        <div class="field-group full-width">
+                            <p:outputLabel for="casal" value="Casal" styleClass="required-field" />
+                            <p:selectOneMenu id="casal"
+                                           value="#{palestranteController.casalSelecionadoId}"
+                                           required="#{palestranteController.palestrante.tipoPalestrante == 'CASAL'}"
+                                           requiredMessage="O casal é obrigatório para tipo Casal"
+                                           disabled="#{palestranteController.palestrante.tipoPalestrante.name() != 'CASAL'}"
+                                           filter="true" filterMatchMode="contains" filterNormalize="true">
+                                <f:selectItem itemLabel="Selecione um casal" itemValue="#{null}"
+                                             noSelectionOption="true" />
+                                <f:selectItems value="#{palestranteController.casaisDisponiveis}"
+                                              var="casalItem"
+                                              itemLabel="#{casalItem.pessoa1.nome} e #{casalItem.pessoa2.nome}"
+                                              itemValue="#{casalItem.id}" />
+                            </p:selectOneMenu>
+                            <small class="field-hint">Escolha o casal que será palestrante</small>
+                        </div>
+                    </div>
+                </p:fieldset>
+            </div>
+
+            <!-- Seção: Palestrante Grupo (comentado como no original, mas com estilo moderno) -->
+            <!--
+            <div class="form-section"
+                 rendered="#{palestranteController.palestrante.tipoPalestrante.name() == 'GRUPO'}">
+                <p:fieldset legend="👥 Seleção de Grupo" styleClass="modern-fieldset" toggleable="false">
+                    <div class="field-grid">
+                        <div class="field-grupo full-width">
+                            <p:outputLabel for="grupo" value="Membros do Grupo" styleClass="required-field" />
+                            <p:selectCheckboxMenu id="grupo"
+                                                 value="#{palestranteController.grupoSelecionadoIds}"
+                                                 label="Selecione os membros (mínimo 2)" multiple="true"
+                                                 required="#{palestranteController.palestrante.tipoPalestrante == 'GRUPO'}"
+                                                 requiredMessage="Grupo deve ter pelo menos 2 membros"
+                                                 disabled="#{palestranteController.palestrante.tipoPalestrante.name() != 'GRUPO'}"
+                                                 filter="true" filterMatchMode="contains"
+                                                 panelStyle="width:400px" scrollHeight="200">
+                                <f:selectItems value="#{palestranteController.pessoasDisponiveis}"
+                                              var="pessoaItem" itemLabel="#{pessoaItem.nome}"
+                                              itemValue="#{pessoaItem.id}" />
+                            </p:selectCheckboxMenu>
+                            <small class="field-hint">Selecione no mínimo 2 pessoas para formar o grupo de palestrantes</small>
+                        </div>
+                    </div>
+                </p:fieldset>
+            </div>
+            -->
+        </p:outputPanel>
+
+        <!-- Botões de Ação do Diálogo -->
+        <div class="dialog-actions">
+            <div class="action-buttons">
+                <p:commandButton value="💾 Salvar"
+                               action="#{palestranteController.salvar}"
+                               ajax="false"
+                               styleClass="ui-button-success action-button-primary"
+                               update=":formListaPalestrantes:tabelaPalestrantes :formListaPalestrantes:messages"
+                               oncomplete="if (!args.validationFailed) PF('dialogCadastroPalestrante').hide();"
+                               validateClient="true" />
+               
+                <p:commandButton value="❌ Cancelar"
+                               immediate="true"
+                               onclick="PF('dialogCadastroPalestrante').hide(); return false;"
+                               styleClass="ui-button-secondary action-button-cancel"
+                               process="@none" />
+            </div>
+           
+            <div class="form-help">
+                <small>
+                    <i class="pi pi-info-circle"></i>
+                    Campos marcados com * são obrigatórios.
+                </small>
+            </div>
+        </div>
+    </h:form>
+</p:dialog>
+
+
+</ui:composition>

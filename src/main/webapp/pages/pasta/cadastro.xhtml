@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">
+        #{empty param.id ? 'Cadastrar' : 'Editar'} Pasta - Sistema Segue-me
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="content-container">
+            <!-- Cabeçalho da página -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">
+                            <i class="pi pi-folder page-icon"></i>
+                            <span class="title-text">#{empty param.id ? 'Cadastrar' : 'Editar'} Pasta</span>
+                        </h1>
+                        <p class="page-subtitle">
+                            #{empty param.id ? 'Adicione uma nova pasta ao sistema' : 'Atualize os dados da pasta'}
+                        </p>
+                    </div>
+                    <div class="page-actions">
+                        <p:button value="Voltar à Lista" 
+                                 outcome="/pages/pasta/lista.xhtml"
+                                 icon="pi pi-arrow-left" 
+                                 styleClass="action-button-primary" />
+                    </div>
+                </div>
+            </div>
+
+            <h:form id="pastaForm" styleClass="modern-form">
+                <p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages">
+                    <p:autoUpdate />
+                </p:messages>
+
+                <f:metadata>
+                    <f:viewParam name="id" />
+                    <f:viewAction action="#{pastaController.carregarPasta}" if="#{not empty param.id}" />
+                </f:metadata>
+
+                <!-- Seção: Dados Básicos -->
+                <div class="form-section">
+                    <p:fieldset legend="📁 Dados da Pasta" styleClass="modern-fieldset" toggleable="true">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="nome" value="Nome da Pasta" styleClass="required-field" />
+                                <p:inputText id="nome" value="#{pastaController.pasta.nome}" 
+                                           required="true"
+                                           requiredMessage="O nome é obrigatório" 
+                                           disabled="#{not pastaController.pasta.ativo}"
+                                           placeholder="Digite o nome da pasta"
+                                           maxlength="100" />
+                                <small class="field-hint">Nome que identificará esta pasta de trabalho</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="equipe" value="Equipe Dirigente" styleClass="required-field" />
+                                <p:selectOneMenu id="equipe" value="#{pastaController.pasta.equipe}" 
+                                               converter="omnifaces.SelectItemsConverter" 
+                                               required="true"
+                                               requiredMessage="A equipe dirigente é obrigatória"
+                                               disabled="#{not pastaController.pasta.ativo}"
+                                               filter="true" filterMatchMode="contains" filterNormalize="true">
+                                    <f:selectItem itemLabel="Selecione a equipe dirigente" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{pastaController.equipesDirigentes}" var="equipe"
+                                                   itemLabel="#{equipe.nome}" itemValue="#{equipe}" />
+                                </p:selectOneMenu>
+                                <small class="field-hint">Equipe responsável pela direção desta pasta</small>
+                            </div>
+
+                            <div class="field-group full-width">
+                                <p:outputLabel for="descricao" value="Descrição" />
+                                <p:inputTextarea id="descricao" value="#{pastaController.pasta.descricao}" 
+                                               rows="4"
+                                               disabled="#{not pastaController.pasta.ativo}"
+                                               placeholder="Descreva os objetivos e características desta pasta"
+                                               maxlength="500" />
+                                <small class="field-hint">Descrição detalhada da pasta (máximo 500 caracteres)</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção: Período de Atividade -->
+                <div class="form-section">
+                    <p:fieldset legend="📅 Período de Atividade" styleClass="modern-fieldset" toggleable="true">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="dataInicio" value="Data de Início" styleClass="required-field" />
+                                <p:datePicker id="dataInicio" value="#{pastaController.pasta.dataInicio}" 
+                                            showOnFocus="false"
+                                            pattern="dd/MM/yyyy" 
+                                            showIcon="true" 
+                                            required="true"
+                                            requiredMessage="A data de início é obrigatória"
+                                            onchange="PF('dataFimWidget').setViewDate(this.value)"
+                                            disabled="#{not pastaController.pasta.ativo}" />
+                                <small class="field-hint">Data em que a pasta iniciará suas atividades</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="dataFim" value="Data de Fim" styleClass="required-field" />
+                                <p:datePicker id="dataFim" value="#{pastaController.pasta.dataFim}" 
+                                            showOnFocus="false"
+                                            pattern="dd/MM/yyyy" 
+                                            showIcon="true" 
+                                            required="true"
+                                            requiredMessage="A data de fim é obrigatória"
+                                            widgetVar="dataFimWidget"  
+                                            disabled="#{not pastaController.pasta.ativo}" />
+                                <small class="field-hint">Data prevista para o encerramento da pasta</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção: Status (somente para edição) -->
+                <div class="form-section" rendered="#{not empty param.id}">
+                    <p:fieldset legend="ℹ️ Informações de Status" styleClass="modern-fieldset" toggleable="true">
+                        <div class="field-grid">
+                            <div class="field-group status-display">
+                                <p:outputLabel value="Status Atual" />
+                                <div class="status-info">
+                                    <span class="status-badge #{pastaController.pasta.ativo ? 'ativo' : 'inativo'}">
+                                        <i class="pi #{pastaController.pasta.ativo ? 'pi-play-circle' : 'pi-stop-circle'}"></i>
+                                        #{pastaController.pasta.ativo ? 'Em Andamento' : 'Finalizada'}
+                                    </span>
+                                </div>
+                                <small class="field-hint">Status atual da pasta no sistema</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Ações do formulário -->
+                <div class="form-actions">
+                    <div class="action-buttons">
+                        <p:commandButton value="💾 Salvar" 
+                                       action="#{pastaController.salvar}" 
+                                       update="@form" 
+                                       process="@form"  
+                                       styleClass="action-button-primary" 
+                                       oncomplete="handleSaveComplete(args);" 
+                                       disabled="#{not pastaController.pasta.ativo}" />
+
+                        <p:commandButton value="🏁 Finalizar Pasta" 
+                                       styleClass="ui-button-warning action-button-secondary" 
+                                       rendered="#{not empty param.id and pastaController.pasta.ativo}" 
+                                       type="button"
+                                       onclick="PF('confirmDialog').show(); return false;"
+                                       process="@this" />
+                        <p:button value="❌ Cancelar" 
+                                outcome="/pages/pasta/lista.xhtml" 
+                                styleClass="ui-button-secondary action-button-cancel" />
+                        
+                                       
+                    </div>
+                    
+                    <div class="form-help">
+                        <small>
+                            <i class="pi pi-info-circle"></i>
+                            Campos marcados com * são obrigatórios.
+                            #{not pastaController.pasta.ativo ? 'Esta pasta foi finalizada e não pode ser editada.' : ''}
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Diálogo de confirmação -->
+                <p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
+                               header="⚠️ Confirmar Finalização"
+                               styleClass="modern-dialog"
+                               message="Tem certeza que deseja finalizar esta pasta? Esta ação não pode ser desfeita."
+                               closeOnEscape="true" 
+                               showEffect="fade" 
+                               hideEffect="fade"
+                               width="450" 
+                               height="200">
+                    <div class="dialog-actions">
+                        <p:commandButton value="✅ Sim, Finalizar"
+                                       action="#{pastaController.desativar}"
+                                       oncomplete="PF('confirmDialog').hide()" 
+                                       update="@form"
+                                       styleClass="ui-button-danger"
+                                        />
+                        <p:commandButton value="❌ Cancelar" 
+                                       onclick="PF('confirmDialog').hide()"
+                                       type="button" 
+                                       styleClass="ui-button-secondary"/>
+                    </div>
+                </p:confirmDialog>
+            </h:form>
+        </div>
+          <style>
+/* Ajuste específico para botões de datePicker - alinha com altura dos campos */
+button.ui-datepicker-trigger {
+    min-height: 35px !important;
+    height: 35px !important;
+    max-height: 35px !important;
+    width: 35px !important;
+    min-width: 35px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    vertical-align: top !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1rem !important;
+    line-height: 1 !important;
+}
+
+/* Ajusta o campo de input do datePicker para manter consistência */
+input.ui-inputfield.ui-datepicker-input {
+    min-height: 29px !important;
+    height: 29px !important;
+    max-height: 29px !important;
+    vertical-align: top !important;
+}
+
+/* Container inline do datePicker - APENAS para o input e botão */
+.ui-datepicker-group {
+    display: inline-flex !important;
+    align-items: stretch !important;
+}
+        </style>
+    </ui:define>
+</ui:composition>
+
+</html>

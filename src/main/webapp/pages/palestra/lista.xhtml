@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Palestras - Sistema Segue-me</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="content">
+		<div class="content-container">
+			<!-- Cabeçalho moderno da página -->
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-presentation page-icon"></i>
+							<span class="title-text">Palestras</span>
+						</h1>
+						<p class="page-subtitle">
+							Gerencie as palestras do sistema
+						</p>
+					</div>
+					<div class="header-actions">
+						<h:form id="formBotaoPalestra">
+							<p:commandButton value="Nova Palestra" 
+											 icon="pi pi-plus"
+											 styleClass="action-button-primary"
+											 title="Cadastrar nova palestra"
+											 actionListener="#{palestraController.prepararNovoCadastro()}"
+											 update=":formCadastroPalestra"
+											 oncomplete="PF('dialogCadastroPalestra').show()" />
+						</h:form>
+					</div>
+				</div>
+			</div>
+
+			<h:form id="formListaPalestras">
+				<p:messages id="messages" showDetail="true" closable="true" />
+
+				<!-- Tabela moderna de palestras -->
+				<p:dataTable id="tabelaPalestras" var="palestra" 
+					widgetVar="tabelaPalestras" value="#{palestraController.palestras}"
+					emptyMessage="Nenhuma palestra encontrada"
+					styleClass="modern-datatable datatable-animation"
+					paginator="true" rows="20" paginatorPosition="bottom" stripeRows="true"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+					rowsPerPageTemplate="20,50,100"
+					filterable="true"
+					filterDelay="300">
+
+					<p:column headerText="Título" sortBy="#{palestra.titulo}"
+							  filterBy="#{palestra.titulo}" filterMatchMode="contains"
+							  styleClass="text-left" width="200">
+						<div class="lecture-info">
+							<div class="lecture-icon enhanced-lecture-icon">
+								<i class="pi pi-presentation"></i>
+								<span class="icon-fallback">🎤</span>
+							</div>
+							<h:outputText value="#{palestra.titulo}" styleClass="lecture-title" />
+						</div>
+					</p:column>
+
+					<p:column headerText="Tema" sortBy="#{palestra.tema.nomeExibicao}"
+							  filterBy="#{palestra.tema.nomeExibicao}" filterMatchMode="contains"
+							  styleClass="text-left" width="150">
+						<span class="theme-badge">
+							<i class="pi pi-tag"></i>
+							#{palestra.tema.nomeExibicao}
+						</span>
+					</p:column>
+
+					<p:column headerText="Data/Hora" sortBy="#{palestra.dataHora}"
+							  styleClass="text-center" width="150" responsivePriority="4">
+						<div class="datetime-display">
+							<i class="pi pi-clock"></i>
+							<h:outputText value="#{palestra.dataHora}">
+								<f:converter converterId="localDateTimeConverter" />
+							</h:outputText>
+						</div>
+					</p:column>
+
+					<p:column headerText="Encontro" sortBy="#{palestra.encontro.nome}"
+							  filterBy="#{palestra.encontro.nome}" filterMatchMode="contains"
+							  styleClass="text-left" width="180" responsivePriority="4">
+						<span class="event-badge">
+							<i class="pi pi-calendar"></i>
+							#{palestra.encontro.nome}
+						</span>
+					</p:column>
+					
+					<p:column headerText="Palestrantes" styleClass="text-left" width="250">
+						<div class="speakers-list">
+							<ui:repeat value="#{palestra.palestrantes.toArray()}"
+								var="palestranteItem">
+								<span class="speaker-tag">
+									<i class="pi pi-user"></i>
+									#{palestranteItem.nomeDisplay}
+								</span>
+							</ui:repeat>
+							<h:outputText value="Sem palestrantes" 
+								rendered="#{empty palestra.palestrantes}" 
+								styleClass="empty-value" />
+						</div>
+					</p:column>
+
+					<p:column headerText="Ações" styleClass="text-center" width="120">
+						<div class="table-action-buttons">
+<p:commandButton icon="pi pi-pencil" title="Editar"
+	update=":formCadastroPalestra" 
+	styleClass="action-button-warn-table action-btn"
+	oncomplete="PF('dialogCadastroPalestra').show()" 
+	actionListener="#{palestraController.prepararEdicao(palestra.id)}" />
+							
+<p:commandButton icon="pi pi-trash" title="Excluir"
+	styleClass="action-button-danger-table action-btn"
+	actionListener="#{palestraController.excluir(palestra.id)}"
+	update=":formListaPalestras:tabelaPalestras :formListaPalestras:messages">
+	<p:confirm header="Confirmação"
+		message="Tem certeza que deseja excluir esta palestra?"
+		icon="pi pi-exclamation-triangle" />
+</p:commandButton>
+						</div>
+					</p:column>
+				</p:dataTable>
+
+				<!-- Diálogo de confirmação -->
+				<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+								 styleClass="modern-dialog" closeOnEscape="true">
+					<p:commandButton value="Sim, excluir" type="button"
+						styleClass="ui-confirmdialog-yes ui-button-danger"
+						icon="pi pi-trash" />
+					<p:commandButton value="Cancelar" type="button"
+						styleClass="ui-confirmdialog-no ui-button-secondary"
+						icon="pi pi-times" />
+				</p:confirmDialog>
+			</h:form>
+		</div>
+
+		<style>
+			/* Estilos específicos para palestras */
+			.lecture-info {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+			}
+
+			.lecture-icon {
+				width: 36px;
+				height: 36px;
+				background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 60%, #4f46e5 100%);
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: #fff;
+				flex-shrink: 0;
+				box-shadow: 0 2px 8px 0 rgba(124, 58, 237, 0.18), 0 1.5px 4px 0 rgba(76, 29, 149, 0.10);
+				position: relative;
+				overflow: hidden;
+				transition: box-shadow 0.2s, transform 0.2s;
+			}
+			.lecture-icon:hover {
+				box-shadow: 0 4px 16px 0 rgba(124, 58, 237, 0.28), 0 3px 8px 0 rgba(76, 29, 149, 0.18);
+				transform: scale(1.07);
+			}
+			.lecture-icon i.pi {
+				font-size: 1.5rem;
+				color: #fff;
+				z-index: 2;
+				filter: drop-shadow(0 1px 2px #7c3aed);
+			}
+			.lecture-icon .icon-fallback {
+				display: none;
+				font-size: 1.3rem;
+				color: #fff;
+				z-index: 1;
+			}
+			.lecture-icon i.pi:empty + .icon-fallback {
+				display: inline;
+			}
+
+			.lecture-title {
+				font-weight: 600;
+				color: #333;
+			}
+
+			.theme-badge {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.25rem 0.75rem;
+				border-radius: 12px;
+				font-size: 0.875rem;
+				font-weight: 500;
+				background: linear-gradient(135deg, #06b6d4, #0891b2);
+				color: white;
+			}
+
+			.event-badge {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.25rem 0.75rem;
+				border-radius: 12px;
+				font-size: 0.875rem;
+				font-weight: 500;
+				background: linear-gradient(135deg, #f59e0b, #d97706);
+				color: white;
+			}
+
+			.datetime-display {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 0.5rem;
+				font-size: 0.875rem;
+				color: #374151;
+				font-weight: 500;
+			}
+
+			.datetime-display i {
+				color: #6b7280;
+			}
+
+			.speakers-list {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.25rem;
+			}
+
+			.speaker-tag {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.25rem;
+				padding: 0.125rem 0.5rem;
+				background: #f3f4f6;
+				border: 1px solid #d1d5db;
+				border-radius: 12px;
+				font-size: 0.75rem;
+				color: #374151;
+			}
+
+			.speaker-tag i {
+				font-size: 0.625rem;
+				color: #6b7280;
+			}
+		</style>
+
+		<ui:include src="cadastro.xhtml" />
+
+	</ui:define>
+
+</ui:composition>
+</html>

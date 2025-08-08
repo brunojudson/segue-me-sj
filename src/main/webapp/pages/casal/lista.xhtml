@@ -1,0 +1,635 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions" lang="pt-BR"
+	xml:lang="pt-BR">
+
+<head>
+<title>Lista de Casais - Sistema Segue-me</title>
+<meta name="description"
+	content="Lista e gerenciamento de casais do Sistema Segue-me" />
+</head>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="title">Lista de Casais - Sistema Segue-me</ui:define>
+
+	<ui:define name="content">
+		<div class="content-container">
+			<!-- Cabeçalho moderno da página -->
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-heart page-icon"></i> <span class="title-text">Casais
+								Cadastrados</span>
+						</h1>
+						<p class="page-subtitle">Gerencie todos os casais do sistema</p>
+					</div>
+					<div class="header-actions">
+						<p:button value="Novo Casal" outcome="/pages/casal/cadastro.xhtml"
+							icon="pi pi-plus" styleClass="action-button-primary"
+							title="Cadastrar novo casal" />
+					</div>
+				</div>
+			</div>
+
+			<h:form id="listForm" prependId="false">
+				<!-- Mensagens -->
+				<p:messages id="messages" showDetail="true" closable="true"
+					styleClass="modern-messages">
+				</p:messages>
+
+				<!-- Tabela de Casais -->
+				<div class="modern-datatable datatable-animation">
+					<p:dataTable id="casaisTable" var="casal"
+						value="#{casalController.casais}"
+						styleClass="modern-datatable casal enhanced-table" emptyMessage=""
+						paginator="true" rows="15" paginatorPosition="bottom"
+						loadingIcon="pi pi-spinner pi-spin"
+						paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						currentPageReportTemplate="Exibindo {startRecord} a {endRecord} de {totalRecords} casais"
+						rowsPerPageTemplate="10,15,25,50" sortMode="multiple"
+						resizableColumns="true" reflow="true"
+						filterable="true"
+						filterDelay="300"
+						widgetVar="casaisTableWidget">
+						<!-- Empty State -->
+						<f:facet name="emptyMessage">
+							<div class="casal-empty-state">
+								<div class="empty-icon">
+									<i class="pi pi-heart"></i>
+								</div>
+								<h3>Nenhum casal encontrado</h3>
+								<p>Não há casais cadastrados no sistema ainda.</p>
+								<p:button value="Cadastrar Primeiro Casal"
+									outcome="/pages/casal/cadastro.xhtml" icon="pi pi-plus"
+									styleClass="action-button-primary" />
+							</div>
+						</f:facet>
+
+						<!-- Coluna ID -->
+						<p:column headerText="ID" sortBy="#{casal.id}" width="60"
+							responsivePriority="6" styleClass="text-center">
+							<div class="id-badge">#{casal.id}</div>
+						</p:column>
+
+						<!-- Coluna Esposo -->
+						<p:column headerText="Esposo" sortBy="#{casal.pessoa1.nome}"
+							responsivePriority="1" filterBy="#{casal.pessoa1.nome}"
+							filterMatchMode="contains" filterStyleClass="filter-input">
+							<div class="person-info husband">
+								<div class="person-avatar husband-avatar">
+									<i class="pi pi-user"></i> <span class="avatar-initial">#{fn:substring(casal.pessoa1.nome,
+										0, 1)}</span>
+								</div>
+								<div class="person-details">
+									<span class="person-name">#{casal.pessoa1.nome}</span> <span
+										class="person-role">Esposo</span>
+								</div>
+							</div>
+						</p:column>
+
+						<!-- Coluna Esposa -->
+						<p:column headerText="Esposa" sortBy="#{casal.pessoa2.nome}"
+							responsivePriority="1" filterBy="#{casal.pessoa2.nome}"
+							filterMatchMode="contains" filterStyleClass="filter-input">
+							<div class="person-info wife">
+								<div class="person-avatar wife-avatar">
+									<i class="pi pi-user"></i> <span class="avatar-initial">#{fn:substring(casal.pessoa2.nome,
+										0, 1)}</span>
+								</div>
+								<div class="person-details">
+									<span class="person-name">#{casal.pessoa2.nome}</span> <span
+										class="person-role">Esposa</span>
+								</div>
+							</div>
+						</p:column>
+
+						<!-- Coluna Data de Casamento -->
+						<p:column headerText="Data de Casamento" styleClass="text-center"
+							responsivePriority="3" sortBy="#{casal.dataCasamento}"
+							width="180">
+							<div class="date-info-container">
+								<div class="date-badge modern" title="Data do casamento">
+									<i class="pi pi-calendar"></i>
+									<div class="date-content">
+										<h:outputText value="#{casal.dataCasamento}"
+											styleClass="date-value">
+											<f:converter converterId="localDateConverter" />
+										</h:outputText>
+										<small class="date-label">Casamento</small>
+									</div>
+								</div>
+								<div class="marriage-status active" title="Casal ativo">
+									<i class="pi pi-heart-fill"></i>
+								</div>
+							</div>
+						</p:column>
+
+						<!-- Coluna Ações -->
+						<p:column headerText="Ações" styleClass="text-center" width="140"
+							responsivePriority="1">
+							<div class="table-action-buttons">
+								<!-- Visualizar -->
+								<p:commandButton icon="pi pi-eye"
+									title="Visualizar detalhes do casal"
+									action="#{casalController.visualizar(casal)}"
+									styleClass="action-button-secondary-table action-btn"
+									ariaLabel="Visualizar casal" />
+
+								<!-- Editar -->
+								<p:commandButton icon="pi pi-pencil" title="Editar casal"
+									action="#{casalController.editar(casal)}"
+									styleClass="action-button-warn-table action-btn"
+									ariaLabel="Editar casal" />
+
+								<!-- Excluir -->
+								<p:commandButton icon="pi pi-trash" title="Excluir casal"
+									action="#{casalController.prepararExclusao(casal)}"
+									update=":confirmDialog" oncomplete="PF('confirmDialog').show()"
+									styleClass="action-button-danger-table action-btn"
+									ariaLabel="Excluir casal">
+									<p:confirm header="Confirmar Exclusão"
+										message="Tem certeza que deseja excluir o casal #{casal.pessoa1.nome} e #{casal.pessoa2.nome}?"
+										icon="pi pi-exclamation-triangle" />
+								</p:commandButton>
+							</div>
+						</p:column>
+					</p:dataTable>
+				</div>
+
+				<!-- Dialog de Confirmação -->
+				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
+					header="Confirmar Exclusão"
+					message="Tem certeza que deseja excluir este casal? Esta ação não pode ser desfeita."
+					closeOnEscape="true" responsive="true" modal="true"
+					showEffect="fade" hideEffect="fade">
+					<div
+						style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+						<p:commandButton value="Sim, Excluir"
+							action="#{casalController.excluir}"
+							oncomplete="PF('confirmDialog').hide()"
+							update="casaisTable,messages" styleClass="ui-button-danger"
+							icon="pi pi-trash" />
+						<p:commandButton value="Cancelar"
+							onclick="PF('confirmDialog').hide()" type="button"
+							styleClass="ui-button-secondary" icon="pi pi-times" />
+					</div>
+				</p:confirmDialog>
+			</h:form>
+		</div>
+
+		<!-- Estilos CSS aprimorados para a tabela de casais -->
+		<style>
+/* Enhanced Table Header */
+.enhanced-table-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1.5rem;
+	background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+	border-radius: 12px 12px 0 0;
+	border-bottom: 1px solid #e2e8f0;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+
+.header-left {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.header-title {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.header-title h3 {
+	margin: 0;
+	color: #1e293b;
+	font-size: 1.5rem;
+	font-weight: 700;
+}
+
+.header-title i {
+	font-size: 1.5rem;
+}
+
+.header-stats {
+	display: flex;
+	gap: 1.5rem;
+	flex-wrap: wrap;
+}
+
+.stat-item {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 0.75rem;
+	background: white;
+	border-radius: 8px;
+	font-size: 0.875rem;
+	color: #64748b;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-item i {
+	color: #0ea5e9;
+}
+
+.header-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.quick-search {
+	min-width: 250px;
+	padding: 0.75rem 1rem !important;
+	border-radius: 8px !important;
+	border: 1px solid #d1d5db !important;
+	background: white !important;
+}
+
+.quick-search:focus {
+	border-color: #0ea5e9 !important;
+	box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1) !important;
+}
+
+.refresh-btn {
+	padding: 0.75rem !important;
+	border-radius: 8px !important;
+	background: #0ea5e9 !important;
+	border: none !important;
+	color: white !important;
+}
+
+.refresh-btn:hover {
+	background: #0284c7 !important;
+}
+
+/* Enhanced Table Styling */
+.enhanced-table {
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.enhanced-table .ui-datatable-thead>tr>th {
+	background: #f8fafc;
+	border-bottom: 2px solid #e2e8f0;
+	padding: 1rem;
+	font-weight: 600;
+	color: #374151;
+}
+
+.enhanced-table .ui-datatable-tbody>tr {
+	transition: all 0.2s ease;
+	border-bottom: 1px solid #f1f5f9;
+}
+
+.enhanced-table .ui-datatable-tbody>tr:hover {
+	background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.enhanced-table .ui-datatable-tbody>tr.ui-state-highlight {
+	background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+	border-color: #3b82f6;
+}
+
+/* Person Info Styling */
+.person-info {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.5rem;
+}
+
+.person-avatar {
+	position: relative;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 600;
+	color: white;
+	font-size: 0.875rem;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.husband-avatar {
+	background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.wife-avatar {
+	background: linear-gradient(135deg, #ec4899, #be185d);
+}
+
+.person-avatar i {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	font-size: 0.5rem;
+	background: rgba(255, 255, 255, 0.9);
+	color: #374151;
+	border-radius: 50%;
+	padding: 2px;
+}
+
+.avatar-initial {
+	font-size: 1rem;
+	font-weight: 700;
+}
+
+.person-details {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+}
+
+.person-name {
+	font-weight: 600;
+	color: #1e293b;
+	font-size: 0.95rem;
+}
+
+.person-role {
+	font-size: 0.75rem;
+	color: #64748b;
+	font-weight: 500;
+}
+
+/* Date Info Styling */
+.date-info-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+}
+
+.date-badge.modern {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem 1rem;
+	background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+	border: 1px solid #0ea5e9;
+	border-radius: 10px;
+	transition: all 0.2s ease;
+}
+
+.date-badge.modern:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.date-badge.modern i {
+	color: #0ea5e9;
+	font-size: 1rem;
+}
+
+.date-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.125rem;
+}
+
+.date-value {
+	font-weight: 600;
+	color: #0c4a6e;
+	font-size: 0.875rem;
+}
+
+.date-label {
+	color: #0284c7;
+	font-size: 0.625rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.marriage-status {
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	animation: heartbeat 2s ease-in-out infinite;
+}
+
+.marriage-status.active {
+	background: linear-gradient(135deg, #ef4444, #dc2626);
+	color: white;
+}
+
+@
+keyframes heartbeat { 0%, 100% {
+	transform: scale(1);
+}
+
+50
+%
+{
+transform
+:
+scale(
+1.1
+);
+}
+}
+
+/* Action Buttons Enhanced */
+.table-action-buttons {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+}
+
+.action-btn {
+	width: 36px;
+	height: 36px;
+	border-radius: 8px;
+	border: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	position: relative;
+	overflow: hidden;
+}
+
+.action-btn-view {
+	background: linear-gradient(135deg, #0ea5e9, #0284c7);
+	color: white;
+}
+
+.action-btn-view:hover {
+	background: linear-gradient(135deg, #0284c7, #0369a1);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+}
+
+/* Action Dropdown */
+.action-dropdown {
+	position: relative;
+}
+
+.action-dropdown-trigger {
+	width: 36px;
+	height: 36px;
+	border-radius: 8px;
+	border: 1px solid #d1d5db;
+	background: white;
+	color: #6b7280;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+}
+
+.action-dropdown-trigger:hover {
+	border-color: #9ca3af;
+	background: #f9fafb;
+	color: #374151;
+}
+
+.action-dropdown-menu {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	z-index: 1000;
+	background: white;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+	min-width: 180px;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-10px);
+	transition: all 0.2s ease;
+}
+
+.action-dropdown-menu.active {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+}
+
+.dropdown-item {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.75rem 1rem;
+	color: #374151;
+	text-decoration: none;
+	transition: all 0.2s ease;
+	border: none;
+	background: none;
+	width: 100%;
+	cursor: pointer;
+	font-size: 0.875rem;
+}
+
+.dropdown-item:hover {
+	background: #f3f4f6;
+	color: #1f2937;
+}
+
+.dropdown-item.edit-item:hover {
+	background: #fef3c7;
+	color: #92400e;
+}
+
+.dropdown-item.danger-item:hover {
+	background: #fecaca;
+	color: #991b1b;
+}
+
+.dropdown-divider {
+	height: 1px;
+	background: #e5e7eb;
+	margin: 0.5rem 0;
+}
+
+/* Responsive adjustments */
+@media ( max-width : 768px) {
+	.enhanced-table-header {
+		flex-direction: column;
+		align-items: stretch;
+	}
+	.header-actions {
+		width: 100%;
+		justify-content: space-between;
+	}
+	.quick-search {
+		flex: 1;
+		min-width: auto;
+	}
+	.person-info {
+		flex-direction: column;
+		text-align: center;
+		gap: 0.5rem;
+	}
+	.date-info-container {
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+}
+</style>
+
+		<script>
+			// Action dropdown functionality
+			function toggleActionDropdown(event, dropdownId) {
+				event.stopPropagation();
+				
+				// Close all other dropdowns
+				document.querySelectorAll('.action-dropdown-menu').forEach(menu => {
+					if (menu.id !== dropdownId) {
+						menu.classList.remove('active');
+					}
+				});
+				
+				// Toggle current dropdown
+				const dropdown = document.getElementById(dropdownId);
+				dropdown.classList.toggle('active');
+			}
+
+			// Close dropdowns when clicking outside
+			document.addEventListener('click', function() {
+				document.querySelectorAll('.action-dropdown-menu').forEach(menu => {
+					menu.classList.remove('active');
+				});
+			});
+
+			// Initialize enhanced table features
+			document.addEventListener('DOMContentLoaded', function() {
+				// Add loading state to table during AJAX calls
+				if (typeof PrimeFaces !== 'undefined') {
+					PrimeFaces.widget.DataTable.prototype.showLoadingStatus = function() {
+						this.jq.addClass('ui-datatable-loading');
+					};
+					
+					PrimeFaces.widget.DataTable.prototype.hideLoadingStatus = function() {
+						this.jq.removeClass('ui-datatable-loading');
+					};
+				}
+			});
+		</script>
+	</ui:define>
+</ui:composition>
+
+</html>

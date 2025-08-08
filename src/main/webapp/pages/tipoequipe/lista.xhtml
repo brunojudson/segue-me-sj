@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Tipos de Equipe - Sistema Segue-me</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="content">
+        <div class="content-container">
+            <!-- Cabeçalho moderno da página -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">
+                            <i class="pi pi-tags page-icon"></i>
+                            <span class="title-text">Tipos de Equipe</span>
+                        </h1>
+                        <p class="page-subtitle">
+                            Configure os tipos de equipe do sistema
+                        </p>
+                    </div>
+                    <div class="header-actions">
+                        <p:button value="Novo Tipo de Equipe" 
+                                  outcome="/pages/tipoequipe/cadastro.xhtml" 
+                                  icon="pi pi-plus"
+                                  styleClass="action-button-primary"
+                                  title="Cadastrar novo tipo de equipe" />
+                    </div>
+                </div>
+            </div>
+
+            <h:form id="listForm" prependId="false">
+                <p:messages id="messages" showDetail="true" closable="true" />
+                
+                <!-- Tabela moderna de tipos de equipe -->
+                <p:dataTable id="tiposEquipeTable" var="tipoEquipe" 
+                    value="#{tipoEquipeController.tiposEquipe}"
+                    emptyMessage="Nenhum tipo de equipe encontrado" 
+                    styleClass="modern-datatable datatable-animation"
+                    paginator="true" rows="20" paginatorPosition="bottom" stripeRows="true"
+                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                    currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                    rowsPerPageTemplate="20,50,100"
+                    filterable="true"
+                    filterDelay="300"
+                    widgetVar="tiposEquipeTableWidget">
+                    
+                    <p:column headerText="Nome" sortBy="#{tipoEquipe.nome}" 
+                              filterBy="#{tipoEquipe.nome}" filterMatchMode="contains"
+                              styleClass="text-left" width="25%">
+                        <div class="type-info">
+                            <div class="type-icon">
+                                <i class="pi pi-tag"></i>
+                            </div>
+                            <h:outputText value="#{tipoEquipe.nome}" styleClass="type-name" />
+                        </div>
+                    </p:column>
+                    
+                    <p:column headerText="Descrição" styleClass="text-left" width="40%">
+                        <h:outputText value="#{tipoEquipe.descricao}" 
+                                      rendered="#{not empty tipoEquipe.descricao}" />
+                        <h:outputText value="Sem descrição" 
+                                      rendered="#{empty tipoEquipe.descricao}" 
+                                      styleClass="empty-value" />
+                    </p:column>
+                    
+                    <p:column headerText="Dirigente" styleClass="text-center" 
+                              width="100" responsivePriority="6">
+                        <div class="status-indicator" style="font-size: 2rem">
+                            <i class="pi #{tipoEquipe.ehDirigente ? 'pi-check-circle status-active2' : 'pi-minus-circle status-inactive2'}"></i>
+                        </div>
+                    </p:column>
+                    
+                    <p:column headerText="Status" styleClass="text-center" 
+                              width="100" responsivePriority="6">
+                        <span class="status-badge #{tipoEquipe.ativo ? 'ativo' : 'inativo'}">
+                            <i class="pi #{tipoEquipe.ativo ? 'pi-check-circle' : 'pi-times-circle'}"></i>
+                            #{tipoEquipe.ativo ? 'Ativo' : 'Inativo'}
+                        </span>
+                       
+                    </p:column>
+                    
+                    <p:column headerText="Ações" styleClass="text-center" width="140">
+<div class="table-action-buttons">
+    <p:commandButton icon="pi pi-eye" title="Visualizar" 
+        action="#{tipoEquipeController.visualizar(tipoEquipe)}"
+        styleClass="action-button-secondary-table action-btn" />
+    
+    <p:commandButton icon="pi pi-pencil" title="Editar" 
+        action="#{tipoEquipeController.editar(tipoEquipe)}"
+        styleClass="action-button-warn-table action-btn" />
+    
+    <p:commandButton icon="pi pi-trash" title="Excluir" 
+        action="#{tipoEquipeController.prepararExclusao(tipoEquipe)}"
+        styleClass="action-button-danger-table action-btn"
+        update=":confirmDialog"
+        oncomplete="PF('confirmDialog').show()" />
+</div>
+                    </p:column>
+                </p:dataTable>
+            
+                <!-- Diálogo de confirmação -->
+                <p:confirmDialog id="confirmDialog" widgetVar="confirmDialog" 
+                    header="Confirmar Exclusão" styleClass="modern-dialog"
+                    message="Tem certeza que deseja excluir este tipo de equipe?"
+                    closeOnEscape="true" width="450" height="200">
+                    <p:commandButton value="Sim, excluir" 
+                        action="#{tipoEquipeController.excluir}" 
+                        oncomplete="PF('confirmDialog').hide()" 
+                        update="tiposEquipeTable messages" 
+                        styleClass="ui-button-danger"
+                        icon="pi pi-trash" />
+                    <p:commandButton value="Cancelar" 
+                        onclick="PF('confirmDialog').hide()" 
+                        type="button" 
+                        styleClass="ui-button-secondary"
+                        icon="pi pi-times" />
+                </p:confirmDialog>
+            </h:form>
+        </div>
+
+        <style>
+        
+        /* Badges de status modernos */
+            .status-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
+                padding: 0.375rem 0.75rem;
+                border-radius: 20px;
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .status-badge.ativo {
+                background-color: #e8f5e8;
+                color: #2e7d32;
+                border: 1px solid #c8e6c9;
+            }
+
+            .status-badge.inativo {
+                background-color: #ffebee;
+                color: #c62828;
+                border: 1px solid #ffcdd2;
+            }
+            /* Estilos específicos para tipos de equipe */
+            .type-info {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .type-icon {
+                width: 32px;
+                height: 32px;
+                background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                flex-shrink: 0;
+            }
+
+            .type-name {
+                font-weight: 600;
+                color: #333;
+            }
+
+            .status-indicator {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        </style>
+    </ui:define>
+</ui:composition>
+
+</html>

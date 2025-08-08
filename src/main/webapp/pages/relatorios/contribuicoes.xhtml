@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+<head>
+    <title>Relatório de Contribuições - Sistema Segue-me São José</title>
+</head>
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">
+        Relatório de Contribuições por Encontro - Sistema Segue-me
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="content-container">
+            <!-- Cabeçalho aprimorado -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">
+                            <i class="pi pi-chart-bar page-icon"></i>
+                            <span class="title-text">Relatório de Contribuições</span>
+                        </h1>
+                        <p class="page-subtitle">
+                            Análise financeira detalhada das contribuições por encontro
+                        </p>
+                    </div>
+                    <div class="page-actions">
+                        <h:link outcome="/pages/relatorios/relatorios" 
+                            styleClass="ui-button ui-button-outlined action-button-secondary"
+                            style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                            <i class="pi pi-arrow-left"></i>
+                            <span>📊 Voltar aos Relatórios</span>
+                        </h:link>
+                    </div>
+                </div>
+            </div>
+
+            <h:form id="relatorioForm" styleClass="modern-form">
+                <p:messages id="messages" showDetail="true" closable="true" />
+                <!-- Instruções do relatório -->
+                <div class="form-section">
+                    <p:fieldset legend="ℹ️ Sobre este relatório" styleClass="modern-fieldset info-fieldset" toggleable="true" collapsed="true">
+                        <div class="info-content">
+                            <p><strong>Descrição:</strong></p>
+                            <p>Este relatório apresenta um resumo financeiro das contribuições organizadas por forma de pagamento, 
+                               incluindo estatísticas como valores totais, médios, mínimos e máximos.</p>
+                            <ul>
+                                <li><strong>Quantidade:</strong> Número total de contribuições por forma de pagamento</li>
+                                <li><strong>Valor Total:</strong> Soma de todas as contribuições</li>
+                                <li><strong>Menor/Maior Valor:</strong> Valores extremos registrados</li>
+                                <li><strong>Valor Médio:</strong> Média aritmética dos valores</li>
+                            </ul>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Filtros modernizados -->
+                <div class="form-section">
+                    <p:fieldset legend="🔍 Filtros do Relatório" styleClass="modern-fieldset">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="encontro1" value="Encontro" styleClass="required-field" />
+                                <p:selectOneMenu id="encontro1" 
+                                    value="#{relatorioController.encontroSelecionado}" 
+                                    converter="omnifaces.SelectItemsConverter" 
+                                    required="true"
+                                    requiredMessage="O encontro é obrigatório para gerar o relatório financeiro"
+                                    filter="true" 
+                                    filterMatchMode="startsWith" 
+                                    filterNormalize="true"
+                                    styleClass="modern-select">
+                                    <f:selectItem itemLabel="Selecione um encontro" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{relatorioController.encontros}" var="encontro"
+                                                   itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
+                                </p:selectOneMenu>
+                                <small class="field-hint">
+                                    <i class="pi pi-info-circle"></i>
+                                    Escolha o encontro para análise financeira das contribuições
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <div class="action-buttons">
+                                <p:commandButton value="📊 Gerar Relatório Financeiro" 
+                                    action="#{relatorioController.gerarRelatorioFinanceiroContribuicoes}" 
+                                    update=":relatorioForm:resultadoPanel" 
+                                    icon="pi pi-chart-line"
+                                    styleClass="ui-button-success action-button-primary"
+                                    process="@this encontro1"
+                                    oncomplete="setTimeout(function(){
+                                        var panel = PF('resultadoPanelWidget').jq[0];
+                                        if(panel){
+                                            panel.scrollIntoView({behavior: 'smooth', block: 'start'});
+                                        }
+                                    }, 200);" />
+                                    
+                                <p:commandButton value="🔄 Limpar Filtros" 
+                                    type="reset"
+                                    icon="pi pi-refresh"
+                                    styleClass="ui-button-outlined action-button-secondary"
+                                    style="margin-left: 0.5rem;"
+                                    onclick="PF('encontro1').clearFilters(); return false;" />
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção de Resultados Modernizada -->
+                <div class="form-section" style="margin-top: 2rem;">
+                    <p:panel id="resultadoPanel" widgetVar="resultadoPanelWidget" styleClass="modern-panel resultado-panel">
+                        <f:facet name="header">
+                            <div class="panel-header">
+                                <h3 class="panel-title">
+                                    <i class="pi pi-chart-bar"></i>
+                                    Análise Financeira de Contribuições
+                                </h3>
+                                <div class="panel-actions">
+                                    <p:commandButton value="📥 Excel" 
+                                        icon="pi pi-file-excel"
+                                        styleClass="ui-button-success ui-button-sm export-button"
+                                        style="margin-right: 0.75rem;"
+                                        title="Exportar para Excel"
+                                        rendered="#{not empty relatorioController.resultadoRelatorio}">
+                                        <p:dataExporter type="xlsx" target="resultadoRelatorio" 
+                                            fileName="relatorio_contribuicoes_financeiro" />
+                                    </p:commandButton>
+                                    
+                                    <p:commandButton value="📄 PDF" 
+                                        icon="pi pi-file-pdf"
+                                        styleClass="ui-button-danger ui-button-sm export-button"
+                                        title="Exportar para PDF"
+                                        rendered="#{not empty relatorioController.resultadoRelatorio}">
+                                        <p:dataExporter type="pdf" target="resultadoRelatorio" 
+                                            fileName="relatorio_contribuicoes_financeiro" />
+                                    </p:commandButton>
+                                </div>
+                            </div>
+                        </f:facet>
+
+                        <div class="resultado-content">
+                            <!-- Resumo estatístico -->
+                            <ui:fragment rendered="#{not empty relatorioController.resultadoRelatorio}">
+                                <div class="stats-cards">
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <i class="pi pi-list"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <span class="stat-label">Formas de Pagamento</span>
+                                            <span class="stat-value">#{relatorioController.resultadoRelatorio.size()}</span>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <i class="pi pi-money-bill"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <span class="stat-label">Valor Arrecadado</span>
+                                            <span class="stat-value">
+                                                <h:outputText value="#{relatorioController.somaValorArrecadado}">
+                                                    <f:convertNumber type="currency" currencySymbol="R$ " />
+                                                </h:outputText>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+
+                            <!-- Tabela de resultados -->
+                            <p:dataTable id="resultadoRelatorio" 
+                                var="item" 
+                                value="#{relatorioController.resultadoRelatorio}" 
+                                styleClass="modern-datatable resultado-tabela"
+                                reflow="true" 
+                                striped="true" 
+                                sortMode="multiple"
+                                paginator="#{relatorioController.resultadoRelatorio.size() > 10}"
+                                rows="15"
+                                paginatorPosition="both"
+                                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                currentPageReportTemplate="Exibindo {startRecord} - {endRecord} de {totalRecords} registros"
+                                rowsPerPageTemplate="10,15,25,50"
+                                emptyMessage="Nenhum dado encontrado para o encontro selecionado."
+                                rendered="#{not empty relatorioController.resultadoRelatorio}">
+                                
+                                <f:facet name="header">
+                                    <div class="table-header">
+                                        <span class="table-title">Resumo Financeiro por Forma de Pagamento</span>
+                                    </div>
+                                </f:facet>
+                                
+                                <p:column headerText="💳 Forma de Pagamento" 
+                                    sortBy="#{item.forma_pagamento}"
+                                    filterBy="#{item.forma_pagamento}"
+                                    filterMatchMode="contains"
+                                    styleClass="text-left" 
+                                    priority="1"
+                                    exportValue="#{item.forma_pagamento}">
+                                    <div class="payment-method payment-method-left">
+                                        <span class="payment-emoji">
+                                            <ui:fragment rendered="#{item.forma_pagamento eq 'Dinheiro'}">💵</ui:fragment>
+                                            <ui:fragment rendered="#{item.forma_pagamento eq 'PIX'}">🔗</ui:fragment>
+                                            <ui:fragment rendered="#{item.forma_pagamento eq 'Cartão de Crédito'}">💳</ui:fragment>
+                                            <ui:fragment rendered="#{item.forma_pagamento eq 'Cartão de Débito'}">🏧</ui:fragment>
+                                            <ui:fragment rendered="#{item.forma_pagamento eq 'Transferência Bancária'}">🏦</ui:fragment>
+                                        </span>
+                                        <span class="payment-text">#{item.forma_pagamento}</span>
+                                    </div>
+                                </p:column>
+                                
+                                <p:column headerText="📊 Quantidade" 
+                                    sortBy="#{item.quantidade}"
+                                    styleClass="text-center"
+                                    priority="2"
+                                    exportValue="#{item.quantidade}">
+                                    <div class="quantity-cell">
+                                        <span class="quantity-badge">#{item.quantidade}</span>
+                                        <small class="quantity-label">contribuições</small>
+                                    </div>
+                                </p:column>
+                                
+                                <p:column headerText="💰 Valor Total" 
+                                    sortBy="#{item.valor_total}"
+                                    styleClass="text-right currency-column"
+                                    priority="1"
+                                    exportValue="#{item.valor_total}">
+                                    <h:outputText value="#{item.valor_total}" styleClass="currency-value total-value">
+                                        <f:convertNumber type="currency" currencySymbol="R$ " />
+                                    </h:outputText>
+                                </p:column>
+                                
+                                <p:column headerText="📉 Menor Valor" 
+                                    sortBy="#{item.menor_valor}"
+                                    styleClass="text-right currency-column"
+                                    priority="3"
+                                    exportValue="#{item.menor_valor}">
+                                    <h:outputText value="#{item.menor_valor}" styleClass="currency-value min-value">
+                                        <f:convertNumber type="currency" currencySymbol="R$ " />
+                                    </h:outputText>
+                                </p:column>
+                                
+                                <p:column headerText="📈 Maior Valor" 
+                                    sortBy="#{item.maior_valor}"
+                                    styleClass="text-right currency-column"
+                                    priority="3"
+                                    exportValue="#{item.maior_valor}">
+                                    <h:outputText value="#{item.maior_valor}" styleClass="currency-value max-value">
+                                        <f:convertNumber type="currency" currencySymbol="R$ " />
+                                    </h:outputText>
+                                </p:column>
+                                
+                                <p:column headerText="📊 Valor Médio" 
+                                    sortBy="#{item.valor_medio}"
+                                    styleClass="text-right currency-column"
+                                    priority="2"
+                                    exportValue="#{item.valor_medio}">
+                                    <h:outputText value="#{item.valor_medio}" styleClass="currency-value avg-value">
+                                        <f:convertNumber type="currency" currencySymbol="R$ " />
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+
+                            <!-- Estado vazio -->
+                            <ui:fragment rendered="#{empty relatorioController.resultadoRelatorio}">
+                                <div class="empty-state">
+                                    <i class="pi pi-chart-bar" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                                    <h3>Nenhum relatório financeiro gerado</h3>
+                                    <p>Selecione um encontro e clique em "Gerar Relatório Financeiro" para visualizar a análise das contribuições.</p>
+                                </div>
+                            </ui:fragment>
+                        </div>
+                    </p:panel>
+                </div>
+            </h:form>
+        </div>
+
+        <!-- Estilos específicos da página -->
+        <style>
+            /* Cabeçalho da página */
+            .page-header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 2rem;
+                border-radius: 0.5rem;
+                margin-bottom: 2rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            
+            .page-header-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .page-title {
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                font-size: 1.8rem;
+                font-weight: 600;
+            }
+            
+            .page-icon {
+                font-size: 2rem;
+                color: #ffd700;
+            }
+            
+            .page-subtitle {
+                margin: 0.5rem 0 0 0;
+                opacity: 0.9;
+                font-size: 1rem;
+            }
+            
+            /* Cards de estatísticas */
+            .stats-cards {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .stat-card {
+                background: white;
+                padding: 1.25rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                border-left: 4px solid #667eea;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+            
+            .stat-icon {
+                background: #667eea;
+                color: white;
+                width: 3rem;
+                height: 3rem;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.25rem;
+            }
+            
+            .stat-content {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .stat-label {
+                font-size: 0.875rem;
+                color: #6c757d;
+                margin-bottom: 0.25rem;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+            
+            /* Tabela */
+            .payment-method {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .payment-method-left {
+                justify-content: flex-start !important;
+                text-align: left !important;
+            }
+            
+            .payment-icon {
+                color: #667eea;
+                font-size: 1.1rem;
+            }
+            
+            .quantity-cell {
+                text-align: center;
+            }
+            
+            .quantity-badge {
+                background: #e3f2fd;
+                color: #1976d2;
+                padding: 0.25rem 0.75rem;
+                border-radius: 1rem;
+                font-weight: 600;
+                font-size: 1rem;
+            }
+            
+            .quantity-label {
+                display: block;
+                color: #6c757d;
+                font-size: 0.75rem;
+                margin-top: 0.25rem;
+            }
+            
+            /* Valores monetários */
+            .currency-value {
+                font-weight: 600;
+                font-size: 1rem;
+            }
+            
+            .total-value {
+                color: #2e7d32;
+                font-size: 1.1rem;
+            }
+            
+            .min-value {
+                color: #d32f2f;
+            }
+            
+            .max-value {
+                color: #1976d2;
+            }
+            
+            .avg-value {
+                color: #f57c00;
+            }
+            
+            /* Botões de exportação */
+            .panel-actions {
+                display: flex;
+                gap: 0.5rem;
+                align-items: center;
+            }
+            
+            .export-button {
+                white-space: nowrap;
+                padding: 0.375rem 0.75rem !important;
+                font-size: 0.875rem !important;
+            }
+            
+            /* Responsividade */
+            @media (max-width: 768px) {
+                .page-header-content {
+                    flex-direction: column;
+                    text-align: center;
+                }
+                
+                .panel-header {
+                    flex-direction: column;
+                    gap: 1rem;
+                }
+                
+                .panel-actions {
+                    width: 100%;
+                    justify-content: center;
+                }
+                
+                .stats-cards {
+                    grid-template-columns: 1fr;
+                }
+            }
+            
+            /* Estados vazios */
+            .empty-state {
+                text-align: center;
+                padding: 3rem 1rem;
+                color: #6c757d;
+            }
+            
+            .empty-state h3 {
+                margin: 0.5rem 0;
+                color: #495057;
+            }
+            
+            .empty-state p {
+                margin: 0;
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
+                line-height: 1.5;
+            }
+        </style>
+    </ui:define>
+</ui:composition>
+</html>
+

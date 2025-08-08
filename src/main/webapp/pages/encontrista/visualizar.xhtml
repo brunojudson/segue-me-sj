@@ -1,0 +1,691 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Visualizar Seguimista - #{encontristaController.encontrista.pessoa.nome}</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="content">
+		<style>
+			/* Layout principal melhorado */
+			.encontrista-header {
+				background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+				color: white;
+				padding: 2rem;
+				border-radius: 20px 20px 0 0;
+				margin: -1rem -1rem 0 -1rem;
+				box-shadow: 0 8px 32px rgba(33, 150, 243, 0.3);
+				position: relative;
+				overflow: hidden;
+			}
+
+			.encontrista-header::before {
+				content: '';
+				position: absolute;
+				top: -50%;
+				right: -20%;
+				width: 300px;
+				height: 300px;
+				background: rgba(255, 255, 255, 0.1);
+				border-radius: 50%;
+				backdrop-filter: blur(10px);
+			}
+
+			.encontrista-header h2 {
+				margin: 0;
+				font-size: 2rem;
+				font-weight: 700;
+				position: relative;
+				z-index: 2;
+			}
+
+			.encontrista-subtitle {
+				opacity: 0.9;
+				font-size: 1.1rem;
+				margin-top: 0.5rem;
+				position: relative;
+				z-index: 2;
+			}
+
+			.encontrista-meta {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 1rem;
+				margin-top: 1rem;
+				position: relative;
+				z-index: 2;
+			}
+
+			.meta-badge {
+				background: rgba(255, 255, 255, 0.2);
+				padding: 0.5rem 1rem;
+				border-radius: 20px;
+				font-size: 0.9rem;
+				backdrop-filter: blur(10px);
+				border: 1px solid rgba(255, 255, 255, 0.3);
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			/* Layout principal com foto */
+			.encontrista-content {
+				display: grid;
+				grid-template-columns: 1fr 250px;
+				gap: 2rem;
+				background: white;
+				border-radius: 0 0 20px 20px;
+				padding: 2rem;
+				box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+				margin: 0 -1rem -1rem -1rem;
+			}
+
+			.encontrista-photo-section {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 1rem;
+				background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+				padding: 2rem 1rem;
+				border-radius: 20px;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+			}
+
+			.encontrista-photo {
+				width: 180px;
+				height: 180px;
+				border-radius: 50%;
+				object-fit: cover;
+				border: 6px solid #fff;
+				box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+				transition: all 0.3s ease;
+				display: block;
+				background: #f0f0f0;
+			}
+
+			.encontrista-photo:hover {
+				transform: scale(1.05);
+				box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+			}
+
+			.photo-placeholder {
+				width: 180px;
+				height: 180px;
+				border-radius: 50%;
+				background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: #1976d2;
+				font-size: 4rem;
+				border: 6px solid #fff;
+				box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+			}
+
+			/* Melhorias no TabView */
+			.custom-tabview .ui-tabs-nav {
+				background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+				border-radius: 15px 15px 0 0;
+				border: none;
+				box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+				padding: 0.5rem;
+			}
+
+			.custom-tabview .ui-tabs-nav li {
+				margin-right: 0.5rem;
+			}
+
+			.custom-tabview .ui-tabs-nav li a {
+				padding: 1rem 1.5rem;
+				font-weight: 600;
+				color: #424242 !important;
+				transition: all 0.3s ease;
+				border-radius: 10px;
+				background: transparent;
+				border: none;
+				text-decoration: none !important;
+				display: flex !important;
+				align-items: center !important;
+			}
+
+			.custom-tabview .ui-tabs-nav li:hover a {
+				background: rgba(33, 150, 243, 0.1);
+				color: #1976d2 !important;
+			}
+
+			.custom-tabview .ui-tabs-nav li.ui-state-active a,
+			.custom-tabview .ui-tabs-nav li.ui-state-active a:hover,
+			.custom-tabview .ui-tabs-nav li.ui-state-active a:focus {
+				background: #2196f3 !important;
+				color: white !important;
+				box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+				text-shadow: none !important;
+			}
+
+			.custom-tabview .ui-tabs-nav li.ui-state-active a .ui-icon,
+			.custom-tabview .ui-tabs-nav li.ui-state-active a i {
+				color: white !important;
+			}
+
+			.custom-tabview .ui-tabs-nav li.ui-state-active a * {
+				color: white !important;
+			}
+
+			.custom-tabview .ui-tabs-panels {
+				background: #fff;
+				border: 1px solid #e3f2fd;
+				border-radius: 0 0 15px 15px;
+				padding: 2rem;
+				min-height: 400px;
+			}
+
+			/* Grid de informações melhorado */
+			.info-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+				gap: 1.5rem;
+				margin-top: 1rem;
+			}
+
+			.info-item {
+				background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+				padding: 1.5rem;
+				border-radius: 15px;
+				border-left: 5px solid #2196f3;
+				transition: all 0.3s ease;
+				box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+			}
+
+			.info-item:hover {
+				background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+				transform: translateY(-2px);
+				box-shadow: 0 8px 25px rgba(33, 150, 243, 0.15);
+			}
+
+			.info-label {
+				font-weight: 700;
+				color: #424242;
+				font-size: 0.85rem;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+				margin-bottom: 0.75rem;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.info-value {
+				font-size: 1.1rem;
+				color: #212121;
+				font-weight: 500;
+				word-break: break-word;
+				line-height: 1.4;
+			}
+
+			.info-value.highlight {
+				color: #1976d2;
+				font-weight: 600;
+			}
+
+			/* Círculos melhorados */
+			.circulo-tag {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.75rem 1.25rem;
+				border-radius: 25px;
+				color: white;
+				font-weight: 600;
+				font-size: 1rem;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+			}
+
+			.circulo-vermelho { background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%); }
+			.circulo-verde { background: linear-gradient(135deg, #689f38 0%, #8bc34a 100%); }
+			.circulo-rosa { background: linear-gradient(135deg, #e91e63 0%, #f06292 100%); }
+			.circulo-amarelo { background: linear-gradient(135deg, #fbc02d 0%, #ffeb3b 100%); color: #424242 !important; }
+			.circulo-azul { background: linear-gradient(135deg, #0288d1 0%, #03a9f4 100%); }
+			.circulo-laranja { background: linear-gradient(135deg, #f57c00 0%, #ff9800 100%); }
+
+			/* Sacramentos melhorados */
+			.sacramentos-container {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+				margin-top: 0.5rem;
+			}
+
+			.sacramento-tag {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.5rem 1rem;
+				border-radius: 20px;
+				color: white;
+				font-weight: 600;
+				font-size: 0.9rem;
+				box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+				transition: all 0.3s ease;
+			}
+
+			.sacramento-tag:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+			}
+
+			.sacramento-batismo { background: linear-gradient(135deg, #007ad9 0%, #4fc3f7 100%); }
+			.sacramento-eucaristia { background: linear-gradient(135deg, #43a047 0%, #81c784 100%); }
+			.sacramento-crisma { background: linear-gradient(135deg, #fbc02d 0%, #fff176 100%); }
+			.sacramento-matrimonio { background: linear-gradient(135deg, #8e24aa 0%, #ba68c8 100%); }
+
+			/* Botões melhorados */
+			.form-buttons {
+				display: flex;
+				gap: 1rem;
+				justify-content: center;
+				margin-top: 2rem;
+				padding: 2rem;
+				background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+				border-radius: 15px;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+			}
+
+			.form-buttons .ui-button {
+				padding: 1rem 2rem;
+				border-radius: 25px;
+				font-weight: 600;
+				transition: all 0.3s ease;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+				border: none;
+			}
+
+			.form-buttons .ui-button:hover {
+				transform: translateY(-3px);
+				box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+			}
+
+			/* Ícones para as abas */
+			.tab-icon {
+				margin-right: 0.5rem;
+				font-size: 1.1rem;
+			}
+
+			/* Estados vazios */
+			.empty-value {
+				color: #9e9e9e;
+				font-style: italic;
+				font-size: 0.95rem;
+			}
+
+			/* Item que ocupa toda a linha */
+			.info-item-full {
+				grid-column: 1 / -1;
+			}
+
+			/* Responsividade */
+			@media (max-width: 768px) {
+				.encontrista-content {
+					grid-template-columns: 1fr;
+					gap: 1.5rem;
+					padding: 1.5rem;
+				}
+
+				.encontrista-photo-section {
+					order: -1;
+					padding: 1.5rem 1rem;
+				}
+
+				.info-grid {
+					grid-template-columns: 1fr;
+					gap: 1rem;
+				}
+
+				.form-buttons {
+					flex-direction: column;
+					align-items: stretch;
+				}
+
+				.encontrista-header {
+					padding: 1.5rem;
+					margin: -0.5rem -0.5rem 0 -0.5rem;
+				}
+
+				.encontrista-header h2 {
+					font-size: 1.5rem;
+				}
+
+				.encontrista-meta {
+					flex-direction: column;
+					gap: 0.5rem;
+				}
+			}
+
+			/* Animações */
+			@keyframes fadeInUp {
+				from {
+					opacity: 0;
+					transform: translateY(30px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
+			.info-item,
+			.encontrista-photo-section {
+				animation: fadeInUp 0.6s ease-out;
+			}
+
+			/* Print styles */
+			@media print {
+				.form-buttons {
+					display: none !important;
+				}
+				
+				.encontrista-header {
+					background: #fff !important;
+					color: #000 !important;
+					box-shadow: none !important;
+				}
+			}
+		</style>
+        <div class="content-container">
+            <div class="form-container">
+				<!-- Cabeçalho do Encontrista -->
+				<div class="encontrista-header">
+					<h2>
+						<i class="pi pi-user-plus"></i>
+						#{encontristaController.encontrista.pessoa.nome}
+					</h2>
+					<div class="encontrista-subtitle">
+						ID: #{encontristaController.encontrista.id} | 
+						<h:outputText value="#{encontristaController.encontrista.idade} anos" rendered="#{encontristaController.encontrista.idade != null}" />
+						<h:outputText value="Idade não informada" rendered="#{encontristaController.encontrista.idade == null}" />
+					</div>
+					<div class="encontrista-meta">
+						<div class="meta-badge">
+							<i class="pi pi-calendar"></i>
+							#{encontristaController.encontrista.encontro.nome}
+						</div>
+						<h:panelGroup rendered="#{encontristaController.encontrista.circulo != null}">
+							<div class="circulo-tag circulo-#{encontristaController.encontrista.circulo.toString().toLowerCase()}">
+								<i class="pi pi-circle-fill"></i>
+								#{encontristaController.encontrista.circulo}
+							</div>
+						</h:panelGroup>
+					</div>
+				</div>
+
+                <h:form id="visualizarForm">
+                    <f:metadata>
+                        <f:viewParam name="id" converter="javax.faces.Long" />
+                        <f:viewAction
+                            action="#{encontristaController.carregarEncontrista}"
+                            if="#{not empty param.id}" />
+                    </f:metadata>
+
+					<!-- Conteúdo Principal -->
+					<div class="encontrista-content">
+						<!-- Seção de Informações -->
+						<div class="encontrista-info">
+							<p:tabView styleClass="custom-tabview">
+								<p:tab title="Dados Pessoais e Encontro">
+									<f:facet name="title">
+										<i class="pi pi-user tab-icon"></i>Dados Pessoais e Encontro
+									</f:facet>
+									<div class="info-grid">
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-id-card"></i>Identificação
+											</div>
+											<div class="info-value highlight">#{encontristaController.encontrista.id}</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-calendar"></i>Data de Nascimento
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.pessoa.dataNascimento}" rendered="#{encontristaController.encontrista.pessoa.dataNascimento != null}">
+													<f:converter converterId="localDateConverter" />
+												</h:outputText>
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.pessoa.dataNascimento == null}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-users"></i>Sexo
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.pessoa.sexo != null and encontristaController.encontrista.pessoa.sexo.toString() eq 'F' ? 'Feminino' : 'Masculino'}" rendered="#{encontristaController.encontrista.pessoa.sexo != null}" />
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.pessoa.sexo == null}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-bookmark"></i>Encontro
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.encontro.nome}" rendered="#{encontristaController.encontrista.encontro != null}" />
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.encontro == null}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-clock"></i>Data de Inscrição
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.dataInscricao}" rendered="#{encontristaController.encontrista.dataInscricao != null}">
+													<f:converter converterId="localDateTimeConverter" />
+												</h:outputText>
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.dataInscricao == null}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item" rendered="#{encontristaController.encontrista.observacoes != null and not empty encontristaController.encontrista.observacoes}">
+											<div class="info-label">
+												<i class="pi pi-comment"></i>Observações
+											</div>
+											<div class="info-value">
+												#{encontristaController.encontrista.observacoes}
+											</div>
+										</div>
+									</div>
+								</p:tab>
+
+								<p:tab title="Contato e Endereço">
+									<f:facet name="title">
+										<i class="pi pi-phone tab-icon"></i>Contato e Endereço
+									</f:facet>
+									<div class="info-grid">
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-home"></i>Endereço
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.pessoa.endereco}" rendered="#{encontristaController.encontrista.pessoa.endereco != null and not empty encontristaController.encontrista.pessoa.endereco}" />
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.pessoa.endereco == null or empty encontristaController.encontrista.pessoa.endereco}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-phone"></i>Telefone
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.pessoa.telefone}" rendered="#{encontristaController.encontrista.pessoa.telefone != null and not empty encontristaController.encontrista.pessoa.telefone}" />
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.pessoa.telefone == null or empty encontristaController.encontrista.pessoa.telefone}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-envelope"></i>E-mail
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.pessoa.email}" rendered="#{encontristaController.encontrista.pessoa.email != null and not empty encontristaController.encontrista.pessoa.email}" />
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.pessoa.email == null or empty encontristaController.encontrista.pessoa.email}" styleClass="empty-value" />
+											</div>
+										</div>
+									</div>
+								</p:tab>
+                                
+								<p:tab title="Detalhes Adicionais da Pessoa">
+									<f:facet name="title">
+										<i class="pi pi-info-circle tab-icon"></i>Detalhes Adicionais
+									</f:facet>
+									<div class="info-grid">
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-map-marker"></i>Naturalidade
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.pessoa.naturalidade}" rendered="#{encontristaController.encontrista.pessoa.naturalidade != null and not empty encontristaController.encontrista.pessoa.naturalidade}" />
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.pessoa.naturalidade == null or empty encontristaController.encontrista.pessoa.naturalidade}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-user"></i>Pai
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.pessoa.filiacaoPai}" rendered="#{encontristaController.encontrista.pessoa.filiacaoPai != null and not empty encontristaController.encontrista.pessoa.filiacaoPai}" />
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.pessoa.filiacaoPai == null or empty encontristaController.encontrista.pessoa.filiacaoPai}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-user"></i>Mãe
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.pessoa.filiacaoMae}" rendered="#{encontristaController.encontrista.pessoa.filiacaoMae != null and not empty encontristaController.encontrista.pessoa.filiacaoMae}" />
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.pessoa.filiacaoMae == null or empty encontristaController.encontrista.pessoa.filiacaoMae}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-graduation-cap"></i>Escolaridade
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.pessoa.escolaridade.descricao}" rendered="#{encontristaController.encontrista.pessoa.escolaridade != null}" />
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.pessoa.escolaridade == null}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-book"></i>Curso
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.pessoa.curso}" rendered="#{encontristaController.encontrista.pessoa.curso != null and not empty encontristaController.encontrista.pessoa.curso}" />
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.pessoa.curso == null or empty encontristaController.encontrista.pessoa.curso}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-building"></i>Instituição de Ensino
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.pessoa.instituicaoEnsino}" rendered="#{encontristaController.encontrista.pessoa.instituicaoEnsino != null and not empty encontristaController.encontrista.pessoa.instituicaoEnsino}" />
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.pessoa.instituicaoEnsino == null or empty encontristaController.encontrista.pessoa.instituicaoEnsino}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-star"></i>Religião
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.pessoa.religiao}" rendered="#{encontristaController.encontrista.pessoa.religiao != null and not empty encontristaController.encontrista.pessoa.religiao}" />
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.pessoa.religiao == null or empty encontristaController.encontrista.pessoa.religiao}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-home"></i>Igreja que Frequenta
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.pessoa.igrejaFrequenta}" rendered="#{encontristaController.encontrista.pessoa.igrejaFrequenta != null and not empty encontristaController.encontrista.pessoa.igrejaFrequenta}" />
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.pessoa.igrejaFrequenta == null or empty encontristaController.encontrista.pessoa.igrejaFrequenta}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item">
+											<div class="info-label">
+												<i class="pi pi-users"></i>Movimento que Participou
+											</div>
+											<div class="info-value">
+												<h:outputText value="#{encontristaController.encontrista.pessoa.movimentoParticipou}" rendered="#{encontristaController.encontrista.pessoa.movimentoParticipou != null and not empty encontristaController.encontrista.pessoa.movimentoParticipou}" />
+												<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.pessoa.movimentoParticipou == null or empty encontristaController.encontrista.pessoa.movimentoParticipou}" styleClass="empty-value" />
+											</div>
+										</div>
+										
+										<div class="info-item info-item-full">
+											<div class="info-label">
+												<i class="pi pi-bookmark"></i>Sacramentos
+											</div>
+											<div class="sacramentos-container">
+												<ui:repeat value="#{encontristaController.encontrista.pessoa.sacramentos}" var="sacramento">
+													<span class="sacramento-tag sacramento-#{sacramento.toString().toLowerCase()}">
+														<i class="pi pi-check"></i>
+														<h:outputText value="#{sacramento.descricao}" />
+													</span>
+												</ui:repeat>
+												<h:outputText value="Nenhum sacramento informado" 
+													rendered="#{empty encontristaController.encontrista.pessoa.sacramentos}"
+													styleClass="empty-value" />
+											</div>
+										</div>
+									</div>
+								</p:tab>
+                            </p:tabView>
+                        </div>
+						
+						<!-- Seção da Foto -->
+						<div class="encontrista-photo-section">
+							<p:graphicImage value="#{encontristaController.foto}" alt="Foto do Encontrista"
+								styleClass="encontrista-photo" 
+								rendered="#{encontristaController.foto != null}" />
+							<h:panelGroup rendered="#{encontristaController.foto == null}" styleClass="photo-placeholder">
+								<i class="pi pi-user"></i>
+							</h:panelGroup>
+						</div>
+                    </div>
+					
+					<!-- Botões de Ação -->
+					<div class="form-buttons">
+						<p:commandButton value="Gerar PDF"
+							styleClass="ui-button-success" ajax="false"
+							action="#{encontristaController.gerarFichaInscricao(encontristaController.encontrista)}" />
+						<p:button value="Editar"
+							outcome="/pages/encontrista/cadastro.xhtml" icon="pi pi-pencil"
+							styleClass="ui-button-warning">
+							<f:param name="id"
+								value="#{encontristaController.encontrista.id}" />
+						</p:button>
+						<p:button value="Voltar" outcome="/pages/encontrista/lista.xhtml"
+							icon="pi pi-arrow-left" styleClass="ui-button-secondary" />
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>
+
+</html>

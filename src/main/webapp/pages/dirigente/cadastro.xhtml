@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">
+        #{empty param.id ? 'Cadastrar' : 'Editar'} Dirigente - Sistema Segue-me
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="content-container">
+            <!-- Cabeçalho da página -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">
+                            <i class="pi pi-star page-icon"></i>
+                            <span class="title-text">#{empty param.id ? 'Cadastrar' : 'Editar'} Dirigente</span>
+                        </h1>
+                        <p class="page-subtitle">
+                            #{empty param.id ? 'Adicione um novo dirigente à pasta' : 'Atualize os dados do dirigente'}
+                        </p>
+                    </div>
+                    <div class="page-actions">
+                        <p:button value="Voltar à Lista" 
+                                  outcome="/pages/dirigente/lista.xhtml"
+                                  icon="pi pi-arrow-left" 
+                                  styleClass="action-button-primary" />
+                    </div>
+                </div>
+            </div>
+                
+            <h:form id="dirigenteForm" styleClass="modern-form">
+                <p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages"
+                onshow="scrollToTopOnError()">
+                    <p:autoUpdate />
+                </p:messages>
+                
+                <f:metadata>
+                    <f:viewParam name="id" />
+                    <f:viewAction action="#{dirigenteController.carregarDirigente}" if="#{not empty param.id}" />
+                </f:metadata>
+                
+                <!-- Seção: Dados do Dirigente -->
+                <div class="form-section">
+                    <p:fieldset legend="⭐ Dados do Dirigente" styleClass="modern-fieldset" toggleable="true">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="trabalhador" value="Trabalhador" styleClass="required-field" />
+                                <p:selectOneMenu id="trabalhador" value="#{dirigenteController.dirigente.trabalhador}" 
+                                                converter="omnifaces.SelectItemsConverter" required="true"
+                                                requiredMessage="O trabalhador é obrigatório"
+                                                filter="true" filterMatchMode="startsWith" filterNormalize="true">
+                                    <f:selectItem itemLabel="Selecione um trabalhador" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{dirigenteController.trabalhadores}" var="trabalhador"
+                                                  itemLabel="#{trabalhador.pessoa.nome}" itemValue="#{trabalhador}" />
+                                </p:selectOneMenu>
+                                <small class="field-hint">Trabalhador que assumirá o cargo de dirigente</small>
+                            </div>
+                            
+                            <div class="field-group">
+                                <p:outputLabel for="pasta" value="Pasta" styleClass="required-field" />
+                                <p:selectOneMenu id="pasta" value="#{dirigenteController.dirigente.pasta}" 
+                                                converter="omnifaces.SelectItemsConverter" required="true"
+                                                requiredMessage="A pasta é obrigatória">
+                                    <f:selectItem itemLabel="Selecione uma pasta" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{dirigenteController.pastas}" var="pasta"
+                                                  itemLabel="#{pasta.nome}" itemValue="#{pasta}" />
+                                </p:selectOneMenu>
+                                <small class="field-hint">Pasta que o dirigente irá liderar</small>
+                            </div>
+
+                            <div class="field-group checkbox-group">
+                                <p:outputLabel for="ativo" value="Dirigente Ativo" />
+                                <p:selectBooleanCheckbox id="ativo" value="#{dirigenteController.dirigente.ativo}" />
+                                <small class="field-hint">Marque se o dirigente está ativo no sistema</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção: Período de Mandato -->
+                <div class="form-section">
+                    <p:fieldset legend="📅 Período de Mandato" styleClass="modern-fieldset" toggleable="true">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="dataInicio" value="Data de Início" styleClass="required-field" />
+                                <p:datePicker id="dataInicio" value="#{dirigenteController.dirigente.dataInicio}" 
+                                             pattern="dd/MM/yyyy" showIcon="true" required="true" showOnFocus="false" 
+                                             requiredMessage="A data de início é obrigatória" />
+                                <small class="field-hint">Data em que o dirigente assume o cargo</small>
+                            </div>
+                            
+                            <div class="field-group">
+                                <p:outputLabel for="dataFim" value="Data de Fim" styleClass="required-field" />
+                                <p:datePicker id="dataFim" value="#{dirigenteController.dirigente.dataFim}" 
+                                             pattern="dd/MM/yyyy" showIcon="true" required="true" showOnFocus="false" 
+                                             requiredMessage="A data de fim é obrigatória" />
+                                <small class="field-hint">Data prevista para o fim do mandato</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção: Observações -->
+                <div class="form-section">
+                    <p:fieldset legend="📝 Observações" styleClass="modern-fieldset" toggleable="true" collapsed="true">
+                        <div class="field-grid">
+                            <div class="field-group full-width">
+                                <p:outputLabel for="observacoes" value="Observações" />
+                                <p:inputTextarea id="observacoes"
+                                                value="#{dirigenteController.dirigente.observacoes}" 
+                                                maxlength="255" rows="4"
+                                                placeholder="Adicione observações sobre o dirigente..." />
+                                <small class="field-hint">Informações adicionais sobre o dirigente (máximo 255 caracteres)</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+                
+                <!-- Botões de Ação -->
+                <div class="form-actions">
+                    <div class="action-buttons">
+                        <p:commandButton value="💾 Salvar Dados"
+                                       oncomplete="handleSaveComplete(args);" 
+                                       action="#{dirigenteController.salvar}" 
+                                       update="@form" 
+                                       styleClass="ui-button-success action-button-primary"
+                                       validateClient="true" />
+
+                        <p:commandButton value="📋 Salvar e Continuar"
+								action="#{dirigenteController.salvarEContinuar}"
+								update="@form messages"
+								process="@form"
+								styleClass="ui-button-info action-button-secondary"
+								validateClient="true"
+								oncomplete="handleSaveComplete(args);" />
+
+                        <p:button value="❌ Cancelar" 
+                                outcome="/pages/dirigente/lista.xhtml"
+                                styleClass="ui-button-secondary action-button-cancel" />
+                    </div>
+                    
+                    <div class="form-help">
+                        <small>
+                            <i class="pi pi-info-circle"></i>
+                            Campos marcados com * são obrigatórios. 
+                            Use Tab para navegar entre os campos.
+                        </small>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+        <h:outputScript library="js" name="scrollUp.js" target="head" />
+          <style>
+/* Ajuste específico para botões de datePicker - alinha com altura dos campos */
+button.ui-datepicker-trigger {
+    min-height: 35px !important;
+    height: 35px !important;
+    max-height: 35px !important;
+    width: 35px !important;
+    min-width: 35px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    vertical-align: top !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1rem !important;
+    line-height: 1 !important;
+}
+
+/* Ajusta o campo de input do datePicker para manter consistência */
+input.ui-inputfield.ui-datepicker-input {
+    min-height: 29px !important;
+    height: 29px !important;
+    max-height: 29px !important;
+    vertical-align: top !important;
+}
+
+/* Container inline do datePicker - APENAS para o input e botão */
+.ui-datepicker-group {
+    display: inline-flex !important;
+    align-items: stretch !important;
+}
+        </style>
+    </ui:define>
+</ui:composition>
+
+</html>

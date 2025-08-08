@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Lista de Seguidores</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="content">
+		<style>
+/* Layout da página de listagem */
+.page-header {
+	background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+	color: white;
+	padding: 2rem;
+	margin: 0 0 2rem 0;
+	border-radius: 12px;
+	box-shadow: 0 4px 20px rgba(33, 150, 243, 0.3);
+	position: relative;
+	overflow: hidden;
+}
+
+.page-header::before {
+	content: '';
+	position: absolute;
+	top: -50%;
+	right: -10%;
+	width: 200px;
+	height: 200px;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 50%;
+	backdrop-filter: blur(10px);
+}
+
+.page-header .page-title {
+	margin: 0;
+	font-size: 2rem;
+	font-weight: 700;
+	position: relative;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.page-header .page-icon {
+	font-size: 1.8rem;
+}
+
+.page-header .page-subtitle {
+	font-size: 1rem;
+	opacity: 0.9;
+	margin-top: 0.5rem;
+	position: relative;
+	z-index: 2;
+}
+
+/* Área de ações */
+.actions-bar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1.5rem;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.action-group {
+	display: flex;
+	gap: 0.75rem;
+	align-items: center;
+}
+
+.stats-card {
+	background: #f8f9fa;
+	border: 1px solid #e9ecef;
+	border-radius: 12px;
+	padding: 1rem 1.5rem;
+	font-size: 0.9rem;
+	color: #495057;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.stats-number {
+	font-weight: 700;
+	color: #2196f3;
+	font-size: 1.1rem;
+}
+
+/* Tabela moderna */
+.modern-datatable {
+	background: white;
+	border-radius: 16px;
+	overflow: hidden;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.ui-datatable .ui-datatable-thead>tr>th {
+	background: #f8f9fa !important;
+	color: #495057 !important;
+	font-weight: 600 !important;
+	border: none !important;
+	padding: 1rem !important;
+	font-size: 0.875rem !important;
+	text-transform: uppercase !important;
+	letter-spacing: 0.5px !important;
+}
+
+.ui-datatable .ui-datatable-tbody>tr>td {
+	padding: 1rem !important;
+	border: none !important;
+	border-bottom: 1px solid #f0f0f0 !important;
+	vertical-align: middle !important;
+}
+
+.ui-datatable .ui-datatable-tbody>tr:hover {
+	background-color: #f8f9fa !important;
+	transition: background-color 0.2s ease !important;
+}
+
+.ui-datatable .ui-datatable-tbody>tr:last-child>td {
+	border-bottom: none !important;
+}
+
+/* Layout da linha da pessoa */
+.person-row {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+/* Avatar das pessoas */
+.person-avatar {
+	width: 40px;
+	height: 40px;
+	background: linear-gradient(135deg, #2196f3, #42a5f5);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-weight: bold;
+	font-size: 0.9rem;
+	margin-right: 0.75rem;
+	flex-shrink: 0;
+}
+
+/* Informações da pessoa */
+.person-table-info {
+	display: flex;
+	flex-direction: column;
+}
+
+.person-name {
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 0.25rem;
+}
+
+.person-email {
+	font-size: 0.8rem;
+	color: #666;
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+/* Badges de status modernos */
+.status-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.375rem 0.75rem;
+	border-radius: 20px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.status-badge.ativo {
+	background-color: #e8f5e8;
+	color: #2e7d32;
+	border: 1px solid #c8e6c9;
+}
+
+.status-badge.inativo {
+	background-color: #ffebee;
+	color: #c62828;
+	border: 1px solid #ffcdd2;
+}
+
+/* Botões de ação */
+
+/* Indicadores com ícones */
+.info-indicator {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.25rem;
+}
+
+.info-indicator i {
+	font-size: 0.8rem;
+}
+
+.info-indicator.age i {
+	color: #2196f3;
+}
+
+.info-indicator.phone i {
+	color: #4caf50;
+}
+
+/* Empty state melhorado */
+.empty-value {
+	color: #999;
+	font-style: italic;
+	font-size: 0.9rem;
+}
+
+/* Paginação moderna */
+.ui-paginator {
+	background: #f8f9fa !important;
+	border: none !important;
+	padding: 1rem !important;
+	border-radius: 0 0 16px 16px !important;
+}
+
+/* Filtros da tabela - Corrigido para não interferir */
+.ui-datatable .ui-datatable-thead > tr.ui-filter-row > td {
+	background: #ffffff !important;
+	padding: 0.75rem !important;
+	border: none !important;
+}
+
+.ui-datatable .ui-datatable-thead > tr.ui-filter-row > td > .ui-inputfield,
+.ui-datatable .ui-datatable-thead > tr.ui-filter-row > td input {
+	border-radius: 8px !important;
+	border: 1px solid #dee2e6 !important;
+	padding: 0.5rem !important;
+	width: 100% !important;
+	box-sizing: border-box !important;
+}
+
+/* Melhorias nos filtros globais */
+.ui-datatable .ui-datatable-header {
+	background: #f8f9fa !important;
+	border: none !important;
+	padding: 1rem !important;
+	border-radius: 16px 16px 0 0 !important;
+}
+
+.table-header-content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 1rem;
+}
+
+.filter-input {
+	width: 100% !important;
+	border-radius: 8px !important;
+	border: 1px solid #dee2e6 !important;
+	padding: 0.5rem !important;
+}
+
+/* Empty state da tabela */
+.ui-datatable-empty-message {
+	text-align: center !important;
+	color: #6c757d !important;
+	font-style: italic !important;
+	padding: 3rem 2rem !important;
+	background: #f8f9fa !important;
+}
+
+/* Diálogos modernos */
+.ui-dialog .ui-dialog-titlebar {
+	background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%) !important;
+	color: white !important;
+	border: none !important;
+	border-radius: 12px 12px 0 0 !important;
+}
+
+.ui-dialog .ui-dialog-content {
+	border-radius: 0 0 12px 12px !important;
+}
+
+/* Loading state para botão de atualizar idades */
+.loading-button {
+	position: relative;
+	overflow: hidden;
+}
+
+.loading-button::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3),
+		transparent);
+	animation: loading-sweep 1.5s infinite;
+}
+
+@
+keyframes loading-sweep { 0% {
+	left: -100%;
+}
+
+100
+
+
+%
+{
+left
+
+
+:
+
+
+100
+%;
+
+
+}
+}
+
+/* Responsividade */
+@media ( max-width : 768px) {
+	.page-header {
+		padding: 1.5rem 1rem;
+		margin: -1rem -1rem 1.5rem -1rem;
+	}
+	.page-header .page-title {
+		font-size: 1.5rem;
+	}
+	.actions-bar {
+		flex-direction: column;
+		align-items: stretch;
+	}
+	.action-group {
+		justify-content: center;
+	}
+	.stats-card {
+		text-align: center;
+	}
+	.ui-datatable .ui-datatable-thead>tr>th, .ui-datatable .ui-datatable-tbody>tr>td
+		{
+		padding: 0.75rem 0.5rem !important;
+	}
+}
+
+/* Animações */
+.datatable-animation {
+	animation: fadeInUp 0.6s ease-out;
+}
+
+@
+keyframes fadeInUp {from { opacity:0;
+	transform: translateY(20px);
+}
+
+to {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+}
+
+/* Classes utilitárias */
+.text-center {
+	text-align: center !important;
+}
+
+.text-left {
+	text-align: left !important;
+}
+
+.text-right {
+	text-align: right !important;
+}
+</style>
+
+		<div class="content-container">
+			<!-- Cabeçalho moderno da página -->
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-users page-icon"></i> <span class="title-text">Seguidores
+								Cadastrados</span>
+						</h1>
+						<p class="page-subtitle">Gerencie todos as seguidores do
+							sistema</p>
+					</div>
+					<div class="header-actions">
+						<p:button value="Novo Seguidor"
+							outcome="/pages/pessoa/cadastro.xhtml" icon="pi pi-plus"
+							styleClass="action-button-primary"
+							title="Cadastrar novo seguidor" />
+					</div>
+				</div>
+			</div>
+
+			<h:form id="listForm" prependId="false">
+				<!-- Barra de ações e estatísticas -->
+				<div class="actions-bar">
+					<div class="action-group">
+						<div class="stats-card">
+							<i class="pi pi-chart-bar"></i> <span class="stats-number">#{pessoaController.pessoas.size()}</span>
+							<span>seguidores(s) cadastrado(s)</span>
+						</div>
+					</div>
+
+					<div class="action-group">
+						<p:commandButton value="Atualizar Idades"
+							rendered="#{loginController.hasPermission('ADMIN')}"
+							icon="pi pi-refresh"
+							onclick="PF('confirmAtualizarIdades').show(); return false;"
+							styleClass="ui-button-help" />
+					</div>
+				</div>
+
+				<p:messages id="messages" showDetail="true" closable="true"
+					styleClass="modern-messages" onshow="scrollToTopOnError()" />
+
+				<!-- Tabela moderna de pessoas -->
+				<p:dataTable id="pessoasTable" var="pessoa"
+					value="#{pessoaController.pessoas}" stripeRows="true"
+					emptyMessage="Nenhuma pessoa encontrada"
+					styleClass="modern-datatable datatable-animation" paginator="true"
+					rows="20" paginatorPosition="bottom"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+					rowsPerPageTemplate="20,50,100"
+					filterable="true"
+					filterDelay="300"
+					widgetVar="pessoasTableWidget">
+
+					<p:column headerText="Código" sortBy="#{pessoa.id}"
+						filterBy="#{pessoa.id}" filterMatchMode="contains"
+						styleClass="text-center" width="80">
+						<h:outputText value="#{pessoa.id}" />
+					</p:column>
+
+					<p:column headerText="Nome" sortBy="#{pessoa.nome}"
+						filterBy="#{pessoa.nome}" filterMatchMode="contains"
+						styleClass="text-left" width="35%">
+						<div class="person-row">
+							<div class="person-avatar">#{pessoa.nome.substring(0,
+								1).toUpperCase()}</div>
+							<div class="person-table-info">
+								<div class="person-name">
+									<h:outputText value="#{pessoa.nome}" />
+								</div>
+								<div class="person-email" rendered="#{not empty pessoa.email}">
+									<i class="pi pi-envelope"></i>
+									<h:outputText value="#{pessoa.email}" />
+								</div>
+							</div>
+						</div>
+					</p:column>
+
+					<p:column headerText="CPF" sortBy="#{pessoa.cpf}"
+						styleClass="text-center" responsivePriority="3" width="140">
+						<h:outputText value="#{pessoa.cpf}"
+							rendered="#{not empty pessoa.cpf}" />
+						<h:outputText value="Não informado" styleClass="empty-value"
+							rendered="#{empty pessoa.cpf}" />
+					</p:column>
+
+					<p:column headerText="Idade" styleClass="text-center" width="80">
+						<div class="info-indicator age">
+							<i class="pi pi-calendar"></i>
+							<h:outputText value="#{pessoa.idade}"
+								rendered="#{not empty pessoa.idade}" />
+							<h:outputText value="N/A" styleClass="empty-value"
+								rendered="#{empty pessoa.idade}" />
+						</div>
+					</p:column>
+
+					<p:column headerText="Telefone" styleClass="text-center"
+						responsivePriority="4" width="140">
+						<div class="info-indicator phone"
+							rendered="#{not empty pessoa.telefone}">
+							<i class="pi pi-phone"></i>
+							<h:outputText value="#{pessoa.telefone}" />
+						</div>
+						<h:outputText value="Não informado" styleClass="empty-value"
+							rendered="#{empty pessoa.telefone}" />
+					</p:column>
+
+					<p:column headerText="Status" styleClass="text-center" width="100">
+						<span class="status-badge #{pessoa.ativo ? 'ativo' : 'inativo'}">
+							<i
+							class="pi #{pessoa.ativo ? 'pi-check-circle' : 'pi-times-circle'}"></i>
+							#{pessoa.ativo ? 'Ativo' : 'Inativo'}
+						</span>
+					</p:column>
+
+					<p:column headerText="Ações" styleClass="text-center" width="140">
+						<div class="table-action-buttons">
+							<p:commandButton icon="pi pi-eye" title="Visualizar"
+								action="#{pessoaController.visualizar(pessoa)}"
+								styleClass="action-button-secondary-table action-btn" />
+
+							<p:commandButton icon="pi pi-pencil" title="Editar"
+								action="#{pessoaController.editar(pessoa)}"
+								styleClass="action-button-warn-table action-btn" />
+
+							<p:commandButton icon="pi pi-trash" title="Excluir"
+								action="#{pessoaController.prepararExclusao(pessoa)}"
+								styleClass="action-button-danger-table action-btn"
+								update=":confirmDialog" oncomplete="PF('confirmDialog').show()" />
+						</div>
+					</p:column>
+				</p:dataTable>
+
+				<!-- Diálogo de confirmação de exclusão -->
+				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
+					header="Confirmar Exclusão" styleClass="modern-dialog"
+					message="Tem certeza que deseja excluir esta pessoa?"
+					closeOnEscape="true" width="450" height="200">
+					<p:commandButton value="Sim, excluir"
+						action="#{pessoaController.excluir}"
+						oncomplete="PF('confirmDialog').hide()"
+						update="pessoasTable messages" styleClass="ui-button-danger"
+						icon="pi pi-trash" />
+					<p:commandButton value="Cancelar"
+						onclick="PF('confirmDialog').hide()" type="button"
+						styleClass="ui-button-secondary" icon="pi pi-times" />
+				</p:confirmDialog>
+
+				<!-- Diálogo de atualização de idades -->
+				<p:confirmDialog id="confirmAtualizarIdadesDialog"
+					widgetVar="confirmAtualizarIdades" header="Atualizar Idades"
+					styleClass="modern-dialog"
+					message="Deseja realmente atualizar as idades? Isso pode demorar alguns segundos."
+					closeOnEscape="false" closable="false" showEffect="fade"
+					hideEffect="fade" width="500" height="250">
+
+					<p:commandButton id="btnSimAtualizar"
+						value="#{pessoaController.processandoAtualizacao ? 'Atualizando...' : (pessoaController.idadesAtualizadas ? 'Atualizado!' : 'Sim, atualizar')}"
+						icon="#{pessoaController.processandoAtualizacao ? 'pi pi-spin pi-spinner' : (pessoaController.idadesAtualizadas ? 'pi pi-check-circle' : 'pi pi-refresh')}"
+						action="#{pessoaController.atualizarIdades}"
+						update="pessoasTable messages btnSimAtualizar" process="@this"
+						disabled="#{pessoaController.processandoAtualizacao or pessoaController.idadesAtualizadas}"
+						styleClass="#{pessoaController.processandoAtualizacao ? 'loading-button' : ''}"
+						oncomplete="if(args.atualizado){setTimeout(function(){PF('confirmAtualizarIdades').hide();}, 2000);}" />
+					<p:commandButton value="Cancelar"
+						onclick="PF('confirmAtualizarIdades').hide();" type="button"
+						styleClass="ui-button-secondary" icon="pi pi-times"
+						disabled="#{pessoaController.processandoAtualizacao}" />
+				</p:confirmDialog>
+			</h:form>
+		</div>
+		<h:outputScript>
+		function initScrollOnError() {
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    // Verifica se o próprio nó é uma mensagem
+                    if (
+                        node.classList.contains('ui-messages') ||
+                        node.classList.contains('ui-growl') ||
+                        node.className.indexOf('message') !== -1 ||
+                        node.className.indexOf('error') !== -1
+                    ) {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+    });
+
+    // Observa apenas adições diretas ao body (ou ao container das mensagens, se houver)
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+}
+
+// Diagnóstico dos filtros
+function testarFiltros() {
+    console.log('Widget da tabela:', PF('pessoasTableWidget'));
+    console.log('Filtros disponíveis:', PF('pessoasTableWidget').cfg.filter);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initScrollOnError();
+    setTimeout(testarFiltros, 1000); // Testa após carregar
+});
+	</h:outputScript>
+	</ui:define>
+</ui:composition>
+
+</html>

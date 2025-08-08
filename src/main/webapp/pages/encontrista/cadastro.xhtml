@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="title">
+		#{empty param.id ? 'Cadastrar' : 'Editar'} Seguimista - Sistema Segue-me
+	</ui:define>
+
+	<ui:define name="content">
+		<div class="content-container">
+			<!-- Cabeçalho da página -->
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-user-plus page-icon"></i>
+							<span class="title-text">#{empty param.id ? 'Cadastrar' : 'Editar'} Seguimista</span>
+						</h1>
+						<p class="page-subtitle">
+							#{empty param.id ? 'Inscreva uma pessoa em um encontro' : 'Atualize os dados do seguimista'}
+						</p>
+					</div>
+					<div class="page-actions">
+						<p:button value="Voltar à Lista" 
+								  outcome="/pages/encontrista/lista.xhtml"
+								  icon="pi pi-arrow-left" 
+								  styleClass="action-button-primary" />
+					</div>
+				</div>
+			</div>
+
+			<h:form id="encontristaForm" styleClass="modern-form">
+				<p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages"
+				onshow="scrollToTopOnError()">
+					<p:autoUpdate />
+				</p:messages>
+
+				<f:metadata>
+					<f:viewParam name="id" />
+					<f:viewAction action="#{encontristaController.carregarEncontrista}"
+						if="#{not empty param.id}" />
+				</f:metadata>
+
+				<!-- Seção: Dados do Encontrista -->
+				<div class="form-section">
+					<p:fieldset legend="👤 Dados do Seguimista" styleClass="modern-fieldset" toggleable="true">
+						<div class="field-grid">
+							<div class="field-group">
+								<p:outputLabel for="pessoa" value="Pessoa" styleClass="required-field" />
+								<p:selectOneMenu id="pessoa"
+												value="#{encontristaController.encontrista.pessoa}"
+												converter="omnifaces.SelectItemsConverter" 
+												required="true"
+												requiredMessage="A pessoa é obrigatória" 
+												filter="true"
+												filterMatchMode="startsWith" 
+												filterNormalize="true"
+												panelStyle="width:400px">
+									<f:selectItem itemLabel="Selecione uma pessoa" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{encontristaController.pessoas}"
+										var="pessoa" itemLabel="#{pessoa.nome}" itemValue="#{pessoa}" />
+								</p:selectOneMenu>
+								<small class="field-hint">Selecione a pessoa que participará do encontro</small>
+							</div>
+
+							<div class="field-group">
+								<p:outputLabel for="encontro" value="Encontro" styleClass="required-field" />
+								<p:selectOneMenu id="encontro"
+												value="#{encontristaController.encontrista.encontro}"
+												converter="omnifaces.SelectItemsConverter" 
+												required="true"
+												requiredMessage="O encontro é obrigatório"
+												panelStyle="width:400px">
+									<f:selectItem itemLabel="Selecione um encontro" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{encontristaController.encontros}"
+										var="encontro" itemLabel="#{encontro.nome} - #{encontro.tema}"
+										itemValue="#{encontro}" />
+								</p:selectOneMenu>
+								<small class="field-hint">Escolha o encontro para inscrição</small>
+							</div>
+
+							<div class="field-group">
+								<p:outputLabel for="circulo" value="Círculo" styleClass="required-field" />
+								<p:selectOneMenu id="circulo"
+												value="#{encontristaController.encontrista.circulo}"
+												required="true"
+												requiredMessage="O círculo é obrigatório">
+									<f:selectItem itemLabel="Selecione um círculo" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{encontristaController.circulos}"
+										var="cor" itemLabel="Círculo #{cor}" itemValue="#{cor}" />
+								</p:selectOneMenu>
+								<small class="field-hint">Círculo ao qual o encontrista será designado</small>
+							</div>
+						</div>
+					</p:fieldset>
+				</div>
+
+				<!-- Seção: Observações -->
+				<div class="form-section">
+					<p:fieldset legend="📝 Informações Adicionais" styleClass="modern-fieldset" toggleable="true">
+						<div class="field-grid">
+							<div class="field-group full-width">
+								<p:outputLabel for="observacoes" value="Observações" />
+								<p:inputTextarea id="observacoes" 
+												value="#{encontristaController.encontrista.observacoes}" 
+												rows="4"
+												maxlength="255"
+												placeholder="Observações sobre o encontrista, necessidades especiais, etc." />
+								<small class="field-hint">Informações adicionais sobre o encontrista (máximo 255 caracteres)</small>
+							</div>
+						</div>
+					</p:fieldset>
+				</div>
+
+				<!-- Botões de Ação -->
+				<div class="form-actions">
+					<div class="action-buttons">
+						<p:commandButton value="💾 Salvar Seguimista" 
+									   oncomplete="handleSaveComplete(args);" 
+									   action="#{encontristaController.salvar}" 
+									   update="@form" 
+									   styleClass="ui-button-success action-button-primary"
+									   validateClient="true" />
+
+						<p:commandButton value="📋 Salvar e Continuar"
+								action="#{encontristaController.salvarEContinuar}"
+                                update="@form messages"
+                                process="@form"
+                                styleClass="ui-button-info action-button-secondary"
+                                validateClient="true"
+                                oncomplete="handleSaveComplete(args);" />
+
+						<p:button value="❌ Cancelar" 
+								outcome="/pages/encontrista/lista.xhtml"
+								styleClass="ui-button-secondary action-button-cancel" />
+					</div>
+					
+					<div class="form-help">
+						<small>
+							<i class="pi pi-info-circle"></i>
+							Campos marcados com * são obrigatórios. 
+							Certifique-se de que a pessoa selecionada atende aos critérios do encontro.
+						</small>
+					</div>
+				</div>
+			</h:form>
+		</div>
+
+		<style>
+			/* Estilos específicos para o cadastro de encontrista */
+			.ui-selectonemenu {
+				min-width: 250px;
+			}
+
+			.ui-selectonemenu .ui-selectonemenu-label {
+				padding: 0.75rem;
+			}
+
+			.ui-selectonemenu-panel .ui-selectonemenu-items {
+				padding: 0.5rem 0;
+			}
+
+			.ui-selectonemenu-panel .ui-selectonemenu-item {
+				padding: 0.75rem 1rem;
+				border-bottom: 1px solid #f0f0f0;
+			}
+
+			.ui-selectonemenu-panel .ui-selectonemenu-item:hover {
+				background-color: #f8f9fa;
+			}
+
+			.ui-selectonemenu-filter-container {
+				padding: 0.75rem;
+				border-bottom: 1px solid #dee2e6;
+			}
+
+			/* Responsividade específica */
+			@media (max-width: 768px) {
+				.field-grid {
+					grid-template-columns: 1fr;
+				}
+				
+				.action-buttons {
+					flex-direction: column;
+					gap: 0.75rem;
+				}
+				
+				.action-buttons .ui-button {
+					width: 100%;
+				}
+
+				.ui-selectonemenu {
+					min-width: auto;
+					width: 100%;
+				}
+			}
+		</style>
+		  <h:outputScript library="js" name="scrollUp.js" target="head" />
+	</ui:define>
+</ui:composition>
+
+</html>

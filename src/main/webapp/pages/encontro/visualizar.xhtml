@@ -1,0 +1,956 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Visualizar Encontro - #{encontroController.encontro.nome}</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="content">
+		<style>
+/* Layout principal melhorado */
+.page-header {
+	background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+	color: white;
+	padding: 2rem;
+	border-radius: 15px 15px 0 0;
+	margin: -1rem -1rem 2rem -1rem;
+	box-shadow: 0 4px 20px rgba(25, 118, 210, 0.3);
+}
+
+.page-header h2 {
+	margin: 0;
+	font-size: 1.8rem;
+	font-weight: 600;
+}
+
+.page-header .subtitle {
+	opacity: 0.9;
+	font-size: 1rem;
+	margin-top: 0.5rem;
+}
+
+.status-indicator {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 1rem;
+	border-radius: 25px;
+	font-weight: 600;
+	font-size: 0.9rem;
+	margin-top: 1rem;
+	backdrop-filter: blur(10px);
+}
+
+.status-indicator.ativo {
+	background: rgba(76, 175, 80, 0.2);
+	border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.status-indicator.inativo {
+	background: rgba(244, 67, 54, 0.2);
+	border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Dashboard de círculos melhorado */
+.dashboard-section {
+	background: #fff;
+	border-radius: 15px;
+	padding: 2rem;
+	margin: 2rem 0;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+	border: 1px solid #e3f2fd;
+}
+
+.section-title {
+	color: #1976d2;
+	margin-bottom: 1.5rem;
+	font-size: 1.4rem;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	font-weight: 600;
+}
+
+.dashboard-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 1.5rem;
+	margin: 1.5rem 0;
+}
+
+.dashboard-card {
+	padding: 1.5rem;
+	border-radius: 20px;
+	color: #fff;
+	text-align: center;
+	box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	cursor: pointer;
+	position: relative;
+	border: 3px solid transparent;
+	min-height: 180px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.dashboard-card:hover {
+	transform: translateY(-8px) scale(1.05);
+	box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+	border: 3px solid rgba(255, 255, 255, 0.8);
+}
+
+.dashboard-card.rosa {
+	background: linear-gradient(135deg, #e91e63 0%, #f06292 100%);
+}
+
+.dashboard-card.azul {
+	background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%);
+}
+
+.dashboard-card.verde {
+	background: linear-gradient(135deg, #4caf50 0%, #81c784 100%);
+}
+
+.dashboard-card.vermelho {
+	background: linear-gradient(135deg, #f44336 0%, #ef5350 100%);
+}
+
+.dashboard-card.amarelo {
+	background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+	color: #fff;
+}
+
+.dashboard-card.roxo {
+	background: linear-gradient(135deg, #9c27b0 0%, #ba68c8 100%);
+}
+
+.card-header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.card-header i {
+	font-size: 2.5rem;
+	opacity: 0.9;
+}
+
+.card-title {
+	font-weight: 700;
+	font-size: 1.1rem;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.card-count {
+	background: rgba(255, 255, 255, 0.25);
+	backdrop-filter: blur(10px);
+	border-radius: 50%;
+	width: 70px;
+	height: 70px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 2rem;
+	font-weight: 700;
+	margin: 1rem auto;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+	border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Informações do encontro melhoradas */
+.info-section {
+	background: #fff;
+	border-radius: 15px;
+	padding: 2rem;
+	margin: 2rem 0;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+	border: 1px solid #e3f2fd;
+}
+
+.info-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+.info-item {
+	background: #f8f9fa;
+	padding: 1.2rem;
+	border-radius: 12px;
+	border-left: 4px solid #2196f3;
+	transition: all 0.2s ease;
+}
+
+.info-item:hover {
+	background: #e3f2fd;
+	transform: translateX(5px);
+}
+
+.info-label {
+	font-weight: 600;
+	color: #424242;
+	font-size: 0.85rem;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	margin-bottom: 0.5rem;
+	display: block;
+}
+
+.info-value {
+	font-size: 1.1rem;
+	color: #212121;
+	font-weight: 500;
+	word-break: break-word;
+}
+
+/* Dialog melhorado */
+.integrante-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	max-height: 400px;
+	overflow-y: auto;
+}
+
+.integrante-list li {
+	padding: 1rem 1.5rem;
+	margin-bottom: 0.75rem;
+	background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+	border-radius: 12px;
+	border-left: 4px solid #2196f3;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	transition: all 0.3s ease;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.integrante-list li:hover {
+	background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+	transform: translateX(8px);
+	box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
+}
+
+.integrante-list li i {
+	color: #2196f3;
+	font-size: 1.2rem;
+}
+
+/* TabView melhorado */
+.ui-tabs .ui-tabs-nav {
+	background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+	border-radius: 12px 12px 0 0;
+	border: none;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.ui-tabs .ui-tabs-nav li a {
+	padding: 1rem 1.5rem;
+	font-weight: 600;
+	color: #424242 !important;
+	transition: all 0.3s ease;
+	text-decoration: none !important;
+	display: flex !important;
+	align-items: center !important;
+}
+
+.ui-tabs .ui-tabs-nav li:hover a {
+	background: rgba(33, 150, 243, 0.1);
+	color: #1976d2 !important;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-state-active a, .ui-tabs .ui-tabs-nav li.ui-state-active a:hover,
+	.ui-tabs .ui-tabs-nav li.ui-state-active a:focus {
+	background: #2196f3 !important;
+	color: white !important;
+	border-radius: 8px 8px 0 0;
+	text-shadow: none !important;
+}
+
+/* Estilos específicos para ícones do PrimeFaces nas abas */
+.ui-tabs .ui-tabs-nav li.ui-state-active a .ui-icon:before, .ui-tabs .ui-tabs-nav li.ui-state-active a i:before
+	{
+	color: white !important;
+}
+
+/* Garantir que todos os elementos dentro da aba ativa sejam brancos */
+.ui-tabs .ui-tabs-nav li.ui-state-active a * {
+	color: white !important;
+}
+
+.ui-tabs .ui-tabs-panels {
+	background: #fff;
+	border: 1px solid #e3f2fd;
+	border-radius: 0 0 12px 12px;
+	padding: 2rem;
+}
+
+/* Botões de ação melhorados */
+.form-buttons {
+	display: flex;
+	gap: 1rem;
+	justify-content: flex-end;
+	margin-top: 2rem;
+	padding-top: 1.5rem;
+	border-top: 2px solid #f0f0f0;
+}
+
+.form-buttons .ui-button {
+	padding: 0.75rem 1.5rem;
+	border-radius: 25px;
+	font-weight: 600;
+	transition: all 0.3s ease;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-buttons .ui-button:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsividade melhorada */
+@media ( max-width : 768px) {
+	.page-header {
+		padding: 1.5rem;
+		margin: -0.5rem -0.5rem 1.5rem -0.5rem;
+	}
+	.dashboard-section, .info-section {
+		padding: 1.5rem;
+		margin: 1.5rem 0;
+	}
+	.dashboard-cards {
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+	.info-grid {
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+	.form-buttons {
+		flex-direction: column;
+		align-items: stretch;
+	}
+	.ui-tabs .ui-tabs-nav li a {
+		padding: 0.75rem 1rem;
+		font-size: 0.9rem;
+	}
+}
+
+/* Estados vazios */
+.empty-state {
+	text-align: center;
+	padding: 3rem;
+	color: #757575;
+}
+
+.empty-state i {
+	font-size: 4rem;
+	color: #e0e0e0;
+	margin-bottom: 1rem;
+	display: block;
+}
+
+.empty-state p {
+	font-size: 1.1rem;
+	margin: 0;
+}
+
+/* Melhorias nas DataTables */
+.custom-datatable .ui-datatable-header {
+	background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+	border: none;
+	padding: 1rem;
+	border-radius: 8px 8px 0 0;
+}
+
+.custom-datatable .ui-datatable thead th {
+	background: #2196f3;
+	color: white;
+	font-weight: 600;
+	padding: 1rem 0.75rem;
+	border: none;
+}
+
+.custom-datatable .ui-datatable tbody td {
+	padding: 0.875rem 0.75rem;
+	border-bottom: 1px solid #f0f0f0;
+	vertical-align: middle;
+}
+
+.custom-datatable .ui-datatable tbody tr:hover {
+	background: #f3f4f6;
+	transform: scale(1.01);
+	transition: all 0.2s ease;
+}
+
+/* Dialog customizado */
+.custom-dialog .ui-dialog {
+	border-radius: 15px !important;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+	border: none !important;
+}
+
+.custom-dialog .ui-dialog-titlebar {
+	background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+	color: white;
+	border: none;
+	border-radius: 15px 15px 0 0 !important;
+	padding: 1.5rem 2rem !important;
+	font-weight: 600 !important;
+	font-size: 1.1rem !important;
+}
+
+.custom-dialog .ui-dialog-title {
+	color: white !important;
+	font-weight: 600 !important;
+}
+
+.custom-dialog .ui-dialog-titlebar-icon {
+	color: white !important;
+	opacity: 0.9 !important;
+}
+
+.custom-dialog .ui-dialog-titlebar-icon:hover {
+	background: rgba(255, 255, 255, 0.1) !important;
+	color: white !important;
+}
+
+.custom-dialog .ui-dialog-content {
+	padding: 2rem !important;
+	border: none;
+	background: white !important;
+}
+
+.custom-dialog .ui-dialog-footer {
+	background: #f8f9fa;
+	border: none;
+	border-radius: 0 0 15px 15px !important;
+	padding: 1rem 1.5rem;
+	text-align: right;
+}
+
+/* DIALOG COM CORES DOS CÍRCULOS */
+.dialog-rosa .ui-dialog-titlebar {
+	background: linear-gradient(135deg, #e91e63 0%, #f06292 100%) !important;
+	box-shadow: 0 2px 10px rgba(233, 30, 99, 0.3) !important;
+}
+
+.dialog-rosa .ui-dialog {
+	background: linear-gradient(135deg, rgba(233, 30, 99, 0.02) 0%,
+		rgba(240, 98, 146, 0.01) 100%) !important;
+	border: 2px solid rgba(233, 30, 99, 0.1) !important;
+}
+
+.dialog-rosa .integrante-list li {
+	border-left-color: #e91e63 !important;
+	background: linear-gradient(135deg, rgba(233, 30, 99, 0.03) 0%,
+		rgba(240, 98, 146, 0.02) 100%) !important;
+}
+
+.dialog-rosa .integrante-list li:hover {
+	background: linear-gradient(135deg, rgba(233, 30, 99, 0.08) 0%,
+		rgba(240, 98, 146, 0.05) 100%) !important;
+}
+
+.dialog-rosa .integrante-list li i {
+	color: #e91e63 !important;
+}
+
+.dialog-azul .ui-dialog-titlebar {
+	background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%) !important;
+	box-shadow: 0 2px 10px rgba(33, 150, 243, 0.3) !important;
+}
+
+.dialog-azul .ui-dialog {
+	background: linear-gradient(135deg, rgba(33, 150, 243, 0.02) 0%,
+		rgba(100, 181, 246, 0.01) 100%) !important;
+	border: 2px solid rgba(33, 150, 243, 0.1) !important;
+}
+
+.dialog-azul .integrante-list li {
+	border-left-color: #2196f3 !important;
+	background: linear-gradient(135deg, rgba(33, 150, 243, 0.03) 0%,
+		rgba(100, 181, 246, 0.02) 100%) !important;
+}
+
+.dialog-azul .integrante-list li:hover {
+	background: linear-gradient(135deg, rgba(33, 150, 243, 0.08) 0%,
+		rgba(100, 181, 246, 0.05) 100%) !important;
+}
+
+.dialog-azul .integrante-list li i {
+	color: #2196f3 !important;
+}
+
+.dialog-verde .ui-dialog-titlebar {
+	background: linear-gradient(135deg, #4caf50 0%, #81c784 100%) !important;
+	box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3) !important;
+}
+
+.dialog-verde .ui-dialog {
+	background: linear-gradient(135deg, rgba(76, 175, 80, 0.02) 0%,
+		rgba(129, 199, 132, 0.01) 100%) !important;
+	border: 2px solid rgba(76, 175, 80, 0.1) !important;
+}
+
+.dialog-verde .integrante-list li {
+	border-left-color: #4caf50 !important;
+	background: linear-gradient(135deg, rgba(76, 175, 80, 0.03) 0%,
+		rgba(129, 199, 132, 0.02) 100%) !important;
+}
+
+.dialog-verde .integrante-list li:hover {
+	background: linear-gradient(135deg, rgba(76, 175, 80, 0.08) 0%,
+		rgba(129, 199, 132, 0.05) 100%) !important;
+}
+
+.dialog-verde .integrante-list li i {
+	color: #4caf50 !important;
+}
+
+.dialog-vermelho .ui-dialog-titlebar {
+	background: linear-gradient(135deg, #f44336 0%, #ef5350 100%) !important;
+	box-shadow: 0 2px 10px rgba(244, 67, 54, 0.3) !important;
+}
+
+.dialog-vermelho .ui-dialog {
+	background: linear-gradient(135deg, rgba(244, 67, 54, 0.02) 0%,
+		rgba(239, 83, 80, 0.01) 100%) !important;
+	border: 2px solid rgba(244, 67, 54, 0.1) !important;
+}
+
+.dialog-vermelho .integrante-list li {
+	border-left-color: #f44336 !important;
+	background: linear-gradient(135deg, rgba(244, 67, 54, 0.03) 0%,
+		rgba(239, 83, 80, 0.02) 100%) !important;
+}
+
+.dialog-vermelho .integrante-list li:hover {
+	background: linear-gradient(135deg, rgba(244, 67, 54, 0.08) 0%,
+		rgba(239, 83, 80, 0.05) 100%) !important;
+}
+
+.dialog-vermelho .integrante-list li i {
+	color: #f44336 !important;
+}
+
+.dialog-amarelo .ui-dialog-titlebar {
+	background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%) !important;
+	box-shadow: 0 2px 10px rgba(255, 152, 0, 0.3) !important;
+}
+
+.dialog-amarelo .ui-dialog {
+	background: linear-gradient(135deg, rgba(255, 152, 0, 0.02) 0%,
+		rgba(255, 183, 77, 0.01) 100%) !important;
+	border: 2px solid rgba(255, 152, 0, 0.1) !important;
+}
+
+.dialog-amarelo .integrante-list li {
+	border-left-color: #ff9800 !important;
+	background: linear-gradient(135deg, rgba(255, 152, 0, 0.03) 0%,
+		rgba(255, 183, 77, 0.02) 100%) !important;
+}
+
+.dialog-amarelo .integrante-list li:hover {
+	background: linear-gradient(135deg, rgba(255, 152, 0, 0.08) 0%,
+		rgba(255, 183, 77, 0.05) 100%) !important;
+}
+
+.dialog-amarelo .integrante-list li i {
+	color: #ff9800 !important;
+}
+
+.dialog-roxo .ui-dialog-titlebar {
+	background: linear-gradient(135deg, #9c27b0 0%, #ba68c8 100%) !important;
+	box-shadow: 0 2px 10px rgba(156, 39, 176, 0.3) !important;
+}
+
+.dialog-roxo .ui-dialog {
+	background: linear-gradient(135deg, rgba(156, 39, 176, 0.02) 0%,
+		rgba(186, 104, 200, 0.01) 100%) !important;
+	border: 2px solid rgba(156, 39, 176, 0.1) !important;
+}
+
+.dialog-roxo .integrante-list li {
+	border-left-color: #9c27b0 !important;
+	background: linear-gradient(135deg, rgba(156, 39, 176, 0.03) 0%,
+		rgba(186, 104, 200, 0.02) 100%) !important;
+}
+
+.dialog-roxo .integrante-list li:hover {
+	background: linear-gradient(135deg, rgba(156, 39, 176, 0.08) 0%,
+		rgba(186, 104, 200, 0.05) 100%) !important;
+}
+
+.dialog-roxo .integrante-list li i {
+	color: #9c27b0 !important;
+}
+
+/* Animações suaves */
+@
+keyframes fadeInUp {from { opacity:0;
+	transform: translateY(30px);
+}
+
+to {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+}
+.dashboard-section, .info-section {
+	animation: fadeInUp 0.6s ease-out;
+}
+
+/* Melhorias de acessibilidade */
+.dashboard-card:focus, .ui-button:focus {
+	outline: 3px solid #42a5f5;
+	outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+	.form-buttons, .ui-paginator, .p-button {
+		display: none !important;
+	}
+	.page-header {
+		background: #fff !important;
+		color: #000 !important;
+		box-shadow: none !important;
+	}
+	.dashboard-card {
+		box-shadow: none !important;
+		border: 2px solid #ddd !important;
+	}
+}
+
+/* Classes para tags */
+.tag-success {
+	background: #4caf50 !important;
+	color: white !important;
+}
+
+.tag-secondary {
+	background: #757575 !important;
+	color: white !important;
+}
+
+.tag-primary {
+	background: #2196f3 !important;
+	color: white !important;
+}
+</style>
+		<div class="content-container">
+			<div class="form-container">
+				<!-- Cabeçalho melhorado -->
+				<div class="page-header">
+					<h2>
+						<i class="pi pi-calendar"></i> #{encontroController.encontro.nome}
+					</h2>
+					<div class="subtitle">ID: #{encontroController.encontro.id} |
+						#{encontroController.encontro.tema}</div>
+					<div
+						class="status-indicator #{encontroController.encontro.ativo ? 'ativo' : 'inativo'}">
+						<i
+							class="pi #{encontroController.encontro.ativo ? 'pi-check-circle' : 'pi-times-circle'}"></i>
+						#{encontroController.encontro.ativo ? 'Encontro Ativo' : 'Encontro
+						Inativo'}
+					</div>
+				</div>
+
+				<h:form id="visualizarForm">
+					<f:metadata>
+						<f:viewParam name="id" />
+						<f:viewAction action="#{encontroController.carregarEncontro}"
+							if="#{not empty param.id}" />
+					</f:metadata>
+
+					<!-- Dashboard de Círculos -->
+					<div class="dashboard-section">
+						<h3 class="section-title">
+							<i class="pi pi-chart-pie"></i> Distribuição por Círculos
+						</h3>
+						<p:outputPanel id="dashboardCards" styleClass="dashboard-cards"
+							layout="block">
+							<ui:repeat value="#{encontroController.circulos}" var="circulo">
+								<div class="dashboard-card #{circulo.name().toLowerCase()}">
+									<div class="card-header">
+										<i class="pi pi-circle-fill"></i> <span class="card-title">#{circulo.name()}</span>
+									</div>
+									<div class="card-count">
+										#{encontroController.contarIntegrantesPorCirculo(circulo)}</div>
+									<p:commandButton value="Ver Integrantes" icon="pi pi-users"
+										styleClass="p-button-rounded p-button-outlined"
+										style="background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.5);"
+										actionListener="#{encontroController.selecionarCirculo(circulo)}"
+										update=":visualizarForm:dialogIntegrantes"
+										oncomplete="PF('dlgIntegrantes').show()"
+										disabled="#{encontroController.encontroSelecionado == null or encontroController.contarIntegrantesPorCirculo(circulo) == 0}" />
+								</div>
+							</ui:repeat>
+						</p:outputPanel>
+					</div>
+					<!-- Informações Detalhadas do Encontro -->
+					<div class="info-section">
+						<h3 class="section-title">
+							<i class="pi pi-info-circle"></i> Informações Detalhadas
+						</h3>
+						<div class="info-grid">
+							<div class="info-item">
+								<span class="info-label">Tema</span>
+								<div class="info-value">#{encontroController.encontro.tema}</div>
+							</div>
+
+							<div class="info-item">
+								<span class="info-label">Descrição</span>
+								<div class="info-value">#{encontroController.encontro.descricao}</div>
+							</div>
+
+							<div class="info-item">
+								<span class="info-label">Local</span>
+								<div class="info-value">#{encontroController.encontro.local}</div>
+							</div>
+
+							<div class="info-item">
+								<span class="info-label">Capacidade Máxima</span>
+								<div class="info-value">#{encontroController.encontro.capacidadeMaxima}
+									pessoas</div>
+							</div>
+
+							<div class="info-item">
+								<span class="info-label">Data de Início</span>
+								<div class="info-value">
+									<h:outputText value="#{encontroController.encontro.dataInicio}">
+										<f:converter converterId="localDateConverter" />
+									</h:outputText>
+								</div>
+							</div>
+
+							<div class="info-item">
+								<span class="info-label">Data de Fim</span>
+								<div class="info-value">
+									<h:outputText value="#{encontroController.encontro.dataFim}">
+										<f:converter converterId="localDateConverter" />
+									</h:outputText>
+								</div>
+							</div>
+
+							<div class="info-item">
+								<span class="info-label">Valor da Inscrição</span>
+								<div class="info-value">
+									<h:outputText
+										value="#{encontroController.encontro.valorInscricao}">
+										<f:convertNumber type="currency" currencySymbol="R$"
+											locale="pt_BR" />
+									</h:outputText>
+								</div>
+							</div>
+
+							<div class="info-item">
+								<span class="info-label">Valor da Contribuição</span>
+								<div class="info-value">
+									<h:outputText
+										value="#{encontroController.encontro.valorContribuicaoTrabalhador}">
+										<f:convertNumber type="currency" currencySymbol="R$"
+											locale="pt_BR" />
+									</h:outputText>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+					<!-- Dialog dos Integrantes -->
+					<p:dialog
+						header="#{encontroController.circuloSelecionado != null ? 'Integrantes do Círculo '.concat(encontroController.circuloSelecionado) : 'Integrantes'}"
+						closeOnEscape="true" widgetVar="dlgIntegrantes" modal="true"
+						id="dialogIntegrantes" resizable="false" width="600" height="500"
+						styleClass="custom-dialog #{encontroController.circuloSelecionado != null ? 'dialog-'.concat(encontroController.circuloSelecionado.toString().toLowerCase()) : ''}">
+
+						<div>
+							<h:panelGroup
+								rendered="#{not empty encontroController.integrantesSelecionados}">
+								<p style="color: #666; margin-bottom: 1rem; font-size: 0.95rem;">
+									<i class="pi pi-info-circle" style="margin-right: 0.5rem;"></i>
+									Total de #{encontroController.integrantesSelecionados.size()}
+									integrante(s) neste círculo
+								</p>
+							</h:panelGroup>
+
+							<ul class="integrante-list">
+								<ui:repeat value="#{encontroController.integrantesSelecionados}"
+									var="integrante">
+									<li><i class="pi pi-user"></i>
+										<div>
+											<strong>#{integrante.pessoa.nome}</strong> <br /> <small
+												style="color: #666;"> <h:outputText
+													rendered="#{integrante.encontro.ativo}"
+													value="Fazendo o encontro com #{integrante.idade} anos" />
+												<h:outputText rendered="#{not integrante.encontro.ativo}"
+													value="Fez o encontro com #{integrante.idade} anos" />
+											</small>
+										</div></li>
+								</ui:repeat>
+
+								<ui:fragment
+									rendered="#{empty encontroController.integrantesSelecionados}">
+									<div class="empty-state">
+										<i class="pi pi-users"></i>
+										<p>Nenhum integrante cadastrado neste círculo.</p>
+									</div>
+								</ui:fragment>
+							</ul>
+						</div>
+
+						<f:facet name="footer">
+							<p:commandButton value="Fechar" icon="pi pi-times"
+								styleClass="p-button-secondary"
+								onclick="PF('dlgIntegrantes').hide(); return false;" />
+						</f:facet>
+					</p:dialog>
+
+
+
+					<!-- Detalhes em Abas -->
+					<div class="info-section">
+						<h3 class="section-title">
+							<i class="pi pi-list"></i> Detalhes do Encontro
+						</h3>
+
+						<p:tabView styleClass="custom-tabview">
+							<p:tab title="Encontristas" icon="pi pi-users">
+								<h:panelGroup
+									rendered="#{not empty encontroController.encontro.encontristas}">
+									<p style="color: #666; margin-bottom: 1rem;">
+										<i class="pi pi-info-circle" style="margin-right: 0.5rem;"></i>
+										Total de #{encontroController.encontro.encontristas.size()}
+										encontrista(s) cadastrado(s)
+									</p>
+								</h:panelGroup>
+
+								<p:dataTable value="#{encontroController.encontro.encontristas}"
+									var="encontrista" styleClass="custom-datatable"
+									emptyMessage="Nenhum encontrista cadastrado para este encontro"
+									paginator="true" rows="10" paginatorPosition="bottom">
+
+									<p:column headerText="Nome" sortBy="#{encontrista.pessoa.nome}">
+										<h:outputText value="#{encontrista.pessoa.nome}" />
+									</p:column>
+
+									<p:column headerText="Data de Inscrição"
+										sortBy="#{encontrista.dataInscricao}">
+										<h:outputText value="#{encontrista.dataInscricao}">
+											<f:converter converterId="localDateTimeConverter" />
+										</h:outputText>
+									</p:column>
+
+									<p:column headerText="Valor Pago"
+										sortBy="#{encontrista.valorPago}">
+										<h:outputText value="#{encontrista.valorPago}"
+											style="font-weight: 600; color: #2e7d32;">
+											<f:convertNumber type="currency" currencySymbol="R$"
+												locale="pt_BR" />
+										</h:outputText>
+									</p:column>
+								</p:dataTable>
+							</p:tab>
+
+							<p:tab title="Equipes" icon="pi pi-sitemap">
+								<h:panelGroup
+									rendered="#{not empty encontroController.encontro.equipes}">
+									<p style="color: #666; margin-bottom: 1rem;">
+										<i class="pi pi-info-circle" style="margin-right: 0.5rem;"></i>
+										Total de #{encontroController.encontro.equipes.size()}
+										equipe(s) cadastrada(s)
+									</p>
+								</h:panelGroup>
+
+								<p:dataTable value="#{encontroController.encontro.equipes}"
+									var="equipe" styleClass="custom-datatable"
+									emptyMessage="Nenhuma equipe cadastrada para este encontro"
+									paginator="true" rows="10" paginatorPosition="bottom">
+
+									<p:column headerText="Nome" sortBy="#{equipe.nome}">
+										<h:outputText value="#{equipe.nome}" style="font-weight: 600;" />
+									</p:column>
+
+									<p:column headerText="Tipo" sortBy="#{equipe.tipoEquipe.nome}">
+										<h:outputText value="#{equipe.tipoEquipe.nome}" />
+									</p:column>
+
+									<p:column headerText="Dirigente" style="text-align: center;">
+										<p:tag value="#{equipe.ehEquipeDirigente() ? 'Sim' : 'Não'}"
+											styleClass="#{equipe.ehEquipeDirigente() ? 'tag-success' : 'tag-secondary'}" />
+									</p:column>
+								</p:dataTable>
+							</p:tab>
+
+							<p:tab title="Palestras" icon="pi pi-microphone">
+								<h:panelGroup
+									rendered="#{not empty encontroController.palestrasPorData}">
+									<p style="color: #666; margin-bottom: 1rem;">
+										<i class="pi pi-info-circle" style="margin-right: 0.5rem;"></i>
+										Total de #{encontroController.palestrasPorData.size()}
+										palestra(s) cadastrada(s)
+									</p>
+								</h:panelGroup>
+
+								<p:dataTable value="#{encontroController.palestrasPorData}"
+									var="palestra" styleClass="custom-datatable"
+									emptyMessage="Nenhuma palestra cadastrada para este encontro"
+									rows="10" paginator="true" paginatorPosition="bottom"
+									paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									rowsPerPageTemplate="5,10,15">
+
+									<p:column headerText="Título" sortBy="#{palestra.titulo}">
+										<h:outputText value="#{palestra.titulo}"
+											style="font-weight: 600; color: #1976d2;" />
+									</p:column>
+
+									<p:column headerText="Tema"
+										sortBy="#{palestra.tema.nomeExibicao}">
+										<p:tag value="#{palestra.tema.nomeExibicao}"
+											styleClass="tag-primary" />
+									</p:column>
+
+									<p:column headerText="Palestrantes">
+										<ui:repeat value="#{palestra.palestrantes.toArray()}"
+											var="palestrante">
+											<div class="palestrante-badge">
+												<i class="pi pi-user"></i>
+												<h:outputText value="#{palestrante.nomeDisplay}" />
+											</div>
+										</ui:repeat>
+									</p:column>
+								</p:dataTable>
+							</p:tab>
+						</p:tabView>
+					</div>
+
+					<!-- Botões de Ação -->
+					<div class="form-buttons">
+						<p:button value="Editar Encontro"
+							outcome="/pages/encontro/cadastro.xhtml" icon="pi pi-pencil"
+							styleClass="ui-button-warning">
+							<f:param name="id" value="#{encontroController.encontro.id}" />
+						</p:button>
+
+						<p:button value="Voltar à Lista"
+							outcome="/pages/encontro/lista.xhtml" icon="pi pi-arrow-left"
+							styleClass="ui-button-secondary" />
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>
+
+</html>

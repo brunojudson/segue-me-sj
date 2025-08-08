@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="title">
+		#{empty param.id ? 'Cadastrar' : 'Editar'} Tipo de Equipe - Sistema Segue-me
+	</ui:define>
+
+	<ui:define name="content">
+		<div class="content-container">
+			<!-- Cabeçalho da página -->
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-tags page-icon"></i>
+							<span class="title-text">#{empty param.id ? 'Cadastrar' : 'Editar'} Tipo de Equipe</span>
+						</h1>
+						<p class="page-subtitle">
+							#{empty param.id ? 'Crie um novo tipo de equipe' : 'Atualize os dados do tipo de equipe'}
+						</p>
+					</div>
+					<div class="page-actions">
+						<p:button value="Voltar à Lista" 
+								  outcome="/pages/tipoequipe/lista.xhtml"
+								  icon="pi pi-arrow-left" 
+								  styleClass="action-button-primary" />
+					</div>
+				</div>
+			</div>
+
+			<h:form id="tipoEquipeForm" styleClass="modern-form">
+				<p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages">
+					<p:autoUpdate />
+				</p:messages>
+				
+				<f:metadata>
+					<f:viewParam name="id" />
+					<f:viewAction action="#{tipoEquipeController.carregarTipoEquipe}" if="#{not empty param.id}" />
+				</f:metadata>
+
+				<!-- Seção: Dados Básicos -->
+				<div class="form-section">
+					<p:fieldset legend="🏷️ Dados Básicos" styleClass="modern-fieldset" toggleable="true">
+						<div class="field-grid">
+							<div class="field-group">
+								<p:outputLabel for="nome" value="Nome do Tipo" styleClass="required-field" />
+								<p:inputText id="nome" 
+										   value="#{tipoEquipeController.tipoEquipe.nome}" 
+										   required="true" 
+										   requiredMessage="O nome é obrigatório"
+										   placeholder="Digite o nome do tipo de equipe"
+										   maxlength="100" />
+								<small class="field-hint">Nome que identificará este tipo de equipe</small>
+							</div>
+
+							<div class="field-group full-width">
+								<p:outputLabel for="descricao" value="Descrição" />
+								<p:inputTextarea id="descricao" 
+												value="#{tipoEquipeController.tipoEquipe.descricao}" 
+												rows="4"
+												placeholder="Descreva as características e responsabilidades deste tipo de equipe"
+												maxlength="500" />
+								<small class="field-hint">Descrição detalhada do tipo de equipe (máximo 500 caracteres)</small>
+							</div>
+						</div>
+					</p:fieldset>
+				</div>
+
+				<!-- Seção: Configurações -->
+				<div class="form-section">
+					<p:fieldset legend="⚙️ Configurações" styleClass="modern-fieldset" toggleable="true">
+						<div class="field-grid">
+							<div class="field-group checkbox-group">
+								<p:outputLabel for="dirigente" value="Equipe Dirigente" />
+								<div class="checkbox-container">
+									<p:selectBooleanCheckbox id="dirigente" 
+															value="#{tipoEquipeController.tipoEquipe.ehDirigente}" />
+									<span class="checkbox-label">Esta é uma equipe dirigente</span>
+								</div>
+								<small class="field-hint">Marque se este tipo de equipe possui função de direção</small>
+							</div>
+
+							<div class="field-group checkbox-group">
+								<p:outputLabel for="ativo" value="Status" />
+								<div class="checkbox-container">
+									<p:selectBooleanCheckbox id="ativo" 
+															value="#{tipoEquipeController.tipoEquipe.ativo}" />
+									<span class="checkbox-label">Tipo de equipe ativo</span>
+								</div>
+								<small class="field-hint">Marque para manter este tipo ativo no sistema</small>
+							</div>
+						</div>
+					</p:fieldset>
+				</div>
+
+				<!-- Botões de Ação -->
+				<div class="form-actions">
+					<div class="action-buttons">
+						<p:commandButton value="💾 Salvar Tipo de Equipe" 
+									   action="#{tipoEquipeController.salvar}" 
+									   update="@form" 
+									   styleClass="ui-button-success action-button-primary" 
+									   oncomplete="handleSaveComplete(args);"
+									   validateClient="true" />
+
+						<!-- <p:button value="📋 Salvar e Continuar"
+								outcome="/pages/tipoequipe/cadastro.xhtml"
+								styleClass="ui-button-info action-button-secondary" /> -->
+
+						<p:button value="❌ Cancelar" 
+								outcome="/pages/tipoequipe/lista.xhtml" 
+								styleClass="ui-button-secondary action-button-cancel" />
+					</div>
+					
+					<div class="form-help">
+						<small>
+							<i class="pi pi-info-circle"></i>
+							Campos marcados com * são obrigatórios. 
+							Tipos inativos não aparecerão nas opções de seleção.
+						</small>
+					</div>
+				</div>
+			</h:form>
+		</div>
+
+		<style>
+			/* Estilos específicos para o cadastro de tipo de equipe */
+			.checkbox-container {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+				padding: 0.5rem;
+				border-radius: 8px;
+				background-color: #f8f9fa;
+			}
+
+			.checkbox-label {
+				font-weight: 500;
+				color: #495057;
+			}
+
+			.ui-chkbox {
+				margin: 0 !important;
+			}
+
+			.ui-chkbox .ui-chkbox-box {
+				width: 20px !important;
+				height: 20px !important;
+				border-radius: 4px !important;
+			}
+
+			.ui-chkbox .ui-chkbox-icon {
+				font-size: 12px !important;
+			}
+
+			/* Responsividade específica */
+			@media (max-width: 768px) {
+				.field-grid {
+					grid-template-columns: 1fr;
+				}
+				
+				.action-buttons {
+					flex-direction: column;
+					gap: 0.75rem;
+				}
+				
+				.action-buttons .ui-button {
+					width: 100%;
+				}
+
+				.checkbox-container {
+					flex-direction: column;
+					align-items: flex-start;
+					gap: 0.5rem;
+				}
+			}
+		</style>
+	</ui:define>
+</ui:composition>
+
+</html>

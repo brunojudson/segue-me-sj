@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" lang="pt-BR" xml:lang="pt-BR">
+
+<head>
+<title>Contribuições - Sistema Segue-me</title>
+<meta name="description"
+	content="Gestão de contribuições financeiras dos trabalhadores do Sistema Segue-me" />
+</head>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="title">Contribuições - Sistema Segue-me</ui:define>
+
+	<ui:define name="content">
+		<div class="content-container">
+			<!-- Cabeçalho moderno da página -->
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-dollar page-icon"></i> <span class="title-text">Contribuições</span>
+						</h1>
+						<p class="page-subtitle">Gerencie as contribuições financeiras
+							dos trabalhadores e acompanhe os pagamentos</p>
+					</div>
+					<div class="header-actions">
+						<p:button value="Nova Contribuição"
+							outcome="/pages/contribuicao/cadastro.xhtml" icon="pi pi-plus"
+							styleClass="action-button-primary"
+							title="Cadastrar nova contribuição" />
+					</div>
+				</div>
+			</div>
+
+			<h:form id="listForm" prependId="false">
+				<p:messages id="messages" showDetail="true" closable="true">
+					<p:autoUpdate />
+				</p:messages>
+
+				<p:dataTable id="contribuicoesTable" var="contribuicao"
+					value="#{contribuicaoController.contribuicoes}"
+					styleClass="modern-datatable datatable-animation"
+					widgetVar="contribuicoesTable" paginator="true" rows="15"
+					paginatorPosition="bottom" stripeRows="true" reflow="true"
+					emptyMessage="Nenhuma contribuição foi encontrada com os filtros aplicados."
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					currentPageReportTemplate="Exibindo {startRecord}-{endRecord} de {totalRecords} contribuições"
+					rowsPerPageTemplate="10,15,25,50" sortMode="multiple"
+					filterable="true"
+					filterDelay="300">
+
+					<!-- Estado vazio personalizado -->
+					<f:facet name="emptyMessage">
+						<div class="contribuicao-empty-state">
+							<div class="empty-icon">
+								<i class="pi pi-dollar"></i>
+							</div>
+							<h3>Nenhuma contribuição encontrada</h3>
+							<p>Não há contribuições registradas com os filtros atuais ou
+								ainda não foram cadastradas contribuições no sistema.</p>
+							<p:button value="Cadastrar primeira contribuição"
+								outcome="/pages/contribuicao/cadastro.xhtml" icon="pi pi-plus"
+								styleClass="ui-button-success" />
+						</div>
+					</f:facet>
+
+					<p:column headerText="ID" sortBy="#{contribuicao.id}" width="70"
+						styleClass="text-center" priority="6" exportable="true"
+						toggleable="false">
+
+						<div class="id-badge"
+							title="Identificador único: #{contribuicao.id}">
+							#{contribuicao.id}</div>
+					</p:column>
+
+					<p:column headerText="Trabalhador"
+						sortBy="#{contribuicao.trabalhador.pessoa.nome}"
+						filterBy="#{contribuicao.trabalhador.pessoa.nome}"
+						filterMatchMode="contains" priority="1" exportable="true">
+						<div class="user-info"
+							title="Trabalhador: #{contribuicao.trabalhador.pessoa.nome}">
+							<div class="user-avatar">
+								<i class="pi pi-user"></i>
+							</div>
+							<span class="user-name">#{contribuicao.trabalhador.pessoa.nome}</span>
+						</div>
+					</p:column>
+
+					<p:column headerText="Encontro"
+						sortBy="#{contribuicao.trabalhador.encontro.nome}"
+						filterBy="#{contribuicao.trabalhador.encontro.nome}"
+						filterMatchMode="contains" priority="3" exportable="true">
+						<span class="encontro-tag"
+							title="Encontro: #{contribuicao.trabalhador.encontro.nome}">
+							<i class="pi pi-calendar"></i>
+							#{contribuicao.trabalhador.encontro.nome}
+						</span>
+					</p:column>
+
+					<p:column headerText="Data de Pagamento"
+						sortBy="#{contribuicao.dataPagamento}" styleClass="text-center"
+						priority="4" exportable="true">
+						<span class="date-badge"
+							title="Data do pagamento: #{contribuicao.dataPagamento}">
+							<i class="pi pi-calendar"></i> <h:outputText
+								value="#{contribuicao.dataPagamento}">
+								<f:converter converterId="localDateTimeConverter" />
+							</h:outputText>
+						</span>
+					</p:column>
+
+					<p:column headerText="Valor" sortBy="#{contribuicao.valor}"
+						styleClass="text-center" width="140" priority="2"
+						exportable="true">
+						<div class="value-badge"
+							title="Valor da contribuição: #{contribuicao.valor}">
+							<i class="pi pi-dollar"></i>
+							<h:outputText value="#{contribuicao.valor}">
+								<f:convertNumber type="currency" currencySymbol="R$"
+									locale="pt_BR" />
+							</h:outputText>
+						</div>
+					</p:column>
+
+					<p:column headerText="Forma de Pagamento"
+						sortBy="#{contribuicao.formaPagamento}"
+						filterBy="#{contribuicao.formaPagamento}"
+						filterMatchMode="contains" priority="5" exportable="true">
+
+						<span class="payment-method-badge"
+							title="Forma de pagamento: #{contribuicao.formaPagamento}">
+							<ui:fragment>
+								<h:outputText rendered="#{contribuicao.formaPagamento eq 'Cartão de Crédito'}" value="💳 Cartão de Crédito" />
+								<h:outputText rendered="#{contribuicao.formaPagamento eq 'Cartão de Débito'}" value="🏧 Cartão de Débito" />
+								<h:outputText rendered="#{contribuicao.formaPagamento eq 'PIX'}" value="⚡ PIX" />
+								<h:outputText rendered="#{contribuicao.formaPagamento eq 'Transferência Bancária'}" value="🏦 Transferência Bancária" />
+								<h:outputText rendered="#{contribuicao.formaPagamento eq 'Dinheiro'}" value="💵 Dinheiro" />
+								<h:outputText rendered="#{!(contribuicao.formaPagamento eq 'Cartão de Crédito' or 
+															contribuicao.formaPagamento eq 'Cartão de Débito' or 
+															contribuicao.formaPagamento eq 'PIX' or 
+															contribuicao.formaPagamento eq 'Transferência Bancária' or 
+															contribuicao.formaPagamento eq 'Dinheiro')}" 
+											   value="#{contribuicao.formaPagamento}" />
+							</ui:fragment>
+						</span>
+					</p:column>
+
+					<p:column headerText="Ações" styleClass="text-center" width="160"
+						exportable="false" toggleable="false" priority="1">
+						<div class="table-action-buttons">
+							<p:commandButton icon="pi pi-eye"
+								title="Visualizar detalhes da contribuição"
+								action="#{contribuicaoController.visualizar(contribuicao)}"
+								styleClass="action-button-secondary-table action-btn"
+								aria-label="Visualizar contribuição #{contribuicao.id}" />
+
+							<p:commandButton icon="pi pi-pencil" title="Editar contribuição"
+								action="#{contribuicaoController.editar(contribuicao)}"
+								styleClass="action-button-warn-table action-btn"
+								aria-label="Editar contribuição #{contribuicao.id}" />
+
+							<p:commandButton icon="pi pi-trash" title="Excluir contribuição"
+								action="#{contribuicaoController.prepararExclusao(contribuicao)}"
+								styleClass="action-button-danger-table action-btn"
+								update=":confirmDialog" oncomplete="PF('confirmDialog').show()"
+								aria-label="Excluir contribuição #{contribuicao.id}">
+								<p:confirm message="Confirma a exclusão desta contribuição?" />
+							</p:commandButton>
+						</div>
+					</p:column>
+				</p:dataTable>
+
+				<!-- Diálogo de confirmação moderno -->
+				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
+					header="Confirmar Exclusão" styleClass="modern-dialog"
+					message="Tem certeza que deseja excluir esta contribuição? Esta ação não poderá ser desfeita."
+					closeOnEscape="true" closable="true" responsive="true"
+					showEffect="fade" hideEffect="fade"
+					icon="pi pi-exclamation-triangle">
+
+					<div class="dialog-actions">
+						<p:commandButton value="Confirmar Exclusão"
+							action="#{contribuicaoController.excluir}"
+							oncomplete="PF('confirmDialog').hide()"
+							update="contribuicoesTable messages"
+							styleClass="ui-button-danger" icon="pi pi-trash"
+							title="Confirmar a exclusão da contribuição" />
+
+						<p:commandButton value="Cancelar"
+							onclick="PF('confirmDialog').hide(); return false;" type="button"
+							styleClass="ui-button-secondary" icon="pi pi-times"
+							title="Cancelar a exclusão" />
+					</div>
+				</p:confirmDialog>
+			</h:form>
+		</div>
+		<!-- Estilos UX aprimorados para tabela de contribuições -->
+		<style>
+
+
+
+.id-badge {
+	background: #e0f2fe;
+	color: #0369a1;
+	border-radius: 6px;
+	padding: 0.25rem 0.75rem;
+	font-weight: 700;
+	font-size: 0.95rem;
+	display: inline-block;
+}
+
+.user-info {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.user-avatar {
+	background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+	color: #fff;
+	border-radius: 50%;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.1rem;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.user-name {
+	font-weight: 600;
+	color: #0f172a;
+}
+
+.encontro-tag {
+	background: #f1f5f9;
+	color: #334155;
+	border-radius: 6px;
+	padding: 0.25rem 0.75rem;
+	font-size: 0.95rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.date-badge {
+	background: #f0fdf4;
+	color: #166534;
+	border-radius: 6px;
+	padding: 0.25rem 0.75rem;
+	font-weight: 600;
+	font-size: 0.95rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.value-badge {
+	background: #fef9c3;
+	color: #92400e;
+	border-radius: 6px;
+	padding: 0.25rem 0.75rem;
+	font-weight: 700;
+	font-size: 1rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.payment-method-badge {
+	background: #f3f4f6;
+	color: #334155;
+	border-radius: 6px;
+	padding: 0.25rem 0.75rem;
+	font-size: 0.95rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+
+@media (max-width: 900px) {
+	.modern-datatable, .datatable-animation {
+		font-size: 0.95rem;
+	}
+	.table-header, .column-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.2rem;
+	}
+	/* Mantém botões lado a lado em telas pequenas */
+	.table-action-buttons {
+		flex-direction: row !important;
+		gap: 0.3rem;
+		width: 100%;
+		align-items: center;
+		justify-content: center;
+	}
+	.payment-method-badge, .date-badge, .value-badge, .encontro-tag {
+		min-width: 100%;
+		justify-content: flex-start;
+		font-size: 0.95rem;
+		margin-bottom: 0.2rem;
+		box-sizing: border-box;
+		word-break: break-word;
+	}
+	.user-info {
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 0.3rem;
+	}
+	.user-avatar {
+		width: 28px;
+		height: 28px;
+		font-size: 1rem;
+	}
+	.user-name {
+		font-size: 0.95rem;
+	}
+	.id-badge {
+		font-size: 0.9rem;
+		padding: 0.2rem 0.5rem;
+	}
+	.contribuicao-empty-state {
+		padding: 1.2rem 0.5rem;
+	}
+}
+
+@media (max-width: 600px) {
+	.modern-datatable, .datatable-animation {
+		font-size: 0.90rem;
+	}
+	.user-info {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.2rem;
+	}
+	.user-avatar {
+		width: 24px;
+		height: 24px;
+		font-size: 0.9rem;
+	}
+	.user-name {
+		font-size: 0.9rem;
+	}
+	.id-badge, .date-badge, .value-badge, .encontro-tag, .payment-method-badge {
+		font-size: 0.85rem;
+		padding: 0.15rem 0.4rem;
+	}
+	/* Mantém botões lado a lado mesmo em telas muito pequenas */
+	.table-action-buttons {
+		flex-direction: row !important;
+		gap: 0.2rem;
+		width: 100%;
+		align-items: center;
+		justify-content: center;
+	}
+	.contribuicao-empty-state {
+		padding: 0.7rem 0.2rem;
+	}
+	.empty-icon {
+		width: 48px;
+		height: 48px;
+		font-size: 1.2rem;
+	}
+	.contribuicao-empty-state h3 {
+		font-size: 1.1rem;
+	}
+	.contribuicao-empty-state p {
+		font-size: 0.95rem;
+	}
+}
+
+/* Destaque para filtros ativos */
+.ui-inputfield.filter-input:focus, .ui-selectonemenu.filter-input.ui-state-focus
+	{
+	border-color: #0ea5e9 !important;
+	box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15) !important;
+}
+
+.ui-selectonemenu.filter-input .ui-selectonemenu-label {
+	color: #0ea5e9;
+	font-weight: 600;
+}
+
+</style>
+	</ui:define>
+</ui:composition>
+
+</html>

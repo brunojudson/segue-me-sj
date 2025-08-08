@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui" lang="pt-BR" xml:lang="pt-BR">
+
+<h:head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Login - Sistema Segue-me</title>
+	<h:outputStylesheet library="primefaces" name="primeicons/primeicons.css" />
+	
+	<h:outputStylesheet library="css" name="login.css" />
+	<h:outputScript library="primefaces" name="jquery/jquery.js" />
+	<link href="favicon.ico" rel="shortcut icon" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+		rel="stylesheet" />
+</h:head>
+
+<h:body class="login-page">
+	<!-- Global Loader -->
+	<div class="global-loader" style="display: none;" id="globalLoader">
+		<div class="loader-content">
+			<i class="pi pi-spin pi-spinner" aria-label="Carregando"></i> <span>Carregando...</span>
+		</div>
+	</div>
+
+	<div class="login-container">
+		<div class="login-background">
+			<div class="login-pattern"></div>
+		</div>
+
+		<div class="login-card" id="loginCard">
+			<!-- Header do login -->
+			<div class="login-header">
+				<div class="login-logo">
+					<i class="pi pi-heart" style="font-size: 2.2rem; color: #fff;"></i>
+				</div>
+				<h1 class="login-title">Sistema Segue-me</h1>
+				<p class="login-subtitle">Faça login para acessar o sistema</p>
+			</div>
+
+			<!-- Formulário -->
+			<h:form class="login-form" id="loginForm">
+				<p:tooltip />
+				<p:focus for="username" />
+
+				<p:messages id="messages" showDetail="true" closable="true"
+					styleClass="login-messages" />
+
+				<div class="form-group">
+					<div class="input-wrapper">
+						<i class="fas fa-user input-icon"></i>
+						<i class="pi pi-user input-icon"></i>
+						<p:inputText id="username" value="#{loginController.email}"
+							placeholder="Digite seu usuário ou e-mail"
+							styleClass="login-input" required="true"
+							requiredMessage="Por favor, informe seu usuário" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="input-wrapper">
+						<i class="fas fa-lock input-icon"></i>
+						<i class="pi pi-lock input-icon"></i>
+						<p:password id="password" value="#{loginController.senha}"
+							placeholder="Digite sua senha" styleClass="login-input"
+							required="true" requiredMessage="Por favor, informe sua senha"
+							feedback="false" toggleMask="true" />
+					</div>
+				</div>
+
+				<div class="form-options">
+					<div class="remember-me">
+						<p:selectBooleanCheckbox id="rememberMe" />
+						<h:outputLabel for="rememberMe" value="Lembrar-me"
+							styleClass="remember-label" />
+					</div>
+				</div>
+
+				<p:commandButton value="Entrar" action="#{loginController.login}"
+					update="messages" styleClass="login-button" icon="pi pi-sign-in"
+					iconPos="right">
+					<p:ajax onstart="showGlobalLoader()"
+						oncomplete="hideGlobalLoader()" />
+				</p:commandButton>
+			</h:form>
+
+			<!-- Footer do login -->
+			<div class="login-footer">
+				<div class="footer-links">
+					<!-- <h:link value="Sobre o Sistema" styleClass="footer-link" />
+					<span class="separator">•</span>
+					<h:link value="Ajuda" styleClass="footer-link" />
+					<span class="separator">•</span>
+					<h:link value="Contato" styleClass="footer-link" /> -->
+				</div>
+				<p class="copyright">© 2025 Sistema Segue-me. Todos os direitos
+					reservados.</p>
+			</div>
+		</div>
+
+		<!-- Loader global já incluso no template/style.css -->
+	</div>
+
+	<script>
+		//<![CDATA[
+		function showGlobalLoader() {
+			document.getElementById('globalLoader').style.display = 'flex';
+		}
+		function hideGlobalLoader() {
+			document.getElementById('globalLoader').style.display = 'none';
+		}
+		document.addEventListener('DOMContentLoaded', function() {
+			showGlobalLoader();
+			setTimeout(function() {
+				hideGlobalLoader();
+				document.querySelector('.login-card').classList.add('animate-in');
+			}, 800);
+			// Efeitos de focus nos inputs
+			const inputs = document.querySelectorAll('.login-input');
+			inputs.forEach(input => {
+				input.addEventListener('focus', function() {
+					this.closest('.input-wrapper').classList.add('focused');
+				});
+				input.addEventListener('blur', function() {
+					this.closest('.input-wrapper').classList.remove('focused');
+				});
+			});
+		});
+		//]]>
+	</script>
+
+</h:body>
+</html>

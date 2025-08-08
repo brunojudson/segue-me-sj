@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">
+        #{empty param.id ? 'Cadastrar' : 'Editar'} Seguidor - Sistema Segue-me
+    </ui:define>
+	
+    <ui:define name="content">
+
+        <div class="content-container">
+            <!-- Cabeçalho da página -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">
+                            <i class="pi pi-user-plus page-icon"></i>
+                            <span class="title-text">#{empty param.id ? 'Cadastrar' : 'Editar'} Seguidor</span>
+                        </h1>
+                        <p class="page-subtitle">
+                            #{empty param.id ? 'Adicione um novo seguidor ao sistema' : 'Atualize os dados do seguidor'}
+                        </p>
+                    </div>
+                    <div class="page-actions">
+                        <p:button value="Voltar à Lista" 
+                                  outcome="/pages/pessoa/lista.xhtml"
+                                  icon="pi pi-arrow-left" 
+                                  styleClass="action-button-primary" />
+                    </div>
+                </div>
+            </div>
+
+            <h:form id="pessoaForm" enctype="multipart/form-data" styleClass="modern-form">
+                <p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages"
+                    onshow="scrollToTopOnError()">
+                    <p:autoUpdate />
+                </p:messages>
+
+                <f:metadata>
+                    <f:viewParam name="id" />
+                    <f:viewAction action="#{pessoaController.carregarPessoa}"
+                                  if="#{not empty param.id}" />
+                </f:metadata>
+
+                <!-- Seção: Dados Pessoais -->
+                <div class="form-section">
+                    <p:fieldset legend="👤 Dados Pessoais" styleClass="modern-fieldset" toggleable="true">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="nome" value="Nome Completo"/>
+                                <p:inputText id="nome" 
+                                           value="#{pessoaController.pessoa.nome}"
+                                           required="true" 
+                                           requiredMessage="O nome é obrigatório"
+                                           placeholder="Digite o nome completo" 
+                                           maxlength="100" />
+                                <small class="field-hint">Nome completo da pessoa</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="dataNascimento" value="Data de Nascimento" />
+                                <p:datePicker id="dataNascimento"
+                                            value="#{pessoaController.pessoa.dataNascimento}"
+                                            pattern="dd/MM/yyyy" 
+                                            showIcon="true" 
+                                            required="true"
+                                            showOnFocus="false"
+                                            yearRange="c-100:c+0"
+                                            requiredMessage="A data de nascimento é obrigatória" />
+                                <small class="field-hint">Formato: DD/MM/AAAA</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="sexo" value="Sexo" />
+                                <p:selectOneMenu id="sexo" value="#{pessoaController.pessoa.sexo}" required="true"
+                                                requiredMessage="O sexo é obrigatório" 
+                                                styleClass="modern-select">
+                                    <f:selectItem itemLabel="Selecione o sexo" itemValue="" noSelectionOption="true" />
+                                    <f:selectItem itemLabel="Masculino" itemValue="M" />
+                                    <f:selectItem itemLabel="Feminino" itemValue="F" />
+                                </p:selectOneMenu>
+                            </div>
+
+                            <div class="field-group checkbox-group">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <p:selectBooleanCheckbox id="ativo" value="#{pessoaController.pessoa.ativo}" />
+                                    <p:outputLabel for="ativo" value="Pessoa Ativa" style="margin: 0; font-weight: 500;" />
+                                    <small style="color: #6c757d; font-style: italic;">Marque se a pessoa está ativa no sistema</small>
+                                </div>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção: Contato e Endereço -->
+                <div class="form-section">
+                    <p:fieldset legend="📍 Contato e Endereço" styleClass="modern-fieldset" toggleable="true">
+                        <div class="field-grid">
+                            <div class="field-group full-width">
+                                <p:outputLabel for="endereco" value="Endereço Completo" />
+                                <p:inputText id="endereco" 
+                                           value="#{pessoaController.pessoa.endereco}"
+                                           placeholder="Rua, número, bairro, cidade - UF"
+                                           maxlength="200" />
+                                <small class="field-hint">Endereço completo incluindo rua, número, bairro e cidade</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="telefone" value="Telefone" />
+                                <p:inputMask id="telefone"
+                                            required="true"
+                                           value="#{pessoaController.pessoa.telefone}"
+                                           mask="(99) 99999-9999"
+                                           placeholder="(11) 99999-9999" />
+                                <small class="field-hint">Número com DDD</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="email" value="E-mail" />
+                                <p:inputText id="email" 
+                                           value="#{pessoaController.pessoa.email}"
+                                           type="email"
+                                           placeholder="exemplo@email.com"
+                                           maxlength="100" />
+                                <small class="field-hint">Endereço de e-mail válido</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção: Filiação e Origem -->
+                <div class="form-section">
+                    <p:fieldset legend="👨‍👩‍👧‍👦 Filiação e Origem" styleClass="modern-fieldset" toggleable="true" collapsed="true">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="filiacaoPai" value="Nome do Pai" />
+                                <p:autoComplete id="filiacaoPai"
+                                    value="#{pessoaController.pessoa.filiacaoPai}"
+                                    completeMethod="#{pessoaController.autocompleteNomePessoa}"
+                                    forceSelection="false"
+                                    dropdown="false"
+                                    var="sugestao"
+                                    itemLabel="#{sugestao}"
+                                    itemValue="#{sugestao}"
+                                    placeholder="Nome completo do pai"
+                                    maxlength="100"
+                                    minQueryLength="4"
+                                    panelStyle="display:none;"/>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="filiacaoMae" value="Nome da Mãe" />
+                                <p:autoComplete id="filiacaoMae"
+                                    value="#{pessoaController.pessoa.filiacaoMae}"
+                                    completeMethod="#{pessoaController.autocompleteNomePessoa}"
+                                    forceSelection="false"
+                                    dropdown="false"
+                                    var="sugestao"
+                                    itemLabel="#{sugestao}"
+                                    itemValue="#{sugestao}"
+                                    placeholder="Nome completo da mãe"
+                                    maxlength="100"
+                                    minQueryLength="4"
+                                    panelStyle="display:none;"/>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="naturalidade" value="Naturalidade" />
+                                <p:inputText id="naturalidade" 
+                                           value="#{pessoaController.pessoa.naturalidade}"
+                                           placeholder="Cidade/Estado de nascimento"
+                                           maxlength="50" />
+                                <small class="field-hint">Cidade e estado onde nasceu</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção: Escolaridade -->
+                <div class="form-section">
+                    <p:fieldset legend="🎓 Escolaridade e Formação" styleClass="modern-fieldset" toggleable="true" collapsed="true">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="escolaridade" value="Nível de Escolaridade" />
+                                <p:selectOneMenu id="escolaridade" value="#{pessoaController.pessoa.escolaridade}"
+                                               filter="true" filterMatchMode="contains">
+                                    <f:selectItem itemLabel="Selecione o nível de escolaridade" 
+                                                itemValue="#{null}" noSelectionOption="true" />
+                                    <f:selectItems value="#{pessoaController.todasEscolaridades}" 
+                                                 var="esc" 
+                                                 itemLabel="#{esc.descricao}" 
+                                                 itemValue="#{esc}" />
+                                </p:selectOneMenu>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="curso" value="Curso" />
+                                <p:inputText id="curso" 
+                                           value="#{pessoaController.pessoa.curso}"
+                                           placeholder="Nome do curso (se aplicável)"
+                                           maxlength="100" />
+                                <small class="field-hint">Curso superior, técnico ou similar</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="instituicaoEnsino" value="Instituição de Ensino" />
+                                <p:inputText id="instituicaoEnsino" 
+                                           value="#{pessoaController.pessoa.instituicaoEnsino}"
+                                           placeholder="Nome da escola/universidade"
+                                           maxlength="100" />
+                                <small class="field-hint">Escola, universidade ou instituição de ensino</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção: Dados Religiosos -->
+                <div class="form-section">
+                    <p:fieldset legend="⛪ Dados Religiosos" styleClass="modern-fieldset" toggleable="true" collapsed="true">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="religiao" value="Religião" />
+                                <p:inputText id="religiao" 
+                                           value="#{pessoaController.pessoa.religiao}"
+                                           placeholder="Ex: Católica, Evangélica, etc."
+                                           maxlength="50" />
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="igrejaFrequenta" value="Igreja que Frequenta" />
+                                <p:inputText id="igrejaFrequenta" 
+                                           value="#{pessoaController.pessoa.igrejaFrequenta}"
+                                           placeholder="Nome da igreja ou paróquia"
+                                           maxlength="100" />
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="movimentoParticipou" value="Movimento que Participou" />
+                                <p:inputText id="movimentoParticipou" 
+                                           value="#{pessoaController.pessoa.movimentoParticipou}"
+                                           placeholder="Movimentos religiosos anteriores"
+                                           maxlength="100" />
+                                <small class="field-hint">Outros movimentos ou grupos religiosos que participou</small>
+                            </div>
+
+                            <div class="field-group">
+                                <p:outputLabel for="sacramentos" value="Sacramentos Recebidos" />
+                                <p:selectCheckboxMenu id="sacramentos"
+                                                    value="#{pessoaController.sacramentosSelecionados}" 
+                                                    label="Selecionar sacramentos"
+                                                    multiple="true" 
+                                                    panelStyle="width:300px"
+                                                    scrollHeight="200">
+                                    <f:selectItems value="#{pessoaController.todosSacramentos}" />
+                                </p:selectCheckboxMenu>
+                                <small class="field-hint">Marque todos os sacramentos já recebidos</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção: Foto -->
+                <div class="form-section">
+                    <p:fieldset legend="📷 Foto da Pessoa" styleClass="modern-fieldset" toggleable="true" collapsed="true">
+                        <div class="field-grid">
+                            <div class="field-group upload-section">
+                                <p:outputLabel for="foto" value="Foto da Pessoa" />
+                                <p:fileUpload id="foto" 
+                                            value="#{pessoaController.uploadedFile}"
+                                            mode="simple"
+                                            accept="image/*" 
+                                            label="Escolher Foto" 
+                                            uploadLabel="Enviar"
+                                            cancelLabel="Cancelar"
+                                            sizeLimit="5242880"
+                                            allowTypes="/(\.|\/)(jpe?g|png|gif)$/i" />
+                                <small class="field-hint">
+                                    <i class="pi pi-info-circle"></i>
+                                    Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB
+                                </small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="form-actions">
+                    <div class="action-buttons">
+                        <p:commandButton value="💾 Salvar Dados"
+                                       oncomplete="handleSaveComplete(args);" 
+                                       action="#{pessoaController.salvar}" 
+                                       update="@form" 
+                                       styleClass="ui-button-success action-button-primary" 
+                                       validateClient="true" />
+
+                        <p:commandButton value="📋 Salvar e Continuar"
+                                action="#{pessoaController.salvarEContinuar}"
+                                update="@form messages"
+                                process="@form"
+                                styleClass="ui-button-info action-button-secondary"
+                                validateClient="true"
+                                oncomplete="handleSaveComplete(args);" />
+
+                        <p:button value="❌ Cancelar" 
+                                outcome="/pages/pessoa/lista.xhtml"
+                                styleClass="ui-button-secondary action-button-cancel" />
+                    </div>
+                    
+                    <div class="form-help">
+                        <small>
+                            <i class="pi pi-info-circle"></i>
+                            Campos marcados com * são obrigatórios. 
+                            Use Tab para navegar entre os campos.
+                        </small>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+
+        <style>
+/* Ajuste específico para botões de datePicker - alinha com altura dos campos */
+button.ui-datepicker-trigger {
+    min-height: 35px !important;
+    height: 35px !important;
+    max-height: 35px !important;
+    width: 35px !important;
+    min-width: 35px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    vertical-align: top !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1rem !important;
+    line-height: 1 !important;
+}
+
+/* Ajusta o campo de input do datePicker para manter consistência */
+input.ui-inputfield.ui-datepicker-input {
+    min-height: 29px !important;
+    height: 29px !important;
+    max-height: 29px !important;
+    vertical-align: top !important;
+}
+
+/* Container inline do datePicker - APENAS para o input e botão */
+.ui-datepicker-group {
+    display: inline-flex !important;
+    align-items: stretch !important;
+}
+        </style>
+      
+    </ui:define>
+</ui:composition>
+
+</html>

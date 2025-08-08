@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">
+        #{empty param.id ? 'Cadastrar' : 'Editar'} Equipe - Sistema Segue-me
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="content-container">
+            <!-- Cabeçalho da página -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">
+                            <i class="pi pi-users page-icon"></i>
+                            <span class="title-text">#{empty param.id ? 'Cadastrar' : 'Editar'} Equipe</span>
+                        </h1>
+                        <p class="page-subtitle">
+                            #{empty param.id ? 'Adicione uma nova equipe ao encontro' : 'Atualize os dados da equipe'}
+                        </p>
+                    </div>
+                    <div class="page-actions">
+                        <p:button value="Voltar à Lista" 
+                                  outcome="/pages/equipe/lista.xhtml"
+                                  icon="pi pi-arrow-left" 
+                                  styleClass="action-button-primary" />
+                    </div>
+                </div>
+            </div>
+
+            <h:form id="equipeForm" styleClass="modern-form">
+                <p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages"
+                onshow="scrollToTopOnError()">
+                    <p:autoUpdate />
+                </p:messages>
+                
+                <f:metadata>
+                    <f:viewParam name="id" />
+                    <f:viewAction action="#{equipeController.carregarEquipe}" if="#{not empty param.id}" />
+                </f:metadata>
+                
+                <!-- Seção: Dados da Equipe -->
+                <div class="form-section">
+                    <p:fieldset legend="👥 Dados da Equipe" styleClass="modern-fieldset" toggleable="true">
+                        <div class="field-grid">
+                            <div class="field-group field-nome">
+                                <p:outputLabel for="nome" value="Nome da Equipe" styleClass="required-field" />
+                                <p:inputText id="nome" value="#{equipeController.equipe.nome}" 
+                                            required="true" 
+                                            requiredMessage="O nome da equipe é obrigatório"
+                                            placeholder="Digite o nome da equipe"
+                                            maxlength="100" />
+                                <small class="field-hint">Nome que identificará a equipe no encontro</small>
+                            </div>
+
+                            <div class="field-group field-tipo">
+                                <p:outputLabel for="tipoEquipe" value="Tipo de Equipe" styleClass="required-field" />
+                                <p:selectOneMenu id="tipoEquipe" value="#{equipeController.equipe.tipoEquipe}" 
+                                                converter="omnifaces.SelectItemsConverter" required="true"
+                                                requiredMessage="O tipo de equipe é obrigatório"
+                                                styleClass="select-tipo-equipe">
+                                    <f:selectItem itemLabel="Selecione o tipo de equipe" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{equipeController.tiposEquipe}" var="tipoEquipe"
+                                                  itemLabel="#{tipoEquipe.nome} - #{tipoEquipe.descricao}" itemValue="#{tipoEquipe}" />
+                                </p:selectOneMenu>
+                                <small class="field-hint">Categoria da equipe (coordenação, apoio, palestras, etc.)</small>
+                            </div>
+
+                            <div class="field-group field-encontro">
+                                <p:outputLabel for="encontro" value="Encontro" styleClass="required-field" />
+                                <p:selectOneMenu id="encontro" value="#{equipeController.equipe.encontro}" 
+                                                converter="omnifaces.SelectItemsConverter" required="true"
+                                                requiredMessage="O encontro é obrigatório"
+                                                styleClass="select-encontro">
+                                    <f:selectItem itemLabel="Selecione um encontro" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{equipeController.encontros}" var="encontro"
+                                                  itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
+                                </p:selectOneMenu>
+                                <small class="field-hint">Encontro ao qual esta equipe pertence</small>
+                            </div>
+
+                            <div class="field-group checkbox-group" rendered="#{param.id}">
+                                <p:outputLabel for="ativo" value="Equipe Ativa" />
+                                <p:selectBooleanCheckbox id="ativo" value="#{equipeController.equipe.ativo}" />
+                                <small class="field-hint">Marque se a equipe está ativa no sistema</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção: Descrição -->
+                <div class="form-section">
+                    <p:fieldset legend="📝 Descrição e Detalhes" styleClass="modern-fieldset" toggleable="true" collapsed="true">
+                        <div class="field-grid">
+                            <div class="field-group full-width">
+                                <p:outputLabel for="descricao" value="Descrição da Equipe" />
+                                <p:inputTextarea id="descricao" value="#{equipeController.equipe.descricao}" 
+                                                rows="4"
+                                                placeholder="Descreva as responsabilidades e objetivos da equipe..."
+                                                maxlength="500" />
+                                <small class="field-hint">Detalhes sobre as atividades e responsabilidades da equipe (máximo 500 caracteres)</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+                
+                <!-- Botões de Ação -->
+                <div class="form-actions">
+                    <div class="action-buttons">
+                        <p:commandButton value="💾 Salvar Dados"
+                                       oncomplete="handleSaveComplete(args);" 
+                                       action="#{equipeController.salvar}" 
+                                       update="@form" 
+                                       styleClass="ui-button-success action-button-primary"
+                                       validateClient="true" />
+
+                        <p:commandButton value="📋 Salvar e Continuar"
+								action="#{equipeController.salvarEContinuar}"
+                                update="@form messages"
+                                process="@form"
+                                styleClass="ui-button-info action-button-secondary"
+                                validateClient="true"
+                                oncomplete="handleSaveComplete(args);" />
+
+                        <p:button value="❌ Cancelar" 
+                                outcome="/pages/equipe/lista.xhtml"
+                                styleClass="ui-button-secondary action-button-cancel" />
+                    </div>
+                    
+                    <div class="form-help">
+                        <small>
+                            <i class="pi pi-info-circle"></i>
+                            Campos marcados com * são obrigatórios. 
+                            Use Tab para navegar entre os campos.
+                        </small>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+        <h:outputScript library="js" name="scrollUp.js" target="head" />
+    </ui:define>
+</ui:composition>
+
+</html>

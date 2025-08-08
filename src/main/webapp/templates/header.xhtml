@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition>
+	<div class="header-container">
+		<div class="logo">
+			<h:link outcome="/pages/index.xhtml" styleClass="logo-link" title="Voltar à página inicial">
+				<div class="logo-content">
+					<div class="logo-icon">
+						<i class="fas fa-heart"></i>
+					</div>
+					<div class="logo-text">
+						<span class="logo-main">Segue-me</span>
+						<span class="logo-sub">Sistema de Encontros</span>
+					</div>
+				</div>
+			</h:link>
+		</div>
+
+		<div class="header-actions">
+			<!-- Botão de modo escuro -->
+			<p:commandButton id="darkModeToggle"
+				icon="pi pi-moon"
+				styleClass="header-btn dark-mode-btn"
+				title="Alternar modo escuro"
+				onclick="toggleDarkMode(); return false;" />
+			
+			<!-- Informações do usuário -->
+			<div class="user-info">
+				<div class="user-profile">
+					<div class="user-avatar">
+						<i class="pi pi-user"></i>
+					</div>
+					<div class="user-details">
+						<span class="user-name">#{loginController.usuarioLogado.nome}</span>
+						<span class="user-role">Usuário do Sistema</span>
+					</div>
+				</div>
+				
+				<p:commandButton id="buttonSair" 
+					action="#{loginController.logout}"
+					icon="pi pi-sign-out" 
+					styleClass="header-btn logout-btn"
+					title="Sair do sistema">
+					<p:confirm header="Confirmação" 
+						message="Tem certeza que deseja sair do sistema?" 
+						icon="pi pi-exclamation-triangle" />
+				</p:commandButton>
+			</div>
+		</div>
+	</div>
+	
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+		<p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+		<p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no ui-button-secondary" icon="pi pi-times" />
+	</p:confirmDialog>
+</ui:composition>
+
+</html>

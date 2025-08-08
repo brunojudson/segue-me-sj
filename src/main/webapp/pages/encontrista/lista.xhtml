@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Seguimista - Sistema Segue-me</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="content">
+		<div class="content-container">
+			<!-- Cabeçalho moderno da página -->
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-user-plus page-icon"></i> <span
+								class="title-text">Seguimistas</span>
+						</h1>
+						<p class="page-subtitle">Gerencie os Seguimistas do sistema</p>
+					</div>
+					<div class="header-actions">
+						<p:button value="Novo Seguimista"
+							outcome="/pages/encontrista/cadastro.xhtml" icon="pi pi-plus"
+							styleClass="action-button-primary"
+							title="Cadastrar novo encontrista" />
+					</div>
+				</div>
+			</div>
+
+			<h:form id="listForm" prependId="false">
+				<p:messages id="messages" showDetail="true" closable="true" />
+
+				<!-- Tabela moderna de encontristas -->
+				<p:dataTable id="encontristasTable" var="encontrista"
+					value="#{encontristaController.encontristas}"
+					emptyMessage="Nenhum encontrista encontrado"
+					styleClass="modern-datatable datatable-animation" paginator="true"
+					rows="20" paginatorPosition="bottom" stripeRows="true"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+					rowsPerPageTemplate="20,50,100"
+					filterable="true"
+					filterDelay="300"
+					widgetVar="encontristasTableWidget">
+
+					<p:column headerText="Código" sortBy="#{encontrista.id}"
+						styleClass="text-center" width="5%" responsivePriority="6">
+						<div class="id-badge">#{encontrista.pessoa.id}</div>
+					</p:column>
+
+					<p:column headerText="Pessoa" sortBy="#{encontrista.pessoa.nome}"
+						filterBy="#{encontrista.pessoa.nome}" filterMatchMode="contains"
+						styleClass="text-left" width="25%">
+						<div class="participant-info">
+							<div class="participant-avatar">
+								<i class="pi pi-user-plus"></i>
+							</div>
+							<h:outputText value="#{encontrista.pessoa.nome}"
+								styleClass="participant-name" />
+						</div>
+					</p:column>
+
+					<p:column headerText="Encontro"
+						sortBy="#{encontrista.encontro.nome}"
+						filterBy="#{encontrista.encontro.nome}" filterMatchMode="contains"
+						styleClass="text-left" width="15%" responsivePriority="4">
+						<span class="event-badge"> <i class="pi pi-calendar"></i>
+							#{encontrista.encontro.nome}
+						</span>
+					</p:column>
+
+					<p:column headerText="Data de Inscrição"
+						sortBy="#{encontrista.dataInscricao}" styleClass="text-center"
+						width="12%" responsivePriority="5">
+						<div class="datetime-display">
+							<i class="pi pi-clock"></i>
+							<h:outputText value="#{encontrista.dataInscricao}">
+								<f:converter converterId="localDateTimeConverter" />
+							</h:outputText>
+						</div>
+					</p:column>
+
+					<p:column headerText="Idade" sortBy="#{encontrista.idade}"
+						styleClass="text-center" width="5%" responsivePriority="5">
+						<div class="age-display">#{encontrista.idade}</div>
+					</p:column>
+
+					<p:column headerText="Status" sortBy="#{encontrista.ativo}"
+						styleClass="text-center" width="8%">
+						<div class="participant-status">
+							<i
+								class="pi #{encontrista.ativo ? 'pi-hourglass status-progress' : 'pi-check-circle status-complete'}"
+								title="#{encontrista.ativo ? 'Fazendo o Encontro' : 'Já fez o Encontro'}"></i>
+						</div>
+					</p:column>
+
+					<p:column headerText="Círculo" sortBy="#{encontrista.circulo}"
+						styleClass="text-center" width="8%">
+						<div class="circle-indicator">
+							<i
+								class="pi pi-circle-fill circulo-#{encontrista.circulo.toString().toLowerCase()}"
+								title="Círculo #{encontrista.circulo}" style="font-size: 2rem;"></i>
+						</div>
+					</p:column>
+
+					<p:column headerText="Ações" styleClass="text-center" width="12%">
+						<div class="table-action-buttons">
+							<p:commandButton icon="pi pi-eye" title="Visualizar"
+								action="#{encontristaController.visualizar(encontrista)}"
+								styleClass="action-button-secondary-table action-btn" />
+
+							<p:commandButton icon="pi pi-pencil" title="Editar"
+								disabled="#{encontrista.ativo ? 'false' : 'true'}"
+								action="#{encontristaController.editar(encontrista)}"
+								styleClass="action-button-warn-table action-btn" />
+
+							<p:commandButton icon="pi pi-trash" title="Excluir"
+								action="#{encontristaController.prepararExclusao(encontrista)}"
+								styleClass="action-button-danger-table action-btn"
+								update=":confirmDialog" oncomplete="PF('confirmDialog').show()" />
+						</div>
+					</p:column>
+				</p:dataTable>
+
+				<!-- Ações extras -->
+				<div class="table-footer-actions">
+					<p:commandButton value="Baixar Seguimista Ativos (PDF)"
+						icon="pi pi-file-pdf"
+						action="#{encontristaController.gerarRelatorioEncontristasAtivos}"
+						ajax="false" styleClass="ui-button-success" />
+				</div>
+
+				<!-- Diálogo de confirmação -->
+				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
+					header="Confirmar Exclusão" styleClass="modern-dialog"
+					message="Tem certeza que deseja excluir este encontrista?"
+					closeOnEscape="true" width="450" height="200">
+					<p:commandButton value="Sim, excluir"
+						action="#{encontristaController.excluir}"
+						oncomplete="PF('confirmDialog').hide()"
+						update="encontristasTable messages" styleClass="ui-button-danger"
+						icon="pi pi-trash" />
+					<p:commandButton value="Cancelar"
+						onclick="PF('confirmDialog').hide()" type="button"
+						styleClass="ui-button-secondary" icon="pi pi-times" />
+				</p:confirmDialog>
+			</h:form>
+		</div>
+
+		<style>
+/* Estilos específicos para encontristas */
+.participant-info {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.participant-avatar {
+	width: 32px;
+	height: 32px;
+	background: linear-gradient(135deg, #06b6d4, #0891b2);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	flex-shrink: 0;
+}
+
+.participant-name {
+	font-weight: 600;
+	color: #333;
+}
+
+.participant-status {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.participant-status i {
+	font-size: 2rem;
+}
+
+.status-progress {
+	color: #f59e0b !important;
+	animation: pulse 2s infinite;
+}
+
+.status-complete {
+	color: #6b7280 !important;
+}
+
+.circle-indicator {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.circle-indicator i {
+	font-size: 2rem;
+}
+
+/* Classes para cores dos círculos - mapeamento direto */
+.circle-vermelho, .circle-Vermelho, .circle-VERMELHO {
+	color: #dc2626 !important;
+}
+
+.circle-verde, .circle-Verde, .circle-VERDE {
+	color: #16a34a !important;
+}
+
+.circle-rosa, .circle-Rosa, .circle-ROSA {
+	color: #ec4899 !important;
+}
+
+.circle-amarelo, .circle-Amarelo, .circle-AMARELO {
+	color: #eab308 !important;
+}
+
+.circle-azul, .circle-Azul, .circle-AZUL {
+	color: #2563eb !important;
+}
+
+/* Classes originais mantidas para compatibilidade */
+.circulo-vermelho {
+	color: #dc2626 !important;
+}
+
+.circulo-verde {
+	color: #16a34a !important;
+}
+
+.circulo-rosa {
+	color: #ec4899 !important;
+}
+
+.circulo-amarelo {
+	color: #eab308 !important;
+}
+
+.circulo-azul {
+	color: #2563eb !important;
+}
+
+/* Classes para valores do enum em diferentes formatos */
+.circulo-vermelho, .circulo-red {
+	color: #dc2626 !important;
+}
+
+.circulo-verde, .circulo-green {
+	color: #16a34a !important;
+}
+
+.circulo-rosa, .circulo-pink {
+	color: #ec4899 !important;
+}
+
+.circulo-amarelo, .circulo-yellow {
+	color: #eab308 !important;
+}
+
+.circulo-azul, .circulo-blue {
+	color: #2563eb !important;
+}
+
+/* Fallback para cores padrão */
+.circle-indicator .pi-circle-fill:not([class*="circulo-"]) {
+	color: #6b7280 !important;
+}
+
+/* Mapeamento por números caso o círculo seja retornado como número */
+.circle-1 {
+	color: #dc2626 !important; /* Vermelho */
+}
+
+.circle-2 {
+	color: #16a34a !important; /* Verde */
+}
+
+.circle-3 {
+	color: #ec4899 !important; /* Rosa */
+}
+
+.circle-4 {
+	color: #eab308 !important; /* Amarelo */
+}
+
+.circle-5 {
+	color: #2563eb !important; /* Azul */
+}
+
+/* Fallback para círculo padrão */
+.circle-indicator .pi-circle-fill {
+	color: #6b7280;
+	/* Cor padrão cinza caso não encontre a classe específica */
+}
+
+/* Modo escuro - ajustes para melhor contraste */
+@media ( prefers-color-scheme : dark) {
+	.circle-indicator .pi-circle-fill {
+		filter: brightness(1.2);
+	}
+}
+
+body.dark-mode .circle-indicator .pi-circle-fill {
+	filter: brightness(1.2);
+}
+
+.age-display {
+	font-weight: 600;
+	color: #374151;
+	font-size: 1rem;
+}
+
+.table-footer-actions {
+	margin-top: 1rem;
+	display: flex;
+	justify-content: flex-end;
+}
+
+@
+keyframes pulse { 0%, 100% {
+	opacity: 1;
+}
+50
+
+
+%
+{
+opacity
+
+
+:
+
+
+0
+.5
+;
+
+
+}
+}
+</style>
+	</ui:define>
+</ui:composition>
+
+</html>

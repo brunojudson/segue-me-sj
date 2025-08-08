@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+                                 http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
+             version="2.2">
+
+    <persistence-unit name="seguemePU" transaction-type="JTA">
+        <jta-data-source>java:jboss/datasources/SeguemeDS</jta-data-source>
+        <!-- <jta-data-source>java:comp/env/jdbc/SeguemeDS</jta-data-source> -->
+
+        <class>br.com.segueme.entity.Pessoa</class>
+        <class>br.com.segueme.entity.Encontro</class>
+        <class>br.com.segueme.entity.Encontrista</class>
+        <class>br.com.segueme.entity.Casal</class>
+        <class>br.com.segueme.entity.TipoEquipe</class>
+        <class>br.com.segueme.entity.Equipe</class>
+        <class>br.com.segueme.entity.Pasta</class>
+        <class>br.com.segueme.entity.Trabalhador</class>
+        <class>br.com.segueme.entity.Contribuicao</class>
+        <class>br.com.segueme.entity.Dirigente</class>
+        <class>br.com.segueme.entity.Usuario</class>
+        <class>br.com.segueme.entity.Permissao</class>
+        <class>br.com.segueme.entity.Versiculo</class>
+        <class>br.com.segueme.entity.Auditoria</class>
+        <class>br.com.segueme.entity.Palestrante</class>
+        <class>br.com.segueme.entity.Palestra</class>
+
+        <properties>
+            <!-- Configurações do Hibernate -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <!-- <property name="hibernate.format_sql" value="true"/> -->
+            <property name="hibernate.use_sql_comments" value="true"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+
+            <!-- Configurações de pool de conexões -->
+            <!-- <property name="hibernate.c3p0.min_size" value="5"/>
+            <property name="hibernate.c3p0.max_size" value="20"/>
+            <property name="hibernate.c3p0.timeout" value="300"/>
+            <property name="hibernate.c3p0.max_statements" value="50"/>
+            <property name="hibernate.c3p0.idle_test_period" value="3000"/> -->
+
+            <!-- Configurações específicas do PostgreSQL -->
+            <property name="hibernate.jdbc.batch_size" value="50"/>
+            <property name="hibernate.order_inserts" value="true"/>
+            <property name="hibernate.order_updates" value="true"/>
+            <property name="hibernate.jdbc.batch_versioned_data" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>

@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Visualizar Trabalhador - #{trabalhadorController.trabalhador.pessoa.nome}</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="content">
+		<style>
+			/* Layout principal melhorado */
+			.trabalhador-header {
+				background: linear-gradient(135deg, #ff5722 0%, #ff8a65 100%);
+				color: white;
+				padding: 2rem;
+				border-radius: 20px 20px 0 0;
+				margin: -1rem -1rem 0 -1rem;
+				box-shadow: 0 8px 32px rgba(255, 87, 34, 0.3);
+				position: relative;
+				overflow: hidden;
+			}
+
+			.trabalhador-header::before {
+				content: '';
+				position: absolute;
+				top: -50%;
+				right: -20%;
+				width: 300px;
+				height: 300px;
+				background: rgba(255, 255, 255, 0.1);
+				border-radius: 50%;
+				backdrop-filter: blur(10px);
+			}
+
+			.trabalhador-header h2 {
+				margin: 0;
+				font-size: 2rem;
+				font-weight: 700;
+				position: relative;
+				z-index: 2;
+			}
+
+			.trabalhador-subtitle {
+				opacity: 0.9;
+				font-size: 1.1rem;
+				margin-top: 0.5rem;
+				position: relative;
+				z-index: 2;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.header-icon {
+				margin-right: 0.5rem;
+				font-size: 1.8rem;
+			}
+
+			.coordenador-badge {
+				background: rgba(255, 193, 7, 0.2);
+				color: #ffc107;
+				padding: 0.25rem 0.5rem;
+				border-radius: 15px;
+				font-size: 0.9rem;
+				border: 1px solid rgba(255, 193, 7, 0.3);
+				display: inline-flex;
+				align-items: center;
+				gap: 0.25rem;
+			}
+
+			/* Grid de informações */
+			.info-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+				gap: 1.5rem;
+				margin: 2rem 0;
+			}
+
+			.info-card {
+				background: #ffffff;
+				border: 1px solid #e0e0e0;
+				border-radius: 16px;
+				padding: 1.5rem;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+				transition: all 0.3s ease;
+				position: relative;
+				overflow: hidden;
+			}
+
+			.info-card::before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 4px;
+				height: 100%;
+				background: linear-gradient(to bottom, #ff5722, #ff8a65);
+			}
+
+			.info-card:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+			}
+
+			.info-card h3 {
+				color: #ff5722;
+				font-size: 1.1rem;
+				font-weight: 600;
+				margin: 0 0 1rem 0;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.info-item {
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-start;
+				padding: 0.75rem 0;
+				border-bottom: 1px solid #f5f5f5;
+			}
+
+			.info-item:last-child {
+				border-bottom: none;
+			}
+
+			.info-label {
+				font-weight: 600;
+				color: #424242;
+				min-width: 120px;
+				flex-shrink: 0;
+			}
+
+			.info-value {
+				color: #666;
+				text-align: right;
+				flex: 1;
+				margin-left: 1rem;
+			}
+
+			.info-value.empty {
+				color: #999;
+				font-style: italic;
+			}
+
+			.coordenador-sim {
+				color: #ffc107;
+				font-weight: 600;
+				display: flex;
+				align-items: center;
+				gap: 0.25rem;
+			}
+
+			.coordenador-nao {
+				color: #999;
+			}
+
+			/* Seção de contribuições */
+			.contribuicoes-section {
+				margin-top: 2rem;
+				background: white;
+				border-radius: 16px;
+				overflow: hidden;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+			}
+
+			.contribuicoes-header {
+				background: linear-gradient(135deg, #ff5722 0%, #ff8a65 100%);
+				color: white;
+				padding: 1.5rem;
+				font-size: 1.2rem;
+				font-weight: 600;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.ui-datatable .ui-datatable-thead > tr > th {
+				background: #fafafa !important;
+				color: #424242 !important;
+				font-weight: 600 !important;
+				border: 1px solid #e0e0e0 !important;
+				padding: 1rem !important;
+			}
+
+			.ui-datatable .ui-datatable-tbody > tr > td {
+				padding: 1rem !important;
+				border: 1px solid #f0f0f0 !important;
+				vertical-align: middle !important;
+			}
+
+			.ui-datatable .ui-datatable-tbody > tr:hover {
+				background-color: #f8f9fa !important;
+			}
+
+			/* Empty state */
+			.ui-datatable-empty-message {
+				text-align: center !important;
+				color: #666 !important;
+				font-style: italic !important;
+				padding: 2rem !important;
+			}
+
+			/* Botões */
+			.action-buttons {
+				display: flex;
+				gap: 1rem;
+				margin-top: 2rem;
+				flex-wrap: wrap;
+			}
+
+			.ui-button {
+				padding: 0.75rem 1.5rem !important;
+				border-radius: 10px !important;
+				font-weight: 500 !important;
+				transition: all 0.3s ease !important;
+			}
+
+			.ui-button:hover {
+				transform: translateY(-1px) !important;
+				box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+			}
+
+			/* Responsividade */
+			@media (max-width: 768px) {
+				.trabalhador-header {
+					padding: 1.5rem 1rem;
+					margin: -1rem -1rem 0 -1rem;
+				}
+
+				.trabalhador-header h2 {
+					font-size: 1.5rem;
+				}
+
+				.trabalhador-subtitle {
+					flex-direction: column;
+					align-items: flex-start;
+					gap: 0.5rem;
+				}
+
+				.info-grid {
+					grid-template-columns: 1fr;
+					gap: 1rem;
+					margin: 1.5rem 0;
+				}
+
+				.info-card {
+					padding: 1rem;
+				}
+
+				.info-item {
+					flex-direction: column;
+					align-items: flex-start;
+					gap: 0.25rem;
+				}
+
+				.info-value {
+					text-align: left;
+					margin-left: 0;
+				}
+
+				.action-buttons {
+					flex-direction: column;
+				}
+
+				.ui-button {
+					width: 100% !important;
+				}
+			}
+
+			/* Animações */
+			.info-card-animation {
+				animation: fadeInUp 0.6s ease-out;
+			}
+
+			.info-card-animation:nth-child(2) {
+				animation-delay: 0.1s;
+			}
+
+			.info-card-animation:nth-child(3) {
+				animation-delay: 0.2s;
+			}
+
+			@keyframes fadeInUp {
+				from {
+					opacity: 0;
+					transform: translateY(20px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+		</style>
+
+		<div class="content-container">
+			<div class="form-container">
+				<!-- Cabeçalho moderno -->
+				<div class="trabalhador-header">
+					<h2>
+						<i class="pi pi-id-card header-icon"></i>
+						<h:outputText value="#{trabalhadorController.trabalhador.pessoa.nome}" 
+									  rendered="#{not empty trabalhadorController.trabalhador.pessoa.nome}"/>
+						<h:outputText value="Trabalhador sem nome" 
+									  rendered="#{empty trabalhadorController.trabalhador.pessoa.nome}"/>
+					</h2>
+					<div class="trabalhador-subtitle">
+						<span>
+							<h:outputText value="Equipe: #{trabalhadorController.trabalhador.equipe.nome}" 
+										  rendered="#{not empty trabalhadorController.trabalhador.equipe.nome}"/>
+							<h:outputText value="Sem equipe definida" 
+										  rendered="#{empty trabalhadorController.trabalhador.equipe.nome}"/>
+						</span>
+						<h:panelGroup rendered="#{trabalhadorController.trabalhador.ehCoordenador}" 
+									  styleClass="coordenador-badge">
+							<i class="pi pi-star"></i>
+							Coordenador
+						</h:panelGroup>
+					</div>
+				</div>
+
+				<h:form id="visualizarForm">
+					<f:metadata>
+						<f:viewParam name="id" />
+						<f:viewAction
+							action="#{trabalhadorController.carregarTrabalhador}"
+							if="#{not empty param.id}" />
+					</f:metadata>
+
+					<!-- Grid de informações principais -->
+					<div class="info-grid">
+						<!-- Card de Informações Básicas -->
+						<div class="info-card info-card-animation">
+							<h3><i class="pi pi-info-circle"></i> Informações Básicas</h3>
+							
+							<div class="info-item">
+								<span class="info-label">Pessoa:</span>
+								<span class="info-value">
+									<h:outputText value="#{trabalhadorController.trabalhador.pessoa.nome}" 
+												  rendered="#{not empty trabalhadorController.trabalhador.pessoa.nome}"/>
+									<h:outputText value="Não informada" styleClass="empty"
+												  rendered="#{empty trabalhadorController.trabalhador.pessoa.nome}"/>
+								</span>
+							</div>
+							
+							<div class="info-item">
+								<span class="info-label">Equipe:</span>
+								<span class="info-value">
+									<h:outputText value="#{trabalhadorController.trabalhador.equipe.nome}" 
+												  rendered="#{not empty trabalhadorController.trabalhador.equipe.nome}"/>
+									<h:outputText value="Não informada" styleClass="empty"
+												  rendered="#{empty trabalhadorController.trabalhador.equipe.nome}"/>
+								</span>
+							</div>
+							
+							<div class="info-item">
+								<span class="info-label">Encontro:</span>
+								<span class="info-value">
+									<h:outputText value="#{trabalhadorController.trabalhador.encontro.nome}" 
+												  rendered="#{not empty trabalhadorController.trabalhador.encontro.nome}"/>
+									<h:outputText value="Não informado" styleClass="empty"
+												  rendered="#{empty trabalhadorController.trabalhador.encontro.nome}"/>
+								</span>
+							</div>
+							
+							<div class="info-item">
+								<span class="info-label">Data de Início:</span>
+								<span class="info-value">
+									<h:outputText value="#{trabalhadorController.trabalhador.dataInicio}" 
+												  rendered="#{not empty trabalhadorController.trabalhador.dataInicio}">
+										<f:converter converterId="localDateConverter" />
+									</h:outputText>
+									<h:outputText value="Não informada" styleClass="empty"
+												  rendered="#{empty trabalhadorController.trabalhador.dataInicio}"/>
+								</span>
+							</div>
+						</div>
+
+						<!-- Card de Características -->
+						<div class="info-card info-card-animation">
+							<h3><i class="pi pi-user"></i> Características</h3>
+							
+							<h:panelGroup rendered="#{not empty trabalhadorController.trabalhador.idade}">
+								<div class="info-item">
+									<span class="info-label">Idade:</span>
+									<span class="info-value">
+										<h:outputText value="#{trabalhadorController.trabalhador.idade} anos"/>
+									</span>
+								</div>
+							</h:panelGroup>
+							
+							<div class="info-item">
+								<span class="info-label">Coordenador:</span>
+								<span class="info-value">
+									<h:panelGroup rendered="#{trabalhadorController.trabalhador.ehCoordenador}" 
+												  styleClass="coordenador-sim">
+										Sim <i class="pi pi-star-fill"></i>
+									</h:panelGroup>
+									<h:outputText rendered="#{not trabalhadorController.trabalhador.ehCoordenador}"
+												  value="Não" styleClass="coordenador-nao" />
+								</span>
+							</div>
+							
+							<div class="info-item">
+								<span class="info-label">Foi Encontrista:</span>
+								<span class="info-value">
+									<h:outputText value="#{trabalhadorController.trabalhador.foiEncontrista ? 'Sim' : 'Não'}" />
+								</span>
+							</div>
+							
+							<div class="info-item">
+								<span class="info-label">Observações:</span>
+								<span class="info-value">
+									<h:outputText value="#{trabalhadorController.trabalhador.observacoes}" 
+												  rendered="#{not empty trabalhadorController.trabalhador.observacoes}"/>
+									<h:outputText value="Sem observações" styleClass="empty"
+												  rendered="#{empty trabalhadorController.trabalhador.observacoes}"/>
+								</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Seção de Contribuições -->
+					<div class="contribuicoes-section">
+						<div class="contribuicoes-header">
+							<i class="pi pi-money-bill"></i>
+							Contribuições do Trabalhador
+						</div>
+						
+						<p:dataTable value="#{trabalhadorController.trabalhador.contribuicoes}" 
+									 var="contribuicao"
+									 emptyMessage="Nenhuma contribuição cadastrada para este trabalhador"
+									 styleClass="modern-datatable"
+									 paginator="true" rows="10" paginatorPosition="bottom">
+							<p:column headerText="Data" sortBy="#{contribuicao.dataPagamento}">
+								<h:outputText value="#{contribuicao.dataPagamento}" 
+											  rendered="#{not empty contribuicao.dataPagamento}">
+									<f:converter converterId="localDateTimeConverter" />
+								</h:outputText>
+								<h:outputText value="Não informada" styleClass="empty"
+											  rendered="#{empty contribuicao.dataPagamento}"/>
+							</p:column>
+							<p:column headerText="Valor" sortBy="#{contribuicao.valor}">
+								<h:outputText value="#{contribuicao.valor}" 
+											  rendered="#{not empty contribuicao.valor}">
+									<f:convertNumber type="currency" currencySymbol="R$" locale="pt_BR" />
+								</h:outputText>
+								<h:outputText value="Não informado" styleClass="empty"
+											  rendered="#{empty contribuicao.valor}"/>
+							</p:column>
+							<p:column headerText="Forma de Pagamento" sortBy="#{contribuicao.formaPagamento}">
+								<h:outputText value="#{contribuicao.formaPagamento}" 
+											  rendered="#{not empty contribuicao.formaPagamento}"/>
+								<h:outputText value="Não informada" styleClass="empty"
+											  rendered="#{empty contribuicao.formaPagamento}"/>
+							</p:column>
+						</p:dataTable>
+					</div>
+
+					<!-- Botões de ação -->
+					<div class="action-buttons">
+						<p:button value="Editar" outcome="/pages/trabalhador/cadastro.xhtml" 
+								  icon="pi pi-pencil" styleClass="ui-button-warning">
+							<f:param name="id" value="#{trabalhadorController.trabalhador.id}" />
+						</p:button>
+
+						<p:button value="Voltar" outcome="/pages/trabalhador/lista.xhtml"
+								  icon="pi pi-arrow-left" styleClass="ui-button-secondary" />
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>
+
+</html>
