@@ -23,6 +23,10 @@ import javax.persistence.UniqueConstraint;
 
 import br.com.segueme.enums.Circulo;
 
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 @Entity
 @Table(name = "encontrista", schema="public",uniqueConstraints = {
     @UniqueConstraint(columnNames = {"pessoa_id", "encontro_id"})
@@ -35,10 +39,12 @@ public class Encontrista implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Pessoa é obrigatória")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pessoa_id", nullable = false)
     private Pessoa pessoa;
 
+    @NotNull(message = "Encontro é obrigatório")
     @JsonbTransient
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "encontro_id", nullable = false)
@@ -47,12 +53,15 @@ public class Encontrista implements Serializable {
     @Column(name = "data_inscricao")
     private LocalDateTime dataInscricao;
 
+    @DecimalMin(value = "0.0", inclusive = true, message = "Valor pago não pode ser negativo")
     @Column(name = "valor_pago", precision = 10, scale = 2)
     private BigDecimal valorPago;
 
+    @Size(max = 50, message = "Forma de pagamento deve ter no máximo 50 caracteres")
     @Column(name = "forma_pagamento", length = 50)
     private String formaPagamento;
 
+    @Size(max = 500, message = "Observações devem ter no máximo 500 caracteres")
     @Column(name = "observacoes")
     private String observacoes;
     
@@ -68,6 +77,9 @@ public class Encontrista implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "circulo", length = 10)
     private Circulo circulo;
+
+    @Column(name = "token_ficha", length = 36, unique = true)
+    private String tokenFicha;
 
     // Construtores
     public Encontrista() {
@@ -168,6 +180,14 @@ public class Encontrista implements Serializable {
 
     public void setCirculo(Circulo circulo) {
         this.circulo = circulo;
+    }
+
+    public String getTokenFicha() {
+        return tokenFicha;
+    }
+
+    public void setTokenFicha(String tokenFicha) {
+        this.tokenFicha = tokenFicha;
     }
 
     public void calcularIdade() {

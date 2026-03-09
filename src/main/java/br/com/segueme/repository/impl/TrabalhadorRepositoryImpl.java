@@ -104,7 +104,9 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 
 	@Override
 	public List<Trabalhador> findByPessoa(Long pessoaId) {
-		return entityManager.createQuery("SELECT t FROM Trabalhador t WHERE t.pessoa.id = :pessoaId", Trabalhador.class)
+		return entityManager.createQuery(
+				"SELECT t FROM Trabalhador t JOIN FETCH t.equipe LEFT JOIN FETCH t.encontro WHERE t.pessoa.id = :pessoaId",
+				Trabalhador.class)
 				.setParameter("pessoaId", pessoaId).getResultList();
 	}
 
@@ -184,5 +186,11 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 				.setParameter("trabalhadorId", id).getSingleResult();
 
 		return count > 0;
+	}
+
+	@Override
+	public long count() {
+		return entityManager.createQuery("SELECT COUNT(t) FROM Trabalhador t", Long.class)
+				.getSingleResult();
 	}
 }

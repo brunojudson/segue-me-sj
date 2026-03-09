@@ -30,6 +30,7 @@ public class ContribuicaoController implements Serializable {
     private List<Contribuicao> contribuicoes;
     private Contribuicao contribuicao;
     private Contribuicao contribuicaoSelecionada;
+    private Contribuicao contribuicaoDetalhes;
     
     private List<Trabalhador> trabalhadores;
     
@@ -54,28 +55,14 @@ public class ContribuicaoController implements Serializable {
     }
     
     public String salvar() {
-        try {
-            if (contribuicao.getId() == null) {
-                contribuicaoService.salvar(contribuicao);
-                FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Contribuição cadastrada com sucesso!"));
-            } else {
-                contribuicaoService.atualizar(contribuicao);
-                FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Contribuição atualizada com sucesso!"));
-            }
-            
-            carregarContribuicoes();
-            limpar();
-            return "lista?faces-redirect=true";
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, 
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
-            return null;
-        }
+        return salvarInterno(true);
     }
     
     public String salvarEContinuar() {
+        return salvarInterno(false);
+    }
+
+    private String salvarInterno(boolean redirecionarParaLista) {
         try {
             if (contribuicao.getId() == null) {
                 contribuicaoService.salvar(contribuicao);
@@ -89,7 +76,7 @@ public class ContribuicaoController implements Serializable {
             
             carregarContribuicoes();
             limpar();
-            return "";
+            return redirecionarParaLista ? "lista?faces-redirect=true" : "";
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, 
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
@@ -131,6 +118,18 @@ public class ContribuicaoController implements Serializable {
         }
     }
     
+    public void abrirDetalhes(Contribuicao contribuicao) {
+        contribuicaoService.buscarPorId(contribuicao.getId()).ifPresent(c -> this.contribuicaoDetalhes = c);
+    }
+
+    public void fecharDetalhes() {
+        this.contribuicaoDetalhes = null;
+    }
+
+    public Contribuicao getContribuicaoDetalhes() {
+        return contribuicaoDetalhes;
+    }
+
     // Getters e Setters
     
     public List<Contribuicao> getContribuicoes() {

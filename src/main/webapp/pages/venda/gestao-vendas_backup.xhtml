@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">Gestão de Vendas</ui:define>
+    
+    <ui:define name="content">
+        <h:form id="formGestaoVendas" styleClass="modern-form">
+            
+            <!-- Mensagens de feedback -->
+            <p:growl id="growl" showDetail="true" sticky="false" life="5000">
+                <p:autoUpdate />
+            </p:growl>
+            
+            <!-- Fieldset: Seleção de Encontro -->
+            <p:fieldset legend="Encontro Ativo" toggleable="false" styleClass="modern-fieldset">
+                <div class="field-grid">
+                    <div class="field-group">
+                        <p:outputLabel for="encontro" value="Encontro:" />
+                        <p:selectOneMenu id="encontro" value="#{vendaPedidoController.encontroSelecionadoId}" 
+                                         required="true" requiredMessage="Selecione um encontro">
+                            <f:selectItem itemLabel="-- Selecione --" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{vendaPedidoController.encontrosAtivos}" 
+                                           var="enc" itemLabel="#{enc.nome}" itemValue="#{enc.id}"/>
+                                <p:ajax listener="#{vendaPedidoController.onEncontroChanged}" 
+                                    update=":formGestaoVendas:pnlStatusEncontro :formGestaoVendas:pnlNovaVenda :formGestaoVendas:pnlContasAbertas" />
+                        </p:selectOneMenu>
+                    </div>
+                    
+                    <h:panelGroup id="pnlStatusEncontro" class="field-group">
+                        <p:outputLabel value="Status do Encontro:" styleClass="label-info" />
+                        <p:outputLabel value="#{vendaPedidoController.encontroAtivo ? '✓ ATIVO' : '✗ Inativo'}" 
+                                       styleClass="#{vendaPedidoController.encontroAtivo ? 'status-active' : 'status-inactive'}" />
+                    </h:panelGroup>
+                </div>
+                
+                <p:messages id="mensagensEncontro" for="encontro" showDetail="true" closable="true" />
+            </p:fieldset>
+                        
+            <!-- Fieldset: Nova Venda / Adicionar Itens -->
+            <h:panelGroup id="pnlNovaVenda" rendered="#{vendaPedidoController.encontroSelecionadoId != null}">
+            <p:fieldset legend="#{vendaPedidoController.pedidoAtual == null ? 'Nova Venda' : 'Adicionar Itens ao Pedido'}" 
+                        toggleable="true" collapsed="false" styleClass="modern-fieldset">
+                
+                <!-- Seção: Iniciar Nova Venda -->
+                <h:panelGroup id="pnlIniciarVenda" rendered="#{vendaPedidoController.pedidoAtual == null}">
+                    <div class="field-grid">
+                        <div class="field-group">
+                            <p:outputLabel for="trabalhador" value="Trabalhador Responsável: *" />
+                            <p:selectOneMenu id="trabalhador" value="#{vendaPedidoController.trabalhadorSelecionadoId}" 
+                                             filter="true" filterMatchMode="contains">
+                                <f:selectItem itemLabel="-- Selecione --" itemValue="#{null}" noSelectionOption="true"/>
+                                <f:selectItems value="#{vendaPedidoController.trabalhadores}" 
+                                               var="trab" itemLabel="#{trab.pessoa.nome}" itemValue="#{trab.id}"/>
+                            </p:selectOneMenu>
+                            <p:messages id="mensagensTrabalhador" for="trabalhador" showDetail="true" closable="true" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <p:commandButton value="Nova Venda (Alt+N)" icon="pi pi-plus" 
+                                         actionListener="#{vendaPedidoController.iniciarNovaVenda}"
+                                         process="@this :formGestaoVendas:trabalhador"
+                                         update=":formGestaoVendas:growl :formGestaoVendas:mensagensTrabalhador :formGestaoVendas:pnlNovaVenda :formGestaoVendas:pnlContasAbertas"
+                                         ajax="true"
+                                         styleClass="action-button-primary"
+                                         accesskey="N" />
+                    </div>
+                </h:panelGroup>
+                
+                <!-- Seção: Adicionar Item a Pedido Existente -->
+                <h:panelGroup id="pnlAdicionarItem" rendered="#{vendaPedidoController.pedidoAtual != null}">
+                    <p:panel header="Pedido: #{vendaPedidoController.pedidoAtual.numeroPedido} - Trabalhador: #{vendaPedidoController.pedidoAtual.trabalhadorResponsavel.pessoa.nome}" 
+                             styleClass="info-panel">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="artigo" value="Artigo: *" />
+                                <p:selectOneMenu id="artigo" value="#{vendaPedidoController.artigoSelecionadoId}" 
+                                                 filter="true" filterMatchMode="contains" required="true">
+                                    <f:selectItem itemLabel="-- Selecione --" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItems value="#{vendaPedidoController.artigosAtivos}" 
+                                                   var="art" itemLabel="#{art.nome} - R$ #{art.precoBase}" itemValue="#{art.id}"/>
+                                    <p:ajax listener="#{vendaPedidoController.onArtigoSelecionado}" 
+                                            update="valorUnitario" />
+                                </p:selectOneMenu>
+                            </div>
+                            
+                            <div class="field-group">
+                                <p:outputLabel for="quantidade" value="Quantidade: *" />
+                                <p:inputNumber id="quantidade" value="#{vendaPedidoController.quantidadeItem}" 
+                                               decimalPlaces="0" minValue="1" required="true" />
+                            </div>
+                            
+                            <div class="field-group">
+                                <p:outputLabel for="valorUnitario" value="Valor Unitário: *" />
+                                <p:inputNumber id="valorUnitario" value="#{vendaPedidoController.valorUnitarioItem}" 
+                                               mode="currency" currencySymbol="R$ " required="true" />
+                            </div>
+                        </div>
+                        
+                        <div class="form-buttons">
+                            <p:commandButton value="Adicionar Item (Alt+I)" icon="pi pi-plus-circle" 
+                                             actionListener="#{vendaPedidoController.adicionarItem}"
+                                             process="@this :formGestaoVendas:artigo :formGestaoVendas:quantidade :formGestaoVendas:valorUnitario"
+                                             update="@form" styleClass="action-button-success"
+                                             accesskey="I" />
+                            
+                            <p:commandButton value="Cancelar / Nova Venda" icon="pi pi-times" 
+                                             actionListener="#{vendaPedidoController.limpar}"
+                                             process="@this"
+                                             update="@form" styleClass="action-button-secondary" />
+                        </div>
+                    </p:panel>
+                </h:panelGroup>
+            </p:fieldset>
+            </h:panelGroup>
+            
+             <!-- Fieldset: Contas Abertas -->
+            <p:fieldset id="pnlContasAbertas" legend="Contas Abertas" toggleable="true" collapsed="false" 
+                        styleClass="modern-fieldset" rendered="#{vendaPedidoController.encontroSelecionadoId != null}">
+                
+                <p:dataTable id="tblContasAbertas" value="#{vendaPedidoController.pedidosAbertos}" 
+                             var="pedido" emptyMessage="Nenhuma conta aberta"
+                             paginator="true" rows="10" paginatorPosition="bottom"
+                             styleClass="modern-datatable" selectionMode="single"
+                             selection="#{vendaPedidoController.pedidoAtual}" rowKey="#{pedido.id}">
+                    
+                        <p:ajax event="rowSelect" listener="#{vendaPedidoController.selecionarPedido}" 
+                            update=":formGestaoVendas:pnlNovaVenda :formGestaoVendas:pnlItens" />
+                    
+                    <p:column headerText="Número" width="120">
+                        <h:outputText value="#{pedido.numeroPedido}" />
+                    </p:column>
+                    
+                    <p:column headerText="Trabalhador" sortBy="#{pedido.trabalhadorResponsavel.pessoa.nome}">
+                        <h:outputText value="#{pedido.trabalhadorResponsavel.pessoa.nome}" />
+                    </p:column>
+                    
+                    <p:column headerText="Data Abertura" width="140">
+                        <h:outputText value="#{pedido.dataAberturaFormatada}" />
+                    </p:column>
+                    
+                    <p:column headerText="Itens" width="80" style="text-align:center;">
+                        <h:outputText value="#{pedido.quantidadeTotalItens}" />
+                    </p:column>
+                    
+                    <p:column headerText="Valor Total" width="120" style="text-align:right;">
+                        <h:outputText value="#{pedido.valorTotal}">
+                            <f:convertNumber type="currency" currencySymbol="R$ " />
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="Status" width="100">
+                        <p:tag value="#{pedido.status.descricao}" severity="info" />
+                    </p:column>
+                    
+                    <p:column headerText="Ações" width="150" style="text-align:center;">
+                        <p:commandButton icon="pi pi-pencil" title="Editar" 
+                                         actionListener="#{vendaPedidoController.selecionarPedidoPorId(pedido.id)}"
+                                         process="@this"
+                                         update=":formGestaoVendas:pnlNovaVenda :formGestaoVendas:pnlItens :formGestaoVendas:growl"
+                                         styleClass="action-button-edit" />
+                        
+                        <p:commandButton icon="pi pi-times" title="Cancelar Pedido" 
+                                         actionListener="#{vendaPedidoController.cancelarPedido(pedido.id)}"
+                                         process="@this"
+                                         update="@form" styleClass="action-button-delete">
+                            <p:confirm header="Confirmação" message="Deseja realmente cancelar este pedido?" 
+                                       icon="pi pi-exclamation-triangle" />
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+                
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                </p:confirmDialog>
+            </p:fieldset>
+            
+            <!-- Fieldset: Itens do Pedido Atual -->
+            <p:fieldset id="pnlItens" legend="Itens do Pedido" toggleable="true" collapsed="false" 
+                        styleClass="modern-fieldset"
+                        rendered="#{vendaPedidoController.pedidoAtual != null and not empty vendaPedidoController.pedidoAtual.itens}">
+                
+                <p:dataTable id="tblItens" value="#{vendaPedidoController.pedidoAtual.itens}" 
+                             var="item" emptyMessage="Nenhum item adicionado"
+                             styleClass="modern-datatable">
+                    
+                    <p:column headerText="Artigo">
+                        <h:outputText value="#{item.artigo.nome}" />
+                    </p:column>
+                    
+                    <p:column headerText="Categoria" width="150">
+                        <h:outputText value="#{item.artigo.categoria}" />
+                    </p:column>
+                    
+                    <p:column headerText="Quantidade" width="100" style="text-align:center;">
+                        <h:outputText value="#{item.quantidade}" />
+                    </p:column>
+                    
+                    <p:column headerText="Valor Unit." width="120" style="text-align:right;">
+                        <h:outputText value="#{item.valorUnitario}">
+                            <f:convertNumber type="currency" currencySymbol="R$ " />
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="Valor Total" width="120" style="text-align:right;">
+                        <h:outputText value="#{item.valorTotalItem}">
+                            <f:convertNumber type="currency" currencySymbol="R$ " />
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="Ação" width="80" style="text-align:center;">
+                        <p:commandButton icon="pi pi-trash" title="Remover" 
+                                         actionListener="#{vendaPedidoController.removerItem(item.id)}"
+                                         process="@this"
+                                         update="@form" styleClass="action-button-delete"
+                                         disabled="#{!vendaPedidoController.pedidoAtual.status.permiteAlteracao()}">
+                            <p:confirm header="Confirmação" message="Deseja remover este item?" 
+                                       icon="pi pi-exclamation-triangle" />
+                        </p:commandButton>
+                    </p:column>
+                    
+                    <f:facet name="footer">
+                        <div style="text-align:right; font-weight:bold; font-size:1.1em;">
+                            Total do Pedido: 
+                            <h:outputText value="#{vendaPedidoController.pedidoAtual.valorTotal}">
+                                <f:convertNumber type="currency" currencySymbol="R$ " />
+                            </h:outputText>
+                        </div>
+                    </f:facet>
+                </p:dataTable>
+                
+                <!-- Botões de Ação Principal -->
+                <div class="form-buttons" style="margin-top: 1rem;">
+                    <p:commandButton value="Fechar Pedido (Alt+F)" icon="pi pi-check-circle" 
+                                     onclick="PF('dlgFecharPedido').show(); return false;"
+                                     styleClass="action-button-primary" accesskey="F"
+                                     disabled="#{empty vendaPedidoController.pedidoAtual.itens}" />
+                    
+                    <p:commandButton value="Adicionar Mais Itens (Alt+I)" icon="pi pi-plus" 
+                                     onclick="document.getElementById('formGestaoVendas:artigo_input').focus(); return false;"
+                                     styleClass="action-button-success" accesskey="I" />
+                </div>
+            </p:fieldset>
+            
+            <!-- Dialog: Fechar Pedido -->
+            <p:dialog id="dlgFecharPedido" header="Fechar Pedido" widgetVar="dlgFecharPedido" 
+                      modal="true" responsive="true" width="500" closeOnEscape="true">
+                
+                <div class="dialog-content">
+                    <p:panelGrid columns="2" layout="grid" styleClass="modern-panel-grid">
+                        <p:outputLabel value="Número do Pedido:" styleClass="label-bold" />
+                        <p:outputLabel value="#{vendaPedidoController.pedidoAtual.numeroPedido}" />
+                        
+                        <p:outputLabel value="Trabalhador:" styleClass="label-bold" />
+                        <p:outputLabel value="#{vendaPedidoController.pedidoAtual.trabalhadorResponsavel.pessoa.nome}" />
+                        
+                        <p:outputLabel value="Valor Total:" styleClass="label-bold" />
+                        <h:outputText value="#{vendaPedidoController.pedidoAtual.valorTotal}">
+                            <f:convertNumber type="currency" currencySymbol="R$ " />
+                        </h:outputText>
+                    </p:panelGrid>
+                    
+                    <p:separator />
+                    
+                        <div class="field-grid">
+                        <div class="field-group">
+                            <p:selectBooleanCheckbox id="pagarAgora" value="#{vendaPedidoController.pagarAgora}">
+                                <p:ajax update="pnlPagamento" />
+                            </p:selectBooleanCheckbox>
+                            <p:outputLabel for="pagarAgora" value="Pagar Agora" style="margin-left: 0.5rem;" />
+                        </div>
+                    </div>
+                    
+                    <h:panelGroup id="pnlPagamento" rendered="#{vendaPedidoController.pagarAgora}">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="formaPagamento" value="Forma de Pagamento: *" />
+                                <p:selectOneMenu id="formaPagamento" value="#{vendaPedidoController.formaPagamento}" required="true">
+                                    <f:selectItem itemLabel="-- Selecione --" itemValue="#{null}" />
+                                    <f:selectItem itemLabel="Dinheiro" itemValue="DINHEIRO" />
+                                    <f:selectItem itemLabel="PIX" itemValue="PIX" />
+                                    <f:selectItem itemLabel="Cartão de Débito" itemValue="DEBITO" />
+                                    <f:selectItem itemLabel="Cartão de Crédito" itemValue="CREDITO" />
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </div>
+                
+                <f:facet name="footer">
+                    <p:commandButton value="Confirmar" icon="pi pi-check" 
+                                     actionListener="#{vendaPedidoController.fecharPedido}"
+                                     process="@this :formGestaoVendas:pagarAgora :formGestaoVendas:formaPagamento"
+                                     update="@form" oncomplete="PF('dlgFecharPedido').hide();"
+                                     styleClass="action-button-primary" />
+                    
+                    <p:commandButton value="Cancelar" icon="pi pi-times" 
+                                     onclick="PF('dlgFecharPedido').hide(); return false;"
+                                     styleClass="action-button-secondary" />
+                </f:facet>
+            </p:dialog>
+            
+            <!-- Fieldset: Pedidos Aguardando Pagamento -->
+            <p:fieldset legend="Pedidos Aguardando Pagamento" toggleable="true" collapsed="true" 
+                        styleClass="modern-fieldset"
+                        rendered="#{vendaPedidoController.encontroSelecionadoId != null and not empty vendaPedidoController.pedidosAguardandoPagamento}">
+                
+                <p:dataTable id="tblAguardandoPagamento" value="#{vendaPedidoController.pedidosAguardandoPagamento}" 
+                             var="pedido" emptyMessage="Nenhum pedido aguardando pagamento"
+                             styleClass="modern-datatable">
+                    
+                    <p:column headerText="Número" width="120">
+                        <h:outputText value="#{pedido.numeroPedido}" />
+                    </p:column>
+                    
+                    <p:column headerText="Trabalhador">
+                        <h:outputText value="#{pedido.trabalhadorResponsavel.pessoa.nome}" />
+                    </p:column>
+                    
+                    <p:column headerText="Data Fechamento" width="140">
+                        <h:outputText value="#{pedido.dataFechamentoFormatada}" />
+                    </p:column>
+                    
+                    <p:column headerText="Valor Total" width="120" style="text-align:right;">
+                        <h:outputText value="#{pedido.valorTotal}">
+                            <f:convertNumber type="currency" currencySymbol="R$ " />
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="Ação" width="150" style="text-align:center;">
+                        <p:commandButton value="Marcar como Pago (Alt+P)" icon="pi pi-dollar" 
+                                         actionListener="#{vendaPedidoController.prepararMarcarComoPago(pedido)}"
+                                         onclick="PF('dlgMarcarPago').show(); return false;"
+                                         styleClass="action-button-success" accesskey="P" />
+                    </p:column>
+                </p:dataTable>
+            </p:fieldset>
+            
+            <!-- Dialog: Marcar como Pago -->
+            <p:dialog id="dlgMarcarPago" header="Marcar como Pago" widgetVar="dlgMarcarPago" 
+                      modal="true" responsive="true" width="450" closeOnEscape="true">
+                
+                <div class="dialog-content">
+                    <p:panelGrid columns="2" layout="grid" styleClass="modern-panel-grid">
+                        <p:outputLabel value="Pedido:" styleClass="label-bold" />
+                        <p:outputLabel value="#{vendaPedidoController.pedidoParaPagamento.numeroPedido}" />
+                        
+                        <p:outputLabel value="Trabalhador:" styleClass="label-bold" />
+                        <p:outputLabel value="#{vendaPedidoController.pedidoParaPagamento.trabalhadorResponsavel.pessoa.nome}" />
+                        
+                        <p:outputLabel value="Valor Total:" styleClass="label-bold" />
+                        <h:outputText value="#{vendaPedidoController.pedidoParaPagamento.valorTotal}">
+                            <f:convertNumber type="currency" currencySymbol="R$ " />
+                        </h:outputText>
+                    </p:panelGrid>
+                    
+                    <p:separator />
+                    
+                        <div class="field-grid">
+                        <div class="field-group">
+                            <p:outputLabel for="formaPagamentoPago" value="Forma de Pagamento: *" />
+                            <p:selectOneMenu id="formaPagamentoPago" value="#{vendaPedidoController.formaPagamento}" required="true">
+                                <f:selectItem itemLabel="-- Selecione --" itemValue="#{null}" />
+                                <f:selectItem itemLabel="Dinheiro" itemValue="DINHEIRO" />
+                                <f:selectItem itemLabel="PIX" itemValue="PIX" />
+                                <f:selectItem itemLabel="Cartão de Débito" itemValue="DEBITO" />
+                                <f:selectItem itemLabel="Cartão de Crédito" itemValue="CREDITO" />
+                            </p:selectOneMenu>
+                        </div>
+                        
+                        <div class="field-group">
+                            <p:outputLabel for="valorPagamento" value="Valor Pago: *" />
+                            <p:inputNumber id="valorPagamento" value="#{vendaPedidoController.valorPagamento}" 
+                                           mode="currency" currencySymbol="R$ " required="true" />
+                        </div>
+                    </div>
+                </div>
+                
+                <f:facet name="footer">
+                    <p:commandButton value="Confirmar Pagamento" icon="pi pi-check" 
+                                     actionListener="#{vendaPedidoController.marcarComoPago}"
+                                     process="@this :formGestaoVendas:formaPagamentoPago :formGestaoVendas:valorPagamento"
+                                     update=":formGestaoVendas:growl :formGestaoVendas:tblAguardandoPagamento :formGestaoVendas:tblContasAbertas"
+                                     oncomplete="if (!args.validationFailed) PF('dlgMarcarPago').hide();"
+                                     styleClass="action-button-primary" />
+                    
+                    <p:commandButton value="Cancelar" icon="pi pi-times" 
+                                     onclick="PF('dlgMarcarPago').hide(); return false;"
+                                     styleClass="action-button-secondary" />
+                </f:facet>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

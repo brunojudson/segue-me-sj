@@ -36,10 +36,10 @@
             </div>
 
             <h:form id="trabalhadorForm" styleClass="modern-form">
-                <p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages"
+                <p:growl id="messages" showDetail="true" closable="true" styleClass="modern-messages"
                 onshow="scrollToTopOnError()">
                 
-                </p:messages>
+                </p:growl>
 
                 <f:metadata>
                     <f:viewParam name="id" />
@@ -52,17 +52,17 @@
                         <div class="field-grid">
                             <div class="field-group">
                                 <p:outputLabel for="pessoa" value="Pessoa" styleClass="required-field" />
-                                <p:selectOneMenu id="pessoa" value="#{trabalhadorController.trabalhador.pessoa}"
-                                                 converter="omnifaces.SelectItemsConverter" required="true"
-                                                 requiredMessage="A pessoa é obrigatória"
-                                                 disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}"
-                                                 filter="true" filterMatchMode="startsWith" filterNormalize="true">
-                                    <f:selectItem itemLabel="Selecione a pessoa" itemValue="" noSelectionOption="true" />
-                                    <f:selectItems value="#{trabalhadorController.pessoas}" var="pessoa"
-                                                   itemLabel="#{pessoa.nome}" itemValue="#{pessoa}" />
-                                    <p:ajax event="change" listener="#{trabalhadorController.verificarSeEncontrista}"
-                                            update="foiEncontrista" />
-                                </p:selectOneMenu>
+                                   <p:selectOneMenu id="pessoa" value="#{trabalhadorController.trabalhador.pessoa}"
+                                            converter="omnifaces.SelectItemsConverter" required="true"
+                                            requiredMessage="A pessoa é obrigatória"
+                                            disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}"
+                                            filter="true" filterMatchMode="startsWith" filterNormalize="true">
+                                   <f:selectItem itemLabel="Selecione a pessoa" itemValue="" noSelectionOption="true" />
+                                   <f:selectItems value="#{trabalhadorController.pessoas}" var="pessoa"
+                                          itemLabel="#{pessoa.nome}" itemValue="#{pessoa}" />
+                                        <p:ajax event="change" listener="#{trabalhadorController.verificarSeEncontrista}"
+                                            process="@this" update="@form" />
+                                   </p:selectOneMenu>
                                 <small class="field-hint">Selecione a pessoa que será o trabalhador.</small>
                             </div>
 
@@ -127,7 +127,7 @@
                                 <p:outputLabel for="foiEncontrista" value="Histórico" />
                                 <div class="checkbox-container">
                                     <p:selectBooleanCheckbox id="foiEncontrista" value="#{trabalhadorController.trabalhador.foiEncontrista}"
-                                                             disabled="true" />
+                                                             onclick="return false;" tabindex="-1" aria-disabled="true" />
                                     <span class="checkbox-label">Já participou como encontrista</span>
                                 </div>
                                 <small class="field-hint">Indica se a pessoa já foi encontrista (preenchido automaticamente).</small>

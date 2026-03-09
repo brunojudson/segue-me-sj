@@ -1,6 +1,5 @@
 package br.com.segueme.controller;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -8,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -16,32 +16,53 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletResponse;
 
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
-
+import br.com.segueme.entity.Casal;
+import br.com.segueme.entity.Encontrista;
+import br.com.segueme.entity.Encontro;
+import br.com.segueme.entity.Palestra;
+import br.com.segueme.entity.Palestrante;
 import br.com.segueme.entity.Pessoa;
+import br.com.segueme.entity.Trabalhador;
 import br.com.segueme.enums.Escolaridade;
 import br.com.segueme.enums.Sacramento;
+import br.com.segueme.service.CasalService;
+import br.com.segueme.service.EncontristaService;
+import br.com.segueme.service.PalestranteService;
+import br.com.segueme.service.PdfService;
 import br.com.segueme.service.PessoaService;
+import br.com.segueme.service.TrabalhadorService;
 
 @Named
 @ViewScoped
 public class PessoaController implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	private static final Logger log = LoggerFactory.getLogger(PessoaController.class);
 
 	@Inject
 	private PessoaService pessoaService;
+
+	@Inject
+	private PdfService pdfService;
+
+	@Inject
+	private EncontristaService encontristaService;
+
+	@Inject
+	private TrabalhadorService trabalhadorService;
+
+	@Inject
+	private PalestranteService palestranteService;
+
+	@Inject
+	private CasalService casalService;
 
 	private List<Pessoa> pessoas;
 	private Pessoa pessoa;
@@ -50,6 +71,13 @@ public class PessoaController implements Serializable {
 	private boolean processandoAtualizacao = false;
 	private boolean idadesAtualizadas = false;
 
+	// Modal detalhes
+	private Pessoa pessoaDetalhes;
+	private List<Encontro> encontrosParticipados;
+	private List<Trabalhador> equipesTrabalhou;
+	private List<Palestra> palestrasRealizadas;
+	private boolean detalhesModalVisible = false;
+
 	private List<Sacramento> sacramentosSelecionados;
 
 	private Long pessoaIdParaCarregar;
@@ -57,7 +85,7 @@ public class PessoaController implements Serializable {
 	private UploadedFile uploadedFile;
 	private String fotoPreview;
 
-	private static final String CAMINHO_FOTOS = "C:\\Desenvovilmento\\fotos\\";
+	private static final String CAMINHO_FOTOS = System.getProperty("caminho_fotos", "C:\\Desenvolvimento\\fotos") + java.io.File.separator;
 
 	@PostConstruct
 	public void init() {
@@ -104,55 +132,16 @@ public class PessoaController implements Serializable {
 	}
 
 	public String salvar() {
-		if (pessoa.getSacramentos() == null) { // Segurança extra, mas Pessoa deve cuidar disso
-			pessoa.setSacramentos(new ArrayList<>());
-		}
-		pessoa.setSacramentos(new ArrayList<>(this.sacramentosSelecionados));
-
-		try {
-			// Verificar se há uma nova foto para upload
-			if (uploadedFile != null) {
-				String nomeArquivo = gerarNomeArquivo();
-				String caminhoArquivo = CAMINHO_FOTOS + "" + nomeArquivo;
-
-				// Apagar a foto anterior, se existir
-				if (pessoa.getFoto() != null) {
-					File fotoAnterior = new File(CAMINHO_FOTOS + "" + pessoa.getFoto());
-					if (fotoAnterior.exists()) {
-						fotoAnterior.delete();
-					}
-				}
-				// Salvar o novo arquivo no diretório
-				Files.copy(uploadedFile.getInputStream(), Paths.get(caminhoArquivo),
-						StandardCopyOption.REPLACE_EXISTING);
-
-				// Atualizar o nome do arquivo no objeto casal
-				pessoa.setFoto(nomeArquivo);
-			}
-			if (pessoa.getId() == null) {
-
-				pessoaService.salvar(pessoa);
-				FacesContext.getCurrentInstance().addMessage(null,
-						new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Pessoa cadastrada com sucesso!"));
-			} else {
-
-				pessoaService.atualizar(pessoa);
-				FacesContext.getCurrentInstance().addMessage(null,
-						new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Pessoa atualizada com sucesso!"));
-			}
-
-			carregarPessoas();
-			limpar();
-			return "lista?faces-redirect=true";
-		} catch (Exception e) {
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
-			return null;
-		}
+		return salvarInterno(true);
 	}
 	
 	public String salvarEContinuar() {
-		if (pessoa.getSacramentos() == null) { // Segurança extra, mas Pessoa deve cuidar disso
+		return salvarInterno(false);
+	}
+
+	private String salvarInterno(boolean redirecionarParaLista) {
+		System.out.println(CAMINHO_FOTOS);
+		if (pessoa.getSacramentos() == null) {
 			pessoa.setSacramentos(new ArrayList<>());
 		}
 		pessoa.setSacramentos(new ArrayList<>(this.sacramentosSelecionados));
@@ -161,11 +150,11 @@ public class PessoaController implements Serializable {
 			// Verificar se há uma nova foto para upload
 			if (uploadedFile != null) {
 				String nomeArquivo = gerarNomeArquivo();
-				String caminhoArquivo = CAMINHO_FOTOS + "" + nomeArquivo;
+				String caminhoArquivo = CAMINHO_FOTOS + nomeArquivo;
 
 				// Apagar a foto anterior, se existir
 				if (pessoa.getFoto() != null) {
-					File fotoAnterior = new File(CAMINHO_FOTOS + "" + pessoa.getFoto());
+					File fotoAnterior = new File(CAMINHO_FOTOS + pessoa.getFoto());
 					if (fotoAnterior.exists()) {
 						fotoAnterior.delete();
 					}
@@ -174,16 +163,14 @@ public class PessoaController implements Serializable {
 				Files.copy(uploadedFile.getInputStream(), Paths.get(caminhoArquivo),
 						StandardCopyOption.REPLACE_EXISTING);
 
-				// Atualizar o nome do arquivo no objeto casal
+				// Atualizar o nome do arquivo no objeto pessoa
 				pessoa.setFoto(nomeArquivo);
 			}
 			if (pessoa.getId() == null) {
-
 				pessoaService.salvar(pessoa);
 				FacesContext.getCurrentInstance().addMessage(null,
 						new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Pessoa cadastrada com sucesso!"));
 			} else {
-
 				pessoaService.atualizar(pessoa);
 				FacesContext.getCurrentInstance().addMessage(null,
 						new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Pessoa atualizada com sucesso!"));
@@ -191,7 +178,7 @@ public class PessoaController implements Serializable {
 
 			carregarPessoas();
 			limpar();
-			return "";
+			return redirecionarParaLista ? "lista?faces-redirect=true" : "";
 		} catch (Exception e) {
 			FacesContext.getCurrentInstance().addMessage(null,
 					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
@@ -277,70 +264,7 @@ public class PessoaController implements Serializable {
 	}
 
 	public void gerarFichaInscricao(Pessoa pessoa) {
-		Document document = new Document();
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			PdfWriter.getInstance(document, baos);
-			document.open();
-
-			// Título
-			Font tituloFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
-			Paragraph titulo = new Paragraph("Ficha de Inscrição", tituloFont);
-			titulo.setAlignment(Element.ALIGN_CENTER);
-			document.add(titulo);
-
-			document.add(new Paragraph(" ")); // Espaço
-
-			// Foto
-			String caminhoFoto;
-			if (pessoa.getFoto() != null) {
-				caminhoFoto = CAMINHO_FOTOS + pessoa.getFoto();
-			} else {
-				// Caminho para o avatar padrão (ajuste conforme o local do arquivo em seu
-				// projeto)
-				caminhoFoto = FacesContext.getCurrentInstance().getExternalContext()
-						.getRealPath("/resources/images/default_avatar.png");
-			}
-			File fotoFile = new File(caminhoFoto);
-			if (fotoFile.exists()) {
-				Image foto = Image.getInstance(caminhoFoto);
-				foto.scaleToFit(150, 150);
-				foto.setAlignment(Element.ALIGN_CENTER);
-				document.add(foto);
-			} else {
-				document.add(new Paragraph("Foto não encontrada."));
-			}
-
-			document.add(new Paragraph(" ")); // Espaço
-
-			// Dados da Pessoa
-			Font dadosFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
-			document.add(new Paragraph("Nome: " + pessoa.getNome(), dadosFont));
-			document.add(new Paragraph("CPF: " + pessoa.getCpf(), dadosFont));
-			document.add(new Paragraph("Data de Nascimento: " + pessoa.getDataNascimento(), dadosFont));
-			document.add(new Paragraph("Endereço: " + pessoa.getEndereco(), dadosFont));
-			document.add(new Paragraph("Telefone: " + pessoa.getTelefone(), dadosFont));
-			document.add(new Paragraph("E-mail: " + pessoa.getEmail(), dadosFont));
-			document.add(new Paragraph("Sexo: " + (pessoa.getSexo() != null ? pessoa.getSexo() : "Não informado"),
-					dadosFont));
-			document.add(new Paragraph("Idade: " + (pessoa.getIdade() != null ? pessoa.getIdade() : "Não calculada"),
-					dadosFont));
-
-			document.close();
-
-			// Enviar PDF para o navegador
-			FacesContext facesContext = FacesContext.getCurrentInstance();
-			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-			response.reset();
-			response.setContentType("application/pdf");
-			response.setHeader("Content-Disposition",
-					"attachment; filename=Ficha_Inscricao_" + pessoa.getId() + ".pdf");
-			response.getOutputStream().write(baos.toByteArray());
-			response.getOutputStream().flush();
-			facesContext.responseComplete();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		pdfService.gerarFichaInscricaoPessoa(pessoa);
 	}
 	public void handleFileUpload(FileUploadEvent event) { // Ou apenas (UploadedFile file) se não usar FileUploadEvent
         this.uploadedFile = event.getFile(); // Se usar FileUploadEvent
@@ -372,6 +296,104 @@ public class PessoaController implements Serializable {
 			}
 		}
 		return nomes;
+	}
+
+	// Modal de detalhes da pessoa
+	public void abrirDetalhes(Pessoa pessoa) {
+		
+		this.pessoaDetalhes = pessoaService.buscarPorId(pessoa.getId()).orElse(pessoa);
+
+		// Equipes
+		try {
+			this.equipesTrabalhou = trabalhadorService.buscarPorPessoa(pessoa.getId());
+		} catch (Exception e) {
+			log.error("Erro ao carregar equipes para pessoa {}", pessoa.getId(), e);
+			this.equipesTrabalhou = new ArrayList<>();
+		}
+
+		// Encontros (agrega de encontrista + trabalhador)
+		try {
+			LinkedHashSet<Encontro> encontrosSet = new LinkedHashSet<>();
+			List<Encontrista> encontristas = encontristaService.buscarPorPessoa(pessoa.getId());
+			for (Encontrista enc : encontristas) {
+				if (enc.getEncontro() != null) {
+					encontrosSet.add(enc.getEncontro());
+				}
+			}
+			if (this.equipesTrabalhou != null) {
+				for (Trabalhador trab : this.equipesTrabalhou) {
+					if (trab.getEncontro() != null) {
+						encontrosSet.add(trab.getEncontro());
+					}
+				}
+			}
+			this.encontrosParticipados = new ArrayList<>(encontrosSet);
+		} catch (Exception e) {
+			log.error("Erro ao carregar encontros para pessoa {}", pessoa.getId(), e);
+			this.encontrosParticipados = new ArrayList<>();
+		}
+
+		// Palestras
+		List<Palestra> todasPalestras = new ArrayList<>();
+		try {
+			List<Palestrante> palestrantesIndividual = palestranteService.buscarPorPessoa(this.pessoaDetalhes);
+			for (Palestrante p : palestrantesIndividual) {
+				todasPalestras.addAll(p.getPalestras());
+			}
+
+			List<Casal> casais = casalService.buscarPorPessoa(pessoa.getId());
+			for (Casal casal : casais) {
+				List<Palestrante> palestrantesCasal = palestranteService.buscarPorCasal(casal);
+				for (Palestrante p : palestrantesCasal) {
+					for (Palestra pal : p.getPalestras()) {
+						if (!todasPalestras.contains(pal)) {
+							todasPalestras.add(pal);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error("Erro ao carregar palestras para pessoa {}", pessoa.getId(), e);
+		}
+
+		this.palestrasRealizadas = todasPalestras;
+		this.detalhesModalVisible = true;
+		
+	}
+
+	public void fecharDetalhes() {
+		this.detalhesModalVisible = false;
+		this.pessoaDetalhes = null;
+		this.encontrosParticipados = null;
+		this.equipesTrabalhou = null;
+		this.palestrasRealizadas = null;
+	}
+
+	public String getFotoDetalhes() {
+		if (pessoaDetalhes != null && pessoaDetalhes.getFoto() != null && !pessoaDetalhes.getFoto().isEmpty()) {
+			return "/fotos/" + pessoaDetalhes.getFoto() + "?t=" + System.currentTimeMillis();
+		}
+		return null;
+	}
+
+	public Pessoa getPessoaDetalhes() {
+		return pessoaDetalhes;
+	}
+
+	public List<Encontro> getEncontrosParticipados() {
+		return encontrosParticipados;
+	}
+
+	public List<Trabalhador> getEquipesTrabalhou() {
+		return equipesTrabalhou;
+	}
+
+	public List<Palestra> getPalestrasRealizadas() {
+		return palestrasRealizadas;
+	}
+
+	public boolean isDetalhesModalVisible() {
+		return detalhesModalVisible;
 	}
 	public Sacramento[] getTodosSacramentos() {
 		return Sacramento.values();

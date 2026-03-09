@@ -22,6 +22,8 @@ import javax.persistence.Table;
 
 import br.com.segueme.enums.TipoPalestrante;
 
+import javax.validation.constraints.NotNull;
+
 @Entity
 @Table(name = "palestrante")
 public class Palestrante implements Serializable {
@@ -32,6 +34,7 @@ public class Palestrante implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Tipo de palestrante é obrigatório")
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_palestrante", nullable = false)
     private TipoPalestrante tipoPalestrante;

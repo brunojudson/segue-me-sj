@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+<head>
+    <title>Trabalhadores - Encontro Anterior (Cards)</title>
+</head>
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">Trabalhadores por Equipe — Encontro Anterior</ui:define>
+
+    <ui:define name="content">
+        <div class="content-container">
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">
+                            <i class="pi pi-users page-icon"></i>
+                            <span class="title-text">Trabalhadores do Encontro Anterior</span>
+                        </h1>
+                        <p class="page-subtitle">Visualização em cards por equipe — layout moderno e exportável</p>
+                    </div>
+                </div>
+            </div>
+
+            <h:form id="cardsForm" styleClass="modern-form">
+                <p:messages id="messages" showDetail="true" closable="true"/>
+
+                <p:fieldset legend="Filtros" styleClass="modern-fieldset">
+                    <div class="field-grid">
+                        <div class="field-group">
+                            <p:outputLabel for="encontroAnterior" value="Encontro Anterior" styleClass="required-field" />
+                            <p:selectOneMenu id="encontroAnterior" value="#{relatorioController.encontroAnteriorSelecionado}"
+                                             converter="omnifaces.SelectItemsConverter" required="true"
+                                             requiredMessage="Selecione o encontro anterior">
+                                <f:selectItem itemLabel="Selecione um encontro" itemValue="" noSelectionOption="true" />
+                                <f:selectItems value="#{relatorioController.encontros}" var="encontro" itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
+                            </p:selectOneMenu>
+                        </div>
+
+                        <div class="field-group" style="display:flex; align-items:flex-end; gap:0.75rem;">
+                            <p:commandButton value="✨ Gerar Cards" icon="pi pi-th-large"
+                                             action="#{relatorioController.gerarRelatorioEncontroAnteriorCards}"
+                                             update=":cardsForm:cardsGrid :cardsForm:printBtn :cardsForm:messages"
+                                             oncomplete="try{var btn=document.getElementById('cardsForm:printBtn'); if(btn){btn.disabled=false; btn.classList.remove('ui-state-disabled');}}catch(e){}"
+                                             styleClass="ui-button-success"/>
+
+                            <p:commandButton id="printBtn" value="🖨️ Imprimir" type="button" icon="pi pi-print" onclick="printCards()" styleClass="ui-button-secondary" disabled="#{empty relatorioController.equipesEncontroAnterior}" />
+
+                            <p:commandButton id="limparBtn" value="🔄 Limpar" icon="pi pi-refresh" styleClass="ui-button-outlined"
+                                             action="#{relatorioController.limparEncontroAnteriorCardsSubmit}"
+                                             update=":cardsForm:encontroAnterior :cardsForm:cardsGrid :cardsForm:printBtn :cardsForm:messages" />
+                        </div>
+                    </div>
+                </p:fieldset>
+
+                <h:panelGroup id="cardsGrid" layout="block" style="margin-top:1.5rem;">
+                    <p:panelGrid columns="3" columnClasses="card-col" style="gap:1rem;" rendered="#{not empty relatorioController.equipesEncontroAnterior}">
+                        <ui:repeat value="#{relatorioController.equipesEncontroAnterior}" var="equipe">
+                            <p:panel styleClass="team-card modern-card">
+                                <f:facet name="header">
+                                    <div class="card-header">
+                                        <h3>#{equipe.nome}</h3>
+                                        <small class="card-sub">#{equipe.tipoEquipe != null ? equipe.tipoEquipe.nome : ''}</small>
+                                    </div>
+                                </f:facet>
+
+                                <div class="card-body">
+                                    <p:outputLabel value="Total de trabalhadores: " />
+                                    <h:outputText value="#{relatorioController.trabalhadoresPorEquipe[equipe.id] != null ? relatorioController.trabalhadoresPorEquipe[equipe.id].size() : 0}" />
+
+                                    <p:dataTable value="#{relatorioController.trabalhadoresPorEquipe[equipe.id]}" var="item" styleClass="modern-datatable" rows="6" paginator="false" emptyMessage="Nenhum trabalhador">
+                                        <p:column headerText="Nome">
+                                            <h:outputText value="#{item.nome}" />
+                                        </p:column>
+                                        <p:column headerText="Contato">
+                                            <h:outputText value="#{item.email}" />
+                                            <br />
+                                            <h:outputText value="#{item.telefone}" />
+                                        </p:column>
+                                        <p:column headerText="Coordenador" style="text-align:center; width:8rem;">
+                                            <h:outputText value="#{item.coordenador}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+
+                                <f:facet name="footer">
+                                    <div class="card-footer">
+                                        <p:commandButton value="📥 Exportar Excel" icon="pi pi-file-excel" process="@this" ajax="false"
+                                                         actionListener="#" styleClass="ui-button-success ui-button-sm" rendered="false"/>
+                                    </div>
+                                </f:facet>
+                            </p:panel>
+                        </ui:repeat>
+                    </p:panelGrid>
+
+                    <h:panelGroup rendered="#{empty relatorioController.equipesEncontroAnterior}">
+                        <div class="empty-state">
+                            <i class="pi pi-info-circle" style="font-size:3rem;color:#ccc;margin-bottom:1rem;"></i>
+                            <h3>Nenhum encontro selecionado ou sem equipes</h3>
+                            <p>Selecione um encontro anterior e clique em "Gerar Cards" para ver os trabalhadores agrupados por equipe.</p>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <h:outputScript><![CDATA[
+                    window.printCards = function(){
+                        var container = document.getElementById('cardsForm:cardsGrid');
+                        if(!container){
+                            // fallback try by id without naming container
+                            container = document.getElementById('cardsGrid');
+                        }
+                        if(!container){
+                            alert('Nada a imprimir. Gere os cards primeiro.');
+                            return;
+                        }
+                        var cssLinks = '';
+                        var links = document.querySelectorAll('link[rel="stylesheet"]');
+                        links.forEach(function(l){ cssLinks += '<link rel="stylesheet" href="'+l.href+'"/>'; });
+
+                        var w = window.open('','_blank');
+                        var doc = w.document;
+                        doc.open();
+                        doc.write('<!doctype html><html><head><meta charset="utf-8"><title>Imprimir Trabalhadores por Equipe</title>'+cssLinks+'<style>@media print{ body{margin:0; padding:0;} .menu-wrapper, header, .page-header, .menu-container { display:none !important; } .content-container{padding:0.5rem;} }</style></head><body>');
+                        doc.write(container.innerHTML);
+                        doc.write('</body></html>');
+                        doc.close();
+                        setTimeout(function(){ w.focus(); w.print(); }, 500);
+                    };
+                ]]></h:outputScript>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

@@ -36,10 +36,10 @@
 			</div>
 
 			<h:form id="encontristaForm" styleClass="modern-form">
-				<p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages"
+				<p:growl id="messages" showDetail="true" closable="true" styleClass="modern-messages"
 				onshow="scrollToTopOnError()">
 					<p:autoUpdate />
-				</p:messages>
+				</p:growl>
 
 				<f:metadata>
 					<f:viewParam name="id" />
@@ -155,55 +155,6 @@
 			</h:form>
 		</div>
 
-		<style>
-			/* Estilos específicos para o cadastro de encontrista */
-			.ui-selectonemenu {
-				min-width: 250px;
-			}
-
-			.ui-selectonemenu .ui-selectonemenu-label {
-				padding: 0.75rem;
-			}
-
-			.ui-selectonemenu-panel .ui-selectonemenu-items {
-				padding: 0.5rem 0;
-			}
-
-			.ui-selectonemenu-panel .ui-selectonemenu-item {
-				padding: 0.75rem 1rem;
-				border-bottom: 1px solid #f0f0f0;
-			}
-
-			.ui-selectonemenu-panel .ui-selectonemenu-item:hover {
-				background-color: #f8f9fa;
-			}
-
-			.ui-selectonemenu-filter-container {
-				padding: 0.75rem;
-				border-bottom: 1px solid #dee2e6;
-			}
-
-			/* Responsividade específica */
-			@media (max-width: 768px) {
-				.field-grid {
-					grid-template-columns: 1fr;
-				}
-				
-				.action-buttons {
-					flex-direction: column;
-					gap: 0.75rem;
-				}
-				
-				.action-buttons .ui-button {
-					width: 100%;
-				}
-
-				.ui-selectonemenu {
-					min-width: auto;
-					width: 100%;
-				}
-			}
-		</style>
 		  <h:outputScript library="js" name="scrollUp.js" target="head" />
 	</ui:define>
 </ui:composition>

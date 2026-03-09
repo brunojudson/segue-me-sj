@@ -3,6 +3,7 @@ package br.com.segueme.service;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -227,5 +228,54 @@ public class EncontristaService implements Serializable {
 			.stream()
 			.filter(Encontrista::getAtivo)
 			.collect(Collectors.toList());
+	}
+
+	/**
+	 * Conta o total de encontristas usando COUNT(*) no banco
+	 * @return total de encontristas
+	 */
+	public long contarTotal() {
+		return encontristaRepository.count();
+	}
+
+	/**
+	 * Busca um encontrista pelo token da ficha digital
+	 * @param token Token UUID da ficha
+	 * @return Optional contendo o encontrista, se encontrado
+	 */
+	public Optional<Encontrista> buscarPorToken(String token) {
+		if (token == null || token.trim().isEmpty()) {
+			return Optional.empty();
+		}
+		return encontristaRepository.findByToken(token);
+	}
+
+	/**
+	 * Gera um token UUID para ficha digital do encontrista.
+	 * Se já possuir um token, retorna o existente.
+	 * @param encontristaId ID do encontrista
+	 * @return Token gerado ou existente
+	 */
+	public String gerarTokenFicha(Long encontristaId) {
+		if (encontristaId == null) {
+			throw new IllegalArgumentException("ID do encontrista não pode ser nulo");
+		}
+		Optional<Encontrista> opt = encontristaRepository.findById(encontristaId);
+		if (!opt.isPresent()) {
+			throw new IllegalArgumentException("Seguimista não encontrado com o ID: " + encontristaId);
+		}
+		Encontrista enc = opt.get();
+		if (enc.getTokenFicha() != null && !enc.getTokenFicha().isEmpty()) {
+			return enc.getTokenFicha();
+		}
+		String token = UUID.randomUUID().toString();
+		enc.setTokenFicha(token);
+		encontristaRepository.update(enc);
+
+		auditoriaService.registrar("Encontrista", enc.getId(), "TOKEN_GERADO",
+				usuarioService.getUsuarioLogadoNome(),
+				"Token ficha digital gerado: " + token);
+
+		return token;
 	}
 }

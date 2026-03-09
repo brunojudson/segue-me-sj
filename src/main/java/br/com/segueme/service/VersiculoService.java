@@ -1,8 +1,5 @@
 package br.com.segueme.service;
 
-import java.util.List;
-import java.util.Random;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,10 +13,12 @@ public class VersiculoService {
 	private EntityManager em;
 
 	public Versiculo buscarAleatorio() {
-		List<Versiculo> lista = em.createQuery("SELECT v FROM Versiculo v", Versiculo.class).getResultList();
-		if (lista.isEmpty())
+		try {
+			return em.createQuery("SELECT v FROM Versiculo v ORDER BY FUNCTION('RANDOM')", Versiculo.class)
+					.setMaxResults(1)
+					.getSingleResult();
+		} catch (javax.persistence.NoResultException e) {
 			return null;
-		int idx = new Random().nextInt(lista.size());
-		return lista.get(idx);
+		}
 	}
 }

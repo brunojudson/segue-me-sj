@@ -6,8 +6,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
-
 import br.com.segueme.entity.Encontro;
 import br.com.segueme.entity.Palestra;
 import br.com.segueme.repository.PalestraRepository;
@@ -56,19 +54,16 @@ public class PalestraRepositoryImpl implements PalestraRepository {
 	}
 
 	@Override
-	@Transactional
 	public void save(Palestra palestra) {
 		entityManager.merge(palestra);
 	}
 
 	@Override
-	@Transactional
 	public void update(Palestra palestra) {
 		entityManager.merge(palestra);
 	}
 
 	@Override
-	@Transactional
 	public void delete(Long id) {
 		Palestra palestra = findById(id);
 		if (palestra != null) {

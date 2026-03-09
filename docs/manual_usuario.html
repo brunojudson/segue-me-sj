@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Manual do Usuário — Sistema Segue-me</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;color:#222;line-height:1.6;margin:24px}
+    h1,h2,h3{color:#0b5;}
+    .toc{background:#f7f7f7;padding:12px;border-radius:6px;margin-bottom:18px}
+    .step{border-left:4px solid #0b5;padding:10px;margin:10px 0;background:#fff}
+    code{background:#eee;padding:2px 4px;border-radius:4px}
+    a.file{color:#0645ad}
+    .note{background:#fffbe6;border:1px solid #ffeeba;padding:8px;border-radius:6px}
+  </style>
+</head>
+<body>
+  <h1>Manual do Usuário — Sistema Segue-me</h1>
+  <p>Versão do manual: 1.0 — Gerado automaticamente a partir do código-fonte do projeto.</p>
+
+  <div class="toc">
+    <strong>Índice</strong>
+    <ol>
+      <li>Visão geral</li>
+      <li>Fluxo de implantação inicial</li>
+      <li>Cadastro passo a passo</li>
+      <li>Gestão de fotos</li>
+      <li>Relatórios e exportação</li>
+      <li>Boas práticas e checagens finais</li>
+      <li>Referências técnicas (arquivos relevantes)</li>
+    </ol>
+  </div>
+
+  <h2>1. Visão geral</h2>
+  <p>Este manual descreve, passo a passo, como operar o sistema Segue-me na primeira implantação e no uso diário. Ele cobre os cadastros essenciais, sequência recomendada, finalização de encontros e verificações.</p>
+
+  <h2>2. Fluxo de implantação inicial (ordem recomendada)</h2>
+  <p>Para a <strong>primeira implantação</strong>, siga esta ordem com cuidado — ela evita problemas com telefones, relacionamentos e dependências entre tabelas:</p>
+  <ol>
+    <li><strong>Cadastrar todas as pessoas</strong> — veja detalhes na seção 3.1. (Cadastrar de trás para frente para garantir telefones atualizados)</li>
+    <li><strong>Cadastrar casais</strong> — associe pessoas já cadastradas.</li>
+    <li><strong>Cadastrar encontro</strong> — use o padrão de nome: <em>Segue-me 2025</em> (ou ano correspondente).</li>
+    <li><strong>Cadastrar seguimistas (encontristas)</strong> — associando à pessoa e ao encontro.</li>
+    <li><strong>Cadastrar equipes</strong>, incluindo equipes de dirigentes.</li>
+    <li><strong>Cadastrar trabalhadores</strong>, incluindo dirigentes.</li>
+    <li><strong>Cadastrar pastas</strong> (se aplicável) e relacionar dirigentes.</li>
+    <li><strong>Cadastrar dirigentes</strong> (associar a pasta/equipe).</li>
+    <li><strong>Cadastrar contribuições</strong> financeiras (se aplicável).</li>
+    <li>Ao término do encontro, <strong>editar o encontro e finalizá-lo</strong> (mudar status/ativo).</li>
+  </ol>
+
+  <h2>3. Cadastro passo a passo</h2>
+
+  <h3>3.1 Pessoas</h3>
+  <div class="step">
+    <strong>Página de cadastro:</strong>
+    <ul>
+      <li>Formulário: <a class="file" href="src/main/webapp/pages/pessoa/cadastro.xhtml">pages/pessoa/cadastro.xhtml</a></li>
+    </ul>
+    <p>Recomendações:</p>
+    <ul>
+      <li>Ao cadastrar durante a implantação inicial, cadastre <em>de trás para frente</em> — isto é, se você estiver migrando de uma lista ordenada, insira os registros começando pelos mais antigos até os mais recentes de forma a preservar a consistência dos telefones e referências.</li>
+      <li>Campos essenciais: <em>Nome</em>, <em>Data de Nascimento</em>, <em>Sexo</em>, <em>Telefone</em>. Telefone é único no banco.</li>
+      <li>Use o campo <em>Foto</em> para carregar imagem — veja seção 4 sobre gestão de fotos.</li>
+      <li>Validação: o formulário aplica validações cliente/servidor. Mensagens aparecem no growl.</li>
+    </ul>
+  </div>
+
+  <h3>3.2 Casais</h3>
+  <div class="step">
+    <strong>Página de cadastro:</strong> <a class="file" href="src/main/webapp/pages/casal/cadastro.xhtml">pages/casal/cadastro.xhtml</a>
+    <p>Notas:</p>
+    <ul>
+      <li>Casais referenciam duas pessoas existentes. Selecione pessoas já cadastradas.</li>
+      <li>Há uma restrição de unicidade (pessoa1, pessoa2).</li>
+    </ul>
+  </div>
+
+  <h3>3.3 Encontros</h3>
+  <div class="step">
+    <strong>Página de cadastro:</strong> <a class="file" href="src/main/webapp/pages/encontro/cadastro.xhtml">pages/encontro/cadastro.xhtml</a>
+    <p>Padronização de nome:</p>
+    <ul>
+      <li>Use o padrão <strong>Segue-me &lt;ano&gt;</strong> (ex.: Segue-me 2025) no campo nome para facilitar filtros e relatórios.</li>
+      <li>Preencha datas de início/fim, local, capacidade máxima e valores de inscrição conforme política do encontro.</li>
+    </ul>
+  </div>
+
+  <h3>3.4 Seguimistas / Encontristas</h3>
+  <div class="step">
+    <strong>Página de cadastro:</strong> <a class="file" href="src/main/webapp/pages/encontrista/cadastro.xhtml">pages/encontrista/cadastro.xhtml</a>
+    <p>Observações:</p>
+    <ul>
+      <li>Cada encontrista deve estar vinculado a uma <em>Pessoa</em> e a um <em>Encontro</em>.</li>
+      <li>Registre dados de inscrição, forma de pagamento e observações quando disponíveis.</li>
+      <li>O sistema possui relatórios por encontro: <a class="file" href="src/main/webapp/pages/relatorios/encontristas-por-encontro.xhtml">relatorios/encontristas-por-encontro.xhtml</a></li>
+    </ul>
+  </div>
+
+  <h3>3.5 Equipes e Dirigentes</h3>
+  <div class="step">
+    <strong>Páginas:</strong>
+    <ul>
+      <li>Cadastro de equipes: <a class="file" href="src/main/webapp/pages/equipe/cadastro.xhtml">pages/equipe/cadastro.xhtml</a></li>
+      <li>Listagem/visualização de equipes: <a class="file" href="src/main/webapp/pages/equipe/lista.xhtml">pages/equipe/lista.xhtml</a>, <a class="file" href="src/main/webapp/pages/equipe/visualizar.xhtml">pages/equipe/visualizar.xhtml</a></li>
+      <li>Dirigentes: <a class="file" href="src/main/webapp/pages/dirigente/cadastro.xhtml">pages/dirigente/cadastro.xhtml</a></li>
+    </ul>
+    <p>Boas práticas:</p>
+    <ul>
+      <li>Cadastre as equipes antes de atribuir trabalhadores a elas.</li>
+      <li>Dirigentes podem ser registrados separadamente e atribuídos a pastas/equipes.</li>
+    </ul>
+  </div>
+
+  <h3>3.6 Trabalhadores</h3>
+  <div class="step">
+    <strong>Página de cadastro:</strong> <a class="file" href="src/main/webapp/pages/trabalhador/cadastro.xhtml">pages/trabalhador/cadastro.xhtml</a>
+    <p>Observações:</p>
+    <ul>
+      <li>Trabalhadores são associados a uma pessoa e a uma equipe. Marque o campo de dirigente quando aplicável.</li>
+      <li>Relatórios úteis: <a class="file" href="src/main/webapp/pages/relatorios/trabalhadores-por-equipe.xhtml">relatorios/trabalhadores-por-equipe.xhtml</a></li>
+    </ul>
+  </div>
+
+  <h3>3.7 Pastas</h3>
+  <div class="step">
+    <strong>Página de cadastro:</strong> <a class="file" href="src/main/webapp/pages/pasta/cadastro.xhtml">pages/pasta/cadastro.xhtml</a>
+    <p>Use pastas para organizar equipes e atribuir dirigentes.</p>
+  </div>
+
+  <h3>3.8 Contribuições</h3>
+  <div class="step">
+    <strong>Páginas:</strong>
+    <ul>
+      <li>Cadastro: <a class="file" href="src/main/webapp/pages/contribuicao/cadastro.xhtml">pages/contribuicao/cadastro.xhtml</a></li>
+      <li>Listagem: <a class="file" href="src/main/webapp/pages/contribuicao/lista.xhtml">pages/contribuicao/lista.xhtml</a></li>
+    </ul>
+    <p>Campos importantes: valor, forma de pagamento, comprovante (URL) e vínculo com trabalhador.</p>
+  </div>
+
+  <h3>3.9 Finalizar encontro</h3>
+  <div class="step">
+    <p>Ao finalizar o encontro, edite o registro em <a class="file" href="src/main/webapp/pages/encontro/visualizar.xhtml">pages/encontro/visualizar.xhtml</a> ou na edição e marque como inativo/fechado conforme o campo disponível no formulário. Confirme também os valores de presença e contribuições.</p>
+  </div>
+
+  <h2>4. Gestão de fotos</h2>
+  <div class="step">
+    <p>Local padrão das fotos: o sistema lê a propriedade <code>caminho_fotos</code>. Nos controllers a constante padrão é definida como:</p>
+    <ul>
+      <li><a class="file" href="src/main/java/br/com/segueme/controller/PessoaController.java">PessoaController</a> e <a class="file" href="src/main/java/br/com/segueme/controller/EncontristaController.java">EncontristaController</a> definem por padrão <code>C:\Desenvolvimento\fotos</code>.</li>
+    </ul>
+    <p class="note">Se o diretório não existir, o sistema cria automaticamente (verificar permissões). Caso você prefira outro local, defina a propriedade de sistema <code>-Dcaminho_fotos=&lt;caminho&gt;</code> ao iniciar a JVM.</p>
+  </div>
+
+  <h2>5. Relatórios e exportação</h2>
+  <div class="step">
+    <p>Relatórios estão disponíveis em:</p>
+    <ul>
+      <li><a class="file" href="src/main/webapp/pages/relatorios/relatorios.xhtml">Relatórios gerais</a></li>
+      <li>Relatórios específicos: encontristas por encontro, contribuições, trabalhadores por equipe</li>
+    </ul>
+    <p>Use os filtros por encontro (nome padronizado) e por datas para gerar exportações corretas.</p>
+  </div>
+
+  <h2>6. Boas práticas e checagens finais</h2>
+  <ul>
+    <li>Antes de iniciar a migração, faça um backup do banco de dados.</li>
+    <li>Siga a ordem de implantação do item 2 para evitar problemas com FK e unicidades (telefone único, casais referenciam pessoas).</li>
+    <li>Após grandes importações, rode o script para reiniciar sequences: veja seção Referências Técnicas abaixo.</li>
+    <li>Verifique permissões de escrita no diretório de fotos antes de importar imagens em massa.</li>
+  </ul>
+
+  <h2>7. Referências técnicas (arquivos importantes)</h2>
+  <ul>
+    <li>Formulários e páginas:
+      <ul>
+        <li><a class="file" href="src/main/webapp/pages/pessoa/cadastro.xhtml">pages/pessoa/cadastro.xhtml</a></li>
+        <li><a class="file" href="src/main/webapp/pages/casal/cadastro.xhtml">pages/casal/cadastro.xhtml</a></li>
+        <li><a class="file" href="src/main/webapp/pages/encontro/cadastro.xhtml">pages/encontro/cadastro.xhtml</a></li>
+        <li><a class="file" href="src/main/webapp/pages/encontrista/cadastro.xhtml">pages/encontrista/cadastro.xhtml</a></li>
+        <li><a class="file" href="src/main/webapp/pages/equipe/cadastro.xhtml">pages/equipe/cadastro.xhtml</a></li>
+        <li><a class="file" href="src/main/webapp/pages/trabalhador/cadastro.xhtml">pages/trabalhador/cadastro.xhtml</a></li>
+        <li><a class="file" href="src/main/webapp/pages/pasta/cadastro.xhtml">pages/pasta/cadastro.xhtml</a></li>
+        <li><a class="file" href="src/main/webapp/pages/dirigente/cadastro.xhtml">pages/dirigente/cadastro.xhtml</a></li>
+        <li><a class="file" href="src/main/webapp/pages/contribuicao/cadastro.xhtml">pages/contribuicao/cadastro.xhtml</a></li>
+      </ul>
+    </li>
+    <li>Controllers (lógica/paths):
+      <ul>
+        <li><a class="file" href="src/main/java/br/com/segueme/controller/PessoaController.java">src/main/java/br/com/segueme/controller/PessoaController.java</a></li>
+        <li><a class="file" href="src/main/java/br/com/segueme/controller/EncontristaController.java">src/main/java/br/com/segueme/controller/EncontristaController.java</a></li>
+      </ul>
+    </li>
+    <li>Script de limpeza / reset de sequences:
+      <ul>
+        <li><a class="file" href="modelo/cleanup_database.sql">modelo/cleanup_database.sql</a> — contém TRUNCATE + bloco para reiniciar sequences automaticamente.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2>8. Procedimentos recomendados rápidos</h2>
+  <ol>
+    <li>Backup do banco.</li>
+    <li>Cadastre pessoas (garantir telefones atualizados).</li>
+    <li>Cadastre casais.</li>
+    <li>Cadastre encontro padrão (Segue-me &lt;ano&gt;).</li>
+    <li>Cadastre encontristas e equipes, depois trabalhadores e dirigentes.</li>
+    <li>Importe contribuições e confira relatórios.</li>
+    <li>Ao final do encontro, marque-o como finalizado na tela de edição.</li>
+    <li>Se necessário, rode <code>modelo/cleanup_database.sql</code> para limpeza e reinício de sequences.</li>
+  </ol>
+
+  <hr/>
+  <p>Manual gerado automaticamente. Caso queira, eu posso:
+    <ul>
+      <li>Adicionar screenshots das telas (se fornecer imagens).</li>
+      <li>Gerar uma versão PDF do manual.</li>
+      <li>Extrair e listar endpoints/menus com mapeamento mais detalhado.</li>
+    </ul>
+  </p>
+</body>
+</html>

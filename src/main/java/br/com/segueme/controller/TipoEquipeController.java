@@ -24,6 +24,7 @@ public class TipoEquipeController implements Serializable {
     private List<TipoEquipe> tiposEquipe;
     private TipoEquipe tipoEquipe;
     private TipoEquipe tipoEquipeSelecionado;
+    private TipoEquipe tipoEquipeDetalhes;
     
     @PostConstruct
     public void init() {
@@ -96,6 +97,18 @@ public class TipoEquipeController implements Serializable {
         }
     }
     
+    public void abrirDetalhes(TipoEquipe tipoEquipe) {
+        tipoEquipeService.buscarPorId(tipoEquipe.getId()).ifPresent(t -> this.tipoEquipeDetalhes = t);
+    }
+
+    public void fecharDetalhes() {
+        this.tipoEquipeDetalhes = null;
+    }
+
+    public TipoEquipe getTipoEquipeDetalhes() {
+        return tipoEquipeDetalhes;
+    }
+
     // Getters e Setters
     
     public List<TipoEquipe> getTiposEquipe() {

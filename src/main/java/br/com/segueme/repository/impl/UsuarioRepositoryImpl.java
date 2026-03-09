@@ -8,6 +8,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import br.com.segueme.entity.Permissao;
 import br.com.segueme.entity.Usuario;
@@ -15,6 +17,8 @@ import br.com.segueme.repository.UsuarioRepository;
 
 @Stateless
 public class UsuarioRepositoryImpl implements UsuarioRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioRepositoryImpl.class);
 
     @PersistenceContext(unitName = "seguemePU")
     private EntityManager entityManager;
@@ -43,7 +47,7 @@ public class UsuarioRepositoryImpl implements UsuarioRepository {
     }
 
     public void save(Usuario usuario) {
-    	System.out.println("Chegou aqui repository: " + usuario.getId());
+    	logger.debug("Salvando usuário: {}", usuario.getId());
         // Só gera hash se a senha não estiver vazia e não for um hash já existente
         if (usuario.getSenha() != null && !usuario.getSenha().startsWith("$2a$")) {
             String hash = BCrypt.hashpw(usuario.getSenha(), BCrypt.gensalt());

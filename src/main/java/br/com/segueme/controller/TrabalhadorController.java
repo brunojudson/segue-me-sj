@@ -23,6 +23,8 @@ import br.com.segueme.service.PessoaService;
 import br.com.segueme.service.TrabalhadorService;
 
 import java.util.stream.Collectors;
+import java.text.Normalizer;
+import java.util.Objects;
 
 @Named
 @ViewScoped
@@ -48,6 +50,7 @@ public class TrabalhadorController implements Serializable {
 	private List<Trabalhador> trabalhadores;
 	private Trabalhador trabalhador;
 	private Trabalhador trabalhadorSelecionado;
+	private Trabalhador trabalhadorDetalhes;
 
 	private List<Pessoa> pessoas;
 	private List<Equipe> equipes;
@@ -90,38 +93,16 @@ public class TrabalhadorController implements Serializable {
 	}
 
 	public String salvar() {
-		try {
-			// Verificar se a pessoa já foi encontrista
-			// Quando tudo estiver implementado, descomentar a linha abaixo
-			if (trabalhador.getPessoa() != null) {
-				List<Encontrista> encontristas = encontristaService.buscarPorPessoa(trabalhador.getPessoa().getId());
-				trabalhador.setFoiEncontrista(!encontristas.isEmpty());
-			}
-
-			if (trabalhador.getId() == null) {
-				trabalhadorService.salvar(trabalhador);
-				FacesContext.getCurrentInstance().addMessage(null,
-						new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Trabalhador cadastrado com sucesso!"));
-			} else {
-				trabalhadorService.atualizar(trabalhador);
-				FacesContext.getCurrentInstance().addMessage(null,
-						new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Trabalhador atualizado com sucesso!"));
-			}
-
-			carregarTrabalhadores();
-			limpar();
-			return "lista?faces-redirect=true";
-		} catch (Exception e) {
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
-			return null;
-		}
+		return salvarInterno(true);
 	}
 	
 	public String salvarEContinuar() {
+		return salvarInterno(false);
+	}
+
+	private String salvarInterno(boolean redirecionarParaLista) {
 		try {
 			// Verificar se a pessoa já foi encontrista
-			// Quando tudo estiver implementado, descomentar a linha abaixo
 			if (trabalhador.getPessoa() != null) {
 				List<Encontrista> encontristas = encontristaService.buscarPorPessoa(trabalhador.getPessoa().getId());
 				trabalhador.setFoiEncontrista(!encontristas.isEmpty());
@@ -139,7 +120,7 @@ public class TrabalhadorController implements Serializable {
 
 			carregarTrabalhadores();
 			limpar();
-			return "";
+			return redirecionarParaLista ? "lista?faces-redirect=true" : "";
 		} catch (Exception e) {
 			FacesContext.getCurrentInstance().addMessage(null,
 					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
@@ -186,6 +167,18 @@ public class TrabalhadorController implements Serializable {
 			List<Encontrista> encontristas = encontristaService.buscarPorPessoa(trabalhador.getPessoa().getId());
 			trabalhador.setFoiEncontrista(!encontristas.isEmpty());
 		}
+	}
+
+	public void abrirDetalhes(Trabalhador trabalhador) {
+		trabalhadorService.buscarPorId(trabalhador.getId()).ifPresent(t -> this.trabalhadorDetalhes = t);
+	}
+
+	public void fecharDetalhes() {
+		this.trabalhadorDetalhes = null;
+	}
+
+	public Trabalhador getTrabalhadorDetalhes() {
+		return trabalhadorDetalhes;
 	}
 
 	// Getters e Setters
@@ -243,6 +236,40 @@ public class TrabalhadorController implements Serializable {
 				context.addMessage("trabalhadorForm:equipe", new FacesMessage(FacesMessage.SEVERITY_WARN, msg, null));
 			}
 		}
+
+		// Verificação 3: já trabalhou em equipe com nome igual ou semelhante
+		try {
+			List<Trabalhador> historico = trabalhadorService.buscarPorPessoa(pessoa.getId());
+			if (historico != null && !historico.isEmpty()) {
+				String nomeSelecionado = equipe.getNome();
+				if (nomeSelecionado != null && !nomeSelecionado.trim().isEmpty()) {
+					String normSelecionado = normalizeNome(nomeSelecionado);
+					List<String> equipesHistoricas = historico.stream()
+						.map(t -> t.getEquipe() != null ? t.getEquipe().getNome() : null)
+						.filter(Objects::nonNull)
+						.distinct()
+						.collect(Collectors.toList());
+					List<String> similares = equipesHistoricas.stream()
+						.filter(n -> n != null && !n.trim().isEmpty())
+						.filter(n -> normalizeNome(n).equals(normSelecionado))
+						.collect(Collectors.toList());
+					if (!similares.isEmpty()) {
+						String msg = "Atenção: a pessoa já trabalhou em equipe(s) com nome semelhante: " + String.join(", ", similares) + ".";
+						context.addMessage("trabalhadorForm:equipe", new FacesMessage(FacesMessage.SEVERITY_WARN, msg, null));
+					}
+				}
+			}
+		} catch (Exception ex) {
+			// Não quebrar o fluxo por erro nessa verificação; apenas logue se necessário
+		}
+	}
+
+	private String normalizeNome(String s) {
+		if (s == null) return null;
+		String n = Normalizer.normalize(s, Normalizer.Form.NFD);
+		n = n.replaceAll("\\p{M}", ""); // remove diacríticos
+		n = n.replaceAll("[^A-Za-z0-9]", ""); // remove espaços e pontuação
+		return n.toUpperCase();
 	}
 
 	public List<Trabalhador> getTrabalhadores() {

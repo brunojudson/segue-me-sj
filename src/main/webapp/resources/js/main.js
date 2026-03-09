@@ -407,3 +407,137 @@ window.hideLoadingOverlay = hideLoadingOverlay;
 window.toggleDarkMode = toggleDarkMode;
 window.initDarkMode = initDarkMode;
 window.initHeaderAnimations = initHeaderAnimations;
+
+/* ========================================
+   LOADING INDICATORS PARA DATATABLES
+======================================== */
+
+// Adiciona loading indicator nas dataTables durante filtros e paginação
+function initDataTableLoadingIndicators() {
+    // Intercepta eventos AJAX do PrimeFaces
+    if (typeof PrimeFaces !== 'undefined') {
+        // Configura callback global para quando AJAX inicia
+        PrimeFaces.ajax.Request.addOnEventHandler(function(data) {
+            const source = data.source;
+            
+            // Verifica se o evento vem de uma dataTable
+            if (source && source.closest) {
+                const table = source.closest('.ui-datatable');
+                
+                if (table && data.status === 'begin') {
+                    // Adiciona overlay de loading
+                    showDataTableLoading(table);
+                } else if (table && (data.status === 'complete' || data.status === 'success')) {
+                    // Remove overlay de loading
+                    hideDataTableLoading(table);
+                }
+            }
+        });
+    }
+    
+    // Observer para detectar quando novas dataTables são adicionadas ao DOM
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === 1 && node.classList && node.classList.contains('ui-datatable')) {
+                    setupDataTableLoading(node);
+                }
+            });
+        });
+    });
+    
+    // Inicia observação do body
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+    
+    // Configura dataTables existentes
+    document.querySelectorAll('.ui-datatable').forEach(setupDataTableLoading);
+}
+
+// Configura uma dataTable específica para loading indicators
+function setupDataTableLoading(table) {
+    if (table.dataset.loadingConfigured) return;
+    table.dataset.loadingConfigured = 'true';
+    
+    // Adiciona listeners para filtros
+    const filterInputs = table.querySelectorAll('.ui-column-filter');
+    filterInputs.forEach(input => {
+        input.addEventListener('input', debounce(function() {
+            showDataTableLoading(table);
+        }, 100));
+    });
+    
+    // Adiciona listeners para paginação
+    const paginators = table.querySelectorAll('.ui-paginator a, .ui-paginator select');
+    paginators.forEach(element => {
+        element.addEventListener('click', function() {
+            showDataTableLoading(table);
+        });
+        if (element.tagName === 'SELECT') {
+            element.addEventListener('change', function() {
+                showDataTableLoading(table);
+            });
+        }
+    });
+}
+
+// Mostra loading indicator em uma dataTable
+function showDataTableLoading(table) {
+    if (!table) return;
+    
+    // Verifica se já existe overlay
+    let overlay = table.querySelector('.ui-datatable-loading-overlay');
+    if (overlay) return;
+    
+    // Cria overlay
+    overlay = document.createElement('div');
+    overlay.className = 'ui-datatable-loading-overlay';
+    overlay.innerHTML = `
+        <div class="ui-datatable-loading-content">
+            <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+            <span>Carregando...</span>
+        </div>
+    `;
+    
+    // Adiciona ao container da tabela
+    const tableWrapper = table.querySelector('.ui-datatable-tablewrapper') || table;
+    tableWrapper.style.position = 'relative';
+    tableWrapper.appendChild(overlay);
+}
+
+// Remove loading indicator de uma dataTable
+function hideDataTableLoading(table) {
+    if (!table) return;
+    
+    const overlay = table.querySelector('.ui-datatable-loading-overlay');
+    if (overlay) {
+        overlay.remove();
+    }
+}
+
+// Utility: debounce function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Inicializa loading indicators quando o DOM estiver pronto
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDataTableLoadingIndicators);
+} else {
+    initDataTableLoadingIndicators();
+}
+
+// Expõe funções de dataTable globalmente
+window.initDataTableLoadingIndicators = initDataTableLoadingIndicators;
+window.showDataTableLoading = showDataTableLoading;
+window.hideDataTableLoading = hideDataTableLoading;

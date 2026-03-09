@@ -22,6 +22,10 @@ import javax.persistence.Table;
 import br.com.segueme.enums.TemaPalestra;
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 @Entity
 @Table(name = "palestra")
 public class Palestra implements Serializable {
@@ -32,20 +36,26 @@ public class Palestra implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Título da palestra é obrigatório")
+    @Size(min = 3, max = 200, message = "Título deve ter entre 3 e 200 caracteres")
     @Column(name = "titulo", nullable = false, length = 200)
     private String titulo;
 
+    @NotNull(message = "Tema é obrigatório")
     @Enumerated(EnumType.STRING)
     @Column(name = "tema", nullable = false)
     private TemaPalestra tema;
 
+    @Size(max = 500, message = "Descrição deve ter no máximo 500 caracteres")
     @Column(name = "descricao", length = 500)
     private String descricao;
 
+    @NotNull(message = "Encontro é obrigatório")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "encontro_id", nullable = false)
     private Encontro encontro;
 
+    @NotNull(message = "Data/hora é obrigatória")
     @Column(name = "data_hora", nullable = false)
     private LocalDateTime dataHora;
 

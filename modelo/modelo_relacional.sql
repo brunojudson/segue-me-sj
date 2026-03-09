@@ -1,171 +1,346 @@
--- Modelo Relacional para o Sistema "Segue-me"
+-- Drop table
 
--- Tabela de Pessoas (entidade base)
-CREATE TABLE pessoa (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    cpf VARCHAR(14) UNIQUE NOT NULL,
-    data_nascimento DATE NOT NULL,
-    endereco VARCHAR(200),
-    telefone VARCHAR(15),
-    email VARCHAR(100),
-    sexo CHAR(1),
-    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ativo BOOLEAN DEFAULT TRUE
+-- DROP TABLE public.auditoria
+
+CREATE TABLE public.auditoria (
+	id bigserial NOT NULL,
+	acao varchar(255) NULL,
+	datahora timestamp NULL,
+	detalhes text NULL,
+	entidade varchar(255) NULL,
+	entidadeid int8 NULL,
+	usuario varchar(255) NULL,
+	data_hora timestamp NULL,
+	entidade_id int8 NULL,
+	CONSTRAINT auditoria_pkey PRIMARY KEY (id)
 );
 
--- Tabela de Encontros
-CREATE TABLE encontro (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    tema VARCHAR(200),
-    data_inicio DATE NOT NULL,
-    data_fim DATE NOT NULL,
-    local VARCHAR(200) NOT NULL,
-    descricao TEXT,
-    capacidade_maxima INTEGER DEFAULT 60,
-    valor_inscricao DECIMAL(10,2),
-    valor_contribuicao_trabalhador DECIMAL(10,2),
-    ativo BOOLEAN DEFAULT TRUE
+-- Drop table
+
+-- DROP TABLE public.casal
+
+CREATE TABLE public.casal (
+	id bigserial NOT NULL,
+	data_casamento date NULL,
+	observacoes varchar(255) NULL,
+	pessoa1_id int8 NOT NULL,
+	pessoa2_id int8 NOT NULL,
+	foto varchar(255) NULL,
+	CONSTRAINT casal_pkey PRIMARY KEY (id),
+	CONSTRAINT ukgq79718a8064ng0u84hxc5qav UNIQUE (pessoa1_id, pessoa2_id),
+	CONSTRAINT fkbargtnoqbhtcfso6j10odlfgt FOREIGN KEY (pessoa2_id) REFERENCES pessoa(id),
+	CONSTRAINT fkilg0fbidqc2p0d87y51go1apk FOREIGN KEY (pessoa1_id) REFERENCES pessoa(id)
 );
 
--- Tabela de Encontristas (participantes do encontro)
-CREATE TABLE encontrista (
-    id SERIAL PRIMARY KEY,
-    pessoa_id INTEGER NOT NULL REFERENCES pessoa(id),
-    encontro_id INTEGER NOT NULL REFERENCES encontro(id),
-    data_inscricao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    valor_pago DECIMAL(10,2),
-    forma_pagamento VARCHAR(50),
-    observacoes TEXT,
-    UNIQUE (pessoa_id, encontro_id)
+-- Drop table
+
+-- DROP TABLE public.contribuicao
+
+CREATE TABLE public.contribuicao (
+	id bigserial NOT NULL,
+	comprovante_url varchar(255) NULL,
+	data_pagamento timestamp NULL,
+	forma_pagamento varchar(50) NOT NULL,
+	observacoes varchar(255) NULL,
+	valor numeric(10,2) NOT NULL,
+	trabalhador_id int8 NOT NULL,
+	CONSTRAINT contribuicao_pkey PRIMARY KEY (id),
+	CONSTRAINT fkqa6nct4dfci9d1umxtfq0msef FOREIGN KEY (trabalhador_id) REFERENCES trabalhador(id)
 );
 
--- Tabela de Casais
-CREATE TABLE casal (
-    id SERIAL PRIMARY KEY,
-    pessoa1_id INTEGER NOT NULL REFERENCES pessoa(id),
-    pessoa2_id INTEGER NOT NULL REFERENCES pessoa(id),
-    data_casamento DATE,
-    observacoes TEXT,
-    UNIQUE (pessoa1_id, pessoa2_id)
+-- Drop table
+
+-- DROP TABLE public.dirigente
+
+CREATE TABLE public.dirigente (
+	id bigserial NOT NULL,
+	ativo bool NOT NULL,
+	data_fim date NOT NULL,
+	data_inicio date NOT NULL,
+	pasta_id int8 NOT NULL,
+	trabalhador_id int8 NOT NULL,
+	data_cadastro timestamp NULL,
+	observacoes varchar(255) NULL,
+	CONSTRAINT dirigente_pkey PRIMARY KEY (id),
+	CONSTRAINT uk77yxs8j17nw7ax4kxk8apt52x UNIQUE (trabalhador_id, pasta_id),
+	CONSTRAINT fk47up079r92kjyhi9qx4dkbj8d FOREIGN KEY (trabalhador_id) REFERENCES trabalhador(id),
+	CONSTRAINT fkh5v1h17i5u4njnrum543gugnm FOREIGN KEY (pasta_id) REFERENCES pasta(id)
 );
 
--- Tabela de Tipos de Equipe
-CREATE TABLE tipo_equipe (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    descricao TEXT,
-    eh_dirigente BOOLEAN DEFAULT FALSE
+-- Drop table
+
+-- DROP TABLE public.encontrista
+
+CREATE TABLE public.encontrista (
+	id bigserial NOT NULL,
+	data_inscricao timestamp NULL,
+	forma_pagamento varchar(50) NULL,
+	observacoes varchar(255) NULL,
+	valor_pago numeric(10,2) NULL,
+	encontro_id int8 NOT NULL,
+	pessoa_id int8 NOT NULL,
+	trabalhador_id int8 NULL,
+	ativo bool NULL,
+	idade int4 NULL,
+	circulo varchar(10) NULL,
+	token_ficha varchar(36) NULL,
+	CONSTRAINT encontrista_pkey PRIMARY KEY (id),
+	CONSTRAINT uk8h7xvn19m3b8cl0khignn8oim UNIQUE (pessoa_id, encontro_id),
+	CONSTRAINT uk_s1t42vchoeij0aafddggt32wi UNIQUE (token_ficha),
+	CONSTRAINT fk3g7p2u91wldgfk5c0j1naky5a FOREIGN KEY (pessoa_id) REFERENCES pessoa(id),
+	CONSTRAINT fk43olqjjv227wspf3ht11jr5ml FOREIGN KEY (encontro_id) REFERENCES encontro(id),
+	CONSTRAINT fkivwsoitv4qmnwi7bkyh0fl9jh FOREIGN KEY (trabalhador_id) REFERENCES trabalhador(id)
 );
 
--- Tabela de Equipes
-CREATE TABLE equipe (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    tipo_equipe_id INTEGER NOT NULL REFERENCES tipo_equipe(id),
-    encontro_id INTEGER REFERENCES encontro(id),
-    data_inicio DATE,
-    data_fim DATE,
-    descricao TEXT,
-    ativo BOOLEAN DEFAULT TRUE
+-- Drop table
+
+-- DROP TABLE public.encontro
+
+CREATE TABLE public.encontro (
+	id bigserial NOT NULL,
+	ativo bool NULL,
+	capacidade_maxima int4 NULL,
+	data_fim date NOT NULL,
+	data_inicio date NOT NULL,
+	descricao varchar(255) NULL,
+	"local" varchar(200) NOT NULL,
+	nome varchar(100) NOT NULL,
+	tema varchar(200) NULL,
+	valor_contribuicao_trabalhador numeric(10,2) NULL,
+	valor_inscricao numeric(10,2) NULL,
+	CONSTRAINT encontro_pkey PRIMARY KEY (id)
 );
 
--- Tabela de Pastas (para equipe dirigente)
-CREATE TABLE pasta (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    equipe_id INTEGER NOT NULL REFERENCES equipe(id),
-    descricao TEXT,
-    data_inicio DATE NOT NULL,
-    data_fim DATE NOT NULL,
-    CONSTRAINT check_equipe_dirigente CHECK (
-        EXISTS (
-            SELECT 1 FROM equipe e
-            JOIN tipo_equipe te ON e.tipo_equipe_id = te.id
-            WHERE e.id = equipe_id AND te.eh_dirigente = TRUE
-        )
-    )
+-- Drop table
+
+-- DROP TABLE public.equipe
+
+CREATE TABLE public.equipe (
+	id bigserial NOT NULL,
+	ativo bool NULL,
+	data_fim date NULL,
+	data_inicio date NULL,
+	descricao varchar(255) NULL,
+	nome varchar(100) NOT NULL,
+	encontro_id int8 NULL,
+	tipo_equipe_id int8 NOT NULL,
+	CONSTRAINT equipe_pkey PRIMARY KEY (id),
+	CONSTRAINT fkonnntytlyav47wtl3lige3snt FOREIGN KEY (tipo_equipe_id) REFERENCES tipo_equipe(id),
+	CONSTRAINT fkpg94v4bejwi9humsvxbi8hibs FOREIGN KEY (encontro_id) REFERENCES encontro(id)
 );
 
--- Tabela de Trabalhadores
-CREATE TABLE trabalhador (
-    id SERIAL PRIMARY KEY,
-    pessoa_id INTEGER NOT NULL REFERENCES pessoa(id),
-    equipe_id INTEGER NOT NULL REFERENCES equipe(id),
-    encontro_id INTEGER REFERENCES encontro(id),
-    eh_coordenador BOOLEAN DEFAULT FALSE,
-    foi_encontrista BOOLEAN DEFAULT FALSE,
-    encontrista_id INTEGER REFERENCES encontrista(id),
-    data_inicio DATE NOT NULL,
-    data_fim DATE,
-    observacoes TEXT,
-    UNIQUE (pessoa_id, equipe_id, encontro_id)
+-- Drop table
+
+-- DROP TABLE public.movimento_financeiro
+
+CREATE TABLE public.movimento_financeiro (
+	id bigserial NOT NULL,
+	categoria varchar(20) NOT NULL,
+	comprovante_url varchar(255) NULL,
+	data_criacao timestamp NULL,
+	data_movimento date NOT NULL,
+	descricao varchar(255) NOT NULL,
+	observacoes varchar(500) NULL,
+	responsavel varchar(100) NULL,
+	tipo varchar(10) NOT NULL,
+	valor numeric(10,2) NOT NULL,
+	encontro_id int8 NOT NULL,
+	CONSTRAINT movimento_financeiro_pkey PRIMARY KEY (id),
+	CONSTRAINT fkkklpipeajhcips3t32qdvf6u1 FOREIGN KEY (encontro_id) REFERENCES encontro(id)
 );
 
--- Tabela de Contribuições
-CREATE TABLE contribuicao (
-    id SERIAL PRIMARY KEY,
-    trabalhador_id INTEGER NOT NULL REFERENCES trabalhador(id),
-    valor DECIMAL(10,2) NOT NULL,
-    data_pagamento TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    forma_pagamento VARCHAR(50) NOT NULL,
-    comprovante_url VARCHAR(255),
-    observacoes TEXT
+-- Drop table
+
+-- DROP TABLE public.palestra
+
+CREATE TABLE public.palestra (
+	id bigserial NOT NULL,
+	descricao varchar(500) NULL,
+	tema varchar(255) NOT NULL,
+	titulo varchar(200) NOT NULL,
+	encontro_id int8 NOT NULL,
+	data_hora timestamp NULL,
+	CONSTRAINT palestra_pkey PRIMARY KEY (id),
+	CONSTRAINT fkhm549es7260p1m9213xnlcqqr FOREIGN KEY (encontro_id) REFERENCES encontro(id)
 );
 
--- Tabela de Dirigentes (com mandato de 2 anos)
-CREATE TABLE dirigente (
-    id SERIAL PRIMARY KEY,
-    trabalhador_id INTEGER NOT NULL REFERENCES trabalhador(id),
-    pasta_id INTEGER NOT NULL REFERENCES pasta(id),
-    data_inicio DATE NOT NULL,
-    data_fim DATE NOT NULL,
-    CONSTRAINT check_mandato_dois_anos CHECK (
-        (data_fim - data_inicio) BETWEEN 720 AND 732
-    ),
-    UNIQUE (trabalhador_id, pasta_id)
+-- Drop table
+
+-- DROP TABLE public.palestra_palestrante
+
+CREATE TABLE public.palestra_palestrante (
+	palestra_id int8 NOT NULL,
+	palestrante_id int8 NOT NULL,
+	CONSTRAINT palestra_palestrante_pkey PRIMARY KEY (palestra_id, palestrante_id),
+	CONSTRAINT fk713f5jegtqqip13lyu42dw0ot FOREIGN KEY (palestrante_id) REFERENCES palestrante(id),
+	CONSTRAINT fkfagf0qbratlgu3e3pje833des FOREIGN KEY (palestra_id) REFERENCES palestra(id)
 );
 
--- Tabela para histórico de encontristas que se tornaram trabalhadores
-CREATE TABLE historico_encontrista_trabalhador (
-    id SERIAL PRIMARY KEY,
-    encontrista_id INTEGER NOT NULL REFERENCES encontrista(id),
-    trabalhador_id INTEGER NOT NULL REFERENCES trabalhador(id),
-    encontro_origem_id INTEGER NOT NULL REFERENCES encontro(id),
-    encontro_trabalho_id INTEGER NOT NULL REFERENCES encontro(id),
-    data_transicao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (encontrista_id, trabalhador_id)
+-- Drop table
+
+-- DROP TABLE public.palestrante
+
+CREATE TABLE public.palestrante (
+	id bigserial NOT NULL,
+	tipo_palestrante varchar(255) NOT NULL,
+	casal_id int8 NULL,
+	pessoa_id int8 NULL,
+	CONSTRAINT palestrante_pkey PRIMARY KEY (id),
+	CONSTRAINT fk2wcs4g1tjl2kmodh6p3f04u65 FOREIGN KEY (casal_id) REFERENCES casal(id),
+	CONSTRAINT fkb7sduqwoyn76d8akh0micbwfp FOREIGN KEY (pessoa_id) REFERENCES pessoa(id)
 );
 
+-- Drop table
 
--- Índices para melhorar performance
-CREATE INDEX idx_pessoa_nome ON pessoa(nome);
-CREATE INDEX idx_encontro_data ON encontro(data_inicio, data_fim);
-CREATE INDEX idx_encontrista_encontro ON encontrista(encontro_id);
-CREATE INDEX idx_trabalhador_equipe ON trabalhador(equipe_id);
-CREATE INDEX idx_trabalhador_encontro ON trabalhador(encontro_id);
-CREATE INDEX idx_contribuicao_trabalhador ON contribuicao(trabalhador_id);
+-- DROP TABLE public.palestrante_grupo_pessoa
 
-
--- Tabela de Usuários
-CREATE TABLE usuario (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    senha VARCHAR(255) NOT NULL,
-    ativo BOOLEAN DEFAULT TRUE
+CREATE TABLE public.palestrante_grupo_pessoa (
+	palestrante_id int8 NOT NULL,
+	pessoa_id int8 NOT NULL,
+	CONSTRAINT palestrante_grupo_pessoa_pkey PRIMARY KEY (palestrante_id, pessoa_id),
+	CONSTRAINT fkjcwqj6glmqnry43ay0hlhq6qd FOREIGN KEY (palestrante_id) REFERENCES palestrante(id),
+	CONSTRAINT fkpbn6ogue0d9r8mayoxn1pb13w FOREIGN KEY (pessoa_id) REFERENCES pessoa(id)
 );
 
--- Tabela de Permissões
-CREATE TABLE permissao (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(50) UNIQUE NOT NULL
+-- Drop table
+
+-- DROP TABLE public.pasta
+
+CREATE TABLE public.pasta (
+	id bigserial NOT NULL,
+	ativo bool NOT NULL,
+	data_fim date NOT NULL,
+	data_inicio date NOT NULL,
+	descricao varchar(255) NULL,
+	nome varchar(100) NOT NULL,
+	equipe_id int8 NOT NULL,
+	CONSTRAINT pasta_pkey PRIMARY KEY (id),
+	CONSTRAINT fkt1lv6djnfvtpv4isdi19g8yyw FOREIGN KEY (equipe_id) REFERENCES equipe(id)
 );
 
--- Tabela de Relacionamento entre Usuários e Permissões
-CREATE TABLE usuario_permissao (
-    usuario_id INTEGER NOT NULL REFERENCES usuario(id),
-    permissao_id INTEGER NOT NULL REFERENCES permissao(id),
-    PRIMARY KEY (usuario_id, permissao_id)
+-- Drop table
+
+-- DROP TABLE public.permissao
+
+CREATE TABLE public.permissao (
+	id serial NOT NULL,
+	nome varchar(50) NOT NULL,
+	CONSTRAINT permissao_nome_key UNIQUE (nome),
+	CONSTRAINT permissao_pkey PRIMARY KEY (id)
+);
+
+-- Drop table
+
+-- DROP TABLE public.pessoa
+
+CREATE TABLE public.pessoa (
+	id bigserial NOT NULL,
+	ativo bool NULL,
+	cpf varchar(14) NULL,
+	data_cadastro timestamp NULL,
+	data_nascimento date NOT NULL,
+	email varchar(100) NULL,
+	endereco varchar(200) NULL,
+	nome varchar(100) NOT NULL,
+	sexo bpchar(1) NULL,
+	telefone varchar(15) NOT NULL,
+	foto varchar(255) NULL,
+	idade int4 NULL,
+	curso varchar(100) NULL,
+	escolaridade varchar(50) NULL,
+	filiacao_mae varchar(100) NULL,
+	filiacao_pai varchar(100) NULL,
+	igreja_frequenta varchar(100) NULL,
+	instituicao_ensino varchar(100) NULL,
+	movimento_participou varchar(200) NULL,
+	naturalidade varchar(100) NULL,
+	religiao varchar(100) NULL,
+	CONSTRAINT pessoa_pkey PRIMARY KEY (id),
+	CONSTRAINT pessoa_un_tel UNIQUE (telefone)
+);
+
+-- Drop table
+
+-- DROP TABLE public.pessoa_sacramento
+
+CREATE TABLE public.pessoa_sacramento (
+	pessoa_id int8 NOT NULL,
+	sacramento varchar(255) NULL,
+	CONSTRAINT fkcbny1mgusyyk5e3x4cvnuxrbp FOREIGN KEY (pessoa_id) REFERENCES pessoa(id)
+);
+
+-- Drop table
+
+-- DROP TABLE public.tipo_equipe
+
+CREATE TABLE public.tipo_equipe (
+	id bigserial NOT NULL,
+	ativo bool NOT NULL,
+	descricao varchar(255) NULL,
+	eh_dirigente bool NULL,
+	nome varchar(100) NOT NULL,
+	CONSTRAINT tipo_equipe_pkey PRIMARY KEY (id)
+);
+
+-- Drop table
+
+-- DROP TABLE public.trabalhador
+
+CREATE TABLE public.trabalhador (
+	id bigserial NOT NULL,
+	data_fim date NULL,
+	data_inicio date NOT NULL,
+	eh_coordenador bool NULL,
+	foi_encontrista bool NULL,
+	observacoes varchar(255) NULL,
+	encontro_id int8 NULL,
+	equipe_id int8 NOT NULL,
+	pessoa_id int8 NOT NULL,
+	ativo bool NULL,
+	encontrista_id int8 NULL,
+	idade int4 NULL,
+	CONSTRAINT trabalhador_pkey PRIMARY KEY (id),
+	CONSTRAINT ukp1ojykc18frdxfib8kqbu5f53 UNIQUE (pessoa_id, equipe_id, encontro_id),
+	CONSTRAINT fk3oddq8lah5dyfkndr1u2g1f8 FOREIGN KEY (pessoa_id) REFERENCES pessoa(id),
+	CONSTRAINT fkivwsoitv4qmnwi7bkyh0fl9jh FOREIGN KEY (encontrista_id) REFERENCES encontrista(id) ON DELETE SET NULL,
+	CONSTRAINT fkl6qcjk49w4afuiby1uthf3dgr FOREIGN KEY (encontro_id) REFERENCES encontro(id),
+	CONSTRAINT fkmfkvt04rps47tl67vac285s1g FOREIGN KEY (equipe_id) REFERENCES equipe(id),
+	CONSTRAINT fksmmng7c9ido0t8vmsjgakappo FOREIGN KEY (encontrista_id) REFERENCES encontrista(id)
+);
+
+-- Drop table
+
+-- DROP TABLE public.usuario
+
+CREATE TABLE public.usuario (
+	id serial NOT NULL,
+	nome varchar(100) NOT NULL,
+	email varchar(100) NOT NULL,
+	senha varchar(255) NOT NULL,
+	ativo bool NULL DEFAULT true,
+	CONSTRAINT usuario_email_key UNIQUE (email),
+	CONSTRAINT usuario_pkey PRIMARY KEY (id)
+);
+
+-- Drop table
+
+-- DROP TABLE public.usuario_permissao
+
+CREATE TABLE public.usuario_permissao (
+	usuario_id int4 NOT NULL,
+	permissao_id int4 NOT NULL,
+	CONSTRAINT usuario_permissao_pkey PRIMARY KEY (usuario_id, permissao_id),
+	CONSTRAINT usuario_permissao_permissao_id_fkey FOREIGN KEY (permissao_id) REFERENCES permissao(id),
+	CONSTRAINT usuario_permissao_usuario_id_fkey FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+);
+
+-- Drop table
+
+-- DROP TABLE public.versiculo
+
+CREATE TABLE public.versiculo (
+	id bigserial NOT NULL,
+	texto varchar(500) NULL,
+	referencia varchar(100) NULL,
+	CONSTRAINT versiculo_pkey PRIMARY KEY (id)
 );

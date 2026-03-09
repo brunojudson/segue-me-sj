@@ -73,10 +73,10 @@ public class DashboardController implements Serializable {
     }
 
     private void carregarEstatisticas() {
-        // Estas implementações são simplificadas e devem ser ajustadas conforme a lógica real do sistema
-        totalEncontristas = (long) encontristaService.buscarTodos().size();
-        totalTrabalhadores = (long) trabalhadorService.buscarTodos().size();
-        totalEquipes = (long) equipeService.buscarTodos().size();
+        // Usando COUNT(*) no banco em vez de carregar todos os registros em memória
+        totalEncontristas = encontristaService.contarTotal();
+        totalTrabalhadores = trabalhadorService.contarTotal();
+        totalEquipes = equipeService.contarTotal();
 
         // Exemplo simplificado para o total de contribuições
         // totalContribuicoes = new BigDecimal("0.00");

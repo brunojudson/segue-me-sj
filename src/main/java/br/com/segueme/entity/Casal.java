@@ -3,6 +3,8 @@ package br.com.segueme.entity;
 import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity
@@ -17,10 +19,12 @@ public class Casal implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @NotNull(message = "Cônjuge 1 é obrigatório")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pessoa1_id", nullable = false)
     private Pessoa pessoa1;
     
+    @NotNull(message = "Cônjuge 2 é obrigatório")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pessoa2_id", nullable = false)
     private Pessoa pessoa2;
@@ -28,6 +32,7 @@ public class Casal implements Serializable {
     @Column(name = "data_casamento")
     private LocalDate dataCasamento;
     
+    @Size(max = 500, message = "Observações devem ter no máximo 500 caracteres")
     @Column(name = "observacoes")
     private String observacoes;
     

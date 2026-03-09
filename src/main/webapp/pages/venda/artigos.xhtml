@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions" lang="pt-BR" xml:lang="pt-BR">
+
+<ui:define name="title">Artigos - Sistema Segue-me</ui:define>
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="content">
+        <div class="content-container">
+            <!-- Cabeçalho moderno da página -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">
+                            <i class="pi pi-shopping-bag page-icon"></i> 
+                            <span class="title-text">Artigos para Venda</span>
+                        </h1>
+                        <p class="page-subtitle">Gerencie os artigos disponíveis para venda nos encontros</p>
+                    </div>
+                    <div class="header-actions">
+                        <p:commandButton value="Novo Artigo"
+                            icon="pi pi-plus" 
+                            styleClass="action-button-primary"
+                            title="Cadastrar novo artigo"
+                            action="#{vendaArtigoController.prepararNovo}"
+                            onclick="PF('dlgArtigo').show(); return false;" />
+                    </div>
+                </div>
+            </div>
+
+            <h:form id="artigosForm" prependId="false">
+                <p:growl id="messages" showDetail="true" closable="true" />
+
+                <!-- Tabela moderna de artigos -->
+                <p:dataTable id="artigosTable" var="artigo"
+                    value="#{vendaArtigoController.artigos}"
+                    emptyMessage="Nenhum artigo encontrado"
+                    styleClass="modern-datatable datatable-animation" 
+                    paginator="true"
+                    rows="20" 
+                    paginatorPosition="bottom" 
+                    stripeRows="true"
+                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                    currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                    rowsPerPageTemplate="20,50,100" 
+                    filterable="true" 
+                    filterDelay="300"
+                    widgetVar="artigosTableWidget">
+
+                    <p:column headerText="Código" sortBy="#{artigo.codigo}"
+                        filterBy="#{artigo.codigo}" filterMatchMode="contains"
+                        styleClass="text-center" width="10%" responsivePriority="1">
+                        <div class="id-badge">#{artigo.codigo}</div>
+                    </p:column>
+
+                    <p:column headerText="Artigo" sortBy="#{artigo.nome}"
+                        filterBy="#{artigo.nome}" filterMatchMode="contains"
+                        styleClass="text-left" width="30%" responsivePriority="1">
+                        <div class="worker-info">
+                            <div class="worker-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <i class="pi pi-shopping-bag"></i>
+                            </div>
+                            <div>
+                                <p:commandLink value="#{artigo.nome}"
+                                    styleClass="nome-link worker-name"
+                                    action="#{vendaArtigoController.prepararEdicao(artigo)}"
+                                    update=":dlgArtigoForm:dlgArtigoContent"
+                                    oncomplete="PF('dlgArtigo').show()" />
+                                <div style="font-size: 0.85rem; color: #666; margin-top: 0.25rem;">
+                                    <h:outputText value="#{artigo.descricao}"
+                                        rendered="#{not empty artigo.descricao and fn:length(artigo.descricao) le 50}" />
+                                    <h:outputText value="#{fn:substring(artigo.descricao, 0, 50)}..."
+                                        rendered="#{not empty artigo.descricao and fn:length(artigo.descricao) gt 50}" />
+                                </div>
+                            </div>
+                        </div>
+                    </p:column>
+
+                    <p:column headerText="Categoria" sortBy="#{artigo.categoria}"
+                        filterBy="#{artigo.categoria}" filterMatchMode="contains"
+                        styleClass="text-left" width="15%" responsivePriority="2">
+                        <span class="team-badge">
+                            <i class="pi pi-tag"></i>
+                            #{artigo.categoria}
+                        </span>
+                    </p:column>
+
+                    <p:column headerText="Preço" sortBy="#{artigo.precoBase}"
+                        styleClass="text-right" width="12%" responsivePriority="3">
+                        <h:outputText value="#{artigo.precoBase}" styleClass="price-value">
+                            <f:convertNumber type="currency" currencySymbol="R$ " />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Estoque" sortBy="#{artigo.estoqueAtual}"
+                        styleClass="text-center" width="10%" responsivePriority="4">
+                        <div class="age-info">
+                            <span class="estoque-badge #{artigo.estoqueAtual le artigo.estoqueMinimo ? 'estoque-baixo' : 'estoque-ok'}">
+                                <i class="pi pi-box"></i>
+                                #{artigo.estoqueAtual}
+                            </span>
+                            <h:outputText id="estoqueMin" value="" rendered="#{artigo.estoqueAtual le artigo.estoqueMinimo}" />
+                            <p:tooltip for="estoqueMin" value="Estoque baixo! Mínimo: #{artigo.estoqueMinimo}" />
+                        </div>
+                    </p:column>
+
+                    <p:column headerText="Status" styleClass="text-center" width="12%"
+                        responsivePriority="3">
+                        <span class="status-badge #{artigo.ativo ? 'ativo' : 'inativo'}">
+                            <i class="pi #{artigo.ativo ? 'pi-check-circle' : 'pi-times-circle'}"></i>
+                            #{artigo.ativo ? 'Ativo' : 'Inativo'}
+                        </span>
+                    </p:column>
+
+                    <p:column headerText="Ações" styleClass="text-center" width="11%">
+                        <div class="table-action-buttons">
+                            <p:commandButton icon="pi pi-pencil" title="Editar"
+                                ariaLabel="Editar artigo"
+                                action="#{vendaArtigoController.prepararEdicao(artigo)}"
+                                update=":dlgArtigoForm:dlgArtigoContent"
+                                oncomplete="PF('dlgArtigo').show()"
+                                styleClass="action-button-warn-table action-btn" />
+
+                            <p:commandButton icon="pi pi-#{artigo.ativo ? 'eye-slash' : 'eye'}" 
+                                title="#{artigo.ativo ? 'Inativar' : 'Ativar'}"
+                                ariaLabel="#{artigo.ativo ? 'Inativar' : 'Ativar'} artigo"
+                                action="#{vendaArtigoController.toggleAtivo(artigo)}"
+                                styleClass="action-button-secondary-table action-btn"
+                                update="artigosTable messages">
+                                <p:confirm header="Confirmação"
+                                    message="Deseja realmente #{artigo.ativo ? 'inativar' : 'ativar'} este artigo?"
+                                    icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+
+                            <p:commandButton icon="pi pi-trash" title="Excluir"
+                                ariaLabel="Excluir artigo"
+                                action="#{vendaArtigoController.prepararExclusao(artigo)}"
+                                styleClass="action-button-danger-table action-btn"
+                                update=":confirmDialog" 
+                                oncomplete="PF('confirmDialog').show()" />
+                        </div>
+                    </p:column>
+                </p:dataTable>
+
+                <!-- Diálogo de confirmação -->
+                <p:confirmDialog global="true" id="confirmDialog" widgetVar="confirmDialog"
+                    header="Confirmar Ação" styleClass="modern-dialog"
+                    closeOnEscape="true" width="450" height="200">
+                    <p:commandButton value="Sim, confirmar"
+                        action="#{vendaArtigoController.excluir}"
+                        oncomplete="PF('confirmDialog').hide()"
+                        update="artigosTable messages" 
+                        styleClass="ui-button-danger"
+                        icon="pi pi-check" />
+                    <p:commandButton value="Cancelar"
+                        onclick="PF('confirmDialog').hide()" 
+                        type="button"
+                        styleClass="ui-button-secondary" 
+                        icon="pi pi-times" />
+                </p:confirmDialog>
+            </h:form>
+
+            <!-- Modal de Cadastro/Edição de Artigo -->
+            <h:form id="dlgArtigoForm" prependId="false">
+                <p:dialog id="dlgArtigo" widgetVar="dlgArtigo"
+                    header="#{vendaArtigoController.artigo.id == null ? 'Novo Artigo': 'Editar Artigo'}"
+                    styleClass="detalhes-pessoa-dialog" 
+                    modal="true" 
+                    responsive="true"
+                    closable="true" 
+                    closeOnEscape="true" 
+                    showEffect="fade"
+                    hideEffect="fade" 
+                    width="700" 
+                    minWidth="400">
+
+                    <p:ajax event="close" listener="#{vendaArtigoController.limpar()}" />
+
+                    <h:panelGroup id="dlgArtigoContent">
+                        <p:tabView styleClass="modal-tabview" dynamic="false">
+                            <!-- Tab Informações Básicas -->
+                            <p:tab title="Informações Básicas">
+                                <div class="info-grid" style="padding: 1rem;">
+                                    <div class="info-item">
+                                        <label for="codigo">Código:</label>
+                                        <p:inputText id="codigo" value="#{vendaArtigoController.artigo.codigo}"
+                                            placeholder="Ex: ART001" maxlength="50" />
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <label for="nome">Nome: *</label>
+                                        <p:inputText id="nome" value="#{vendaArtigoController.artigo.nome}"
+                                            placeholder="Nome do artigo" maxlength="100" required="true" />
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <label for="categoria">Categoria:</label>
+                                        <p:selectOneMenu id="categoria" value="#{vendaArtigoController.artigo.categoria}">
+                                            <f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
+                                            <f:selectItems value="#{vendaArtigoController.categorias}" />
+                                        </p:selectOneMenu>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <label for="precoBase">Preço Base: *</label>
+                                        <p:inputNumber id="precoBase" value="#{vendaArtigoController.artigo.precoBase}"
+                                            mode="currency" currencySymbol="R$ " minValue="0" required="true" />
+                                    </div>
+                                    
+                                    <div class="info-item full-width">
+                                        <label for="descricao">Descrição:</label>
+                                        <p:inputTextarea id="descricao" value="#{vendaArtigoController.artigo.descricao}"
+                                            rows="3" maxlength="500" placeholder="Descrição detalhada do artigo" />
+                                    </div>
+                                </div>
+                            </p:tab>
+
+                            <!-- Tab Estoque -->
+                            <p:tab title="Estoque">
+                                <div class="info-grid" style="padding: 1rem;">
+                                    <div class="info-item">
+                                        <label for="estoqueAtual">Estoque Atual:</label>
+                                        <p:inputNumber id="estoqueAtual" value="#{vendaArtigoController.artigo.estoqueAtual}"
+                                            decimalPlaces="0" minValue="0" />
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <label for="estoqueMinimo">Estoque Mínimo:</label>
+                                        <p:inputNumber id="estoqueMinimo" value="#{vendaArtigoController.artigo.estoqueMinimo}"
+                                            decimalPlaces="0" minValue="0" />
+                                    </div>
+                                    
+                                    <div class="info-item full-width">
+                                        <label for="fotoUrl">URL da Foto:</label>
+                                        <p:inputText id="fotoUrl" value="#{vendaArtigoController.artigo.fotoUrl}"
+                                            placeholder="https://" maxlength="255" />
+                                    </div>
+                                </div>
+                            </p:tab>
+                        </p:tabView>
+
+                        <div style="padding: 1rem; text-align: right; border-top: 1px solid #dee2e6; margin-top: 1rem;">
+                            <p:commandButton value="Salvar" icon="pi pi-check"
+                                actionListener="#{vendaArtigoController.salvar}"
+                                update="dlgArtigoContent :artigosForm:artigosTable :artigosForm:messages"
+                                oncomplete="if (!args.validationFailed) PF('dlgArtigo').hide();"
+                                styleClass="action-button-primary" style="margin-right: 0.5rem;" />
+                            
+                            <p:commandButton value="Cancelar" icon="pi pi-times"
+                                onclick="PF('dlgArtigo').hide(); return false;"
+                                styleClass="action-button-secondary" />
+                        </div>
+                    </h:panelGroup>
+                </p:dialog>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

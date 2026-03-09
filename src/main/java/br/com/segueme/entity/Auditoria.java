@@ -1,8 +1,15 @@
 package br.com.segueme.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @Entity
 @Table(name = "auditoria", schema = "public")
 public class Auditoria {
@@ -10,54 +17,16 @@ public class Auditoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Nome da entidade é obrigatório")
     private String entidade;
+    @NotNull(message = "ID da entidade é obrigatório")
     private Long entidadeId;
+    @NotBlank(message = "Ação é obrigatória")
     private String acao;
+    @NotBlank(message = "Usuário é obrigatório")
     private String usuario;
+    @NotNull(message = "Data/hora é obrigatória")
     private LocalDateTime dataHora;
     @Column(columnDefinition = "TEXT")
     private String detalhes;
-
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getEntidade() {
-		return entidade;
-	}
-	public void setEntidade(String entidade) {
-		this.entidade = entidade;
-	}
-	public Long getEntidadeId() {
-		return entidadeId;
-	}
-	public void setEntidadeId(Long entidadeId) {
-		this.entidadeId = entidadeId;
-	}
-	public String getAcao() {
-		return acao;
-	}
-	public void setAcao(String acao) {
-		this.acao = acao;
-	}
-	public String getUsuario() {
-		return usuario;
-	}
-	public void setUsuario(String usuario) {
-		this.usuario = usuario;
-	}
-	public LocalDateTime getDataHora() {
-		return dataHora;
-	}
-	public void setDataHora(LocalDateTime dataHora) {
-		this.dataHora = dataHora;
-	}
-	public String getDetalhes() {
-		return detalhes;
-	}
-	public void setDetalhes(String detalhes) {
-		this.detalhes = detalhes;
-	}
 }

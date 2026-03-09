@@ -141,7 +141,7 @@ public class TrabalhadorService implements Serializable {
         // Verificar se o encontro está ativo
         Encontro encontro = trabalhadorExistente.get().getEncontro();
         if (encontro != null && Boolean.FALSE.equals(encontro.getAtivo())) {
-        	throw new IllegalArgumentException("Não é possível remover o trabalhador, pois o encontro está finalizado.");
+        	throw new IllegalArgumentException("Não é possível atualizar o trabalhador, pois o encontro está finalizado.");
         }
         trabalhador.calcularIdade();
 
@@ -290,5 +290,13 @@ public class TrabalhadorService implements Serializable {
             trabalhador.setAtivo(false);
             trabalhadorRepository.update(trabalhador);
         }
+    }
+
+    /**
+     * Conta o total de trabalhadores usando COUNT(*) no banco
+     * @return total de trabalhadores
+     */
+    public long contarTotal() {
+        return trabalhadorRepository.count();
     }
 }

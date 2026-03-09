@@ -7,6 +7,7 @@
 <h:head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="theme-color" content="#f0f2f5" />
 	<title>Login - Sistema Segue-me</title>
 	<h:outputStylesheet library="primefaces" name="primeicons/primeicons.css" />
 	
@@ -16,7 +17,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true" />
 	<link
-		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+		href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&amp;display=swap"
 		rel="stylesheet" />
 </h:head>
 
@@ -37,9 +38,9 @@
 			<!-- Header do login -->
 			<div class="login-header">
 				<div class="login-logo">
-					<i class="pi pi-heart" style="font-size: 2.2rem; color: #fff;"></i>
+					<i class="pi pi-heart"></i>
 				</div>
-				<!-- <h1 class="login-title">Sistema Segue-me</h1> -->
+				<h1 class="login-title">Sistema Segue-me</h1>
 				<p class="login-subtitle">Faça login para acessar o sistema</p>
 			</div>
 
@@ -48,12 +49,11 @@
 				<p:tooltip />
 				<p:focus for="username" />
 
-				<p:messages id="messages" showDetail="true" closable="true"
+				<p:growl id="messages" showDetail="true" closable="true"
 					styleClass="login-messages" />
 
 				<div class="form-group">
 					<div class="input-wrapper">
-						<i class="fas fa-user input-icon"></i>
 						<i class="pi pi-user input-icon"></i>
 						<p:inputText id="username" value="#{loginController.email}"
 							placeholder="Digite seu usuário ou e-mail"
@@ -64,7 +64,6 @@
 
 				<div class="form-group">
 					<div class="input-wrapper">
-						<i class="fas fa-lock input-icon"></i>
 						<i class="pi pi-lock input-icon"></i>
 						<p:password id="password" value="#{loginController.senha}"
 							placeholder="Digite sua senha" styleClass="login-input"

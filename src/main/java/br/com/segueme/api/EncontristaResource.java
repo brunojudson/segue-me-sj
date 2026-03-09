@@ -38,7 +38,7 @@ public class EncontristaResource {
     public Response buscarFoto(@PathParam("id") Long id) {
         Optional<Encontrista> encontrista = encontristaService.buscarPorId(id);
         if (encontrista.isPresent() && encontrista.get().getPessoa() != null && encontrista.get().getPessoa().getFoto() != null) {
-            String caminho = "C:\\Desenvovilmento\\fotos\\" + encontrista.get().getPessoa().getFoto();
+            String caminho = System.getProperty("caminho_fotos", "C:\\Desenvolvimento\\fotos") + java.io.File.separator + encontrista.get().getPessoa().getFoto();
             java.io.File file = new java.io.File(caminho);
             if (file.exists()) {
                 return Response.ok(file).build();

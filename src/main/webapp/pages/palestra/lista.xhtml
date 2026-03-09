@@ -39,7 +39,7 @@
 			</div>
 
 			<h:form id="formListaPalestras">
-				<p:messages id="messages" showDetail="true" closable="true" />
+				<p:growl id="messages" showDetail="true" closable="true" />
 
 				<!-- Tabela moderna de palestras -->
 				<p:dataTable id="tabelaPalestras" var="palestra" 
@@ -92,38 +92,40 @@
 							#{palestra.encontro.nome}
 						</span>
 					</p:column>
-					
-					<p:column headerText="Palestrantes" styleClass="text-left" width="250">
+
+					<p:column headerText="Palestrantes" styleClass="text-left"
+						width="250">
 						<div class="speakers-list">
 							<ui:repeat value="#{palestra.palestrantes.toArray()}"
 								var="palestranteItem">
-								<span class="speaker-tag">
-									<i class="pi pi-user"></i>
+								<span class="speaker-tag"> <i class="pi pi-user"></i>
 									#{palestranteItem.nomeDisplay}
 								</span>
 							</ui:repeat>
-							<h:outputText value="Sem palestrantes" 
-								rendered="#{empty palestra.palestrantes}" 
+							<h:outputText value="Sem palestrantes"
+								rendered="#{empty palestra.palestrantes}"
 								styleClass="empty-value" />
 						</div>
 					</p:column>
 
-					<p:column headerText="Ações" styleClass="text-center" width="120">
+					<p:column headerText="Ações" styleClass="text-center" width="70">
 						<div class="table-action-buttons">
-<p:commandButton icon="pi pi-pencil" title="Editar"
-	update=":formCadastroPalestra" 
-	styleClass="action-button-warn-table action-btn"
-	oncomplete="PF('dialogCadastroPalestra').show()" 
-	actionListener="#{palestraController.prepararEdicao(palestra.id)}" />
+						<p:commandButton icon="pi pi-pencil" title="Editar"
+							ariaLabel="Editar palestra"
+							update=":formCadastroPalestra" 
+							styleClass="action-button-warn-table action-btn"
+							oncomplete="PF('dialogCadastroPalestra').show()" 
+							actionListener="#{palestraController.prepararEdicao(palestra.id)}" />
 							
-<p:commandButton icon="pi pi-trash" title="Excluir"
-	styleClass="action-button-danger-table action-btn"
-	actionListener="#{palestraController.excluir(palestra.id)}"
-	update=":formListaPalestras:tabelaPalestras :formListaPalestras:messages">
-	<p:confirm header="Confirmação"
-		message="Tem certeza que deseja excluir esta palestra?"
-		icon="pi pi-exclamation-triangle" />
-</p:commandButton>
+						<p:commandButton icon="pi pi-trash" title="Excluir"
+							ariaLabel="Excluir palestra"
+							styleClass="action-button-danger-table action-btn"
+							actionListener="#{palestraController.excluir(palestra.id)}"
+							update=":formListaPalestras:tabelaPalestras :formListaPalestras:messages">
+							<p:confirm header="Confirmação"
+								message="Tem certeza que deseja excluir esta palestra?"
+								icon="pi pi-exclamation-triangle" />
+						</p:commandButton>
 						</div>
 					</p:column>
 				</p:dataTable>
@@ -140,116 +142,6 @@
 				</p:confirmDialog>
 			</h:form>
 		</div>
-
-		<style>
-			/* Estilos específicos para palestras */
-			.lecture-info {
-				display: flex;
-				align-items: center;
-				gap: 0.75rem;
-			}
-
-			.lecture-icon {
-				width: 36px;
-				height: 36px;
-				background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 60%, #4f46e5 100%);
-				border-radius: 50%;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				color: #fff;
-				flex-shrink: 0;
-				box-shadow: 0 2px 8px 0 rgba(124, 58, 237, 0.18), 0 1.5px 4px 0 rgba(76, 29, 149, 0.10);
-				position: relative;
-				overflow: hidden;
-				transition: box-shadow 0.2s, transform 0.2s;
-			}
-			.lecture-icon:hover {
-				box-shadow: 0 4px 16px 0 rgba(124, 58, 237, 0.28), 0 3px 8px 0 rgba(76, 29, 149, 0.18);
-				transform: scale(1.07);
-			}
-			.lecture-icon i.pi {
-				font-size: 1.5rem;
-				color: #fff;
-				z-index: 2;
-				filter: drop-shadow(0 1px 2px #7c3aed);
-			}
-			.lecture-icon .icon-fallback {
-				display: none;
-				font-size: 1.3rem;
-				color: #fff;
-				z-index: 1;
-			}
-			.lecture-icon i.pi:empty + .icon-fallback {
-				display: inline;
-			}
-
-			.lecture-title {
-				font-weight: 600;
-				color: #333;
-			}
-
-			.theme-badge {
-				display: inline-flex;
-				align-items: center;
-				gap: 0.5rem;
-				padding: 0.25rem 0.75rem;
-				border-radius: 12px;
-				font-size: 0.875rem;
-				font-weight: 500;
-				background: linear-gradient(135deg, #06b6d4, #0891b2);
-				color: white;
-			}
-
-			.event-badge {
-				display: inline-flex;
-				align-items: center;
-				gap: 0.5rem;
-				padding: 0.25rem 0.75rem;
-				border-radius: 12px;
-				font-size: 0.875rem;
-				font-weight: 500;
-				background: linear-gradient(135deg, #f59e0b, #d97706);
-				color: white;
-			}
-
-			.datetime-display {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				gap: 0.5rem;
-				font-size: 0.875rem;
-				color: #374151;
-				font-weight: 500;
-			}
-
-			.datetime-display i {
-				color: #6b7280;
-			}
-
-			.speakers-list {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 0.25rem;
-			}
-
-			.speaker-tag {
-				display: inline-flex;
-				align-items: center;
-				gap: 0.25rem;
-				padding: 0.125rem 0.5rem;
-				background: #f3f4f6;
-				border: 1px solid #d1d5db;
-				border-radius: 12px;
-				font-size: 0.75rem;
-				color: #374151;
-			}
-
-			.speaker-tag i {
-				font-size: 0.625rem;
-				color: #6b7280;
-			}
-		</style>
 
 		<ui:include src="cadastro.xhtml" />
 

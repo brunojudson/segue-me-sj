@@ -35,7 +35,7 @@
 			</div>
 
 			<h:form id="listForm" prependId="false">
-				<p:messages id="messages" showDetail="true" closable="true" />
+				<p:growl id="messages" showDetail="true" closable="true" />
 
 				<!-- Tabela moderna de encontros -->
 				<p:dataTable id="encontrosTable" var="encontro" 
@@ -118,16 +118,17 @@
 
 <p:column headerText="Ações" styleClass="text-center" width="140">
 	<div class="table-action-buttons">
-		<p:commandButton icon="pi pi-eye" title="Visualizar"
-			action="#{encontroController.visualizar(encontro)}"
-			styleClass="action-button-secondary-table action-btn" />
+		<p:button icon="pi pi-eye" title="Visualizar"			ariaLabel="Visualizar encontro"			outcome="/pages/encontro/visualizar.xhtml"
+			styleClass="action-button-secondary-table action-btn">
+			<f:param name="id" value="#{encontro.id}" />
+		</p:button>
 
-		<p:commandButton icon="pi pi-pencil" title="Editar"
-			action="#{encontroController.editar(encontro)}"
-			styleClass="action-button-warn-table action-btn" />
+		<p:button icon="pi pi-pencil" title="Editar"			ariaLabel="Editar encontro"			outcome="/pages/encontro/cadastro.xhtml"
+			styleClass="action-button-warn-table action-btn">
+			<f:param name="id" value="#{encontro.id}" />
+		</p:button>
 
-		<p:commandButton icon="pi pi-trash" title="Excluir"
-			action="#{encontroController.prepararExclusao(encontro)}"
+		<p:commandButton icon="pi pi-trash" title="Excluir"			ariaLabel="Excluir encontro"			action="#{encontroController.prepararExclusao(encontro)}"
 			styleClass="action-button-danger-table action-btn"
 			update=":confirmDialog"
 			oncomplete="PF('confirmDialog').show()" />
@@ -153,53 +154,6 @@
 				</p:confirmDialog>
 			</h:form>
 		</div>
-
-		<style>
-			/* Estilos específicos para encontros */
-			.event-info {
-				display: flex;
-				align-items: center;
-				gap: 0.75rem;
-			}
-
-			.event-icon {
-				width: 32px;
-				height: 32px;
-				background: linear-gradient(135deg, #f59e0b, #d97706);
-				border-radius: 8px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				color: white;
-				flex-shrink: 0;
-			}
-
-			.event-name {
-				font-weight: 600;
-				color: #333;
-			}
-
-			.event-status {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-			}
-
-			.event-status i {
-				font-size: 2rem;
-			}
-
-			.location-info {
-				display: flex;
-				align-items: center;
-				gap: 0.5rem;
-				color: #6b7280;
-			}
-
-			.location-info i {
-				color: #ef4444;
-			}
-		</style>
 	</ui:define>
 </ui:composition>
 

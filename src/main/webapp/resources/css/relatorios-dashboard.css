@@ -1,0 +1,550 @@
+/* ============================================================
+   DASHBOARD DE RELATÓRIOS EXECUTIVOS - Segue-me SJ
+   Baseado no design do frontend Angular de referência.
+   Sem alterar estilos globais do sistema.
+   ============================================================ */
+
+/* --- Page Header --- */
+.relatorio-dashboard .dash-page-header {
+    margin-bottom: 1.5rem;
+}
+.relatorio-dashboard .dash-page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color, #1e293b);
+    margin: 0;
+}
+.relatorio-dashboard .dash-subtitle {
+    color: var(--text-color-secondary, #64748b);
+    font-size: 0.86rem;
+    margin-top: 0.25rem;
+}
+
+/* --- Tabs --- */
+.relatorio-dashboard .dash-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--surface-border, #e2e8f0);
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.relatorio-dashboard .dash-tab {
+    padding: 0.65rem 1.25rem;
+    background: none;
+    border: none;
+    color: var(--text-color-secondary, #64748b);
+    font-size: 0.86rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    font-family: inherit;
+}
+.relatorio-dashboard .dash-tab:hover {
+    color: var(--text-color, #1e293b);
+}
+.relatorio-dashboard .dash-tab.active {
+    color: var(--primary-color, #6df0c8);
+    border-bottom-color: var(--primary-color, #6df0c8);
+}
+
+/* --- Stats Grid --- */
+.relatorio-dashboard .dash-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.relatorio-dashboard .dash-stats-sm {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+/* --- Stat Card --- */
+.relatorio-dashboard .dash-stat-card {
+    background: var(--surface-card, #ffffff);
+    border: 1px solid var(--surface-border, #e2e8f0);
+    border-radius: 8px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.relatorio-dashboard .dash-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.3rem;
+}
+.relatorio-dashboard .dash-stat-icon.icon-green  { background: rgba(109, 240, 200, 0.1); color: #10b981; }
+.relatorio-dashboard .dash-stat-icon.icon-purple { background: rgba(167, 139, 250, 0.1); color: #a78bfa; }
+.relatorio-dashboard .dash-stat-icon.icon-blue   { background: rgba(96, 165, 250, 0.1);  color: #60a5fa; }
+.relatorio-dashboard .dash-stat-icon.icon-yellow { background: rgba(251, 191, 36, 0.1);  color: #f59e0b; }
+.relatorio-dashboard .dash-stat-icon.icon-teal   { background: rgba(45, 212, 191, 0.1);  color: #2dd4bf; }
+.relatorio-dashboard .dash-stat-icon.icon-rose   { background: rgba(251, 113, 133, 0.1); color: #fb7185; }
+
+.relatorio-dashboard .dash-stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-color, #1e293b);
+}
+.relatorio-dashboard .dash-stat-label {
+    font-size: 0.78rem;
+    color: var(--text-color-secondary, #64748b);
+    font-weight: 500;
+}
+
+/* --- Stat Card Small --- */
+.relatorio-dashboard .dash-stat-card-sm {
+    background: var(--surface-card, #ffffff);
+    border: 1px solid var(--surface-border, #e2e8f0);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+}
+.relatorio-dashboard .dash-stat-card-sm.highlight {
+    border-color: #10b981;
+    background: rgba(109, 240, 200, 0.03);
+}
+.relatorio-dashboard .dash-stat-sm-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-color, #1e293b);
+}
+.relatorio-dashboard .dash-stat-sm-label {
+    font-size: 0.72rem;
+    color: var(--text-color-secondary, #64748b);
+    font-weight: 500;
+    margin-top: 0.2rem;
+}
+
+/* --- Report Grid (2 col) --- */
+.relatorio-dashboard .dash-report-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* --- Card --- */
+.relatorio-dashboard .dash-card {
+    background: var(--surface-card, #ffffff);
+    border: 1px solid var(--surface-border, #e2e8f0);
+    border-radius: 8px;
+    padding: 1.25rem;
+}
+.relatorio-dashboard .dash-card-header {
+    margin-bottom: 0.75rem;
+}
+.relatorio-dashboard .dash-card-header h3 {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-color, #1e293b);
+    margin: 0;
+}
+
+/* --- Bar Charts --- */
+.relatorio-dashboard .dash-bar-list {
+    padding: 0.5rem 0;
+}
+.relatorio-dashboard .dash-bar-item {
+    margin-bottom: 0.75rem;
+}
+.relatorio-dashboard .dash-bar-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+}
+.relatorio-dashboard .dash-bar-label {
+    font-size: 0.82rem;
+    color: var(--text-color, #1e293b);
+    font-weight: 500;
+}
+.relatorio-dashboard .dash-bar-value {
+    font-size: 0.78rem;
+    color: var(--text-color-secondary, #64748b);
+    font-weight: 600;
+}
+.relatorio-dashboard .dash-bar-track {
+    height: 8px;
+    background: var(--surface-border, #e2e8f0);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.relatorio-dashboard .dash-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+    min-width: 2px;
+}
+.relatorio-dashboard .dash-bar-fill.fill-blue   { background: #60a5fa; }
+.relatorio-dashboard .dash-bar-fill.fill-pink   { background: #f472b6; }
+.relatorio-dashboard .dash-bar-fill.fill-gray   { background: #94a3b8; }
+.relatorio-dashboard .dash-bar-fill.fill-accent  { background: #10b981; }
+.relatorio-dashboard .dash-bar-fill.fill-rose   { background: #fb7185; }
+
+/* --- Horizontal Bars --- */
+.relatorio-dashboard .dash-h-bars {
+    padding: 0.5rem 0;
+}
+.relatorio-dashboard .dash-h-bar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+}
+.relatorio-dashboard .dash-h-bar-label {
+    font-size: 0.78rem;
+    color: var(--text-color, #1e293b);
+    font-weight: 500;
+    min-width: 120px;
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.relatorio-dashboard .dash-h-bar-track {
+    flex: 1;
+    height: 20px;
+    background: var(--surface-border, #e2e8f0);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.relatorio-dashboard .dash-h-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+    min-width: 2px;
+}
+.relatorio-dashboard .dash-h-bar-fill.fill-accent { background: #10b981; }
+.relatorio-dashboard .dash-h-bar-fill.fill-rose   { background: #fb7185; }
+.relatorio-dashboard .dash-h-bar-value {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-color, #1e293b);
+    min-width: 50px;
+    text-align: right;
+}
+
+/* --- Data Table --- */
+.relatorio-dashboard .dash-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+.relatorio-dashboard .dash-data-table thead th {
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-color-secondary, #64748b);
+    border-bottom: 2px solid var(--surface-border, #e2e8f0);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+.relatorio-dashboard .dash-data-table tbody td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--surface-border, #e2e8f0);
+    color: var(--text-color, #1e293b);
+}
+.relatorio-dashboard .dash-data-table tbody tr:hover {
+    background: rgba(109, 240, 200, 0.03);
+}
+.relatorio-dashboard .dash-data-table .text-center { text-align: center; }
+.relatorio-dashboard .dash-data-table .text-right { text-align: right; }
+.relatorio-dashboard .dash-data-table .cell-main { font-weight: 500; }
+.relatorio-dashboard .dash-data-table tfoot td {
+    padding: 0.75rem;
+    background: rgba(109, 240, 200, 0.05);
+    border-top: 2px solid #10b981;
+    font-weight: 700;
+}
+
+/* --- Tags --- */
+.relatorio-dashboard .dash-tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+.relatorio-dashboard .tag-green  { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+.relatorio-dashboard .tag-blue   { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.relatorio-dashboard .tag-yellow { background: rgba(234, 179, 8, 0.15); color: #eab308; }
+.relatorio-dashboard .tag-red    { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.relatorio-dashboard .tag-muted  { background: var(--surface-border, #e2e8f0); color: var(--text-color-secondary, #64748b); }
+
+/* --- Conversion Funnel --- */
+.relatorio-dashboard .dash-conversion-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+}
+.relatorio-dashboard .dash-conversion-step {
+    text-align: center;
+    padding: 1rem 1.5rem;
+    background: var(--surface-ground, #f8fafc);
+    border: 1px solid var(--surface-border, #e2e8f0);
+    border-radius: 8px;
+}
+.relatorio-dashboard .dash-conversion-step.highlight {
+    border-color: #10b981;
+    background: rgba(109, 240, 200, 0.05);
+}
+.relatorio-dashboard .dash-conversion-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color, #1e293b);
+}
+.relatorio-dashboard .dash-conversion-label {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary, #64748b);
+    margin-top: 0.25rem;
+}
+.relatorio-dashboard .dash-conversion-arrow {
+    font-size: 1.5rem;
+    color: #10b981;
+    font-weight: 700;
+}
+.relatorio-dashboard .dash-conversion-info {
+    text-align: center;
+    font-size: 0.86rem;
+    color: #10b981;
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+}
+
+/* --- Empty state --- */
+.relatorio-dashboard .dash-empty-state {
+    color: var(--text-color-secondary, #64748b);
+    font-size: 0.86rem;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+/* --- Section Divider --- */
+.relatorio-dashboard .dash-section-divider {
+    border: none;
+    border-top: 2px solid var(--surface-border, #e2e8f0);
+    margin: 2rem 0;
+}
+.relatorio-dashboard .dash-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color, #1e293b);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* --- Margin utils --- */
+.relatorio-dashboard .mt-1 { margin-top: 1rem; }
+.relatorio-dashboard .mb-1 { margin-bottom: 1rem; }
+
+/* --- Dark Mode Support --- */
+body.dark-mode .relatorio-dashboard .dash-page-header h1 {
+    color: var(--sm-text);
+}
+body.dark-mode .relatorio-dashboard .dash-subtitle {
+    color: var(--sm-muted);
+}
+
+body.dark-mode .relatorio-dashboard .dash-stat-card,
+body.dark-mode .relatorio-dashboard .dash-stat-card-sm,
+body.dark-mode .relatorio-dashboard .dash-card {
+    background: var(--sm-surface) !important;
+    border-color: var(--sm-border) !important;
+}
+
+body.dark-mode .relatorio-dashboard .dash-stat-card-sm.highlight {
+    border-color: var(--sm-accent) !important;
+    background: rgba(109, 240, 200, 0.05) !important;
+}
+
+body.dark-mode .relatorio-dashboard .dash-stat-value,
+body.dark-mode .relatorio-dashboard .dash-stat-sm-value {
+    color: var(--sm-text) !important;
+}
+body.dark-mode .relatorio-dashboard .dash-stat-label,
+body.dark-mode .relatorio-dashboard .dash-stat-sm-label {
+    color: var(--sm-muted) !important;
+}
+
+body.dark-mode .relatorio-dashboard .dash-tabs {
+    border-bottom-color: var(--sm-border) !important;
+}
+body.dark-mode .relatorio-dashboard .dash-tab {
+    color: var(--sm-muted);
+}
+body.dark-mode .relatorio-dashboard .dash-tab:hover {
+    color: var(--sm-text);
+}
+body.dark-mode .relatorio-dashboard .dash-tab.active {
+    color: var(--sm-accent);
+    border-bottom-color: var(--sm-accent);
+}
+
+body.dark-mode .relatorio-dashboard .dash-card-header h3 {
+    color: var(--sm-text) !important;
+}
+
+body.dark-mode .relatorio-dashboard .dash-bar-label,
+body.dark-mode .relatorio-dashboard .dash-h-bar-label,
+body.dark-mode .relatorio-dashboard .dash-h-bar-value {
+    color: var(--sm-text) !important;
+}
+
+/* === Estilos para os cartões de equipes (cards modernos) === */
+.team-card {
+    box-shadow: 0 8px 20px rgba(16,24,40,0.06);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.team-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 40px rgba(16,24,40,0.12);
+}
+.modern-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--surface-border, #e6eef6);
+}
+.modern-card .card-header h3 { margin:0; font-size:1.05rem; }
+.modern-card .card-sub { color: var(--text-color-secondary, #64748b); font-size:0.82rem; }
+.modern-card .card-body { padding: 0.75rem 0; font-size:0.92rem; color:var(--text-color,#1e293b); }
+.modern-card .card-footer { padding-top:0.5rem; border-top:1px solid var(--surface-border,#e6eef6); display:flex; justify-content:space-between; align-items:center; }
+.card-header .team-badge { background: linear-gradient(90deg,#6df0c8 0%, #60a5fa 100%); color: #083344; padding:0.25rem 0.6rem; border-radius:999px; font-weight:700; font-size:0.78rem; }
+
+/* Grid responsivo para os cards */
+@media (min-width: 1024px) {
+    .card-col { width: 33%; }
+}
+@media (max-width: 1023px) and (min-width: 640px) {
+    .card-col { width: 50%; }
+}
+@media (max-width: 639px) {
+    .card-col { width: 100%; }
+}
+
+/* Pequenos ajustes na tabela dentro do card */
+.modern-datatable .ui-datatable-tablewrapper { max-height: 240px; overflow:auto; }
+.modern-datatable .ui-datatable-data td { padding:0.4rem 0.5rem; }
+
+/* Ajuste para legibilidade de botões desabilitados dentro do dashboard */
+.relatorio-dashboard .ui-button[disabled],
+.relatorio-dashboard .ui-button.ui-state-disabled {
+    color: #0f172a !important;
+    background: #f3f4f6 !important;
+    opacity: 1 !important;
+    border-color: var(--surface-border, #e2e8f0) !important;
+}
+
+body.dark-mode .relatorio-dashboard .dash-bar-value {
+    color: var(--sm-muted) !important;
+}
+body.dark-mode .relatorio-dashboard .dash-bar-track,
+body.dark-mode .relatorio-dashboard .dash-h-bar-track {
+    background: var(--sm-surface3) !important;
+}
+
+body.dark-mode .relatorio-dashboard .dash-data-table thead th {
+    color: var(--sm-muted) !important;
+    border-bottom-color: var(--sm-border) !important;
+}
+body.dark-mode .relatorio-dashboard .dash-data-table tbody td {
+    color: var(--sm-text) !important;
+    border-bottom-color: var(--sm-border) !important;
+}
+body.dark-mode .relatorio-dashboard .dash-data-table tbody tr:hover {
+    background: var(--sm-surface2) !important;
+}
+body.dark-mode .relatorio-dashboard .dash-data-table tfoot td {
+    background: rgba(109, 240, 200, 0.08) !important;
+    border-top-color: var(--sm-accent) !important;
+    color: var(--sm-text) !important;
+}
+
+body.dark-mode .relatorio-dashboard .dash-conversion-step {
+    background: var(--sm-surface2) !important;
+    border-color: var(--sm-border) !important;
+}
+body.dark-mode .relatorio-dashboard .dash-conversion-step.highlight {
+    border-color: var(--sm-accent) !important;
+    background: rgba(109, 240, 200, 0.05) !important;
+}
+body.dark-mode .relatorio-dashboard .dash-conversion-value {
+    color: var(--sm-text) !important;
+}
+body.dark-mode .relatorio-dashboard .dash-conversion-label {
+    color: var(--sm-muted) !important;
+}
+body.dark-mode .relatorio-dashboard .dash-conversion-arrow {
+    color: var(--sm-accent) !important;
+}
+body.dark-mode .relatorio-dashboard .dash-conversion-info {
+    color: var(--sm-accent) !important;
+}
+
+body.dark-mode .relatorio-dashboard .dash-empty-state {
+    color: var(--sm-muted) !important;
+}
+body.dark-mode .relatorio-dashboard .dash-section-divider {
+    border-top-color: var(--sm-border) !important;
+}
+body.dark-mode .relatorio-dashboard .dash-section-title {
+    color: var(--sm-text) !important;
+}
+
+/* Tags no dark mode */
+body.dark-mode .relatorio-dashboard .tag-green {
+    background: rgba(34, 197, 94, 0.2) !important;
+    color: #4ade80 !important;
+}
+body.dark-mode .relatorio-dashboard .tag-blue {
+    background: rgba(59, 130, 246, 0.2) !important;
+    color: #60a5fa !important;
+}
+body.dark-mode .relatorio-dashboard .tag-yellow {
+    background: rgba(234, 179, 8, 0.2) !important;
+    color: #fbbf24 !important;
+}
+body.dark-mode .relatorio-dashboard .tag-red {
+    background: rgba(239, 68, 68, 0.2) !important;
+    color: #f87171 !important;
+}
+body.dark-mode .relatorio-dashboard .tag-muted {
+    background: var(--sm-surface3) !important;
+    color: var(--sm-muted) !important;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .relatorio-dashboard .dash-report-grid {
+        grid-template-columns: 1fr;
+    }
+    .relatorio-dashboard .dash-conversion-bar {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .relatorio-dashboard .dash-conversion-arrow {
+        transform: rotate(90deg);
+    }
+    .relatorio-dashboard .dash-h-bar-label {
+        min-width: 80px;
+        max-width: 100px;
+    }
+    .relatorio-dashboard .dash-stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+}

@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-
 import br.com.segueme.entity.Casal;
 import br.com.segueme.entity.Palestrante;
 import br.com.segueme.entity.Pessoa;
@@ -33,21 +31,18 @@ public class PalestranteService {
         return palestranteRepository.findByCasal(casal);
     }
 
-    @Transactional
     public void salvar(Palestrante palestrante) {
         // Adicionar validações de negócio
         validarPalestrante(palestrante, true);
         palestranteRepository.save(palestrante);
     }
 
-    @Transactional
     public void atualizar(Palestrante palestrante) {
         // Adicionar validações de negócio
         validarPalestrante(palestrante, false);
         palestranteRepository.update(palestrante);
     }
 
-    @Transactional
     public void excluir(Long id) {
         Palestrante palestrante = palestranteRepository.findById(id);
         if (palestrante == null) {

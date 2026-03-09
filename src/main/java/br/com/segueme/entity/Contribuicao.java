@@ -5,6 +5,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity
@@ -17,22 +21,29 @@ public class Contribuicao implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Trabalhador é obrigatório")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "trabalhador_id", nullable = false)
     private Trabalhador trabalhador;
 
+    @NotNull(message = "Valor é obrigatório")
+    @DecimalMin(value = "0.01", message = "Valor deve ser maior que zero")
     @Column(name = "valor", nullable = false, precision = 10, scale = 2)
     private BigDecimal valor;
 
     @Column(name = "data_pagamento")
     private LocalDateTime dataPagamento;
 
+    @NotBlank(message = "Forma de pagamento é obrigatória")
+    @Size(max = 50, message = "Forma de pagamento deve ter no máximo 50 caracteres")
     @Column(name = "forma_pagamento", nullable = false, length = 50)
     private String formaPagamento;
 
+    @Size(max = 255, message = "URL do comprovante deve ter no máximo 255 caracteres")
     @Column(name = "comprovante_url", length = 255)
     private String comprovanteUrl;
 
+    @Size(max = 500, message = "Observações devem ter no máximo 500 caracteres")
     @Column(name = "observacoes")
     private String observacoes;
 

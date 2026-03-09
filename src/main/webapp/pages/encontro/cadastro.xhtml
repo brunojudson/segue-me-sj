@@ -35,10 +35,10 @@
 			</div>
 
 			<h:form id="encontroForm" styleClass="modern-form">
-				<p:messages id="messages" showDetail="true" closable="true"
+				<p:growl id="messages" showDetail="true" closable="true"
 					styleClass="modern-messages">
 					<p:autoUpdate />
-				</p:messages>
+				</p:growl>
 
 				<f:metadata>
 					<f:viewParam name="id" />
@@ -60,7 +60,7 @@
 									placeholder="Digite o nome do encontro" maxlength="100"
 									disabled="#{not encontroController.encontro.ativo}" />
 								<small class="field-hint">Nome que identificará o
-									encontro no sistema</small>
+									encontro ex: Segue-me 2023</small>
 							</div>
 
 							<div class="field-group">
@@ -242,116 +242,6 @@
 			</h:form>
 		</div>
 
-		<style>
-/* Estilos específicos para o cadastro de encontro */
-.status-display {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	padding: 0.5rem;
-	border-radius: 8px;
-	background-color: #f8f9fa;
-}
-
-.status-active {
-	color: #28a745 !important;
-	animation: pulse 2s infinite;
-}
-
-.status-completed {
-	color: #6c757d !important;
-}
-
-.status-text {
-	font-weight: 600;
-	color: #495057;
-}
-
-.confirm-dialog-content {
-	margin: 1rem 0;
-}
-
-.confirm-dialog-content ul {
-	margin: 0.5rem 0;
-	padding-left: 1.5rem;
-}
-
-.confirm-dialog-content li {
-	margin: 0.25rem 0;
-	color: #666;
-}
-
-@
-keyframes pulse { 0%, 100% {
-	opacity: 1;
-}
-
-50
-%
-{
-opacity
-:
-0.7;
-}
-}
-
-/* Melhorias nos campos de valor */
-.ui-inputnumber input {
-	text-align: right;
-}
-
-/* Campos desabilitados mais claros */
-.ui-state-disabled {
-	opacity: 0.6;
-	background-color: #f8f9fa !important;
-}
-
-/* Responsividade específica */
-@media ( max-width : 768px) {
-	.field-grid {
-		grid-template-columns: 1fr;
-	}
-	.action-buttons {
-		flex-direction: column;
-		gap: 0.75rem;
-	}
-	.action-buttons .ui-button {
-		width: 100%;
-	}
-}
-
-/* Ajuste específico para botões de datePicker - alinha com altura dos campos */
-button.ui-datepicker-trigger {
-	min-height: 35px !important;
-	height: 35px !important;
-	max-height: 35px !important;
-	width: 35px !important;
-	min-width: 35px !important;
-	padding: 0 !important;
-	margin: 0 !important;
-	box-sizing: border-box !important;
-	vertical-align: top !important;
-	display: inline-flex !important;
-	align-items: center !important;
-	justify-content: center !important;
-	font-size: 1rem !important;
-	line-height: 1 !important;
-}
-
-/* Ajusta o campo de input do datePicker para manter consistência */
-input.ui-inputfield.ui-datepicker-input {
-	min-height: 29px !important;
-	height: 29px !important;
-	max-height: 29px !important;
-	vertical-align: top !important;
-}
-
-/* Container inline do datePicker - APENAS para o input e botão */
-.ui-datepicker-group {
-	display: inline-flex !important;
-	align-items: stretch !important;
-}
-</style>
 	</ui:define>
 </ui:composition>
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
+    <deployment>
+        <!-- Permite que as bibliotecas sejam carregadas do WEB-INF/lib -->
+        <dependencies>
+            <!-- Módulos do JBoss necessários -->
+            <module name="javaee.api" />
+        </dependencies>
+        
+        <!-- Evita conflitos de classloader com bibliotecas empacotadas no WAR -->
+        <exclusions>
+            <!-- Impede que o JBoss tente carregar suas próprias versões dessas libs -->
+            <module name="org.apache.commons.logging" />
+            <module name="org.apache.log4j" />
+        </exclusions>
+    </deployment>
+</jboss-deployment-structure>

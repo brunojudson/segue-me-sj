@@ -77,10 +77,10 @@ public class EquipeRepositoryImpl implements EquipeRepository {
     @Override
     public List<Equipe> findByEncontro(Long encontroId) {
         return entityManager.createQuery(
-                "SELECT e FROM Equipe e WHERE e.encontro.id = :encontroId",
-                Equipe.class)
-                .setParameter("encontroId", encontroId)
-                .getResultList();
+            "SELECT e FROM Equipe e LEFT JOIN FETCH e.tipoEquipe t LEFT JOIN FETCH e.encontro en WHERE e.encontro.id = :encontroId ORDER BY e.nome",
+            Equipe.class)
+            .setParameter("encontroId", encontroId)
+            .getResultList();
     }
 
     @Override
@@ -141,5 +141,11 @@ public class EquipeRepositoryImpl implements EquipeRepository {
                 .getSingleResult();
 
         return count > 0;
+    }
+
+    @Override
+    public long count() {
+        return entityManager.createQuery("SELECT COUNT(e) FROM Equipe e", Long.class)
+                .getSingleResult();
     }
 }
