@@ -10,6 +10,7 @@
     <ui:define name="title">Consulta de Vendas - Sistema Segue-me</ui:define>
     
     <ui:define name="content">
+        <h:outputStylesheet name="css/relatorios-dashboard.css" />
         <div class="content-container">
             <!-- Cabeçalho moderno da página -->
             <div class="page-header">
@@ -21,45 +22,43 @@
                         </h1>
                         <p class="page-subtitle">Visualize, filtre e exporte relatórios de vendas dos encontros</p>
                     </div>
-                    <div class="header-actions">
-                        <p:commandButton value="Exportar Excel" icon="pi pi-file-excel" 
-                            styleClass="action-button-success"
-                            ajax="false">
-                            <p:dataExporter type="xlsx" target="tblPedidos" fileName="relatorio_vendas_#{vendaPedidoController.dataExportacao}" />
-                        </p:commandButton>
-                    </div>
-                </div>
-            </div>
+                    <div class="dash-stats-grid">
+                        <div class="dash-stat-card">
+                            <div class="dash-stat-icon icon-blue"><i class="pi pi-shopping-cart"></i></div>
+                            <div>
+                                <div class="dash-stat-value">#{vendaPedidoController.totalPedidos}</div>
+                                <div class="dash-stat-label">Total de Pedidos</div>
+                            </div>
+                        </div>
 
-            <h:form id="formConsultaVendas" prependId="false">
-                <p:growl id="growl" showDetail="true" closable="true" styleClass="modern-messages" />
-                
-                <!-- Filtros de Consulta -->
-                <p:fieldset legend="🔍 Filtros de Consulta" toggleable="true" collapsed="false" styleClass="modern-fieldset">
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label for="filtroEncontroConsulta">Encontro:</label>
-                            <p:selectOneMenu id="filtroEncontroConsulta" value="#{vendaPedidoController.filtroEncontroId}">
-                                <f:selectItem itemLabel="Todos os encontros" itemValue="#{null}" />
-                                <f:selectItems value="#{vendaPedidoController.todosEncontros}" 
-                                               var="enc" itemLabel="#{enc.nome}" itemValue="#{enc.id}"/>
-                            </p:selectOneMenu>
+                        <div class="dash-stat-card">
+                            <div class="dash-stat-icon icon-green"><i class="pi pi-check-circle"></i></div>
+                            <div>
+                                <div class="dash-stat-value">#{vendaPedidoController.totalValorPago}</div>
+                                <div class="dash-stat-label">Pedidos Pagos (valor)</div>
+                            </div>
                         </div>
-                        
-                        <div class="info-item">
-                            <label for="filtroStatus">Status:</label>
-                            <p:selectOneMenu id="filtroStatus" value="#{vendaPedidoController.filtroStatus}">
-                                <f:selectItem itemLabel="Todos os status" itemValue="#{null}" />
-                                <f:selectItems value="#{vendaPedidoController.todosStatus}" 
-                                               var="st" itemLabel="#{st.descricao}" itemValue="#{st}"/>
-                            </p:selectOneMenu>
+
+                        <div class="dash-stat-card">
+                            <div class="dash-stat-icon icon-yellow"><i class="pi pi-clock"></i></div>
+                            <div>
+                                <div class="dash-stat-value">#{vendaPedidoController.totalAguardandoPagamento}</div>
+                                <div class="dash-stat-label">Pedidos Aguardando</div>
+                            </div>
                         </div>
-                        
-                        <div class="info-item">
-                            <label for="dataInicio">Data Início:</label>
-                            <p:calendar id="dataInicio" value="#{vendaPedidoController.dataInicio}" 
-                                        pattern="dd/MM/yyyy" showButtonBar="true" locale="pt_BR" />
+
+                        <div class="dash-stat-card">
+                            <div class="dash-stat-icon icon-rose"><i class="pi pi-dollar"></i></div>
+                            <div>
+                                <div class="dash-stat-value">
+                                    <h:outputText value="#{vendaPedidoController.totalPedidosAbertosValor}">
+                                        <f:convertNumber type="currency" currencySymbol="R$ " locale="pt_BR" />
+                                    </h:outputText>
+                                </div>
+                                <div class="dash-stat-label">Valor Pedidos Abertos</div>
+                            </div>
                         </div>
+                    </div>
                         
                         <div class="info-item">
                             <label for="dataFim">Data Fim:</label>
@@ -102,7 +101,7 @@
                                     <h:outputText value="#{vendaPedidoController.totalValorPago}">
                                         <f:convertNumber type="currency" currencySymbol="R$ " />
                                     </h:outputText>
-                                </span>
+                                </span>	
                             </div>
                         </div>
                         
