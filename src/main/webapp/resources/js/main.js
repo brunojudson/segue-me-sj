@@ -80,10 +80,28 @@ function focusFirstError() {
 
 // Scroll suave para o topo
 function scrollToTop() {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
+    try {
+        var content = document.getElementById('content');
+        if (content) {
+            // Tenta alinhar a primeira seção de conteúdo ao topo, compensando padding
+            var target = content.querySelector('.content-container') || content.firstElementChild;
+            var paddingTop = parseFloat(getComputedStyle(content).paddingTop) || 0;
+            // compensa a altura do header (definida em --header-h no template)
+            var headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 0;
+            var targetOffset = 0;
+            if (target) {
+                targetOffset = target.offsetTop - paddingTop - headerH;
+                if (targetOffset < 0) targetOffset = 0;
+            }
+            if (typeof content.scrollTo === 'function') {
+                content.scrollTo({ top: targetOffset, behavior: 'smooth' });
+            } else {
+                content.scrollTop = targetOffset;
+            }
+            return;
+        }
+    } catch (e) { }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Inicialização quando o DOM estiver pronto
@@ -106,6 +124,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Animação de entrada do header
     initHeaderAnimations();
+    // Garante que ao carregar uma nova página o conteúdo comece no topo
+    try { scrollToTop(); } catch (e) { /* ignore */ }
 });
 
 // Inicializa animações nos fieldsets

@@ -93,6 +93,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
     public List<VendaPedido> findByEncontro(Long encontroId) {
         return entityManager.createQuery(
                 "SELECT DISTINCT p FROM VendaPedido p " +
+                "LEFT JOIN FETCH p.encontro " +
                 "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
                 "LEFT JOIN FETCH tr.pessoa " +
                 "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
@@ -143,6 +144,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
     public List<VendaPedido> findAbertosByEncontro(Long encontroId) {
         return entityManager.createQuery(
             "SELECT DISTINCT p FROM VendaPedido p " +
+            "LEFT JOIN FETCH p.encontro " +
             "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
             "LEFT JOIN FETCH tr.pessoa " +
             "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
@@ -162,6 +164,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
     public List<VendaPedido> findAguardoPagamentoByEncontro(Long encontroId) {
         return entityManager.createQuery(
             "SELECT DISTINCT p FROM VendaPedido p " +
+            "LEFT JOIN FETCH p.encontro " +
             "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
             "LEFT JOIN FETCH tr.pessoa " +
             "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
@@ -181,6 +184,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
     public List<VendaPedido> findByEncontroAndStatus(Long encontroId, StatusPedido status) {
         return entityManager.createQuery(
                 "SELECT DISTINCT p FROM VendaPedido p " +
+                "LEFT JOIN FETCH p.encontro " +
                 "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
                 "LEFT JOIN FETCH tr.pessoa " +
                 "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +

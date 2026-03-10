@@ -3867,3 +3867,397 @@ body.dark-mode .categoria-tag {
         justify-content: flex-end;
     }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   VENDAS — Dashboard Cards, Charts, Totals
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Dashboard Cards */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-card {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: var(--sm-radius);
+    box-shadow: var(--sm-shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sm-shadow-md);
+}
+
+.dashboard-card .card-icon {
+    font-size: 2.5rem;
+    margin-right: 1rem;
+    opacity: 0.8;
+}
+
+/* Compactar altura dos cards quando usado em páginas que exigem economia de espaço */
+.dashboard-grid.compact-cards .dashboard-card {
+    min-height: 52px;
+    padding: 0.5rem 0.75rem;
+    align-items: center;
+}
+
+.dashboard-grid.compact-cards .dashboard-card .card-icon {
+    font-size: 1.6rem;
+    margin-right: 0.75rem;
+}
+
+.dashboard-grid.compact-cards .dashboard-card .card-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dashboard-grid.compact-cards .dashboard-card .card-label {
+    font-size: 0.85rem;
+}
+
+.dashboard-grid.compact-cards .dashboard-card .card-value {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.dashboard-card .card-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-card .card-label {
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.dashboard-card .card-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Dashboard Card Variants — Green theme */
+.card-info {
+    background: linear-gradient(135deg, var(--sm-accent) 0%, #065f46 100%);
+    color: white;
+}
+
+.card-success {
+    background: linear-gradient(135deg, #059669 0%, #34d399 100%);
+    color: white;
+}
+
+.card-warning {
+    background: linear-gradient(135deg, #d97706 0%, #fbbf24 100%);
+    color: white;
+}
+
+.card-primary {
+    background: linear-gradient(135deg, var(--sm-accent2) 0%, #a78bfa 100%);
+    color: white;
+}
+
+.card-info .card-label,
+.card-success .card-label,
+.card-warning .card-label,
+.card-primary .card-label {
+    color: rgba(255,255,255,0.9);
+}
+
+.card-info .card-value,
+.card-success .card-value,
+.card-warning .card-value,
+.card-primary .card-value {
+    color: white;
+}
+
+/* Estoque Badge */
+.estoque-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.estoque-badge.estoque-ok {
+    background: rgba(109, 240, 200, 0.15);
+    color: var(--sm-accent);
+}
+
+.estoque-badge.estoque-baixo {
+    background: rgba(248, 113, 113, 0.15);
+    color: var(--sm-danger);
+    animation: pulse-opacity 2s infinite;
+}
+
+@keyframes pulse-opacity {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Price Value */
+.price-value {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--sm-accent);
+}
+
+.price-lg {
+    font-size: 1.2rem;
+}
+
+/* Quantity value */
+.quantity-value {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--sm-text);
+}
+
+/* Text muted helper */
+.text-muted {
+    font-size: 0.85rem;
+    color: var(--sm-muted);
+}
+
+/* Pedido Info Bar */
+.pedido-info-bar {
+    background: var(--sm-surface2);
+    border-left: 4px solid var(--sm-accent);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.pedido-info-bar strong {
+    color: var(--sm-text);
+}
+
+.pedido-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pedido-info-total {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* DataTable Total Footer */
+.datatable-total-footer {
+    text-align: right;
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding: 0.75rem;
+    background: var(--sm-accent);
+    color: var(--sm-btn-text);
+    border-radius: 6px;
+}
+
+.datatable-total-footer i {
+    margin-right: 0.5rem;
+}
+
+.datatable-total-footer-light {
+    text-align: right;
+    padding: 0.75rem;
+    background: var(--sm-surface2);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.datatable-total-footer-light strong {
+    font-size: 1.1rem;
+}
+
+.datatable-total-footer-light .price-value {
+    font-size: 1.3rem;
+}
+
+/* Dialog tab content padding */
+.dialog-tab-content {
+    padding: 1rem;
+}
+
+/* Dialog Footer Actions */
+.dialog-footer-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+/* Charts Grid */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.chart-container {
+    background: var(--sm-surface);
+    border: 1px solid var(--sm-border);
+    border-radius: var(--sm-radius);
+    padding: 1rem;
+    box-shadow: var(--sm-shadow-sm);
+}
+
+.chart-container.chart-full-width {
+    grid-column: 1 / -1;
+}
+
+.chart-title {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--sm-text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--sm-border);
+}
+
+.chart-title i {
+    color: var(--sm-accent);
+    font-size: 1.1rem;
+}
+
+/* Actions Bar */
+.actions-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.action-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.stats-card {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--sm-surface2);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: var(--sm-muted);
+    border: 1px solid var(--sm-border);
+}
+
+.stats-card i {
+    color: var(--sm-accent);
+}
+
+.stats-number {
+    font-weight: 700;
+    color: var(--sm-text);
+    font-size: 1.1rem;
+}
+
+/* Form Buttons */
+.form-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Status Badge — Vendas extras */
+.status-badge.aberto {
+    background: rgba(96, 165, 250, 0.15) !important;
+    color: #3b82f6 !important;
+}
+
+.status-badge.fechado {
+    background: var(--sm-surface3) !important;
+    color: var(--sm-muted) !important;
+}
+
+.status-badge.pago {
+    background: rgba(109, 240, 200, 0.1) !important;
+    color: var(--sm-accent) !important;
+}
+
+.status-badge.cancelado {
+    background: rgba(248, 113, 113, 0.1) !important;
+    color: var(--sm-danger) !important;
+}
+
+.status-badge.aguardando {
+    background: rgba(251, 191, 36, 0.15) !important;
+    color: var(--sm-warn) !important;
+}
+
+/* Action Button — Success (vendas) */
+.action-button-success {
+    background: #059669 !important;
+    border: none !important;
+    color: #fff !important;
+    padding: 10px 20px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 0.84rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.action-button-success:hover {
+    filter: brightness(1.1) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: var(--sm-shadow-md) !important;
+}
+
+/* DataTable Animation */
+.datatable-animation tbody tr {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Vendas — Responsive */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pedido-info-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pedido-info-total {
+        margin-left: 0;
+    }
+}

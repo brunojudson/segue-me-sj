@@ -1423,6 +1423,11 @@ body .ui-panelgrid .ui-panelgrid-cell {
     position: relative;
 }
 
+/* Isola o scroll no conteúdo principal para que o menu permaneça fixo */
+#layout {
+    height: calc(100vh - var(--header-h));
+}
+
 #header {
     position: sticky;
     top: 0;
@@ -1435,11 +1440,24 @@ body .ui-panelgrid .ui-panelgrid-cell {
     overflow-y: auto;
 }
 
+/* Mantém o menu visível e independente do scroll do conteúdo */
+#menu {
+    position: sticky;
+    top: var(--header-h);
+    height: calc(100vh - var(--header-h));
+}
+
 #content {
     flex: 1;
     box-sizing: border-box;
     background: var(--sm-bg);
     transition: transform 0.22s ease, margin-left 0.22s ease;
+}
+
+/* Conteúdo rola internamente; o body não precisa rolar ao navegar */
+#content {
+    overflow-y: auto;
+    height: calc(100vh - var(--header-h));
 }
 
 #content > div {
@@ -2644,6 +2662,11 @@ body.dark-mode .ui-datatable .ui-datatable-data > tr .datetime-display {
     transition: all 0.3s ease;
 }
 
+/* Espaçamento interno dos fieldsets para evitar que elementos fiquem colados na borda */
+.modern-fieldset {
+    padding: 0.5rem 1rem 1rem 1rem;
+}
+
 .modern-fieldset:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     border-color: #d1d9e6;
@@ -2668,6 +2691,14 @@ body.dark-mode .ui-datatable .ui-datatable-data > tr .datetime-display {
     gap: 32px;
     padding: 24px;
     align-items: start;
+}
+
+/* Garantir que botões dentro do fieldset tenham espaçamento apropriado da borda */
+.modern-fieldset .form-buttons {
+    margin-top: 12px;
+    padding: 0 8px 8px 0; /* direito e inferior com espaçamento */
+    display: flex;
+    justify-content: flex-end;
 }
 
 .field-group {

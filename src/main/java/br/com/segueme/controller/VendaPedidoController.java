@@ -7,7 +7,9 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -28,6 +30,14 @@ import br.com.segueme.service.PessoaService;
 import br.com.segueme.service.TrabalhadorService;
 import br.com.segueme.service.VendaArtigoService;
 import br.com.segueme.service.VendaPedidoService;
+
+import org.primefaces.model.charts.ChartData;
+import org.primefaces.model.charts.pie.PieChartDataSet;
+import org.primefaces.model.charts.pie.PieChartModel;
+import org.primefaces.model.charts.bar.BarChartDataSet;
+import org.primefaces.model.charts.bar.BarChartModel;
+import org.primefaces.model.charts.pie.PieChartOptions;
+import org.primefaces.model.charts.bar.BarChartOptions;
 
 /**
  * Managed Bean para gerenciar pedidos de venda
@@ -65,6 +75,8 @@ public class VendaPedidoController implements Serializable {
     // Pedido atual
     private VendaPedido pedidoAtual;
     private VendaPedido pedidoSelecionado;
+    // Auxiliar para seleção via f:setPropertyActionListener
+    private Long pedidoIdToSelect;
     
     // Seleções para criar novo pedido / adicionar item
     private Long encontroSelecionadoId;
@@ -366,6 +378,21 @@ public class VendaPedidoController implements Serializable {
             addErrorMessage("Erro ao carregar pedido: " + e.getMessage());
         }
     }
+
+    /**
+     * Action wrapper usado por commandButtons que não suportam passagem direta de parâmetro.
+     */
+    public void selecionarPedidoPorIdAction() {
+        selecionarPedidoPorId(this.pedidoIdToSelect);
+    }
+
+    public Long getPedidoIdToSelect() {
+        return pedidoIdToSelect;
+    }
+
+    public void setPedidoIdToSelect(Long pedidoIdToSelect) {
+        this.pedidoIdToSelect = pedidoIdToSelect;
+    }
     
     /**
      * Seleciona pedido (usado pelo ajax rowSelect)
@@ -378,7 +405,8 @@ public class VendaPedidoController implements Serializable {
         try {
             VendaPedido pedidoRecarregado = pedidoService.buscarPorId(this.pedidoAtual.getId()).orElse(this.pedidoAtual);
             this.pedidoAtual = pedidoRecarregado;
-            addInfoMessage("Pedido selecionado via rowSelect: " + this.pedidoAtual.getNumeroPedido());
+                int itensCount = this.pedidoAtual.getItens() != null ? this.pedidoAtual.getItens().size() : 0;
+                addInfoMessage("Pedido selecionado via rowSelect: " + this.pedidoAtual.getNumeroPedido() + " (itens=" + itensCount + ")");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -423,7 +451,22 @@ public class VendaPedidoController implements Serializable {
      * Visualiza detalhes de um pedido (para dialog)
      */
     public void visualizarDetalhes(VendaPedido pedido) {
-        this.pedidoSelecionado = pedido;
+        if (pedido == null || pedido.getId() == null) {
+            this.pedidoSelecionado = null;
+            return;
+        }
+        try {
+            VendaPedido recarregado = pedidoService.buscarPorId(pedido.getId()).orElse(pedido);
+            this.pedidoSelecionado = recarregado;
+            // Também define como pedidoAtual para permitir ações de fechamento direto
+            this.pedidoAtual = recarregado;
+            // resetar flags de pagamento
+            this.pagarAgora = false;
+            this.formaPagamento = null;
+        } catch (Exception e) {
+            this.pedidoSelecionado = pedido;
+            this.pedidoAtual = pedido;
+        }
     }
     
     /**
@@ -638,6 +681,18 @@ public class VendaPedidoController implements Serializable {
                 .filter(v -> v != null)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    /**
+     * Valor total de pedidos com status ABERTO (usado no card de totalizadores)
+     */
+    public BigDecimal getTotalPedidosAbertosValor() {
+        if (pedidos == null) return BigDecimal.ZERO;
+        return pedidos.stream()
+                .filter(p -> p.getStatus() == StatusPedido.ABERTO)
+                .map(VendaPedido::getValorTotal)
+                .filter(v -> v != null)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
     
     public BigDecimal getValorTotalGeral() {
         if (pedidos == null) return BigDecimal.ZERO;
@@ -650,5 +705,201 @@ public class VendaPedidoController implements Serializable {
     
     public String getDataExportacao() {
         return new java.text.SimpleDateFormat("yyyy-MM-dd_HHmmss").format(new Date());
+    }
+
+    // ===== GRÁFICOS =====
+
+    /**
+     * Gráfico de pizza: artigos mais vendidos por quantidade
+     */
+    public PieChartModel getGraficoArtigosMaisVendidos() {
+        PieChartModel model = new PieChartModel();
+        ChartData data = new ChartData();
+        PieChartDataSet dataSet = new PieChartDataSet();
+
+        Map<String, Integer> artigosQtd = new HashMap<>();
+        List<VendaPedido> lista = getPedidosFiltrados();
+
+        for (VendaPedido p : lista) {
+            if (p.getStatus() == StatusPedido.CANCELADO || p.getItens() == null) continue;
+            for (VendaItemPedido item : p.getItens()) {
+                String nome = item.getArtigo() != null ? item.getArtigo().getNome() : "Desconhecido";
+                artigosQtd.merge(nome, item.getQuantidade(), Integer::sum);
+            }
+        }
+
+        List<Number> values = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
+        List<String> bgColors = new ArrayList<>();
+        String[] cores = {
+            "rgb(13, 150, 104)", "rgb(5, 150, 105)", "rgb(16, 185, 129)",
+            "rgb(52, 211, 153)", "rgb(124, 58, 237)", "rgb(167, 139, 250)",
+            "rgb(217, 119, 6)", "rgb(251, 191, 36)", "rgb(220, 38, 38)",
+            "rgb(244, 114, 182)"
+        };
+
+        // Ordenar por quantidade decrescente e pegar top 10
+        artigosQtd.entrySet().stream()
+            .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+            .limit(10)
+            .forEach(entry -> {
+                labels.add(entry.getKey());
+                values.add(entry.getValue());
+                bgColors.add(cores[labels.size() - 1 < cores.length ? labels.size() - 1 : 0]);
+            });
+
+        dataSet.setData(values);
+        dataSet.setBackgroundColor(bgColors);
+        data.addChartDataSet(dataSet);
+        data.setLabels(labels);
+        model.setData(data);
+        model.setOptions(new PieChartOptions());
+        return model;
+    }
+
+    /**
+     * Gráfico de barras: receita por forma de pagamento
+     */
+    public BarChartModel getGraficoReceitaPorFormaPagamento() {
+        BarChartModel model = new BarChartModel();
+        ChartData data = new ChartData();
+        BarChartDataSet dataSet = new BarChartDataSet();
+
+        Map<String, BigDecimal> receitaPorForma = new HashMap<>();
+        List<VendaPedido> lista = getPedidosFiltrados();
+
+        for (VendaPedido p : lista) {
+            if (p.getStatus() != StatusPedido.PAGO || p.getFormaPagamento() == null) continue;
+            receitaPorForma.merge(p.getFormaPagamento(), 
+                p.getValorPago() != null ? p.getValorPago() : BigDecimal.ZERO, 
+                BigDecimal::add);
+        }
+
+        List<Number> values = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
+        List<String> bgColors = new ArrayList<>();
+        Map<String, String> formaLabels = new HashMap<>();
+        formaLabels.put("DINHEIRO", "Dinheiro");
+        formaLabels.put("PIX", "PIX");
+        formaLabels.put("DEBITO", "Cartão Débito");
+        formaLabels.put("CREDITO", "Cartão Crédito");
+
+        String[] cores = {
+            "rgba(13, 150, 104, 0.8)", "rgba(5, 150, 105, 0.8)",
+            "rgba(124, 58, 237, 0.8)", "rgba(217, 119, 6, 0.8)"
+        };
+
+        int i = 0;
+        for (Map.Entry<String, BigDecimal> entry : receitaPorForma.entrySet()) {
+            labels.add(formaLabels.getOrDefault(entry.getKey(), entry.getKey()));
+            values.add(entry.getValue());
+            bgColors.add(cores[i % cores.length]);
+            i++;
+        }
+
+        dataSet.setData(values);
+        dataSet.setLabel("Receita (R$)");
+        dataSet.setBackgroundColor(bgColors);
+        data.addChartDataSet(dataSet);
+        data.setLabels(labels);
+        model.setData(data);
+        model.setOptions(new BarChartOptions());
+        return model;
+    }
+
+    /**
+     * Gráfico de pizza: distribuição de pedidos por status
+     */
+    public PieChartModel getGraficoPedidosPorStatus() {
+        PieChartModel model = new PieChartModel();
+        ChartData data = new ChartData();
+        PieChartDataSet dataSet = new PieChartDataSet();
+
+        Map<String, Integer> statusCount = new HashMap<>();
+        List<VendaPedido> lista = getPedidosFiltrados();
+
+        for (VendaPedido p : lista) {
+            if (p.getStatus() == null) continue;
+            statusCount.merge(p.getStatus().getDescricao(), 1, Integer::sum);
+        }
+
+        List<Number> values = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
+        List<String> bgColors = new ArrayList<>();
+        Map<String, String> statusCores = new HashMap<>();
+        statusCores.put("Aberto", "rgb(59, 130, 246)");
+        statusCores.put("Aguardando Pagamento", "rgb(217, 119, 6)");
+        statusCores.put("Pago", "rgb(13, 150, 104)");
+        statusCores.put("Cancelado", "rgb(220, 38, 38)");
+
+        for (Map.Entry<String, Integer> entry : statusCount.entrySet()) {
+            labels.add(entry.getKey());
+            values.add(entry.getValue());
+            bgColors.add(statusCores.getOrDefault(entry.getKey(), "rgb(108, 117, 125)"));
+        }
+
+        dataSet.setData(values);
+        dataSet.setBackgroundColor(bgColors);
+        data.addChartDataSet(dataSet);
+        data.setLabels(labels);
+        model.setData(data);
+        model.setOptions(new PieChartOptions());
+        return model;
+    }
+
+    /**
+     * Gráfico de barras: quantidade e valor vendido por categoria
+     */
+    public BarChartModel getGraficoVendaPorCategoria() {
+        BarChartModel model = new BarChartModel();
+        ChartData data = new ChartData();
+
+        Map<String, Integer> qtdPorCategoria = new HashMap<>();
+        Map<String, java.math.BigDecimal> valorPorCategoria = new HashMap<>();
+        List<VendaPedido> lista = getPedidosFiltrados();
+
+        for (VendaPedido p : lista) {
+            if (p.getStatus() == StatusPedido.CANCELADO || p.getItens() == null) continue;
+            for (VendaItemPedido item : p.getItens()) {
+                String categoria = (item.getArtigo() != null && item.getArtigo().getCategoria() != null)
+                        ? item.getArtigo().getCategoria() : "Sem Categoria";
+                qtdPorCategoria.merge(categoria, item.getQuantidade(), Integer::sum);
+                java.math.BigDecimal valorItem = item.getValorTotalItem() != null ? item.getValorTotalItem() : java.math.BigDecimal.ZERO;
+                valorPorCategoria.merge(categoria, valorItem, java.math.BigDecimal::add);
+            }
+        }
+
+        // Ordenar categorias por valor total decrescente e limitar a top 10
+        List<String> categorias = valorPorCategoria.entrySet().stream()
+            .sorted(Map.Entry.<String, java.math.BigDecimal>comparingByValue().reversed())
+            .limit(10)
+            .map(Map.Entry::getKey)
+            .collect(java.util.stream.Collectors.toList());
+
+        List<Number> valoresQtd = new ArrayList<>();
+        List<Number> valoresValor = new ArrayList<>();
+
+        for (String cat : categorias) {
+            valoresQtd.add(qtdPorCategoria.getOrDefault(cat, 0));
+            valoresValor.add(valorPorCategoria.getOrDefault(cat, java.math.BigDecimal.ZERO));
+        }
+
+        BarChartDataSet dsQtd = new BarChartDataSet();
+        dsQtd.setLabel("Quantidade");
+        dsQtd.setBackgroundColor("rgba(59,130,246,0.8)");
+        dsQtd.setData(valoresQtd);
+
+        BarChartDataSet dsValor = new BarChartDataSet();
+        dsValor.setLabel("Valor (R$)");
+        dsValor.setBackgroundColor("rgba(16,185,129,0.8)");
+        dsValor.setData(valoresValor);
+
+        data.addChartDataSet(dsQtd);
+        data.addChartDataSet(dsValor);
+        data.setLabels(categorias);
+
+        model.setData(data);
+        model.setOptions(new BarChartOptions());
+        return model;
     }
 }

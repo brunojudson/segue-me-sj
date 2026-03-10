@@ -254,6 +254,25 @@
 		</div>
 	</div>
 	
+	<!-- Destaca item ativo e posiciona o menu sem piscada -->
+	<script>
+		(function() {
+			try {
+				var currentPath = window.location.pathname;
+				var links = document.querySelectorAll('.menu-link');
+				for (var i = 0; i &lt; links.length; i++) {
+					var href = links[i].getAttribute('href');
+					if (href &amp;&amp; currentPath.indexOf(href.replace(/^.*\/pages/, '/pages')) !== -1) {
+						links[i].classList.add('active');
+						// Scroll o item ativo para a área visível do menu sem animação
+						links[i].scrollIntoView({ block: 'center', behavior: 'instant' });
+						break;
+					}
+				}
+			} catch (e) { /* ignore */ }
+		})();
+	</script>
+
 	<h:outputScript>
 		// Menu mobile — Angular sidebar pattern
 		function toggleMenu() {
@@ -328,56 +347,21 @@
 		
 		// Configura eventos quando o DOM estiver carregado
 		document.addEventListener('DOMContentLoaded', function() {
-			// Fecha menu mobile ao clicar num link e salva posição do scroll do menu
+			// Fecha menu mobile ao clicar num link
 			var menuLinks = document.querySelectorAll('.menu-link');
-			var mainNav = document.getElementById('main-navigation');
-			function saveMenuScroll() {
-				try {
-					if (mainNav) sessionStorage.setItem('sm_menu_scrollTop', String(mainNav.scrollTop));
-				} catch (e) { /* ignore storage errors */ }
-			}
 			menuLinks.forEach(function(link) {
-				// salvar em eventos de interação (mousedown/touchstart) para garantir antes da navegação
-				link.addEventListener('mousedown', saveMenuScroll);
-				link.addEventListener('touchstart', saveMenuScroll);
 				link.addEventListener('click', function() {
 					if (window.innerWidth &lt;= 768) {
 						closeMenu();
 					}
-					// também salvar como fallback no click
-					saveMenuScroll();
 				});
 			});
-
-			// Restaura posição do menu ao carregar a página (se houver)
-			try {
-				var stored = sessionStorage.getItem('sm_menu_scrollTop');
-				if (stored &amp;&amp; mainNav) {
-					mainNav.scrollTop = parseInt(stored, 10) || 0;
-				}
-			} catch (e) { /* ignore storage errors */ }
 
 			// Calcula a altura real do header para CSS
 			var header = document.getElementById('header');
 			if (header) {
 				document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
 			}
-
-			highlightCurrentPage();
 		});
-		
-		function highlightCurrentPage() {
-			var currentPath = window.location.pathname;
-			var menuLinks = document.querySelectorAll('.menu-link');
-			
-			menuLinks.forEach(function(link) {
-				link.classList.remove('active');
-				var href = link.getAttribute('href');
-				
-				if (href &amp;&amp; currentPath.indexOf(href.replace(/^.*\/pages/, '/pages')) !== -1) {
-					link.classList.add('active');
-				}
-			});
-		}
 	</h:outputScript>
 </ui:composition>

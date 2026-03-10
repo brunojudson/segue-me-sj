@@ -34,7 +34,17 @@
             </div>
 
             <h:form id="artigosForm" prependId="false">
-                <p:growl id="messages" showDetail="true" closable="true" />
+                <!-- Barra de ações e estatísticas -->
+                <div class="actions-bar">
+                    <div class="action-group">
+                        <div class="stats-card">
+                            <i class="pi pi-chart-bar"></i> <span class="stats-number">#{vendaArtigoController.artigos.size()}</span>
+                            <span>artigo(s) cadastrado(s)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <p:growl id="messages" showDetail="true" closable="true" styleClass="modern-messages" />
 
                 <!-- Tabela moderna de artigos -->
                 <p:dataTable id="artigosTable" var="artigo"
@@ -62,7 +72,7 @@
                         filterBy="#{artigo.nome}" filterMatchMode="contains"
                         styleClass="text-left" width="30%" responsivePriority="1">
                         <div class="worker-info">
-                            <div class="worker-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <div class="worker-avatar">
                                 <i class="pi pi-shopping-bag"></i>
                             </div>
                             <div>
