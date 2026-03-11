@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -136,6 +138,9 @@ public class VendaPedidoController implements Serializable {
             try {
                 pedidosAbertos = pedidoService.buscarAbertosPorEncontro(encontroSelecionadoId);
                 pedidosAguardandoPagamento = pedidoService.buscarAguardoPagamentoPorEncontro(encontroSelecionadoId);
+                // Ordena por prioridade de status (ABERTO primeiro)
+                sortPedidosByStatus(pedidosAbertos);
+                sortPedidosByStatus(pedidosAguardandoPagamento);
             } catch (Exception e) {
                 addErrorMessage("Erro ao carregar pedidos: " + e.getMessage());
             }
@@ -162,7 +167,7 @@ public class VendaPedidoController implements Serializable {
     public void iniciarNovaVenda() {
         try {
             // diagnóstico rápido para ajudar na depuração em tempo de execução
-            addInfoMessage("Iniciando fluxo de nova venda (debug)...");
+            //addInfoMessage("Iniciando fluxo de nova venda (debug)...");
             if (encontroSelecionadoId == null) {
                 addWarnMessage("Selecione um encontro para iniciar a venda");
                 return;
@@ -296,11 +301,13 @@ public class VendaPedidoController implements Serializable {
                 formaPagamento
             );
             
-            String mensagem = pagarAgora ? 
-                "Pedido fechado e pago com sucesso!" : 
+            String mensagem = pagarAgora ?
+                "Pedido fechado e pago com sucesso!" :
                 "Pedido fechado. Aguardando pagamento.";
             addInfoMessage(mensagem);
-            
+
+            // Atualiza listas exibidas nas telas: reexecuta filtro atual e recarrega listas abertas
+            filtrarPedidos();
             carregarPedidosAbertosPorEncontro();
             limpar();
             
@@ -524,8 +531,44 @@ public class VendaPedidoController implements Serializable {
             } else {
                 carregarListas();
             }
+            // Ordenar resultados dando preferência a pedidos com status ABERTO
+            sortPedidosByStatus(pedidos);
         } catch (Exception e) {
             addErrorMessage("Erro ao filtrar pedidos: " + e.getMessage());
+        }
+    }
+
+    /** Ordena a lista de pedidos por prioridade de status (ABERTO primeiro). */
+    private void sortPedidosByStatus(List<VendaPedido> lista) {
+        if (lista == null) return;
+        Comparator<VendaPedido> cmp = Comparator.comparingInt((VendaPedido p) -> statusPriority(p != null ? p.getStatus() : null));
+        cmp = cmp.thenComparing((VendaPedido a, VendaPedido b) -> {
+            long ta = Long.MIN_VALUE;
+            long tb = Long.MIN_VALUE;
+            if (a != null && a.getDataAbertura() != null) {
+                ta = a.getDataAbertura().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+            }
+            if (b != null && b.getDataAbertura() != null) {
+                tb = b.getDataAbertura().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+            }
+            // ordenar por data decrescente (mais recentes primeiro)
+            return Long.compare(tb, ta);
+        });
+        try {
+            Collections.sort(lista, cmp);
+        } catch (Exception e) {
+            // silencioso: não bloquear fluxo por erro de ordenação
+        }
+    }
+
+    private int statusPriority(StatusPedido s) {
+        if (s == null) return 5;
+        switch (s) {
+            case ABERTO: return 1;
+            case AGUARDO_PAGAMENTO: return 2;
+            case PAGO: return 3;
+            case CANCELADO: return 4;
+            default: return 5;
         }
     }
 

@@ -225,7 +225,8 @@
                     
                     <p:dataTable id="tblContasAbertas" value="#{vendaPedidoController.pedidosAbertos}" 
                                  var="pedido" emptyMessage="Nenhuma conta aberta"
-                                 paginator="true" rows="10" paginatorPosition="bottom"
+                                 paginator="true" rows="20" paginatorPosition="bottom"
+                                 scrollHeight="480"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
                                  rowsPerPageTemplate="10,20,50"
@@ -279,23 +280,19 @@
                         <p:column headerText="Ações" width="18%" styleClass="text-center" responsivePriority="1">
                             <div class="table-action-buttons">
                                 <p:commandButton icon="pi pi-pencil" title="Editar pedido" 
-                                                 actionListener="#{vendaPedidoController.selecionarPedidoPorIdAction}"
+                                                 action="#{vendaPedidoController.selecionarPedidoPorId(pedido.id)}"
                                                  process="@this"
                                                  update="pnlNovaVenda pnlItens growl"
                                                  oncomplete="if (!args || !args.validationFailed) {setTimeout(function(){var el=document.getElementById('artigo_input'); if(el) el.focus();},50);}"
-                                                 styleClass="action-button-warn-table action-btn">
-                                    <f:setPropertyActionListener target="#{vendaPedidoController.pedidoIdToSelect}" value="#{pedido.id}" />
-                                </p:commandButton>
+                                                 styleClass="action-button-warn-table action-btn" />
 
-                                <p:commandButton icon="pi pi-lock" title="Fechar pedido"
-                                                 actionListener="#{vendaPedidoController.selecionarPedidoPorIdAction}"
+                                <p:commandButton icon="pi pi-check-circle" title="Fechar pedido"
+                                                 action="#{vendaPedidoController.selecionarPedidoPorId(pedido.id)}"
                                                  process="@this"
-                                                 update="pnlNovaVenda pnlItens growl"
+                                                 update="pnlNovaVenda pnlItens growl dlgFecharPedido"
                                                  oncomplete="PF('dlgFecharPedido').show()"
                                                  styleClass="action-button-primary action-btn"
-                                                 rendered="#{not empty pedido.itens}">
-                                    <f:setPropertyActionListener target="#{vendaPedidoController.pedidoIdToSelect}" value="#{pedido.id}" />
-                                </p:commandButton>
+                                                 rendered="#{not empty pedido.itens}" />
                                 
                                 <p:commandButton icon="pi pi-times" title="Cancelar pedido" 
                                                  actionListener="#{vendaPedidoController.cancelarPedido(pedido.id)}"
@@ -315,7 +312,7 @@
                 </p:fieldset>
                 
                 <!-- Painel: Pedidos Aguardando Pagamento -->
-<h:panelGroup id="pnlAguardandoPagamento">
+            <h:panelGroup id="pnlAguardandoPagamento">
                 <p:fieldset legend="💳 Pedidos Aguardando Pagamento" toggleable="true" collapsed="true" 
                             styleClass="modern-fieldset"
                             rendered="#{vendaPedidoController.encontroSelecionadoId != null and not empty vendaPedidoController.pedidosAguardandoPagamento}">
@@ -383,24 +380,25 @@
                             <p:separator />
                             
                             <div class="info-item" style="padding: 0.5rem 0;">
-                                <p:selectBooleanCheckbox id="pagarAgora" value="#{vendaPedidoController.pagarAgora}">
-                                    <p:ajax update="pnlPagamento" />
-                                </p:selectBooleanCheckbox>
-                                <label for="pagarAgora" style="margin-left: 0.5rem; font-weight: 600; cursor: pointer;">
-                                    Receber pagamento agora
-                                </label>
+                                        <div class="checkbox-container">
+                                            <p:selectBooleanCheckbox id="pagarAgora" value="#{vendaPedidoController.pagarAgora}">
+                                                <p:ajax update="pnlPagamento" />
+                                            </p:selectBooleanCheckbox>
+                                            <label for="pagarAgora" class="checkbox-label">Receber pagamento agora</label>
+                                        </div>
                             </div>
                             
                             <h:panelGroup id="pnlPagamento" style="#{not vendaPedidoController.pagarAgora ? 'display:none;' : ''}">
                                 <div class="info-item" style="margin-top: 1rem;">
                                     <label for="formaPagamento">Forma de Pagamento: *</label>
-                                    <p:selectOneMenu id="formaPagamento" value="#{vendaPedidoController.formaPagamento}" required="true">
+                                    <p:selectOneMenu id="formaPagamento" value="#{vendaPedidoController.formaPagamento}" required="#{vendaPedidoController.pagarAgora}">
                                         <f:selectItem itemLabel="-- Selecione a forma de pagamento --" itemValue="#{null}" />
                                         <f:selectItem itemLabel="💵 Dinheiro" itemValue="DINHEIRO" />
                                         <f:selectItem itemLabel="📱 PIX" itemValue="PIX" />
                                         <f:selectItem itemLabel="💳 Cartão de Débito" itemValue="DEBITO" />
                                         <f:selectItem itemLabel="💳 Cartão de Crédito" itemValue="CREDITO" />
                                     </p:selectOneMenu>
+                                    <p:message for="formaPagamento" />
                                 </div>
                             </h:panelGroup>
                         </div>
@@ -411,7 +409,8 @@
                             <p:commandButton value="Confirmar" icon="pi pi-check" 
                                              actionListener="#{vendaPedidoController.fecharPedido}"
                                              process="@this pagarAgora formaPagamento"
-                                             update="@form" oncomplete="if (!args.validationFailed) PF('dlgFecharPedido').hide();"
+                                             update="growl tblContasAbertas tblAguardandoPagamento pnlNovaVenda pnlItens"
+                                             oncomplete="if (!args.validationFailed) PF('dlgFecharPedido').hide();"
                                              styleClass="action-button-primary" />
                             
                             <p:commandButton value="Cancelar" icon="pi pi-times" 

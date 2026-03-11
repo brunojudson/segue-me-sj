@@ -82,4 +82,11 @@ public interface VendaArtigoRepository {
      * @return Lista de categorias
      */
     List<String> findAllCategorias();
+
+    /**
+     * Retorna o maior sufixo numérico já usado para códigos que começam com o prefixo informado.
+     * Ex.: para prefixo 'CAT' retorna 12 se já existirem CAT001..CAT012.
+     * Retorna null se não houver nenhum registro.
+     */
+    Integer findMaxSuffixForPrefix(String prefix);
 }

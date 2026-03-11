@@ -110,4 +110,7 @@ public interface VendaPedidoRepository {
      * @return true se removido com sucesso, false caso contrário
      */
     boolean delete(Long id);
+
+    /** Remove um item de pedido pelo ID do item (operação direta no DB) */
+    void deleteItemById(Long itemId);
 }

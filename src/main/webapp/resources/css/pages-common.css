@@ -54,7 +54,7 @@ body.dark-mode {
    ══════════════════════════════════════════════════════════════════════ */
 
 .compact-content {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
 }
 .compact-content .modern-form,
 .compact-content .form-section,
@@ -65,17 +65,17 @@ body.dark-mode {
 .compact-content .ui-messages,
 .compact-content .ui-datatable,
 .compact-content .ui-fileupload {
-    font-size: 0.88rem !important;
-    padding: 0.4rem 0.7rem !important;
+    font-size: 0.82rem !important;
+    padding: 0.34rem 0.62rem !important;
 }
 .compact-content .page-title {
-    font-size: 1.25rem !important;
+    font-size: 1.15rem !important;
 }
 .compact-content .page-subtitle {
-    font-size: 0.92rem !important;
+    font-size: 0.86rem !important;
 }
 .compact-content .ui-selectonemenu .ui-selectonemenu-label {
-    padding: 0.4rem 0.7rem !important;
+    padding: 0.34rem 0.62rem !important;
 }
 .compact-content .ui-button {
     min-height: 30px !important;
@@ -998,6 +998,17 @@ body.dark-mode {
     color: var(--sm-text);
 }
 
+/* Espaçamento entre fieldsets para melhorar legibilidade */
+.modern-fieldset {
+    margin-bottom: 0.75rem !important;
+}
+
+/* Regra mais específica para PrimeFaces fieldset renderizado (.ui-fieldset) */
+.ui-fieldset.modern-fieldset,
+.modern-fieldset.ui-fieldset {
+    display: block !important;
+    margin-bottom: 0.75rem !important;
+}
 /* ══════════════════════════════════════════════════════════════════════
    EQUIPE CARDS — Matching Angular equipe-cards pattern
    ══════════════════════════════════════════════════════════════════════ */

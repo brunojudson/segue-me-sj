@@ -131,6 +131,26 @@ public class VendaArtigoService implements Serializable {
     public List<String> listarCategorias() {
         return artigoRepository.findAllCategorias();
     }
+
+    /**
+     * Gera o próximo código com o prefixo informado usando sequência incremental por categoria.
+     * Formato retornado: PREFIX + 3 dígitos (ex: CAT001).
+     */
+    public String gerarCodigoComPrefixo(String prefix) {
+        if (prefix == null || prefix.trim().isEmpty()) {
+            prefix = "ART";
+        }
+        Integer max = artigoRepository.findMaxSuffixForPrefix(prefix);
+        int next = (max == null) ? 1 : (max + 1);
+        // Gera candidato e valida se já existe (proteção contra corrida)
+        for (int i = 0; i < 1000; i++) {
+            String candidate = prefix + String.format("%03d", next + i);
+            if (!artigoRepository.findByCodigo(candidate).isPresent()) {
+                return candidate;
+            }
+        }
+        throw new IllegalStateException("Não foi possível gerar código único para prefixo: " + prefix);
+    }
     
     /**
      * Ativa um artigo

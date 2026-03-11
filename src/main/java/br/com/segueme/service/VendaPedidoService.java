@@ -159,10 +159,19 @@ public class VendaPedidoService implements Serializable {
             throw new IllegalArgumentException("Valor unitário não pode ser negativo");
         }
         
+        // Verificar estoque disponível antes de adicionar
+        if (artigo.getEstoqueAtual() != null && artigo.getEstoqueAtual() < quantidade) {
+            throw new IllegalStateException("Estoque insuficiente para o artigo: " + artigo.getNome());
+        }
+
         // Criar item e adicionar ao pedido
         VendaItemPedido item = new VendaItemPedido(pedido, artigo, quantidade, valorUnit);
         pedido.adicionarItem(item);
-        
+
+        // Debitar estoque do artigo e persistir alteração
+        artigo.debitarEstoque(quantidade);
+        artigoService.atualizar(artigo);
+
         // Atualizar pedido (o valor total será recalculado pelo trigger do banco)
         pedidoRepository.update(pedido);
         
@@ -203,7 +212,17 @@ public class VendaPedidoService implements Serializable {
         }
         
         pedido.removerItem(itemRemover);
+
+        // Creditar estoque do artigo removido
+        VendaArtigo artigoRem = itemRemover.getArtigo();
+        if (artigoRem != null) {
+            artigoRem.creditarEstoque(itemRemover.getQuantidade());
+            artigoService.atualizar(artigoRem);
+        }
+
+        // Atualiza pedido e garante remoção do item no DB (caso orphanRemoval não tenha funcionado)
         pedidoRepository.update(pedido);
+        pedidoRepository.deleteItemById(itemId);
         
         // Recarregar pedido com todas as associações inicializadas via JOIN FETCH
         return pedidoRepository.findById(pedidoId).orElse(pedido);
@@ -327,8 +346,17 @@ public class VendaPedidoService implements Serializable {
         }
         
         VendaPedido pedido = optPedido.get();
+        // Ao cancelar, devolver itens ao estoque
+        for (VendaItemPedido item : pedido.getItens()) {
+            VendaArtigo art = item.getArtigo();
+            if (art != null && item.getQuantidade() != null && item.getQuantidade() > 0) {
+                art.creditarEstoque(item.getQuantidade());
+                artigoService.atualizar(art);
+            }
+        }
+
         pedido.cancelar();
-        
+
         pedidoRepository.update(pedido);
         
         // Recarregar pedido com todas as associações inicializadas via JOIN FETCH

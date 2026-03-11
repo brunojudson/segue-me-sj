@@ -179,6 +179,7 @@
             <h:form id="dlgArtigoForm" prependId="false">
                 <p:dialog id="dlgArtigo" widgetVar="dlgArtigo"
                     header="#{vendaArtigoController.artigo.id == null ? 'Novo Artigo': 'Editar Artigo'}"
+                    onShow="PrimeFaces.focus('nome')"
                     styleClass="detalhes-pessoa-dialog" 
                     modal="true" 
                     responsive="true"
@@ -199,7 +200,7 @@
                                     <div class="info-item">
                                         <label for="codigo">Código:</label>
                                         <p:inputText id="codigo" value="#{vendaArtigoController.artigo.codigo}"
-                                            placeholder="Ex: ART001" maxlength="50" />
+                                            placeholder="Ex: ART001" maxlength="50" disabled="true" />
                                     </div>
                                     
                                     <div class="info-item">
@@ -213,6 +214,8 @@
                                         <p:selectOneMenu id="categoria" value="#{vendaArtigoController.artigo.categoria}">
                                             <f:selectItem itemLabel="Selecione..." itemValue="#{null}" />
                                             <f:selectItems value="#{vendaArtigoController.categorias}" />
+                                            <p:ajax event="change" listener="#{vendaArtigoController.atualizarCodigo}"
+                                                update="codigo" />
                                         </p:selectOneMenu>
                                     </div>
                                     

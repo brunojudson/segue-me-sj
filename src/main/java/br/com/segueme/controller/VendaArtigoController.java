@@ -11,6 +11,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import br.com.segueme.entity.VendaArtigo;
+import br.com.segueme.entity.CategoriaArtigo;
+import java.text.Normalizer;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import br.com.segueme.service.VendaArtigoService;
 
 /**
@@ -51,7 +55,10 @@ public class VendaArtigoController implements Serializable {
     
     public void carregarCategorias() {
         try {
-            categorias = artigoService.listarCategorias();
+            // Carrega categorias a partir do enum CategoriaArtigo
+            categorias = Arrays.stream(CategoriaArtigo.values())
+                    .map(CategoriaArtigo::getDescricao)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             addErrorMessage("Erro ao carregar categorias: " + e.getMessage());
         }
@@ -135,6 +142,30 @@ public class VendaArtigoController implements Serializable {
 
     public void prepararNovo() {
         limpar();
+    }
+
+    /**
+     * Atualiza o código do artigo a partir da categoria selecionada.
+     * Será invocado via AJAX quando o usuário escolher a categoria.
+     */
+    public void atualizarCodigo() {
+        if (artigo == null || artigo.getCategoria() == null) return;
+        String prefix = gerarPrefixo(artigo.getCategoria());
+        String novoCodigo = artigoService.gerarCodigoComPrefixo(prefix);
+        artigo.setCodigo(novoCodigo);
+    }
+
+    private String gerarPrefixo(String categoria) {
+        if (categoria == null) return "ART";
+        // Remove acentos e caracteres não alfabéticos
+        String normalized = Normalizer.normalize(categoria, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        normalized = normalized.replaceAll("[^A-Za-z]", "");
+        if (normalized.length() >= 3) {
+            return normalized.substring(0, 3).toUpperCase();
+        } else {
+            return (normalized + "ART").substring(0, 3).toUpperCase();
+        }
     }
 
     public void prepararEdicao(VendaArtigo artigo) {

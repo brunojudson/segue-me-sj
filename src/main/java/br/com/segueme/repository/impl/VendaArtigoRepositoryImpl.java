@@ -118,4 +118,27 @@ public class VendaArtigoRepositoryImpl implements VendaArtigoRepository {
                 String.class)
                 .getResultList();
     }
+
+    @Override
+    public Integer findMaxSuffixForPrefix(String prefix) {
+        try {
+                    // Usa substring com regex para extrair dígitos no final do código
+                    // substring(text from pattern) não é set-returning, evita erro de aggregate sobre set-returning
+                    String sql = "SELECT MAX(CAST(substring(codigo from '[0-9]+$') AS integer)) FROM venda_artigo WHERE codigo LIKE :likePattern";
+                    Object result = entityManager.createNativeQuery(sql)
+                        .setParameter("likePattern", prefix + "%")
+                        .getSingleResult();
+            if (result == null) return null;
+            if (result instanceof Number) {
+                return ((Number) result).intValue();
+            }
+            try {
+                return Integer.valueOf(result.toString());
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

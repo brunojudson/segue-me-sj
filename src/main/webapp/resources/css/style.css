@@ -2701,6 +2701,13 @@ body.dark-mode .ui-datatable .ui-datatable-data > tr .datetime-display {
     justify-content: flex-end;
 }
 
+/* Responsive field grid used in several pages (fallback for inline grid) */
+.field-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
 .field-group {
     display: flex;
     flex-direction: column;

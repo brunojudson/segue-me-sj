@@ -28,7 +28,9 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
 
     @Override
     public VendaPedido update(VendaPedido pedido) {
-        return entityManager.merge(pedido);
+        VendaPedido merged = entityManager.merge(pedido);
+        entityManager.flush();
+        return merged;
     }
 
     @Override
@@ -246,5 +248,15 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void deleteItemById(Long itemId) {
+        if (itemId == null) return;
+        // Deleta diretamente a linha da tabela de itens para garantir remoção
+        entityManager.createQuery("DELETE FROM VendaItemPedido i WHERE i.id = :id")
+            .setParameter("id", itemId)
+            .executeUpdate();
+        entityManager.flush();
     }
 }

@@ -75,7 +75,7 @@
             </p:fieldset>
                 
                 <!-- Dashboard de Totalizadores -->
-                <p:fieldset id="pnlTotalizadores" legend="📊 Totalizadores" toggleable="true" collapsed="false" 
+                <p:fieldset id="pnlTotalizadores" legend="📊 Totalizadores" toggleable="true" collapsed="true" 
                             styleClass="modern-fieldset" style="margin-top: 1.5rem;">
                     <div class="dash-stats-grid">
                         <div class="dash-stat-card">
@@ -167,7 +167,7 @@
                 
                 <!-- Tabela Moderna de Pedidos -->
                 <p:fieldset legend="📑 Lista de Pedidos" toggleable="true" collapsed="false" 
-                            styleClass="modern-fieldset" style="margin-top: 1.5rem;">
+                            styleClass="modern-fieldset" style="margin-top: 1.5rem; min-height:520px;">
                     <p:dataTable id="tblPedidos" value="#{vendaPedidoController.pedidosFiltrados}" 
                                  var="pedido" emptyMessage="Nenhum pedido encontrado com os filtros especificados"
                                  paginator="true" rows="20" paginatorPosition="bottom"
@@ -243,6 +243,7 @@
                                 <p:commandButton icon="pi pi-eye" title="Ver detalhes do pedido"
                                                  ariaLabel="Ver detalhes" 
                                                  actionListener="#{vendaPedidoController.visualizarDetalhes(pedido)}"
+                                                 process="@this"
                                                  update="dlgDetalhesContent"
                                                  oncomplete="PF('dlgDetalhes').show()"
                                                  styleClass="action-button-secondary-table action-btn" />
@@ -250,7 +251,8 @@
                                 <p:commandButton icon="pi pi-check-circle" title="Fechar pedido"
                                                  ariaLabel="Fechar pedido"
                                                  actionListener="#{vendaPedidoController.selecionarPedido(pedido)}"
-                                                 update="dlgFecharPedidoConsulta"
+                                                 process="@this"
+                                                 update="dlgFecharPedidoConsultaContent dlgFecharPedidoConsulta"
                                                  oncomplete="PF('dlgFecharPedidoConsulta').show()"
                                                  styleClass="action-button-primary-table action-btn"
                                                  rendered="#{pedido.status == 'ABERTO'}" />
@@ -427,7 +429,7 @@
                 
                 <!-- Dialog para fechar pedido (na tela de consulta) -->
                 <p:dialog id="dlgFecharPedidoConsulta" header="Fechar Pedido" widgetVar="dlgFecharPedidoConsulta" 
-                          modal="true" responsive="true" width="520" closeOnEscape="true" dynamic="true">
+                          modal="true" responsive="true" width="520" closeOnEscape="true" dynamic="false">
                     <h:panelGroup id="dlgFecharPedidoConsultaContent" rendered="#{vendaPedidoController.pedidoAtual != null}">
                         <div style="padding: 1rem;">
                             <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
@@ -467,11 +469,11 @@
                     <f:facet name="footer">
                         <div class="dialog-footer-actions">
                             <p:commandButton value="Confirmar" icon="pi pi-check" 
-                                             actionListener="#{vendaPedidoController.fecharPedido}"
-                                             process="@this pagarAgoraConsulta formaPagamentoConsulta"
-                                             update="@form" 
-                                             oncomplete="if (!args.validationFailed) PF('dlgFecharPedidoConsulta').hide();"
-                                             styleClass="action-button-primary" />
+                                                 actionListener="#{vendaPedidoController.fecharPedido}"
+                                                 process="@this pagarAgoraConsulta formaPagamentoConsulta"
+                                                 update=":globalMessages tblPedidos pnlTotalizadores pnlGraficos"
+                                                 oncomplete="if (!args.validationFailed) PF('dlgFecharPedidoConsulta').hide();"
+                                                 styleClass="action-button-primary" />
                             <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlgFecharPedidoConsulta').hide(); return false;" styleClass="action-button-secondary" />
                         </div>
                     </f:facet>
