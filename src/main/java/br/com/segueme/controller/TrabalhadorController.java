@@ -25,6 +25,7 @@ import br.com.segueme.service.TrabalhadorService;
 import java.util.stream.Collectors;
 import java.text.Normalizer;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 @Named
 @ViewScoped
@@ -47,6 +48,8 @@ public class TrabalhadorController implements Serializable {
 	@Inject
 	private EncontristaService encontristaService;
 
+    private static final Logger logger = Logger.getLogger(TrabalhadorController.class.getName());
+
 	private List<Trabalhador> trabalhadores;
 	private Trabalhador trabalhador;
 	private Trabalhador trabalhadorSelecionado;
@@ -56,13 +59,94 @@ public class TrabalhadorController implements Serializable {
 	private List<Equipe> equipes;
 	private List<Encontro> encontros;
 
+
+	// Filtros para a tabela
+	private String filtroNome;
+	private Equipe filtroEquipe;
+	private Encontro filtroEncontro;
+	// IDs para evitar necessidade de converters em selects
+	private Long filtroEquipeId;
+	private Long filtroEncontroId;
+	private Boolean filtroAptoParaPalestrar = null;
+	private Boolean filtroAptoParaCoordenar = null;
+
 	@PostConstruct
 	public void init() {
-		carregarTrabalhadores();
 		carregarPessoas();
 		carregarEquipes();
 		carregarEncontros();
 		limpar();
+		// Não carregar a lista completa ao abrir a página — aguardar filtros
+		this.trabalhadores = java.util.Collections.emptyList();
+	}
+
+	// Limpa filtros e recarrega todos
+	public void limparFiltros() {
+		filtroNome = null;
+		filtroEquipe = null;
+		filtroEncontro = null;
+		filtroEquipeId = null;
+		filtroEncontroId = null;
+		filtroAptoParaPalestrar = null;
+		filtroAptoParaCoordenar = null;
+		// limpar lista exibida
+		this.trabalhadores = java.util.Collections.emptyList();
+	}
+
+	// Aplica filtros à lista de trabalhadores
+	public void aplicarFiltros() {
+		boolean filtroSelecionado =
+			(filtroNome != null && !filtroNome.trim().isEmpty()) ||
+			(filtroEquipeId != null) ||
+			(filtroEncontroId != null) ||
+			(filtroAptoParaPalestrar != null && filtroAptoParaPalestrar) ||
+			(filtroAptoParaCoordenar != null && filtroAptoParaCoordenar);
+
+		if (!filtroSelecionado) {
+			this.trabalhadores = java.util.Collections.emptyList();
+			FacesContext.getCurrentInstance().addMessage(null,
+				new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", "Selecione ao menos um filtro antes de pesquisar."));
+			return;
+		}
+
+		// Use serviço com query otimizada se disponível
+		try {
+			this.trabalhadores = trabalhadorService.buscarPorFiltros(
+				filtroNome,
+				filtroEquipeId,
+				filtroEncontroId,
+				filtroAptoParaPalestrar,
+				filtroAptoParaCoordenar);
+		} catch (Exception e) {
+			// Fallback para filtragem em memória caso o serviço falhe
+			List<Trabalhador> filtrados = trabalhadorService.buscarTodos();
+			if (filtroNome != null && !filtroNome.trim().isEmpty()) {
+				filtrados = filtrados.stream()
+					.filter(t -> t.getPessoa() != null && t.getPessoa().getNome() != null && t.getPessoa().getNome().toLowerCase().contains(filtroNome.toLowerCase()))
+					.collect(java.util.stream.Collectors.toList());
+			}
+			if (filtroEquipeId != null) {
+				filtrados = filtrados.stream()
+					.filter(t -> t.getEquipe() != null && Objects.equals(t.getEquipe().getId(), filtroEquipeId))
+					.collect(java.util.stream.Collectors.toList());
+			}
+			if (filtroEncontroId != null) {
+				filtrados = filtrados.stream()
+					.filter(t -> t.getEncontro() != null && Objects.equals(t.getEncontro().getId(), filtroEncontroId))
+					.collect(java.util.stream.Collectors.toList());
+			}
+			if (filtroAptoParaPalestrar != null && filtroAptoParaPalestrar) {
+				filtrados = filtrados.stream()
+					.filter(t -> Boolean.TRUE.equals(t.getAptoParaPalestrar()))
+					.collect(java.util.stream.Collectors.toList());
+			}
+			if (filtroAptoParaCoordenar != null && filtroAptoParaCoordenar) {
+				filtrados = filtrados.stream()
+					.filter(t -> Boolean.TRUE.equals(t.getAptoParaCoordenar()))
+					.collect(java.util.stream.Collectors.toList());
+			}
+			this.trabalhadores = filtrados;
+		}
 	}
 
 	public void carregarTrabalhadores() {
@@ -80,11 +164,30 @@ public class TrabalhadorController implements Serializable {
 	}
 
 	public void carregarEquipes() {
+		// Carrega equipes ativas por padrão
 		equipes = equipeService.buscarAtivas();
 	}
 
 	public void carregarEncontros() {
-		encontros = encontroService.buscarAtivos();
+		// Carrega todos encontros (ativos e inativos) conforme solicitado
+		encontros = encontroService.buscarTodos();
+	}
+
+	/**
+	 * Carrega as equipes vinculadas ao encontro selecionado nos filtros.
+	 * Se nenhum encontro for selecionado, carrega equipes ativas.
+	 */
+	public void carregarEquipesPorEncontro() {
+		try {
+			if (this.filtroEncontroId != null) {
+				equipes = equipeService.buscarPorEncontro(this.filtroEncontroId);
+			} else {
+				equipes = equipeService.buscarAtivas();
+			}
+		} catch (Exception e) {
+			// Em caso de erro, garante que a lista não seja nula
+			equipes = java.util.Collections.emptyList();
+		}
 	}
 
 	public void limpar() {
@@ -319,4 +422,20 @@ public class TrabalhadorController implements Serializable {
 	public void setEncontros(List<Encontro> encontros) {
 		this.encontros = encontros;
 	}
+
+	// Getters e setters dos filtros
+	public String getFiltroNome() { return filtroNome; }
+	public void setFiltroNome(String filtroNome) { this.filtroNome = filtroNome; }
+	public Equipe getFiltroEquipe() { return filtroEquipe; }
+	public void setFiltroEquipe(Equipe filtroEquipe) { this.filtroEquipe = filtroEquipe; }
+	public Encontro getFiltroEncontro() { return filtroEncontro; }
+	public void setFiltroEncontro(Encontro filtroEncontro) { this.filtroEncontro = filtroEncontro; }
+	public Long getFiltroEquipeId() { return filtroEquipeId; }
+	public void setFiltroEquipeId(Long filtroEquipeId) { this.filtroEquipeId = filtroEquipeId; }
+	public Long getFiltroEncontroId() { return filtroEncontroId; }
+	public void setFiltroEncontroId(Long filtroEncontroId) { this.filtroEncontroId = filtroEncontroId; }
+	public Boolean getFiltroAptoParaPalestrar() { return filtroAptoParaPalestrar; }
+	public void setFiltroAptoParaPalestrar(Boolean filtroAptoParaPalestrar) { this.filtroAptoParaPalestrar = filtroAptoParaPalestrar; }
+	public Boolean getFiltroAptoParaCoordenar() { return filtroAptoParaCoordenar; }
+	public void setFiltroAptoParaCoordenar(Boolean filtroAptoParaCoordenar) { this.filtroAptoParaCoordenar = filtroAptoParaCoordenar; }
 }

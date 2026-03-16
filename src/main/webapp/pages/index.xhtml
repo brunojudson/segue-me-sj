@@ -16,7 +16,8 @@
 	<ui:define name="title">Dashboard - Sistema Segue-me</ui:define>
 	
 	<ui:define name="content">
-		<div class="dash page-enter">
+		<ui:fragment rendered="#{empty loginController or loginController.hasPermission('ADMIN') or not loginController.hasPermission('VENDA')}">
+			<div class="dash page-enter">
 			<!-- Page Header -->
 			<div class="dash-header">
 				<div>
@@ -228,7 +229,21 @@
 					</div>
 				</div>
 			</div>
-		</div>
+</div>
+
+		</ui:fragment>
+
+		<ui:fragment rendered="#{not empty loginController and loginController.hasPermission('VENDA')}">
+			<div class="access-denied">
+				<div class="access-denied-content">
+					<i class="pi pi-lock access-denied-icon"></i>
+					<h2 class="access-denied-title">Acesso restrito</h2>
+					<p class="access-denied-message">Seu perfil não tem acesso ao dashboard principal. Use o módulo de Vendas.</p>
+					<p:link outcome="/pages/venda/gestao-vendas.xhtml" styleClass="btn btn-accent">Ir para Vendas</p:link>
+				</div>
+			</div>
+		</ui:fragment>
+
 	</ui:define>
 </ui:composition>
 

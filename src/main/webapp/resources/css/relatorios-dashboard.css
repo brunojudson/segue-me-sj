@@ -438,7 +438,7 @@ body.dark-mode .relatorio-dashboard .dash-h-bar-value {
 }
 
 /* Pequenos ajustes na tabela dentro do card */
-.modern-datatable .ui-datatable-tablewrapper { max-height: 240px; overflow:auto; }
+.modern-datatable .ui-datatable-tablewrapper { max-height: none !important; overflow:auto; }
 .modern-datatable .ui-datatable-data td { padding:0.4rem 0.5rem; }
 
 /* Ajuste para legibilidade de botões desabilitados dentro do dashboard */

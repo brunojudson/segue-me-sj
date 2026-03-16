@@ -58,9 +58,15 @@
                                     <p:selectOneMenu id="trabalhador" value="#{vendaPedidoController.trabalhadorSelecionadoId}" 
                                                      filter="true" filterMatchMode="contains">
                                         <f:selectItem itemLabel="-- Selecione o trabalhador --" itemValue="#{null}" noSelectionOption="true"/>
-                                        <f:selectItems value="#{vendaPedidoController.trabalhadores}" 
-                                                       var="trab" itemLabel="#{trab.pessoa.nome}" itemValue="#{trab.id}"/>
+                                        <f:selectItems value="#{vendaPedidoController.trabalhadores}"
+                                                       var="trab"
+                                                       itemLabel="#{not empty trab.equipe ? trab.pessoa.nome.concat(' (').concat(trab.equipe.nome).concat(')') : trab.pessoa.nome}"
+                                                       itemValue="#{trab.id}"/>
+                                            <p:ajax update="pnlEquipeSelecionada mensagensTrabalhador" process="@this" />
                                     </p:selectOneMenu>
+                                                <h:panelGroup id="pnlEquipeSelecionada" rendered="#{not empty vendaPedidoController.equipeNomeSelecionada}">
+                                                    <small style="display:block; margin-top:0.35rem; color:var(--text-muted);">Equipe: <strong>#{vendaPedidoController.equipeNomeSelecionada}</strong></small>
+                                                </h:panelGroup>
                                     <p:messages id="mensagensTrabalhador" for="trabalhador" showDetail="true" closable="true" />
 
                                     <h:outputScript target="body">
@@ -76,7 +82,7 @@
                                 <p:commandButton value="Iniciar Nova Venda (Alt+N)" icon="pi pi-plus" 
                                                  actionListener="#{vendaPedidoController.iniciarNovaVenda}"
                                                  process="@this trabalhador"
-                                                 update="growl mensagensTrabalhador pnlNovaVenda pnlContasAbertas"
+                                                     update="growl mensagensTrabalhador pnlNovaVenda pnlContasAbertas pnlAdicionarItem"
                                                  ajax="true"
                                                  oncomplete="if (!args || !args.validationFailed) {setTimeout(function(){var el=document.getElementById('artigo_input'); if(el) el.focus();},50);}"
                                                  styleClass="action-button-primary"
@@ -94,6 +100,10 @@
                                 <div class="pedido-info-item">
                                     <strong>Trabalhador:</strong> 
                                     <span class="worker-name">#{vendaPedidoController.pedidoAtual.trabalhadorResponsavel.pessoa.nome}</span>
+                                </div>
+                                <div class="pedido-info-item">
+                                    <strong>Equipe:</strong>
+                                    <span class="team-name" style="color:var(--text-muted);">#{vendaPedidoController.equipeNomePedidoAtual}</span>
                                 </div>
                                 <div class="pedido-info-total">
                                     <strong>Total:</strong> 
@@ -367,6 +377,7 @@
                                     
                                     <strong>Trabalhador:</strong>
                                     <span>#{vendaPedidoController.pedidoAtual.trabalhadorResponsavel.pessoa.nome}</span>
+                                    <div style="grid-column: 2 / 3; margin-top: 0.25rem; color:var(--text-muted);">Equipe: <strong>#{vendaPedidoController.equipeNomePedidoAtual}</strong></div>
                                     
                                     <strong>Valor Total:</strong>
                                     <span class="price-value" style="font-size: 1.3rem;">

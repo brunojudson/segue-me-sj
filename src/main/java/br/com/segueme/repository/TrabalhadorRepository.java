@@ -58,6 +58,11 @@ public interface TrabalhadorRepository {
      * @return Lista de trabalhadores do encontro
      */
     List<Trabalhador> findByEncontro(Long encontroId);
+
+    /**
+     * Busca trabalhadores aplicando filtros dinâmicos (nome, equipe, encontro, aptidões)
+     */
+    List<Trabalhador> findByFilters(String nome, Long equipeId, Long encontroId, Boolean aptoParaPalestrar, Boolean aptoParaCoordenar);
     
     /**
      * Busca trabalhadores que são coordenadores

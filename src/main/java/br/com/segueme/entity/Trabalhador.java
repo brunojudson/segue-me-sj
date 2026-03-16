@@ -15,6 +15,7 @@ import java.util.HashSet;
 })
 public class Trabalhador implements Serializable {
 
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -70,6 +71,12 @@ public class Trabalhador implements Serializable {
 
     @Transient
     private boolean ehCasal;
+
+    @Column(name = "apto_para_palestrar")
+    private Boolean aptoParaPalestrar = false;
+
+    @Column(name = "apto_para_coordenar")
+    private Boolean aptoParaCoordenar = false;
 
     public boolean isEhCasal() {
         return ehCasal;
@@ -211,6 +218,21 @@ public class Trabalhador implements Serializable {
 
     public void setIdade(Integer idade) {
         this.idade = idade;
+    }
+     public Boolean getAptoParaPalestrar() {
+        return aptoParaPalestrar;
+    }
+
+    public void setAptoParaPalestrar(Boolean aptoParaPalestrar) {
+        this.aptoParaPalestrar = aptoParaPalestrar;
+    }
+
+    public Boolean getAptoParaCoordenar() {
+        return aptoParaCoordenar;
+    }
+
+    public void setAptoParaCoordenar(Boolean aptoParaCoordenar) {
+        this.aptoParaCoordenar = aptoParaCoordenar;
     }
 
     // Métodos auxiliares

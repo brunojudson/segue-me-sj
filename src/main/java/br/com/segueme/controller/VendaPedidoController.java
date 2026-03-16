@@ -436,6 +436,7 @@ public class VendaPedidoController implements Serializable {
             pedidoService.cancelarPedido(pedido.getId());
             addInfoMessage("Pedido cancelado com sucesso!");
             carregarPedidosAbertosPorEncontro();
+            filtrarPedidos();
         } catch (Exception e) {
             addErrorMessage("Erro ao cancelar pedido: " + e.getMessage());
         }
@@ -449,6 +450,7 @@ public class VendaPedidoController implements Serializable {
             pedidoService.cancelarPedido(pedidoId);
             addInfoMessage("Pedido cancelado com sucesso!");
             carregarPedidosAbertosPorEncontro();
+            filtrarPedidos();
         } catch (Exception e) {
             addErrorMessage("Erro ao cancelar pedido: " + e.getMessage());
         }
@@ -652,6 +654,63 @@ public class VendaPedidoController implements Serializable {
     
     public Long getTrabalhadorSelecionadoId() { return trabalhadorSelecionadoId; }
     public void setTrabalhadorSelecionadoId(Long trabalhadorSelecionadoId) { this.trabalhadorSelecionadoId = trabalhadorSelecionadoId; }
+ 
+    /**
+     * Retorna o objeto Trabalhador correspondente ao ID selecionado (ou null)
+     */
+    public Trabalhador getTrabalhadorSelecionado() {
+        if (this.trabalhadorSelecionadoId == null) return null;
+        try {
+            return trabalhadorService.buscarPorId(this.trabalhadorSelecionadoId).orElse(null);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Retorna o nome da equipe do trabalhador selecionado (ou string vazia)
+     */
+    public String getEquipeNomeSelecionada() {
+        Trabalhador t = getTrabalhadorSelecionado();
+        if (t == null) return "";
+        try {
+            return t.getEquipe() != null ? t.getEquipe().getNome() : "";
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * Retorna o nome da equipe do trabalhador responsável pelo pedido atual.
+     * Evita LazyInitializationException recarregando o Trabalhador via service.
+     */
+    public String getEquipeNomePedidoAtual() {
+        if (this.pedidoAtual == null || this.pedidoAtual.getTrabalhadorResponsavel() == null) return "";
+        Long trabId = this.pedidoAtual.getTrabalhadorResponsavel().getId();
+        if (trabId == null) return "";
+        try {
+            Trabalhador t = trabalhadorService.buscarPorId(trabId).orElse(null);
+            return t != null && t.getEquipe() != null ? t.getEquipe().getNome() : "";
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * Retorna o nome da equipe do trabalhador responsável pelo pedido selecionado (detalhes).
+     * Recarrega o Trabalhador via service para evitar LazyInitializationException.
+     */
+    public String getEquipeNomePedidoSelecionado() {
+        if (this.pedidoSelecionado == null || this.pedidoSelecionado.getTrabalhadorResponsavel() == null) return "";
+        Long trabId = this.pedidoSelecionado.getTrabalhadorResponsavel().getId();
+        if (trabId == null) return "";
+        try {
+            Trabalhador t = trabalhadorService.buscarPorId(trabId).orElse(null);
+            return t != null && t.getEquipe() != null ? t.getEquipe().getNome() : "";
+        } catch (Exception e) {
+            return "";
+        }
+    }
     
     public Long getArtigoSelecionadoId() { return artigoSelecionadoId; }
     public void setArtigoSelecionadoId(Long artigoSelecionadoId) { this.artigoSelecionadoId = artigoSelecionadoId; }
@@ -744,6 +803,30 @@ public class VendaPedidoController implements Serializable {
                 .map(VendaPedido::getValorTotal)
                 .filter(v -> v != null)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /**
+     * Retorna true se o pedidoAtual possuir valor total igual a zero.
+     */
+    public boolean isPedidoAtualValorZero() {
+        if (this.pedidoAtual == null) return true;
+        try {
+            return this.pedidoAtual.getValorTotal() == null || this.pedidoAtual.getValorTotal().compareTo(BigDecimal.ZERO) == 0;
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    /**
+     * Retorna true se o pedidoAtual possuir valor total maior que zero.
+     */
+    public boolean isPedidoAtualValorMaiorQueZero() {
+        if (this.pedidoAtual == null) return false;
+        try {
+            return this.pedidoAtual.getValorTotal() != null && this.pedidoAtual.getValorTotal().compareTo(BigDecimal.ZERO) > 0;
+        } catch (Exception e) {
+            return false;
+        }
     }
     
     public String getDataExportacao() {

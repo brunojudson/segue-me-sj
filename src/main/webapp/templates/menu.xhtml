@@ -24,6 +24,7 @@
 
 			<ul class="main-menu">
 				<!-- Home -->
+				<ui:fragment rendered="#{empty loginController or loginController.hasPermission('ADMIN') or not loginController.hasPermission('VENDA')}">
 				<li class="mobile-only">
 					<div class="menu-section">
 						<span class="submenu-label">
@@ -40,8 +41,10 @@
 						</ul>
 					</div>
 				</li>
+				</ui:fragment>
 				
 				<!-- Pessoas -->
+				<ui:fragment rendered="#{empty loginController or loginController.hasPermission('ADMIN') or not loginController.hasPermission('VENDA')}">
 				<li>
 					<div class="menu-section">
 						<span class="submenu-label">
@@ -70,8 +73,10 @@
 						</ul>
 					</div>
 				</li>
+				</ui:fragment>
 				
 				<!-- Encontros -->
+				<ui:fragment rendered="#{empty loginController or loginController.hasPermission('ADMIN') or not loginController.hasPermission('VENDA')}">
 				<li>
 					<div class="menu-section">
 						<span class="submenu-label">
@@ -118,8 +123,10 @@
 						</ul>
 					</div>
 				</li>
+				</ui:fragment>
 								
 				<!-- Dirigência -->
+				<ui:fragment rendered="#{empty loginController or loginController.hasPermission('ADMIN') or not loginController.hasPermission('VENDA')}">
 				<li>
 					<div class="menu-section">
 						<span class="submenu-label">
@@ -154,8 +161,10 @@
 						</ul>
 					</div>
 				</li>
+				</ui:fragment>
 				
 				<!-- Vendas -->
+				<ui:fragment rendered="#{not empty loginController and (loginController.hasPermission('ADMIN') or loginController.hasPermission('VENDA'))}">
 				<li>
 					<div class="menu-section">
 						<span class="submenu-label">
@@ -184,8 +193,10 @@
 						</ul>
 					</div>
 				</li>
+				</ui:fragment>
 				
 				<!-- Relatórios -->
+				<ui:fragment rendered="#{empty loginController or loginController.hasPermission('ADMIN') or not loginController.hasPermission('VENDA')}">
 				<li>
 					<div class="menu-section">
 						<span class="submenu-label">
@@ -226,8 +237,10 @@
 						</ul>
 					</div>
 				</li>
+				</ui:fragment>
 				
 				<!-- Administração -->
+				<ui:fragment rendered="#{not empty loginController and loginController.hasPermission('ADMIN')}">
 				<li>
 					<div class="menu-section">
 						<span class="submenu-label">
@@ -250,6 +263,8 @@
 						</ul>
 					</div>
 				</li>
+				</ui:fragment>
+				
 			</ul>
 		</div>
 	</div>

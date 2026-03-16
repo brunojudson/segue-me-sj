@@ -221,6 +221,13 @@ public class TrabalhadorService implements Serializable {
     }
 
     /**
+     * Busca trabalhadores usando filtros (delegando para o repositório)
+     */
+    public List<Trabalhador> buscarPorFiltros(String nome, Long equipeId, Long encontroId, Boolean aptoParaPalestrar, Boolean aptoParaCoordenar) {
+        return trabalhadorRepository.findByFilters(nome, equipeId, encontroId, aptoParaPalestrar, aptoParaCoordenar);
+    }
+
+    /**
      * Busca trabalhadores que são coordenadores
      * @return Lista de trabalhadores coordenadores
      */

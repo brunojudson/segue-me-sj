@@ -18,20 +18,72 @@
 						<h1 class="page-title">
 							<i class="pi pi-users page-icon"></i> <span class="title-text">Trabalhadores</span>
 						</h1>
-						<p class="page-subtitle">Gerencie os trabalhadores do sistema
-						</p>
+						<p class="page-subtitle">Gerencie os trabalhadores do sistema</p>
 					</div>
 					<div class="header-actions">
-						<p:button value="Novo Trabalhador"
-							outcome="/pages/trabalhador/cadastro.xhtml" icon="pi pi-plus"
-							styleClass="action-button-primary"
-							title="Cadastrar novo trabalhador" />
+						<p:button value="Novo Trabalhador" outcome="/pages/trabalhador/cadastro.xhtml" icon="pi pi-plus" styleClass="action-button-primary" title="Cadastrar novo trabalhador" />
 					</div>
 				</div>
-			</div>
+				</div>
+				<h:form id="listForm" prependId="false" styleClass="modern-form">
+					<!-- Filtros para trabalhadores -->
+					<div class="filter-section" style="margin-bottom: 1.5rem;">
+						<p:fieldset legend="🔎 Filtros" toggleable="false" styleClass="modern-fieldset">
+							<div class="field-grid">
+								<div class="field-group">
+									<p:outputLabel for="filtroNome" value="Nome" />
+									<p:inputText id="filtroNome" value="#{trabalhadorController.filtroNome}" placeholder="Digite o nome" />
+									<small class="field-hint">Pesquisar por nome (contém)</small>
+								</div>
 
-			<h:form id="listForm" prependId="false">
-				<p:growl id="messages" showDetail="true" closable="true" />
+								<div class="field-group">
+									<p:outputLabel for="filtroEncontro" value="Encontro" />
+									<p:selectOneMenu id="filtroEncontro" value="#{trabalhadorController.filtroEncontroId}" styleClass="modern-select">
+										<f:selectItem itemLabel="Todos" itemValue="#{null}" />
+										<f:selectItems value="#{trabalhadorController.encontros}" var="encontro" itemLabel="#{encontro.nome}" itemValue="#{encontro.id}" />
+										<p:ajax event="change" listener="#{trabalhadorController.carregarEquipesPorEncontro}" process="@this" update="filtroEquipe" />
+									</p:selectOneMenu>
+									<small class="field-hint">Filtrar por encontro</small>
+								</div>
+
+								<div class="field-group">
+									<p:outputLabel for="filtroEquipe" value="Equipe" />
+									<p:selectOneMenu id="filtroEquipe" value="#{trabalhadorController.filtroEquipeId}" styleClass="modern-select">
+										<f:selectItem itemLabel="Todas" itemValue="#{null}" />
+										<f:selectItems value="#{trabalhadorController.equipes}" var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}" />
+									</p:selectOneMenu>
+									<small class="field-hint">Filtrar por equipe</small>
+								</div>
+
+								<div class="field-group checkbox-pair">
+									<div class="checkbox-item">
+										<p:outputLabel for="filtroAptoPalestrar" value="Apto p/ palestrar" />
+										<div class="checkbox-container">
+											<p:selectBooleanCheckbox id="filtroAptoPalestrar" value="#{trabalhadorController.filtroAptoParaPalestrar}" />
+											<span class="checkbox-label">Pode palestrar</span>
+										</div>
+									</div>
+								</div>
+								<div class="field-group checkbox-pair">
+									<div class="checkbox-item">
+										<p:outputLabel for="filtroAptoCoordenar" value="Apto p/ coordenar" />
+										<div class="checkbox-container">
+											<p:selectBooleanCheckbox id="filtroAptoCoordenar" value="#{trabalhadorController.filtroAptoParaCoordenar}" />
+											<span class="checkbox-label">Pode coordenar</span>
+										</div>
+									</div>
+								</div>
+
+							</div>
+							<div class="form-actions" style="margin-top:1rem;">
+								<div class="action-buttons" style="margin-bottom: 1px !important;">
+									<p:commandButton id="btnFiltrar" value="Filtrar" icon="pi pi-filter" action="#{trabalhadorController.aplicarFiltros}" process="@form" update="@form" oncomplete="try{PF('trabalhadoresTableWidget').clearFilters(); PF('trabalhadoresTableWidget').getPaginator().cfg.page=0;}catch(e){}" styleClass="ui-button-info action-button-primary" />
+									<p:commandButton id="btnLimpar" value="Limpar" icon="pi pi-times" action="#{trabalhadorController.limparFiltros}" process="@form" update="@form" oncomplete="try{PF('trabalhadoresTableWidget').clearFilters(); PF('trabalhadoresTableWidget').getPaginator().cfg.page=0;}catch(e){}" styleClass="ui-button-secondary" />
+								</div>
+							</div>
+						</p:fieldset>
+					</div>
+					<p:growl id="messages" showDetail="true" closable="true" />
 
 				<!-- Tabela moderna de trabalhadores -->
 				<p:dataTable id="trabalhadoresTable" var="trabalhador"
@@ -268,6 +320,24 @@
 											</h:panelGroup> <h:outputText
 												rendered="#{not trabalhadorController.trabalhadorDetalhes.ehCoordenador}"
 												value="Não" />
+										</span>
+									</div>
+									<div class="info-item">
+										<label>Apto para palestrar</label>
+										<span>
+											<h:panelGroup rendered="#{trabalhadorController.trabalhadorDetalhes.aptoParaPalestrar}">
+												<span class="sm-tag sm-tag-blue"><i class="pi pi-microphone"></i> Sim</span>
+											</h:panelGroup>
+											<h:outputText rendered="#{not trabalhadorController.trabalhadorDetalhes.aptoParaPalestrar}" value="Não" />
+										</span>
+									</div>
+									<div class="info-item">
+										<label>Apto para coordenar</label>
+										<span>
+											<h:panelGroup rendered="#{trabalhadorController.trabalhadorDetalhes.aptoParaCoordenar}">
+												<span class="sm-tag sm-tag-orange"><i class="pi pi-users"></i> Sim</span>
+											</h:panelGroup>
+											<h:outputText rendered="#{not trabalhadorController.trabalhadorDetalhes.aptoParaCoordenar}" value="Não" />
 										</span>
 									</div>
 									<div class="info-item">

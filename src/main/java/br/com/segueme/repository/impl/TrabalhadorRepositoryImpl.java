@@ -2,6 +2,7 @@ package br.com.segueme.repository.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -16,6 +17,8 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 
 	@PersistenceContext(unitName = "seguemePU")
 	private EntityManager entityManager;
+
+    private static final Logger logger = Logger.getLogger(TrabalhadorRepositoryImpl.class.getName());
 
 	@Override
 	public Trabalhador save(Trabalhador trabalhador) {
@@ -121,6 +124,57 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 		return entityManager
 				.createQuery("SELECT t FROM Trabalhador t WHERE t.equipe.encontro.id = :encontroId", Trabalhador.class)
 				.setParameter("encontroId", encontroId).getResultList();
+	}
+
+	@Override
+	public List<Trabalhador> findByFilters(String nome, Long equipeId, Long encontroId, Boolean aptoParaPalestrar, Boolean aptoParaCoordenar) {
+		StringBuilder jpql = new StringBuilder();
+		jpql.append("SELECT DISTINCT t FROM Trabalhador t ");
+		jpql.append("LEFT JOIN FETCH t.pessoa p ");
+		jpql.append("LEFT JOIN FETCH t.equipe e ");
+		jpql.append("LEFT JOIN FETCH t.encontro en ");
+		jpql.append("WHERE 1=1 ");
+
+
+		if (nome != null && !nome.trim().isEmpty()) {
+			jpql.append(" AND LOWER(p.nome) LIKE :nome");
+		}
+		if (equipeId != null) {
+			jpql.append(" AND e.id = :equipeId");
+		}
+		if (encontroId != null) {
+			jpql.append(" AND en.id = :encontroId");
+		}
+		// Construir condição para aptidões: se o usuário marcou um ou ambos "true",
+		// usamos OR entre eles; flags false ou null são ignoradas (não filtram).
+		java.util.List<String> aptoConds = new java.util.ArrayList<>();
+		if (Boolean.TRUE.equals(aptoParaPalestrar)) {
+			aptoConds.add("t.aptoParaPalestrar = true");
+		}
+		if (Boolean.TRUE.equals(aptoParaCoordenar)) {
+			aptoConds.add("t.aptoParaCoordenar = true");
+		}
+		if (!aptoConds.isEmpty()) {
+			jpql.append(" AND (" + String.join(" OR ", aptoConds) + ")");
+		}
+
+		javax.persistence.TypedQuery<Trabalhador> query = entityManager.createQuery(jpql.toString(), Trabalhador.class);
+
+		if (nome != null && !nome.trim().isEmpty()) {
+			query.setParameter("nome", "%" + nome.toLowerCase() + "%");
+		}
+		if (equipeId != null) {
+			query.setParameter("equipeId", equipeId);
+		}
+		if (encontroId != null) {
+			query.setParameter("encontroId", encontroId);
+		}
+		// parametros de aptoPara* foram injetados diretamente na JPQL quando true; nada a setar aqui
+
+
+		List<Trabalhador> results = query.getResultList();
+
+		return results;
 	}
 
 	@Override

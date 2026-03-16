@@ -167,7 +167,7 @@
                 
                 <!-- Tabela Moderna de Pedidos -->
                 <p:fieldset legend="📑 Lista de Pedidos" toggleable="true" collapsed="false" 
-                            styleClass="modern-fieldset" style="margin-top: 1.5rem; min-height:520px;">
+                            styleClass="modern-fieldset" style="margin-top: 1.5rem; height:auto;">
                     <p:dataTable id="tblPedidos" value="#{vendaPedidoController.pedidosFiltrados}" 
                                  var="pedido" emptyMessage="Nenhum pedido encontrado com os filtros especificados"
                                  paginator="true" rows="20" paginatorPosition="bottom"
@@ -175,7 +175,7 @@
                                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
                                  rowsPerPageTemplate="20,50,100"
                                  styleClass="modern-datatable datatable-animation" 
-                                 reflow="true"
+                                 reflow="false" 
                                  sortBy="#{pedido.dataAbertura}" sortOrder="descending">
                         
                         <p:column headerText="Código" width="18%" sortBy="#{pedido.numeroPedido}" 
@@ -309,6 +309,12 @@
                                             <div class="worker-name">
                                                 <i class="pi pi-user" style="margin-right: 0.5rem; color: var(--sm-accent);"></i>
                                                 #{vendaPedidoController.pedidoSelecionado.trabalhadorResponsavel.pessoa.nome}
+                                            </div>
+                                        </div>
+                                        <div class="info-item">
+                                            <label>Equipe:</label>
+                                            <div>
+                                                <span style="color:var(--text-muted);">#{vendaPedidoController.equipeNomePedidoSelecionado}</span>
                                             </div>
                                         </div>
                                         
@@ -448,7 +454,7 @@
                             </div>
 
                             <p:selectBooleanCheckbox id="pagarAgoraConsulta" value="#{vendaPedidoController.pagarAgora}">
-                                <p:ajax update="pnlPagamentoConsulta" />
+                                <p:ajax update="pnlPagamentoConsulta btnConfirmarFechar" />
                             </p:selectBooleanCheckbox>
                             <label for="pagarAgoraConsulta" style="margin-left: 0.5rem; font-weight: 600; cursor: pointer;">Receber pagamento agora</label>
 
@@ -456,6 +462,7 @@
                                 <div style="margin-top: 0.75rem;">
                                     <label for="formaPagamentoConsulta">Forma de Pagamento: *</label>
                                     <p:selectOneMenu id="formaPagamentoConsulta" value="#{vendaPedidoController.formaPagamento}" required="#{vendaPedidoController.pagarAgora}">
+                                        <p:ajax event="change" update="btnConfirmarFechar" />
                                         <f:selectItem itemLabel="-- Selecione a forma de pagamento --" itemValue="#{null}" />
                                         <f:selectItem itemLabel="💵 Dinheiro" itemValue="DINHEIRO" />
                                         <f:selectItem itemLabel="📱 PIX" itemValue="PIX" />
@@ -468,13 +475,24 @@
                     </h:panelGroup>
                     <f:facet name="footer">
                         <div class="dialog-footer-actions">
-                            <p:commandButton value="Confirmar" icon="pi pi-check" 
+                            <p:commandButton value="Cancelar Pedido" icon="pi pi-times-circle" 
+                                             action="#{vendaPedidoController.cancelarPedido(vendaPedidoController.pedidoAtual.id)}"
+                                             process="@this"
+                                             update=":globalMessages tblPedidos pnlTotalizadores pnlGraficos"
+                                             oncomplete="if (!args.validationFailed) PF('dlgFecharPedidoConsulta').hide();"
+                                             styleClass="action-button-danger"
+                                             rendered="#{vendaPedidoController.pedidoAtual != null and vendaPedidoController.pedidoAtual.status == 'ABERTO' and vendaPedidoController.pedidoAtualValorZero}" />
+
+                            <p:commandButton id="btnConfirmarFechar" value="Confirmar" icon="pi pi-check" 
                                                  actionListener="#{vendaPedidoController.fecharPedido}"
-                                                 process="@this pagarAgoraConsulta formaPagamentoConsulta"
+                                                 process="@form pagarAgoraConsulta formaPagamentoConsulta"
                                                  update=":globalMessages tblPedidos pnlTotalizadores pnlGraficos"
                                                  oncomplete="if (!args.validationFailed) PF('dlgFecharPedidoConsulta').hide();"
-                                                 styleClass="action-button-primary" />
-                            <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlgFecharPedidoConsulta').hide(); return false;" styleClass="action-button-secondary" />
+                                                 styleClass="action-button-primary"
+                                                 rendered="#{vendaPedidoController.pedidoAtualValorMaiorQueZero}"
+                                                 disabled="#{not (vendaPedidoController.pagarAgora and not empty vendaPedidoController.formaPagamento)}" />
+
+                            <p:commandButton value="Fechar" icon="pi pi-times" onclick="PF('dlgFecharPedidoConsulta').hide(); return false;" styleClass="action-button-secondary" />
                         </div>
                     </f:facet>
                 </p:dialog>

@@ -24,14 +24,12 @@ public class DatabaseInitializer {
     @PostConstruct
     @Transactional
     public void init() {
-        logger.info("Inicializando banco de dados...");
         
         try {
             // Verifica se já existem dados no banco
             Long countTipoEquipe = (Long) entityManager.createQuery("SELECT COUNT(t) FROM TipoEquipe t").getSingleResult();
             
             if (countTipoEquipe == 0) {
-                logger.info("Criando dados iniciais...");
                 //criarDadosIniciais();
                 logger.info("Dados iniciais criados com sucesso!");
             } else {
