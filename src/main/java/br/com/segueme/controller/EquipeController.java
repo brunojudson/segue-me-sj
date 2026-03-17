@@ -43,6 +43,7 @@ public class EquipeController implements Serializable {
     private List<Equipe> equipes;
     private Equipe equipe;
     private Equipe equipeSelecionada;
+    private Equipe equipeDetalhes;
 
     private List<TipoEquipe> tiposEquipe;
     private List<Encontro> encontros;
@@ -73,28 +74,14 @@ public class EquipeController implements Serializable {
     }
     
     public String salvar() {
-        try {
-            if (equipe.getId() == null) {
-                equipeService.salvar(equipe);
-                FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Equipe cadastrada com sucesso!"));
-            } else {
-                equipeService.atualizar(equipe);
-                FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Equipe atualizada com sucesso!"));
-            }
-
-            carregarEquipes();
-            limpar();
-            return "lista?faces-redirect=true";
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
-            return null;
-        }
+        return salvarInterno(true);
     }
     
     public String salvarEContinuar() {
+        return salvarInterno(false);
+    }
+
+    private String salvarInterno(boolean redirecionarParaLista) {
         try {
             if (equipe.getId() == null) {
                 equipeService.salvar(equipe);
@@ -108,7 +95,7 @@ public class EquipeController implements Serializable {
 
             carregarEquipes();
             limpar();
-            return "";
+            return redirecionarParaLista ? "lista?faces-redirect=true" : "";
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
@@ -167,6 +154,30 @@ public class EquipeController implements Serializable {
                 trabalhador.setEhCasal(ehCasal);
             }
         }
+    }
+
+    public void abrirDetalhes(Equipe equipe) {
+        equipeService.buscarPorId(equipe.getId()).ifPresent(e -> {
+            this.equipeDetalhes = e;
+            // Identificar casais nos trabalhadores
+            if (equipeDetalhes.getTrabalhadores() != null) {
+                for (Trabalhador trabalhador : equipeDetalhes.getTrabalhadores()) {
+                    boolean ehCasal = casalService.verificarSePessoaEhCasal(trabalhador.getPessoa().getId());
+                    trabalhador.setEhCasal(ehCasal);
+                }
+                List<Trabalhador> trabalhadoresOrdenados = new ArrayList<>(equipeDetalhes.getTrabalhadores());
+                trabalhadoresOrdenados.sort(Comparator.comparing(Trabalhador::isEhCasal).reversed());
+                equipeDetalhes.setTrabalhadores(new LinkedHashSet<>(trabalhadoresOrdenados));
+            }
+        });
+    }
+
+    public void fecharDetalhes() {
+        this.equipeDetalhes = null;
+    }
+
+    public Equipe getEquipeDetalhes() {
+        return equipeDetalhes;
     }
 
     // Getters e Setters

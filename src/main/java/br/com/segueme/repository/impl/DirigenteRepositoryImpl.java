@@ -9,11 +9,16 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import br.com.segueme.entity.Dirigente;
 import br.com.segueme.repository.DirigenteRepository;
 
 @Stateless
 public class DirigenteRepositoryImpl implements DirigenteRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(DirigenteRepositoryImpl.class);
 
     @PersistenceContext(unitName = "seguemePU")
     private EntityManager entityManager;
@@ -92,15 +97,15 @@ public class DirigenteRepositoryImpl implements DirigenteRepository {
 
     @Override
     public boolean delete(Long id) {
-        System.out.println("Tentando excluir Dirigente com ID: " + id);
+        logger.debug("Tentando excluir Dirigente com ID: {}", id);
         Dirigente dirigente = entityManager.find(Dirigente.class, id);
         if (dirigente != null) {
-            System.out.println("Dirigente encontrado: " + dirigente);
+            logger.debug("Dirigente encontrado: {}", dirigente);
             entityManager.remove(dirigente);
-            System.out.println("Dirigente removido com sucesso.");
+            logger.debug("Dirigente removido com sucesso.");
             return true;
         } else {
-            System.out.println("Dirigente não encontrado.");
+            logger.debug("Dirigente não encontrado.");
         }
         return false;
     }

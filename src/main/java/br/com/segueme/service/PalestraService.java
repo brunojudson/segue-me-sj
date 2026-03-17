@@ -6,7 +6,6 @@ import br.com.segueme.repository.PalestraRepository;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.util.List;
 
 @ApplicationScoped
@@ -27,19 +26,16 @@ public class PalestraService {
         return palestraRepository.findByEncontro(encontro);
     }
 
-    @Transactional
     public void salvar(Palestra palestra) {
         // Adicionar validações de negócio se necessário
         palestraRepository.save(palestra);
     }
 
-    @Transactional
     public void atualizar(Palestra palestra) {
         // Adicionar validações de negócio se necessário
         palestraRepository.update(palestra);
     }
 
-    @Transactional
     public void excluir(Long id) {
         Palestra palestra = buscarPorId(id);
         if (palestra == null) {

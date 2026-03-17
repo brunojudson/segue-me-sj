@@ -153,6 +153,16 @@ public class PessoaService implements Serializable {
 	}
 
 	/**
+	 * Busca todas as pessoas com sacramentos carregados (eager).
+	 * Indicado para cenários que precisam acessar a coleção lazy fora da transação.
+	 * 
+	 * @return Lista de pessoas com sacramentos
+	 */
+	public List<Pessoa> buscarTodosComSacramentos() {
+		return pessoaRepository.findAllWithSacramentos();
+	}
+
+	/**
 	 * Busca todas as pessoas que não são encontristas ativos
 	 * 
 	 * @return Lista de pessoas

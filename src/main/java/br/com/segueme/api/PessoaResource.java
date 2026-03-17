@@ -38,7 +38,7 @@ public class PessoaResource {
     public Response buscarFoto(@PathParam("id") Long id) {
         Optional<Pessoa> pessoa = pessoaService.buscarPorId(id);
         if (pessoa.isPresent() && pessoa.get().getFoto() != null) {
-            String caminho = "C:\\Desenvovilmento\\fotos\\" + pessoa.get().getFoto();
+            String caminho = System.getProperty("caminho_fotos", "C:\\Desenvolvimento\\fotos") + java.io.File.separator + pessoa.get().getFoto();
             java.io.File file = new java.io.File(caminho);
             if (file.exists()) {
                 return Response.ok(file).build();

@@ -15,6 +15,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "usuario", schema = "public")
@@ -26,12 +29,19 @@ public class Usuario implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Nome é obrigatório")
+    @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres")
     @Column(nullable = false, length = 100)
     private String nome;
 
+    @NotBlank(message = "Email é obrigatório")
+    @Email(message = "Email deve ser válido")
+    @Size(max = 100, message = "Email deve ter no máximo 100 caracteres")
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @NotBlank(message = "Senha é obrigatória")
+    @Size(min = 6, max = 255, message = "Senha deve ter entre 6 e 255 caracteres")
     @Column(nullable = false, length = 255)
     private String senha;
 

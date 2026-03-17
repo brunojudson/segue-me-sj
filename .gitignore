@@ -1,1 +1,51 @@
 /target/
+
+# Maven / Gradle
+/target/
+/build/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ
+.idea/
+*.iml
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Java
+*.class
+
+# Temporary
+*.tmp
+*.swp
+
+# OneDrive temporary files
+~$*
+
+# Generated
+/generated-sources/
+
+# IDE specific
+/.idea/
+/.vscode/
+
+# Build directories
+/bin/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+

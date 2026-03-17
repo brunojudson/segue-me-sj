@@ -6,12 +6,6 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui" lang="pt-BR" xml:lang="pt-BR">
 
-<head>
-<title>Contribuições - Sistema Segue-me</title>
-<meta name="description"
-	content="Gestão de contribuições financeiras dos trabalhadores do Sistema Segue-me" />
-</head>
-
 <ui:composition template="/templates/template.xhtml">
 	<ui:define name="title">Contribuições - Sistema Segue-me</ui:define>
 
@@ -37,9 +31,9 @@
 			</div>
 
 			<h:form id="listForm" prependId="false">
-				<p:messages id="messages" showDetail="true" closable="true">
+				<p:growl id="messages" showDetail="true" closable="true">
 					<p:autoUpdate />
-				</p:messages>
+				</p:growl>
 
 				<p:dataTable id="contribuicoesTable" var="contribuicao"
 					value="#{contribuicaoController.contribuicoes}"
@@ -86,7 +80,10 @@
 							<div class="user-avatar">
 								<i class="pi pi-user"></i>
 							</div>
-							<span class="user-name">#{contribuicao.trabalhador.pessoa.nome}</span>
+							<p:commandLink value="#{contribuicao.trabalhador.pessoa.nome}" styleClass="nome-link user-name"
+								action="#{contribuicaoController.abrirDetalhes(contribuicao)}"
+								update=":detalhesForm:detalhesModal"
+								oncomplete="PF('detalhesDialog').show()" />
 						</div>
 					</p:column>
 
@@ -152,16 +149,20 @@
 					<p:column headerText="Ações" styleClass="text-center" width="160"
 						exportable="false" toggleable="false" priority="1">
 						<div class="table-action-buttons">
-							<p:commandButton icon="pi pi-eye"
-								title="Visualizar detalhes da contribuição"
-								action="#{contribuicaoController.visualizar(contribuicao)}"
-								styleClass="action-button-secondary-table action-btn"
-								aria-label="Visualizar contribuição #{contribuicao.id}" />
+						<!-- <p:button icon="pi pi-eye"
+							title="Visualizar detalhes da contribuição"
+							outcome="/pages/contribuicao/visualizar.xhtml"
+							styleClass="action-button-secondary-table action-btn"
+							aria-label="Visualizar contribuição #{contribuicao.id}">
+							<f:param name="id" value="#{contribuicao.id}" />
+						</p:button> -->
 
-							<p:commandButton icon="pi pi-pencil" title="Editar contribuição"
-								action="#{contribuicaoController.editar(contribuicao)}"
-								styleClass="action-button-warn-table action-btn"
-								aria-label="Editar contribuição #{contribuicao.id}" />
+							<p:button icon="pi pi-pencil" title="Editar contribuição"
+							outcome="/pages/contribuicao/cadastro.xhtml"
+							styleClass="action-button-warn-table action-btn"
+							aria-label="Editar contribuição #{contribuicao.id}">
+							<f:param name="id" value="#{contribuicao.id}" />
+						</p:button>
 
 							<p:commandButton icon="pi pi-trash" title="Excluir contribuição"
 								action="#{contribuicaoController.prepararExclusao(contribuicao)}"
@@ -197,198 +198,111 @@
 					</div>
 				</p:confirmDialog>
 			</h:form>
+
+			<!-- Modal de Detalhes da Contribuição -->
+			<h:form id="detalhesForm">
+			<p:dialog id="detalhesModal" widgetVar="detalhesDialog"
+				header="Detalhes da Contribuição" 
+				styleClass="detalhes-pessoa-dialog"
+				modal="true" responsive="true"
+				closable="true" closeOnEscape="true"
+				showEffect="fade" hideEffect="fade"
+				style="max-width:800px; width: calc(100% - 32px);">
+
+				<p:ajax event="close" listener="#{contribuicaoController.fecharDetalhes()}" />
+
+				<h:panelGroup id="detalhesContent" rendered="#{contribuicaoController.contribuicaoDetalhes != null}">
+					<div class="modal-pessoa-header">
+						<div class="modal-pessoa-avatar-section">
+							<div class="modal-pessoa-avatar">
+								<i class="pi pi-dollar" style="font-size: 2rem;"></i>
+							</div>
+							<div class="modal-pessoa-info-principal">
+								<h2 class="modal-pessoa-nome">Contribuição</h2>
+								<div class="modal-pessoa-meta">
+									<span class="sm-tag sm-tag-green">
+										<i class="pi pi-user"></i> #{contribuicaoController.contribuicaoDetalhes.trabalhador.pessoa.nome}
+									</span>
+									<span class="modal-pessoa-id">ID: #{contribuicaoController.contribuicaoDetalhes.id}</span>
+								</div>
+							</div>
+						</div>
+						<div class="modal-pessoa-actions">
+							<p:button icon="pi pi-pencil" title="Editar"
+								outcome="/pages/contribuicao/cadastro.xhtml"
+								styleClass="action-button-primary">
+								<f:param name="id" value="#{contribuicaoController.contribuicaoDetalhes.id}" />
+							</p:button>
+						</div>
+					</div>
+
+					<!-- Informações do Trabalhador -->
+					<div class="info-grid" style="padding: 0 1.5rem 1rem;">
+						<div class="info-item">
+							<label>Trabalhador</label>
+							<span>
+								<h:outputText value="#{contribuicaoController.contribuicaoDetalhes.trabalhador.pessoa.nome}" rendered="#{not empty contribuicaoController.contribuicaoDetalhes.trabalhador.pessoa.nome}" />
+								<h:outputText value="Não informado" styleClass="empty-value" rendered="#{empty contribuicaoController.contribuicaoDetalhes.trabalhador.pessoa.nome}" />
+							</span>
+						</div>
+						<div class="info-item">
+							<label>Equipe</label>
+							<span>
+								<h:outputText value="#{contribuicaoController.contribuicaoDetalhes.trabalhador.equipe.nome}" rendered="#{not empty contribuicaoController.contribuicaoDetalhes.trabalhador.equipe.nome}" />
+								<h:outputText value="Não informada" styleClass="empty-value" rendered="#{empty contribuicaoController.contribuicaoDetalhes.trabalhador.equipe.nome}" />
+							</span>
+						</div>
+						<div class="info-item">
+							<label>Encontro</label>
+							<span>
+								<h:outputText value="#{contribuicaoController.contribuicaoDetalhes.trabalhador.encontro.nome}" rendered="#{not empty contribuicaoController.contribuicaoDetalhes.trabalhador.encontro.nome}" />
+								<h:outputText value="Não informado" styleClass="empty-value" rendered="#{empty contribuicaoController.contribuicaoDetalhes.trabalhador.encontro.nome}" />
+							</span>
+						</div>
+					</div>
+
+					<!-- Detalhes da Contribuição -->
+					<div style="padding: 0 1.5rem 0.5rem;">
+						<h3 class="detail-section-title"><i class="pi pi-money-bill"></i> Detalhes da Contribuição</h3>
+					</div>
+					<div class="info-grid" style="padding: 0 1.5rem 1.5rem;">
+						<div class="info-item">
+							<label>Data de Pagamento</label>
+							<span>
+								<h:outputText value="#{contribuicaoController.contribuicaoDetalhes.dataPagamento}" rendered="#{not empty contribuicaoController.contribuicaoDetalhes.dataPagamento}">
+									<f:converter converterId="localDateTimeConverter" />
+								</h:outputText>
+								<h:outputText value="Não informada" styleClass="empty-value" rendered="#{empty contribuicaoController.contribuicaoDetalhes.dataPagamento}" />
+							</span>
+						</div>
+						<div class="info-item">
+							<label>Valor</label>
+							<span class="info-value highlight">
+								<h:outputText value="#{contribuicaoController.contribuicaoDetalhes.valor}" rendered="#{not empty contribuicaoController.contribuicaoDetalhes.valor}">
+									<f:convertNumber type="currency" currencySymbol="R$" locale="pt_BR" />
+								</h:outputText>
+								<h:outputText value="Não informado" styleClass="empty-value" rendered="#{empty contribuicaoController.contribuicaoDetalhes.valor}" />
+							</span>
+						</div>
+						<div class="info-item">
+							<label>Forma de Pagamento</label>
+							<span>
+								<h:outputText value="#{contribuicaoController.contribuicaoDetalhes.formaPagamento}" rendered="#{not empty contribuicaoController.contribuicaoDetalhes.formaPagamento}" />
+								<h:outputText value="Não informada" styleClass="empty-value" rendered="#{empty contribuicaoController.contribuicaoDetalhes.formaPagamento}" />
+							</span>
+						</div>
+						<div class="info-item full-width">
+							<label>Observações</label>
+							<span>
+								<h:outputText value="#{contribuicaoController.contribuicaoDetalhes.observacoes}" rendered="#{not empty contribuicaoController.contribuicaoDetalhes.observacoes}" />
+								<h:outputText value="Sem observações" styleClass="empty-value" rendered="#{empty contribuicaoController.contribuicaoDetalhes.observacoes}" />
+							</span>
+						</div>
+					</div>
+				</h:panelGroup>
+			</p:dialog>
+			</h:form>
 		</div>
-		<!-- Estilos UX aprimorados para tabela de contribuições -->
-		<style>
-
-
-
-.id-badge {
-	background: #e0f2fe;
-	color: #0369a1;
-	border-radius: 6px;
-	padding: 0.25rem 0.75rem;
-	font-weight: 700;
-	font-size: 0.95rem;
-	display: inline-block;
-}
-
-.user-info {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.user-avatar {
-	background: linear-gradient(135deg, #0ea5e9, #38bdf8);
-	color: #fff;
-	border-radius: 50%;
-	width: 32px;
-	height: 32px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 1.1rem;
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-.user-name {
-	font-weight: 600;
-	color: #0f172a;
-}
-
-.encontro-tag {
-	background: #f1f5f9;
-	color: #334155;
-	border-radius: 6px;
-	padding: 0.25rem 0.75rem;
-	font-size: 0.95rem;
-	display: inline-flex;
-	align-items: center;
-	gap: 0.4rem;
-}
-
-.date-badge {
-	background: #f0fdf4;
-	color: #166534;
-	border-radius: 6px;
-	padding: 0.25rem 0.75rem;
-	font-weight: 600;
-	font-size: 0.95rem;
-	display: inline-flex;
-	align-items: center;
-	gap: 0.4rem;
-}
-
-.value-badge {
-	background: #fef9c3;
-	color: #92400e;
-	border-radius: 6px;
-	padding: 0.25rem 0.75rem;
-	font-weight: 700;
-	font-size: 1rem;
-	display: inline-flex;
-	align-items: center;
-	gap: 0.4rem;
-}
-
-.payment-method-badge {
-	background: #f3f4f6;
-	color: #334155;
-	border-radius: 6px;
-	padding: 0.25rem 0.75rem;
-	font-size: 0.95rem;
-	display: inline-flex;
-	align-items: center;
-	gap: 0.4rem;
-}
-
-
-@media (max-width: 900px) {
-	.modern-datatable, .datatable-animation {
-		font-size: 0.95rem;
-	}
-	.table-header, .column-header {
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 0.2rem;
-	}
-	/* Mantém botões lado a lado em telas pequenas */
-	.table-action-buttons {
-		flex-direction: row !important;
-		gap: 0.3rem;
-		width: 100%;
-		align-items: center;
-		justify-content: center;
-	}
-	.payment-method-badge, .date-badge, .value-badge, .encontro-tag {
-		min-width: 100%;
-		justify-content: flex-start;
-		font-size: 0.95rem;
-		margin-bottom: 0.2rem;
-		box-sizing: border-box;
-		word-break: break-word;
-	}
-	.user-info {
-		flex-direction: row;
-		flex-wrap: wrap;
-		gap: 0.3rem;
-	}
-	.user-avatar {
-		width: 28px;
-		height: 28px;
-		font-size: 1rem;
-	}
-	.user-name {
-		font-size: 0.95rem;
-	}
-	.id-badge {
-		font-size: 0.9rem;
-		padding: 0.2rem 0.5rem;
-	}
-	.contribuicao-empty-state {
-		padding: 1.2rem 0.5rem;
-	}
-}
-
-@media (max-width: 600px) {
-	.modern-datatable, .datatable-animation {
-		font-size: 0.90rem;
-	}
-	.user-info {
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 0.2rem;
-	}
-	.user-avatar {
-		width: 24px;
-		height: 24px;
-		font-size: 0.9rem;
-	}
-	.user-name {
-		font-size: 0.9rem;
-	}
-	.id-badge, .date-badge, .value-badge, .encontro-tag, .payment-method-badge {
-		font-size: 0.85rem;
-		padding: 0.15rem 0.4rem;
-	}
-	/* Mantém botões lado a lado mesmo em telas muito pequenas */
-	.table-action-buttons {
-		flex-direction: row !important;
-		gap: 0.2rem;
-		width: 100%;
-		align-items: center;
-		justify-content: center;
-	}
-	.contribuicao-empty-state {
-		padding: 0.7rem 0.2rem;
-	}
-	.empty-icon {
-		width: 48px;
-		height: 48px;
-		font-size: 1.2rem;
-	}
-	.contribuicao-empty-state h3 {
-		font-size: 1.1rem;
-	}
-	.contribuicao-empty-state p {
-		font-size: 0.95rem;
-	}
-}
-
-/* Destaque para filtros ativos */
-.ui-inputfield.filter-input:focus, .ui-selectonemenu.filter-input.ui-state-focus
-	{
-	border-color: #0ea5e9 !important;
-	box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15) !important;
-}
-
-.ui-selectonemenu.filter-input .ui-selectonemenu-label {
-	color: #0ea5e9;
-	font-weight: 600;
-}
-
-</style>
 	</ui:define>
 </ui:composition>
 

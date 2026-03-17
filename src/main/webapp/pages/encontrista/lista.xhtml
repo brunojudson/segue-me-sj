@@ -31,7 +31,7 @@
 			</div>
 
 			<h:form id="listForm" prependId="false">
-				<p:messages id="messages" showDetail="true" closable="true" />
+				<p:growl id="messages" showDetail="true" closable="true" />
 
 				<!-- Tabela moderna de encontristas -->
 				<p:dataTable id="encontristasTable" var="encontrista"
@@ -55,11 +55,21 @@
 						filterBy="#{encontrista.pessoa.nome}" filterMatchMode="contains"
 						styleClass="text-left" width="25%">
 						<div class="participant-info">
-							<div class="participant-avatar">
-								<i class="pi pi-user-plus"></i>
-							</div>
-							<h:outputText value="#{encontrista.pessoa.nome}"
-								styleClass="participant-name" />
+							<!-- Avatar com foto ou ícone -->
+							<h:panelGroup rendered="#{not empty encontrista.pessoa.foto}">
+							</h:panelGroup>
+							<h:panelGroup >
+								<div class="participant-avatar">
+									<i class="pi pi-user-plus"></i>
+								</div>
+							</h:panelGroup>
+							<p:commandLink styleClass="nome-link participant-name" 
+								action="#{encontristaController.abrirDetalhes(encontrista)}"
+								update=":detalhesForm:detalhesModal"
+								oncomplete="PF('detalhesDialog').show()"
+								process="@this">
+								<h:outputText value="#{encontrista.pessoa.nome}" />
+							</p:commandLink>
 						</div>
 					</p:column>
 
@@ -108,16 +118,23 @@
 
 					<p:column headerText="Ações" styleClass="text-center" width="12%">
 						<div class="table-action-buttons">
-							<p:commandButton icon="pi pi-eye" title="Visualizar"
-								action="#{encontristaController.visualizar(encontrista)}"
-								styleClass="action-button-secondary-table action-btn" />
+							<p:button icon="pi pi-eye" title="Visualizar"
+								ariaLabel="Visualizar seguimista"
+								outcome="/pages/encontrista/visualizar.xhtml"
+								styleClass="action-button-secondary-table action-btn">
+								<f:param name="id" value="#{encontrista.id}" />
+							</p:button>
 
-							<p:commandButton icon="pi pi-pencil" title="Editar"
-								disabled="#{encontrista.ativo ? 'false' : 'true'}"
-								action="#{encontristaController.editar(encontrista)}"
-								styleClass="action-button-warn-table action-btn" />
+							<p:button icon="pi pi-pencil" title="Editar"
+								ariaLabel="Editar seguimista"
+								disabled="#{not encontrista.ativo}"
+								outcome="/pages/encontrista/cadastro.xhtml"
+								styleClass="action-button-warn-table action-btn">
+								<f:param name="id" value="#{encontrista.id}" />
+							</p:button>
 
 							<p:commandButton icon="pi pi-trash" title="Excluir"
+								ariaLabel="Excluir seguimista"
 								action="#{encontristaController.prepararExclusao(encontrista)}"
 								styleClass="action-button-danger-table action-btn"
 								update=":confirmDialog" oncomplete="PF('confirmDialog').show()" />
@@ -137,7 +154,7 @@
 				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
 					header="Confirmar Exclusão" styleClass="modern-dialog"
 					message="Tem certeza que deseja excluir este encontrista?"
-					closeOnEscape="true" width="450" height="200">
+					closeOnEscape="true">
 					<p:commandButton value="Sim, excluir"
 						action="#{encontristaController.excluir}"
 						oncomplete="PF('confirmDialog').hide()"
@@ -148,203 +165,156 @@
 						styleClass="ui-button-secondary" icon="pi pi-times" />
 				</p:confirmDialog>
 			</h:form>
+
+			<!-- Modal de Detalhes do Seguimista -->
+			<h:form id="detalhesForm">
+			<p:dialog id="detalhesModal" widgetVar="detalhesDialog"
+				header="Detalhes do Seguimista" 
+				styleClass="detalhes-pessoa-dialog"
+				modal="true" responsive="true"
+				closable="true" closeOnEscape="true"
+				showEffect="fade" hideEffect="fade"
+				style="max-width:850px; width: calc(100% - 32px);">
+
+				<p:ajax event="close" listener="#{encontristaController.fecharDetalhes()}" />
+
+				<h:panelGroup id="detalhesContent" rendered="#{encontristaController.encontristaDetalhes != null}">
+					<div class="modal-pessoa-header">
+						<div class="modal-pessoa-avatar-section">
+							<h:panelGroup rendered="#{not empty encontristaController.encontristaDetalhes.pessoa.foto}">
+								<h:graphicImage value="/fotos/#{encontristaController.encontristaDetalhes.pessoa.foto}" alt="Foto"
+									styleClass="modal-pessoa-foto" />
+							</h:panelGroup>
+							<h:panelGroup rendered="#{empty encontristaController.encontristaDetalhes.pessoa.foto}">
+								<h:graphicImage name="images/default_avatar.png" alt="Foto padrão"
+									styleClass="modal-pessoa-foto" />
+							</h:panelGroup>
+							<div class="modal-pessoa-info-principal">
+								<h2 class="modal-pessoa-nome">#{encontristaController.encontristaDetalhes.pessoa.nome}</h2>
+								<div class="modal-pessoa-meta">
+									<span class="sm-tag sm-tag-green">
+										#{encontristaController.encontristaDetalhes.encontro.nome}
+									</span>
+									<h:panelGroup rendered="#{encontristaController.encontristaDetalhes.circulo != null}">
+										<span class="sm-tag sm-tag-#{encontristaController.encontristaDetalhes.circulo.toString().toLowerCase()}">
+											<i class="pi pi-circle-fill"></i> #{encontristaController.encontristaDetalhes.circulo}
+										</span>
+									</h:panelGroup>
+									<span class="modal-pessoa-id">ID: #{encontristaController.encontristaDetalhes.id}</span>
+								</div>
+							</div>
+						</div>
+						<div class="modal-pessoa-actions">
+							<p:button icon="pi pi-pencil" title="Editar"
+								outcome="/pages/encontrista/cadastro.xhtml"
+								styleClass="action-button-primary">
+								<f:param name="id" value="#{encontristaController.encontristaDetalhes.id}" />
+							</p:button>
+						</div>
+					</div>
+
+					<p:tabView styleClass="modal-tabview" dynamic="false" style="padding: 0 1.5rem 1.5rem;">
+						<p:tab title="Dados Pessoais e Encontro">
+							<div class="info-grid">
+								<div class="info-item">
+									<label>Identificação</label>
+									<span>#{encontristaController.encontristaDetalhes.pessoa.id}</span>
+								</div>
+								<div class="info-item">
+									<label>Data de Nascimento</label>
+									<span>
+										<h:outputText value="#{encontristaController.encontristaDetalhes.pessoa.dataNascimento}">
+											<f:converter converterId="localDateConverter" />
+										</h:outputText>
+									</span>
+								</div>
+								<div class="info-item">
+									<label>Sexo</label>
+									<span>#{encontristaController.encontristaDetalhes.pessoa.sexo != null and encontristaController.encontristaDetalhes.pessoa.sexo.toString() eq 'F' ? 'Feminino' : 'Masculino'}</span>
+								</div>
+								<div class="info-item">
+									<label>Encontro</label>
+									<span>#{encontristaController.encontristaDetalhes.encontro.nome}</span>
+								</div>
+								<div class="info-item">
+									<label>Data de Inscrição</label>
+									<span>
+										<h:outputText value="#{encontristaController.encontristaDetalhes.dataInscricao}">
+											<f:converter converterId="localDateTimeConverter" />
+										</h:outputText>
+									</span>
+								</div>
+								<div class="info-item full-width">
+									<label>Observações</label>
+									<span>
+										<h:outputText value="#{encontristaController.encontristaDetalhes.observacoes}" rendered="#{not empty encontristaController.encontristaDetalhes.observacoes}" />
+										<h:outputText value="Nenhuma observação" rendered="#{empty encontristaController.encontristaDetalhes.observacoes}" styleClass="empty-value" />
+									</span>
+								</div>
+							</div>
+						</p:tab>
+						<p:tab title="Contato e Endereço">
+							<div class="info-grid">
+								<div class="info-item full-width">
+									<label>Endereço</label>
+									<span>
+										<h:outputText value="#{encontristaController.encontristaDetalhes.pessoa.endereco}" rendered="#{not empty encontristaController.encontristaDetalhes.pessoa.endereco}" />
+										<h:outputText value="Não informado" rendered="#{empty encontristaController.encontristaDetalhes.pessoa.endereco}" styleClass="empty-value" />
+									</span>
+								</div>
+								<div class="info-item">
+									<label>Telefone</label>
+									<span>
+										<h:outputText value="#{encontristaController.encontristaDetalhes.pessoa.telefone}" rendered="#{not empty encontristaController.encontristaDetalhes.pessoa.telefone}" />
+										<h:outputText value="Não informado" rendered="#{empty encontristaController.encontristaDetalhes.pessoa.telefone}" styleClass="empty-value" />
+									</span>
+								</div>
+								<div class="info-item">
+									<label>E-mail</label>
+									<span>
+										<h:outputText value="#{encontristaController.encontristaDetalhes.pessoa.email}" rendered="#{not empty encontristaController.encontristaDetalhes.pessoa.email}" />
+										<h:outputText value="Não informado" rendered="#{empty encontristaController.encontristaDetalhes.pessoa.email}" styleClass="empty-value" />
+									</span>
+								</div>
+							</div>
+						</p:tab>
+						<p:tab title="Detalhes Adicionais">
+							<div class="info-grid">
+								<div class="info-item">
+									<label>Naturalidade</label>
+									<span>
+										<h:outputText value="#{encontristaController.encontristaDetalhes.pessoa.naturalidade}" rendered="#{not empty encontristaController.encontristaDetalhes.pessoa.naturalidade}" />
+										<h:outputText value="Não informado" rendered="#{empty encontristaController.encontristaDetalhes.pessoa.naturalidade}" styleClass="empty-value" />
+									</span>
+								</div>
+								<div class="info-item">
+									<label>Pai</label>
+									<span>
+										<h:outputText value="#{encontristaController.encontristaDetalhes.pessoa.filiacaoPai}" rendered="#{not empty encontristaController.encontristaDetalhes.pessoa.filiacaoPai}" />
+										<h:outputText value="Não informado" rendered="#{empty encontristaController.encontristaDetalhes.pessoa.filiacaoPai}" styleClass="empty-value" />
+									</span>
+								</div>
+								<div class="info-item">
+									<label>Mãe</label>
+									<span>
+										<h:outputText value="#{encontristaController.encontristaDetalhes.pessoa.filiacaoMae}" rendered="#{not empty encontristaController.encontristaDetalhes.pessoa.filiacaoMae}" />
+										<h:outputText value="Não informado" rendered="#{empty encontristaController.encontristaDetalhes.pessoa.filiacaoMae}" styleClass="empty-value" />
+									</span>
+								</div>
+								<div class="info-item">
+									<label>Escolaridade</label>
+									<span>
+										<h:outputText value="#{encontristaController.encontristaDetalhes.pessoa.escolaridade.descricao}" rendered="#{not empty encontristaController.encontristaDetalhes.pessoa.escolaridade}" />
+										<h:outputText value="Não informado" rendered="#{empty encontristaController.encontristaDetalhes.pessoa.escolaridade}" styleClass="empty-value" />
+									</span>
+								</div>
+							</div>
+						</p:tab>
+					</p:tabView>
+				</h:panelGroup>
+			</p:dialog>
+			</h:form>
 		</div>
-
-		<style>
-/* Estilos específicos para encontristas */
-.participant-info {
-	display: flex;
-	align-items: center;
-	gap: 0.75rem;
-}
-
-.participant-avatar {
-	width: 32px;
-	height: 32px;
-	background: linear-gradient(135deg, #06b6d4, #0891b2);
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: white;
-	flex-shrink: 0;
-}
-
-.participant-name {
-	font-weight: 600;
-	color: #333;
-}
-
-.participant-status {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-.participant-status i {
-	font-size: 2rem;
-}
-
-.status-progress {
-	color: #f59e0b !important;
-	animation: pulse 2s infinite;
-}
-
-.status-complete {
-	color: #6b7280 !important;
-}
-
-.circle-indicator {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-.circle-indicator i {
-	font-size: 2rem;
-}
-
-/* Classes para cores dos círculos - mapeamento direto */
-.circle-vermelho, .circle-Vermelho, .circle-VERMELHO {
-	color: #dc2626 !important;
-}
-
-.circle-verde, .circle-Verde, .circle-VERDE {
-	color: #16a34a !important;
-}
-
-.circle-rosa, .circle-Rosa, .circle-ROSA {
-	color: #ec4899 !important;
-}
-
-.circle-amarelo, .circle-Amarelo, .circle-AMARELO {
-	color: #eab308 !important;
-}
-
-.circle-azul, .circle-Azul, .circle-AZUL {
-	color: #2563eb !important;
-}
-
-/* Classes originais mantidas para compatibilidade */
-.circulo-vermelho {
-	color: #dc2626 !important;
-}
-
-.circulo-verde {
-	color: #16a34a !important;
-}
-
-.circulo-rosa {
-	color: #ec4899 !important;
-}
-
-.circulo-amarelo {
-	color: #eab308 !important;
-}
-
-.circulo-azul {
-	color: #2563eb !important;
-}
-
-/* Classes para valores do enum em diferentes formatos */
-.circulo-vermelho, .circulo-red {
-	color: #dc2626 !important;
-}
-
-.circulo-verde, .circulo-green {
-	color: #16a34a !important;
-}
-
-.circulo-rosa, .circulo-pink {
-	color: #ec4899 !important;
-}
-
-.circulo-amarelo, .circulo-yellow {
-	color: #eab308 !important;
-}
-
-.circulo-azul, .circulo-blue {
-	color: #2563eb !important;
-}
-
-/* Fallback para cores padrão */
-.circle-indicator .pi-circle-fill:not([class*="circulo-"]) {
-	color: #6b7280 !important;
-}
-
-/* Mapeamento por números caso o círculo seja retornado como número */
-.circle-1 {
-	color: #dc2626 !important; /* Vermelho */
-}
-
-.circle-2 {
-	color: #16a34a !important; /* Verde */
-}
-
-.circle-3 {
-	color: #ec4899 !important; /* Rosa */
-}
-
-.circle-4 {
-	color: #eab308 !important; /* Amarelo */
-}
-
-.circle-5 {
-	color: #2563eb !important; /* Azul */
-}
-
-/* Fallback para círculo padrão */
-.circle-indicator .pi-circle-fill {
-	color: #6b7280;
-	/* Cor padrão cinza caso não encontre a classe específica */
-}
-
-/* Modo escuro - ajustes para melhor contraste */
-@media ( prefers-color-scheme : dark) {
-	.circle-indicator .pi-circle-fill {
-		filter: brightness(1.2);
-	}
-}
-
-body.dark-mode .circle-indicator .pi-circle-fill {
-	filter: brightness(1.2);
-}
-
-.age-display {
-	font-weight: 600;
-	color: #374151;
-	font-size: 1rem;
-}
-
-.table-footer-actions {
-	margin-top: 1rem;
-	display: flex;
-	justify-content: flex-end;
-}
-
-@
-keyframes pulse { 0%, 100% {
-	opacity: 1;
-}
-50
-
-
-%
-{
-opacity
-
-
-:
-
-
-0
-.5
-;
-
-
-}
-}
-</style>
 	</ui:define>
 </ui:composition>
 

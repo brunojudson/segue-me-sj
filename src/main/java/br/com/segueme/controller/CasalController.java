@@ -1,6 +1,5 @@
 package br.com.segueme.controller;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -15,20 +14,13 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletResponse;
 
 import org.primefaces.model.file.UploadedFile;
-
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
 
 import br.com.segueme.entity.Casal;
 import br.com.segueme.entity.Pessoa;
 import br.com.segueme.service.CasalService;
+import br.com.segueme.service.PdfService;
 import br.com.segueme.service.PessoaService;
 
 @Named
@@ -39,9 +31,12 @@ public class CasalController implements Serializable {
 
 	@Inject
 	private CasalService casalService;
-	private static final String CAMINHO_FOTOS = "C:\\Desenvovilmento\\fotos\\";
+	private static final String CAMINHO_FOTOS = System.getProperty("caminho_fotos", "C:\\Desenvolvimento\\fotos") + java.io.File.separator;
 	@Inject
 	private PessoaService pessoaService;
+
+	@Inject
+	private PdfService pdfService;
 
 	private List<Casal> casais;
 	private Casal casal;
@@ -51,6 +46,9 @@ public class CasalController implements Serializable {
 	private List<Pessoa> pessoasFemininas;
 
 	private UploadedFile uploadedFile;
+
+	// Modal detalhes
+	private Casal casalDetalhes;
 
 	@PostConstruct
 	public void init() {
@@ -118,59 +116,23 @@ public class CasalController implements Serializable {
 	}
 
 	public String salvar() {
-		try {
-			// Verificar se há uma nova foto para upload
-			if (uploadedFile != null) {
-				String nomeArquivo = gerarNomeArquivo();
-				String caminhoArquivo = CAMINHO_FOTOS + "" + nomeArquivo;
-
-				// Apagar a foto anterior, se existir
-				if (casal.getFoto() != null) {
-					File fotoAnterior = new File(CAMINHO_FOTOS + "" + casal.getFoto());
-					if (fotoAnterior.exists()) {
-						fotoAnterior.delete();
-					}
-				}
-				// Salvar o novo arquivo no diretório
-				Files.copy(uploadedFile.getInputStream(), Paths.get(caminhoArquivo),
-						StandardCopyOption.REPLACE_EXISTING);
-				System.out.println("Arquivo salvo em: " + caminhoArquivo);
-
-				// Atualizar o nome do arquivo no objeto casal
-				casal.setFoto(nomeArquivo);
-			}
-
-			// Salvar ou atualizar o casal no banco de dados
-			if (casal.getId() == null) {
-				casalService.salvar(casal);
-				FacesContext.getCurrentInstance().addMessage(null,
-						new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Casal cadastrado com sucesso!"));
-			} else {
-				casalService.atualizar(casal);
-				FacesContext.getCurrentInstance().addMessage(null,
-						new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Casal atualizado com sucesso!"));
-			}
-
-			carregarCasais();
-			limpar();
-			return "lista?faces-redirect=true";
-		} catch (Exception e) {
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
-			return null;
-		}
+		return salvarInterno(true);
 	}
 	
 	public String salvarEContinuar() {
+		return salvarInterno(false);
+	}
+
+	private String salvarInterno(boolean redirecionarParaLista) {
 		try {
 			// Verificar se há uma nova foto para upload
 			if (uploadedFile != null) {
 				String nomeArquivo = gerarNomeArquivo();
-				String caminhoArquivo = CAMINHO_FOTOS + "" + nomeArquivo;
+				String caminhoArquivo = CAMINHO_FOTOS + nomeArquivo;
 
 				// Apagar a foto anterior, se existir
 				if (casal.getFoto() != null) {
-					File fotoAnterior = new File(CAMINHO_FOTOS + "" + casal.getFoto());
+					File fotoAnterior = new File(CAMINHO_FOTOS + casal.getFoto());
 					if (fotoAnterior.exists()) {
 						fotoAnterior.delete();
 					}
@@ -178,7 +140,6 @@ public class CasalController implements Serializable {
 				// Salvar o novo arquivo no diretório
 				Files.copy(uploadedFile.getInputStream(), Paths.get(caminhoArquivo),
 						StandardCopyOption.REPLACE_EXISTING);
-				System.out.println("Arquivo salvo em: " + caminhoArquivo);
 
 				// Atualizar o nome do arquivo no objeto casal
 				casal.setFoto(nomeArquivo);
@@ -197,7 +158,7 @@ public class CasalController implements Serializable {
 
 			carregarCasais();
 			limpar();
-			return "";
+			return redirecionarParaLista ? "lista?faces-redirect=true" : "";
 		} catch (Exception e) {
 			FacesContext.getCurrentInstance().addMessage(null,
 					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
@@ -243,9 +204,73 @@ public class CasalController implements Serializable {
 					new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Casal excluído com sucesso!"));
 			carregarCasais();
 		} catch (Exception e) {
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
+			// Verificar se é uma violação de chave estrangeira
+			if (isConstraintViolation(e)) {
+				String nomesCasal = casalSelecionado.getPessoa1().getNome() + " e " + casalSelecionado.getPessoa2().getNome();
+				String mensagemDetalhada = "O casal " + nomesCasal + " não pode ser excluído porque possui vínculos com outros registros no sistema ";
+				
+				// Identificar o tipo de vínculo baseado na mensagem de erro completa
+				String errorMsg = getFullErrorMessage(e).toLowerCase();
+				if (errorMsg.contains("palestrante")) {
+					mensagemDetalhada += "(cadastrado como palestrante).";
+				} else if (errorMsg.contains("trabalhador")) {
+					mensagemDetalhada += "(cadastrado como trabalhador).";
+				} else if (errorMsg.contains("equipe")) {
+					mensagemDetalhada += "(vinculado a equipes).";
+				} else if (errorMsg.contains("encontrista")) {
+					mensagemDetalhada += "(cadastrado como encontrista).";
+				} else if (errorMsg.contains("dirigente")) {
+					mensagemDetalhada += "(cadastrado como dirigente).";
+				} else {
+					mensagemDetalhada += ".";
+				}
+				
+				mensagemDetalhada += " Remova os vínculos antes de excluir.";
+				
+				FacesContext.getCurrentInstance().addMessage(null,
+						new FacesMessage(FacesMessage.SEVERITY_WARN, "Exclusão não permitida", mensagemDetalhada));
+			} else {
+				FacesContext.getCurrentInstance().addMessage(null,
+						new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro ao excluir", 
+								"Ocorreu um erro ao tentar excluir o casal. Por favor, tente novamente."));
+			}
 		}
+	}
+	
+	/**
+	 * Verifica se a exceção é uma violação de constraint (chave estrangeira)
+	 */
+	private boolean isConstraintViolation(Exception e) {
+		Throwable cause = e;
+		while (cause != null) {
+			String message = cause.getMessage();
+			if (message != null) {
+				String lowerMessage = message.toLowerCase();
+				if (lowerMessage.contains("foreign key") || 
+					lowerMessage.contains("violates") ||
+					lowerMessage.contains("constraint") ||
+					lowerMessage.contains("referenc")) {
+					return true;
+				}
+			}
+			cause = cause.getCause();
+		}
+		return false;
+	}
+	
+	/**
+	 * Obtém a mensagem completa de erro percorrendo toda a cadeia de exceções
+	 */
+	private String getFullErrorMessage(Exception e) {
+		StringBuilder fullMessage = new StringBuilder();
+		Throwable cause = e;
+		while (cause != null) {
+			if (cause.getMessage() != null) {
+				fullMessage.append(cause.getMessage()).append(" ");
+			}
+			cause = cause.getCause();
+		}
+		return fullMessage.toString();
 	}
 
 	public void carregarCasal() {
@@ -257,86 +282,21 @@ public class CasalController implements Serializable {
 	}
 
 	public void gerarFichaInscricao(Casal casal) {
-		Document document = new Document();
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			PdfWriter.getInstance(document, baos);
-			document.open();
-
-			// Título
-			Font tituloFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
-			Paragraph titulo = new Paragraph("Ficha de Cadastro do Casal", tituloFont);
-			titulo.setAlignment(Element.ALIGN_CENTER);
-			document.add(titulo);
-
-			document.add(new Paragraph(" ")); // Espaço
-
-			// Foto do casal
-			String caminhoFoto;
-			if (casal.getFoto() != null) {
-				caminhoFoto = CAMINHO_FOTOS + casal.getFoto();
-			} else {
-				// Caminho para a imagem padrão
-				caminhoFoto = FacesContext.getCurrentInstance().getExternalContext()
-					.getRealPath("/resources/images/default_casal.png");
-			}
-			File fotoFile = new File(caminhoFoto);
-			if (fotoFile.exists()) {
-				Image foto = Image.getInstance(caminhoFoto);
-				foto.scaleToFit(150, 150);
-				foto.setAlignment(Element.ALIGN_CENTER);
-				document.add(foto);
-			} else {
-				document.add(new Paragraph("Foto não encontrada."));
-			}
-
-			document.add(new Paragraph(" ")); // Espaço
-
-			// Dados Pessoa 1
-			Font dadosFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
-			Pessoa p1 = casal.getPessoa1();
-			document.add(new Paragraph("Dados do Marido:", dadosFont));
-			document.add(new Paragraph("Nome: " + p1.getNome(), dadosFont));
-			document.add(new Paragraph("CPF: " + p1.getCpf(), dadosFont));
-			document.add(new Paragraph("Data de Nascimento: " + p1.getDataNascimento(), dadosFont));
-			document.add(new Paragraph("Endereço: " + p1.getEndereco(), dadosFont));
-			document.add(new Paragraph("Telefone: " + p1.getTelefone(), dadosFont));
-			document.add(new Paragraph("E-mail: " + p1.getEmail(), dadosFont));
-			document.add(new Paragraph("Sexo: " + (p1.getSexo() != null ? p1.getSexo() : "Não informado"), dadosFont));
-			document.add(
-					new Paragraph("Idade: " + (p1.getIdade() != null ? p1.getIdade() : "Não calculada"), dadosFont));
-
-			document.add(new Paragraph(" ")); // Espaço
-
-			// Dados Pessoa 2
-			Pessoa p2 = casal.getPessoa2();
-			document.add(new Paragraph("Dados da Esposa:", dadosFont));
-			document.add(new Paragraph("Nome: " + p2.getNome(), dadosFont));
-			document.add(new Paragraph("CPF: " + p2.getCpf(), dadosFont));
-			document.add(new Paragraph("Data de Nascimento: " + p2.getDataNascimento(), dadosFont));
-			document.add(new Paragraph("Endereço: " + p2.getEndereco(), dadosFont));
-			document.add(new Paragraph("Telefone: " + p2.getTelefone(), dadosFont));
-			document.add(new Paragraph("E-mail: " + p2.getEmail(), dadosFont));
-			document.add(new Paragraph("Sexo: " + (p2.getSexo() != null ? p2.getSexo() : "Não informado"), dadosFont));
-			document.add(
-					new Paragraph("Idade: " + (p2.getIdade() != null ? p2.getIdade() : "Não calculada"), dadosFont));
-
-			document.close();
-
-			// Enviar PDF para o navegador
-			FacesContext facesContext = FacesContext.getCurrentInstance();
-			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-			response.reset();
-			response.setContentType("application/pdf");
-			response.setHeader("Content-Disposition",
-					"attachment; filename=Ficha_Inscricao_Casal_" + casal.getId() + ".pdf");
-			response.getOutputStream().write(baos.toByteArray());
-			response.getOutputStream().flush();
-			facesContext.responseComplete();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		pdfService.gerarFichaInscricaoCasal(casal);
 	}
+
+	public void abrirDetalhes(Casal casal) {
+		this.casalDetalhes = casalService.buscarPorId(casal.getId()).orElse(casal);
+	}
+
+	public void fecharDetalhes() {
+		this.casalDetalhes = null;
+	}
+
+	public Casal getCasalDetalhes() {
+		return casalDetalhes;
+	}
+
 	// Getters e Setters
 
 	public List<Casal> getCasais() {

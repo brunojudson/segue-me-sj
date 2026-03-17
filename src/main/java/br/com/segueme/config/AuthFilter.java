@@ -28,6 +28,7 @@ public class AuthFilter implements Filter {
     private static final String LOGIN_PAGE = "/pages/login.xhtml";
     private static final List<String> PUBLIC_PATHS = Arrays.asList(
             "/pages/login.xhtml",
+            "/pages/index.xhtml",
             "/resources/",
             "/public/",
             "/javax.faces.resource/" // Adicionado para liberar recursos do JSF e PrimeFaces
@@ -73,18 +74,50 @@ public class AuthFilter implements Filter {
         LoginController loginController = (session != null) ? (LoginController) session.getAttribute("loginController")
                 : null;
 
-        if (isLoggedIn(loginController)) {
-            chain.doFilter(request, response);
-        } else {
-            // Evitar redirecionamento infinito para a página de login
-            if (path.equals(LOGIN_PAGE)) {
+        // Se não estiver logado, permitir apenas caminhos públicos e a página de login
+        if (!isLoggedIn(loginController)) {
+            if (isPublicPath(path) || path.equals(LOGIN_PAGE)) {
                 chain.doFilter(request, response);
                 return;
             }
-
-            // Redirecionar para a página de login
             res.sendRedirect(req.getContextPath() + LOGIN_PAGE);
+            return;
         }
+
+        // A partir daqui: usuário logado
+        // ADMIN tem acesso a tudo
+        try {
+            if (loginController.hasPermission("ADMIN")) {
+                chain.doFilter(request, response);
+                return;
+            }
+        } catch (Exception e) {
+            // Se por algum motivo o método não existir ou falhar, negar acesso como fallback
+        }
+
+        // Bloquear acesso à área de usuários para não-ADMINs
+        if (path.startsWith("/pages/usuario")) {
+            res.sendRedirect(req.getContextPath() + "/pages/index.xhtml");
+            return;
+        }
+
+        // Perfil VENDA só pode acessar páginas dentro de /pages/venda
+        try {
+            if (loginController.hasPermission("VENDA")) {
+                if (path.startsWith("/pages/venda") || isPublicPath(path)) {
+                    chain.doFilter(request, response);
+                    return;
+                } else {
+                    res.sendRedirect(req.getContextPath() + "/pages/index.xhtml");
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            // Ignorar e tratar como usuário comum
+        }
+
+        // Usuário comum (USER) — permitir acesso geral, exceto áreas administrativas já bloqueadas acima
+        chain.doFilter(request, response);
     }
 
     private boolean isPublicPath(String path) {

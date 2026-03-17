@@ -1,0 +1,252 @@
+/* ========================================
+   EMPTY STATE COMPONENT
+======================================== */
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    margin: 2rem 0;
+}
+
+.empty-state-icon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e9ecef;
+    border-radius: 50%;
+    margin-bottom: 1.5rem;
+}
+
+.empty-state-icon i {
+    font-size: 2.5rem;
+    color: #6c757d;
+}
+
+.empty-state-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #495057;
+    margin: 0 0 0.75rem 0;
+}
+
+.empty-state-message {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin: 0 0 1.5rem 0;
+    max-width: 400px;
+}
+
+.empty-state-action {
+    margin-top: 0.5rem;
+}
+
+/* Dark mode para empty-state */
+body.dark-mode .empty-state {
+    background: #23272f;
+    border-color: #444c5e;
+}
+
+body.dark-mode .empty-state-icon {
+    background: #2c303a;
+}
+
+body.dark-mode .empty-state-icon i {
+    color: #868e96;
+}
+
+body.dark-mode .empty-state-title {
+    color: #f8f9fa;
+}
+
+body.dark-mode .empty-state-message {
+    color: #bfc7d5;
+}
+
+/* ========================================
+   LOADING INDICATORS PARA DATATABLES
+======================================== */
+
+.ui-datatable-loading {
+    position: relative;
+}
+
+.ui-datatable-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    border-radius: 4px;
+}
+
+.ui-datatable-loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ui-datatable-loading-content i {
+    font-size: 2rem;
+    color: #007bff;
+}
+
+.ui-datatable-loading-content span {
+    font-size: 0.875rem;
+    color: #495057;
+    font-weight: 500;
+}
+
+/* Dark mode para loading indicators */
+body.dark-mode .ui-datatable-loading-overlay {
+    background: rgba(35, 39, 47, 0.85);
+}
+
+body.dark-mode .ui-datatable-loading-content i {
+    color: #66b3ff;
+}
+
+body.dark-mode .ui-datatable-loading-content span {
+    color: #f8f9fa;
+}
+
+/* Animação de fade para mensagens */
+.modern-messages {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   ARIA-LABEL ENHANCEMENTS
+======================================== */
+
+/* Estilo para botões com aria-label mas sem texto visível */
+button[aria-label]:not([title]) {
+    position: relative;
+}
+
+button[aria-label]:not([title]):hover::after {
+    content: attr(aria-label);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 0.375rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-bottom: 0.5rem;
+    pointer-events: none;
+}
+
+body.dark-mode button[aria-label]:not([title]):hover::after {
+    background: #f8f9fa;
+    color: #23272f;
+}
+
+/* ========================================
+   MENU SEARCH
+======================================== */
+
+.menu-search {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    margin: 0.5rem 0.5rem 0;
+    background: var(--sm-surface2, #f0f2f5);
+    border-radius: 8px;
+    border: 1px solid var(--sm-border, #e0e0e0);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.menu-search:focus-within {
+    border-color: var(--sm-accent, #2196f3);
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.15);
+}
+
+.menu-search-icon {
+    color: var(--sm-muted, #999);
+    font-size: 0.85rem;
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+
+.menu-search input {
+    border: none;
+    background: transparent;
+    color: var(--sm-text, #333);
+    font-size: 0.85rem;
+    outline: none;
+    width: 100%;
+    padding: 0.15rem 0;
+}
+
+.menu-search input::placeholder {
+    color: var(--sm-muted, #999);
+    font-style: italic;
+}
+
+.menu-no-results {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem;
+    color: var(--sm-muted, #999);
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.menu-no-results i {
+    font-size: 0.9rem;
+}
+
+/* Dark mode para menu search */
+body.dark-mode .menu-search {
+    background: #2a2e33;
+    border-color: #404040;
+}
+
+body.dark-mode .menu-search:focus-within {
+    border-color: #1976d2;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+}
+
+body.dark-mode .menu-search input {
+    color: #e0e0e0;
+}
+
+body.dark-mode .menu-search input::placeholder {
+    color: #777;
+}
+
+body.dark-mode .menu-no-results {
+    color: #777;
+}

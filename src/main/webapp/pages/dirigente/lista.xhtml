@@ -36,7 +36,7 @@
 				</div>
 
 				<h:form id="listForm" prependId="false">
-					<p:messages id="messages" showDetail="true" closable="true" />
+					<p:growl id="messages" showDetail="true" closable="true" />
 
 					<!-- Tabela moderna de dirigentes -->
 					<p:dataTable id="dirigentesTable" var="dirigente"
@@ -65,7 +65,10 @@
 								<div class="leader-avatar">
 									<i class="pi pi-crown"></i>
 								</div>
-								<h:outputText value="#{dirigente.trabalhador.pessoa.nome}" styleClass="leader-name" />
+								<p:commandLink value="#{dirigente.trabalhador.pessoa.nome}" styleClass="nome-link leader-name"
+									action="#{dirigenteController.abrirDetalhes(dirigente)}"
+									update=":detalhesForm:detalhesModal"
+									oncomplete="PF('detalhesDialog').show()" />
 							</div>
 						</p:column>
 
@@ -106,17 +109,24 @@
 							</span>
 						</p:column>
 
-						<p:column headerText="Ações" styleClass="text-center" width="140">
+						<p:column headerText="Ações" styleClass="text-center" width="80">
 							<div class="table-action-buttons">
-							   <p:commandButton icon="pi pi-eye" title="Visualizar"
-								   action="#{dirigenteController.visualizar(dirigente)}"
-								   styleClass="action-button-secondary-table action-btn" />
+							<!-- 	<p:button icon="pi pi-eye" title="Visualizar"
+									ariaLabel="Visualizar dirigente"
+									outcome="/pages/dirigente/visualizar.xhtml"
+									styleClass="action-button-secondary-table action-btn">
+									<f:param name="id" value="#{dirigente.id}" />
+								</p:button> -->
 
-							   <p:commandButton icon="pi pi-pencil" title="Editar"
-								   action="#{dirigenteController.editar(dirigente)}"
-								   styleClass="action-button-warn-table action-btn" />
+								<p:button icon="pi pi-pencil" title="Editar"
+							   ariaLabel="Editar dirigente"
+							   outcome="/pages/dirigente/cadastro.xhtml"
+							   styleClass="action-button-warn-table action-btn">
+							   <f:param name="id" value="#{dirigente.id}" />
+						   </p:button>
 
-							   <p:commandButton icon="pi pi-trash" title="Excluir"
+						   <p:commandButton icon="pi pi-trash" title="Excluir"
+							   ariaLabel="Excluir dirigente"
 								   action="#{dirigenteController.prepararExclusao(dirigente)}"
 								   styleClass="action-button-danger-table action-btn"
 								   update=":confirmDialog"
@@ -130,7 +140,7 @@
 					<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
 						header="Confirmar Exclusão" styleClass="modern-dialog"
 						message="Tem certeza que deseja excluir este dirigente?"
-						closeOnEscape="true" width="450" height="200">
+						closeOnEscape="true">
 						<p:commandButton value="Sim, excluir"
 							action="#{dirigenteController.excluir}"
 							oncomplete="PF('confirmDialog').hide()" 
@@ -142,6 +152,117 @@
 							type="button" styleClass="ui-button-secondary"
 							icon="pi pi-times" />
 					</p:confirmDialog>
+				</h:form>
+
+				<!-- Modal de Detalhes do Dirigente -->
+				<h:form id="detalhesForm">
+				<p:dialog id="detalhesModal" widgetVar="detalhesDialog"
+					header="Detalhes do Dirigente" 
+					styleClass="detalhes-pessoa-dialog"
+					modal="true" responsive="true"
+					closable="true" closeOnEscape="true"
+					showEffect="fade" hideEffect="fade"
+					style="max-width:800px; width: calc(100% - 32px);">
+
+					<p:ajax event="close" listener="#{dirigenteController.fecharDetalhes()}" />
+
+					<h:panelGroup id="detalhesContent" rendered="#{dirigenteController.dirigenteDetalhes != null}">
+						<div class="modal-pessoa-header">
+							<div class="modal-pessoa-avatar-section">
+								<div class="modal-pessoa-avatar">
+									<i class="pi pi-crown" style="font-size: 2rem;"></i>
+								</div>
+								<div class="modal-pessoa-info-principal">
+									<h2 class="modal-pessoa-nome">#{dirigenteController.dirigenteDetalhes.trabalhador.pessoa.nome}</h2>
+									<div class="modal-pessoa-meta">
+										<span class="sm-tag sm-tag-purple">
+											<i class="pi pi-folder"></i> #{dirigenteController.dirigenteDetalhes.pasta.nome}
+										</span>
+										<span class="sm-tag #{dirigenteController.dirigenteDetalhes.ativo ? 'sm-tag-green' : 'sm-tag-red'}">
+											#{dirigenteController.dirigenteDetalhes.ativo ? 'Ativo' : 'Inativo'}
+										</span>
+										<span class="modal-pessoa-id">ID: #{dirigenteController.dirigenteDetalhes.id}</span>
+									</div>
+								</div>
+							</div>
+							<div class="modal-pessoa-actions">
+								<p:button icon="pi pi-pencil" title="Editar"
+									outcome="/pages/dirigente/cadastro.xhtml"
+									styleClass="action-button-primary">
+									<f:param name="id" value="#{dirigenteController.dirigenteDetalhes.id}" />
+								</p:button>
+							</div>
+						</div>
+
+						<div class="info-grid" style="padding: 0 1.5rem 1rem;">
+							<div class="info-item">
+								<label>Trabalhador</label>
+								<span>
+									<h:outputText value="#{dirigenteController.dirigenteDetalhes.trabalhador.pessoa.nome}" rendered="#{not empty dirigenteController.dirigenteDetalhes.trabalhador.pessoa.nome}" />
+									<h:outputText value="Não informado" styleClass="empty-value" rendered="#{empty dirigenteController.dirigenteDetalhes.trabalhador.pessoa.nome}" />
+								</span>
+							</div>
+							<div class="info-item">
+								<label>Equipe</label>
+								<span>
+									<h:outputText value="#{dirigenteController.dirigenteDetalhes.trabalhador.equipe.nome}" rendered="#{not empty dirigenteController.dirigenteDetalhes.trabalhador.equipe.nome}" />
+									<h:outputText value="Não informada" styleClass="empty-value" rendered="#{empty dirigenteController.dirigenteDetalhes.trabalhador.equipe.nome}" />
+								</span>
+							</div>
+							<div class="info-item">
+								<label>Pasta</label>
+								<span>
+									<h:outputText value="#{dirigenteController.dirigenteDetalhes.pasta.nome}" rendered="#{not empty dirigenteController.dirigenteDetalhes.pasta.nome}" />
+									<h:outputText value="Não informada" styleClass="empty-value" rendered="#{empty dirigenteController.dirigenteDetalhes.pasta.nome}" />
+								</span>
+							</div>
+						</div>
+
+						<div class="info-grid" style="padding: 0 1.5rem 1.5rem;">
+							<div class="info-item">
+								<label>Data de Início</label>
+								<span>
+									<h:outputText value="#{dirigenteController.dirigenteDetalhes.dataInicio}" rendered="#{not empty dirigenteController.dirigenteDetalhes.dataInicio}">
+										<f:converter converterId="localDateConverter" />
+									</h:outputText>
+									<h:outputText value="Não informada" styleClass="empty-value" rendered="#{empty dirigenteController.dirigenteDetalhes.dataInicio}" />
+								</span>
+							</div>
+							<div class="info-item">
+								<label>Data de Fim</label>
+								<span>
+									<h:outputText value="#{dirigenteController.dirigenteDetalhes.dataFim}" rendered="#{not empty dirigenteController.dirigenteDetalhes.dataFim}">
+										<f:converter converterId="localDateConverter" />
+									</h:outputText>
+									<h:outputText value="Em exercício" styleClass="empty-value" rendered="#{empty dirigenteController.dirigenteDetalhes.dataFim}" />
+								</span>
+							</div>
+							<div class="info-item">
+								<label>Duração</label>
+								<span>
+									<h:outputText value="#{dirigenteController.dirigenteDetalhes.calcularDuracaoMandato()} dias" rendered="#{dirigenteController.dirigenteDetalhes.calcularDuracaoMandato() gt 0}" />
+									<h:outputText value="Não calculável" styleClass="empty-value" rendered="#{dirigenteController.dirigenteDetalhes.calcularDuracaoMandato() le 0}" />
+								</span>
+							</div>
+							<div class="info-item full-width">
+								<label>Observações</label>
+								<span>
+									<h:outputText value="#{dirigenteController.dirigenteDetalhes.observacoes}" rendered="#{not empty dirigenteController.dirigenteDetalhes.observacoes}" />
+									<h:outputText value="Sem observações" styleClass="empty-value" rendered="#{empty dirigenteController.dirigenteDetalhes.observacoes}" />
+								</span>
+							</div>
+							<div class="info-item">
+								<label>Data de Cadastro</label>
+								<span>
+									<h:outputText value="#{dirigenteController.dirigenteDetalhes.dataCadastro}" rendered="#{not empty dirigenteController.dirigenteDetalhes.dataCadastro}">
+										<f:converter converterId="localDateTimeConverter" />
+									</h:outputText>
+									<h:outputText value="Não informada" styleClass="empty-value" rendered="#{empty dirigenteController.dirigenteDetalhes.dataCadastro}" />
+								</span>
+							</div>
+						</div>
+					</h:panelGroup>
+				</p:dialog>
 				</h:form>
 			</ui:fragment>
 
@@ -157,74 +278,6 @@
 				</div>
 			</ui:fragment>
 		</div>
-
-		<style>
-		/* Badges de status modernos */
-			.status-badge {
-				display: inline-flex;
-				align-items: center;
-				gap: 0.25rem;
-				padding: 0.375rem 0.75rem;
-				border-radius: 20px;
-				font-size: 0.75rem;
-				font-weight: 600;
-				text-transform: uppercase;
-				letter-spacing: 0.5px;
-			}
-
-			.status-badge.ativo {
-				background-color: #e8f5e8;
-				color: #2e7d32;
-				border: 1px solid #c8e6c9;
-			}
-
-			.status-badge.inativo {
-				background-color: #ffebee;
-				color: #c62828;
-				border: 1px solid #ffcdd2;
-			}
-			/* Estilos específicos para dirigentes */
-			.leader-info {
-				display: flex;
-				align-items: center;
-				gap: 0.75rem;
-			}
-
-			.leader-avatar {
-				width: 36px;
-				height: 36px;
-				background: transparent;
-				border-radius: 50%;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				flex-shrink: 0;
-				/* Remove fundo para mostrar só o ícone */
-			}
-			.leader-avatar .pi-crown {
-				font-size: 2rem;
-				color: #f59e0b;
-				filter: drop-shadow(0 1px 2px #b45309);
-				background: none;
-			}
-
-			.leader-name {
-				font-weight: 600;
-				color: #333;
-			}
-
-			.folder-badge {
-				display: inline-flex;
-				align-items: center;
-				gap: 0.5rem;
-				padding: 0.25rem 0.75rem;
-				border-radius: 12px;
-				font-size: 0.875rem;
-				font-weight: 500;
-				background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-				color: white;
-			}
-		</style>
 	</ui:define>
 </ui:composition>
 

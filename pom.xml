@@ -23,15 +23,16 @@
         <omnifaces.version>2.7.3</omnifaces.version>
         <postgresql.version>42.6.0</postgresql.version>
         <lombok.version>1.18.28</lombok.version>
+        <zxing.version>3.5.2</zxing.version>
 
     </properties>
 
     <dependencies>
-    <dependency>
-    <groupId>net.sf.jasperreports</groupId>
-    <artifactId>jasperreports</artifactId>
-    <version>6.21.0</version>
-</dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.21.0</version>
+        </dependency>
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
@@ -102,6 +103,18 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- ZXing para geração de QR Code -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>${zxing.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>${zxing.version}</version>
+        </dependency>
+
         <!-- Apache POI para exportação Excel -->
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -119,6 +132,20 @@
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
             <version>5.5.13.3</version>
+        </dependency>
+
+        <!-- SLF4J API -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.36</version>
+        </dependency>
+
+        <!-- Logback Classic (implementação do SLF4J) -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.12</version>
         </dependency>
 
         <!-- Apache Commons -->
@@ -219,9 +246,9 @@
         </plugins>
     </build>
     <repositories>
-  <repository>
-      <id>maven-group</id>
-      <url>http://binario.caixa:8081/repository/caixa-group</url>
-  </repository>
-  </repositories>
+        <repository>
+            <id>maven-group</id>
+            <url>http://binario.caixa:8081/repository/caixa-group</url>
+        </repository>
+    </repositories>
 </project>

@@ -87,4 +87,10 @@ public interface EquipeRepository {
      * @return true se possui associações, false caso contrário
      */
     boolean hasAssociations(Long id);
+
+    /**
+     * Conta o total de equipes cadastradas
+     * @return total de equipes
+     */
+    long count();
 }

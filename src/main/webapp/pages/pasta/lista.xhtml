@@ -35,7 +35,7 @@
 			</div>
 
 			<h:form id="listForm" prependId="false">
-				<p:messages id="messages" showDetail="true" closable="true" />
+				<p:growl id="messages" showDetail="true" closable="true" />
 
 				<!-- Tabela moderna de pastas -->
 				<p:dataTable id="pastasTable" var="pasta" 
@@ -64,7 +64,10 @@
 							<div class="folder-icon">
 								<i class="pi pi-folder"></i>
 							</div>
-							<h:outputText value="#{pasta.nome}" styleClass="folder-name" />
+							<p:commandLink value="#{pasta.nome}" styleClass="nome-link folder-name"
+								action="#{pastaController.abrirDetalhes(pasta)}"
+								update=":detalhesForm:detalhesModal"
+								oncomplete="PF('detalhesDialog').show()" />
 						</div>
 					</p:column>
 
@@ -106,15 +109,22 @@
 
 					<p:column headerText="Ações" styleClass="text-center" width="140">
 						<div class="table-action-buttons">
-							<p:commandButton icon="pi pi-eye" title="Visualizar"
-								action="#{pastaController.visualizar(pasta)}"
-								styleClass="action-button-secondary-table action-btn" />
+							<!-- <p:button icon="pi pi-eye" title="Visualizar"
+								ariaLabel="Visualizar pasta"
+								outcome="/pages/pasta/visualizar.xhtml"
+								styleClass="action-button-secondary-table action-btn">
+								<f:param name="id" value="#{pasta.id}" />
+							</p:button> -->
 
-							<p:commandButton icon="pi pi-pencil" title="Editar"
-								action="#{pastaController.editar(pasta)}"
-								styleClass="action-button-warn-table action-btn" />
+							<p:button icon="pi pi-pencil" title="Editar"
+								ariaLabel="Editar pasta"
+								outcome="/pages/pasta/cadastro.xhtml"
+								styleClass="action-button-warn-table action-btn">
+								<f:param name="id" value="#{pasta.id}" />
+							</p:button>
 
 							<p:commandButton icon="pi pi-trash" title="Excluir"
+								ariaLabel="Excluir pasta"
 								action="#{pastaController.prepararExclusao(pasta)}"
 								styleClass="action-button-danger-table action-btn"
 								update=":confirmDialog"
@@ -127,7 +137,7 @@
 				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
 					header="Confirmar Exclusão" styleClass="modern-dialog"
 					message="Tem certeza que deseja excluir esta pasta?"
-					closeOnEscape="true" width="450" height="200">
+					closeOnEscape="true">
 					<p:commandButton value="Sim, excluir" 
 						action="#{pastaController.excluir}"
 						oncomplete="PF('confirmDialog').hide()" 
@@ -140,56 +150,123 @@
 						icon="pi pi-times" />
 				</p:confirmDialog>
 			</h:form>
+
+			<!-- Modal de Detalhes da Pasta -->
+			<h:form id="detalhesForm">
+			<p:dialog id="detalhesModal" widgetVar="detalhesDialog"
+				header="Detalhes da Pasta" 
+				styleClass="detalhes-pessoa-dialog"
+				modal="true" responsive="true"
+				closable="true" closeOnEscape="true"
+				showEffect="fade" hideEffect="fade"
+				style="max-width:900px; width: calc(100% - 32px);">
+
+				<p:ajax event="close" listener="#{pastaController.fecharDetalhes()}" />
+
+				<h:panelGroup id="detalhesContent" rendered="#{pastaController.pastaDetalhes != null}">
+					<div class="modal-pessoa-header">
+						<div class="modal-pessoa-avatar-section">
+							<div class="modal-pessoa-avatar">
+								<i class="pi pi-folder" style="font-size: 2rem;"></i>
+							</div>
+							<div class="modal-pessoa-info-principal">
+								<h2 class="modal-pessoa-nome">#{pastaController.pastaDetalhes.nome}</h2>
+								<div class="modal-pessoa-meta">
+									<span class="sm-tag #{pastaController.pastaDetalhes.ativo ? 'sm-tag-green' : 'sm-tag-red'}">
+										#{pastaController.pastaDetalhes.ativo ? 'Ativo' : 'Inativo'}
+									</span>
+									<span class="modal-pessoa-id">ID: #{pastaController.pastaDetalhes.id}</span>
+								</div>
+							</div>
+						</div>
+						<div class="modal-pessoa-actions">
+							<p:button icon="pi pi-pencil" title="Editar"
+								outcome="/pages/pasta/cadastro.xhtml"
+								styleClass="action-button-primary">
+								<f:param name="id" value="#{pastaController.pastaDetalhes.id}" />
+							</p:button>
+						</div>
+					</div>
+
+					<div class="info-grid" style="padding: 0 1.5rem 1rem;">
+						<div class="info-item">
+							<label>Nome</label>
+							<span>#{pastaController.pastaDetalhes.nome}</span>
+						</div>
+						<div class="info-item">
+							<label>Equipe Dirigente</label>
+							<span>
+								<h:outputText value="#{pastaController.pastaDetalhes.equipe.nome}" rendered="#{not empty pastaController.pastaDetalhes.equipe.nome}" />
+								<h:outputText value="Não informada" styleClass="empty-value" rendered="#{empty pastaController.pastaDetalhes.equipe.nome}" />
+							</span>
+						</div>
+						<div class="info-item full-width">
+							<label>Descrição</label>
+							<span>
+								<h:outputText value="#{pastaController.pastaDetalhes.descricao}" rendered="#{not empty pastaController.pastaDetalhes.descricao}" />
+								<h:outputText value="Sem descrição" rendered="#{empty pastaController.pastaDetalhes.descricao}" styleClass="empty-value" />
+							</span>
+						</div>
+						<div class="info-item">
+							<label>Data de Início</label>
+							<span>
+								<h:outputText value="#{pastaController.pastaDetalhes.dataInicio}" rendered="#{not empty pastaController.pastaDetalhes.dataInicio}">
+									<f:converter converterId="localDateConverter" />
+								</h:outputText>
+								<h:outputText value="Não informada" styleClass="empty-value" rendered="#{empty pastaController.pastaDetalhes.dataInicio}" />
+							</span>
+						</div>
+						<div class="info-item">
+							<label>Data de Fim</label>
+							<span>
+								<h:outputText value="#{pastaController.pastaDetalhes.dataFim}" rendered="#{not empty pastaController.pastaDetalhes.dataFim}">
+									<f:converter converterId="localDateConverter" />
+								</h:outputText>
+								<h:outputText value="Não informada" styleClass="empty-value" rendered="#{empty pastaController.pastaDetalhes.dataFim}" />
+							</span>
+						</div>
+						<div class="info-item">
+							<label>Duração</label>
+							<span>
+								<h:outputText value="#{pastaController.pastaDetalhes.calcularDuracaoMandato()} dias" rendered="#{pastaController.pastaDetalhes.calcularDuracaoMandato() gt 0}" />
+								<h:outputText value="Não calculável" styleClass="empty-value" rendered="#{pastaController.pastaDetalhes.calcularDuracaoMandato() le 0}" />
+							</span>
+						</div>
+					</div>
+
+					<!-- Dirigentes -->
+					<div style="padding: 0 1.5rem 1.5rem;">
+						<h3 class="detail-section-title"><i class="pi pi-users"></i> Dirigentes da Pasta</h3>
+						<p:dataTable value="#{pastaController.pastaDetalhes.dirigentes}" var="dirigente"
+							emptyMessage="Nenhum dirigente cadastrado para esta pasta"
+							styleClass="modern-datatable">
+							<p:column headerText="Nome" sortBy="#{dirigente.trabalhador.pessoa.nome}">
+								<h:outputText value="#{dirigente.trabalhador.pessoa.nome}" />
+							</p:column>
+							<p:column headerText="Data de Início" sortBy="#{dirigente.dataInicio}">
+								<h:outputText value="#{dirigente.dataInicio}" rendered="#{not empty dirigente.dataInicio}">
+									<f:converter converterId="localDateConverter" />
+								</h:outputText>
+								<h:outputText value="Não informada" styleClass="empty-value" rendered="#{empty dirigente.dataInicio}" />
+							</p:column>
+							<p:column headerText="Data de Fim" sortBy="#{dirigente.dataFim}">
+								<h:outputText value="#{dirigente.dataFim}" rendered="#{not empty dirigente.dataFim}">
+									<f:converter converterId="localDateConverter" />
+								</h:outputText>
+								<h:outputText value="Em exercício" styleClass="empty-value" rendered="#{empty dirigente.dataFim}" />
+							</p:column>
+							<p:column headerText="Status" styleClass="text-center">
+								<span class="sm-tag #{dirigente.ativo ? 'sm-tag-green' : 'sm-tag-red'}">
+									<i class="pi #{dirigente.ativo ? 'pi-check' : 'pi-times'}"></i>
+									#{dirigente.ativo ? 'Ativo' : 'Inativo'}
+								</span>
+							</p:column>
+						</p:dataTable>
+					</div>
+				</h:panelGroup>
+			</p:dialog>
+			</h:form>
 		</div>
-
-		<style>
-			/* Estilos específicos para pastas */
-			.folder-info {
-				display: flex;
-				align-items: center;
-				gap: 0.75rem;
-			}
-
-			.folder-icon {
-				width: 32px;
-				height: 32px;
-				background: linear-gradient(135deg, #f59e0b, #d97706);
-				border-radius: 8px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				color: white;
-				flex-shrink: 0;
-			}
-
-			.folder-name {
-				font-weight: 600;
-				color: #333;
-			}
-
-			.folder-status {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-			}
-
-			.folder-status i {
-				font-size: 2rem;
-			}
-
-			.date-display {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				gap: 0.5rem;
-				font-size: 0.875rem;
-				color: #6b7280;
-			}
-
-			.date-display i {
-				color: #9ca3af;
-			}
-		</style>
 		<h:outputScript library="js" name="scrollUpParaLista.js" target="head" />
 	</ui:define>
 </ui:composition>

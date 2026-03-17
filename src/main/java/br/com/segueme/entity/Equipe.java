@@ -18,6 +18,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "equipe", schema="public")
@@ -29,9 +32,12 @@ public class Equipe implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Nome da equipe é obrigatório")
+    @Size(min = 2, max = 100, message = "Nome deve ter entre 2 e 100 caracteres")
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 
+    @NotNull(message = "Tipo de equipe é obrigatório")
     @JsonbTransient
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_equipe_id", nullable = false)
@@ -47,6 +53,7 @@ public class Equipe implements Serializable {
     @Column(name = "data_fim")
     private LocalDate dataFim;
 
+    @Size(max = 500, message = "Descrição deve ter no máximo 500 caracteres")
     @Column(name = "descricao")
     private String descricao;
 

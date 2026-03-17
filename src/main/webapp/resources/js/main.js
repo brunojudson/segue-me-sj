@@ -80,10 +80,28 @@ function focusFirstError() {
 
 // Scroll suave para o topo
 function scrollToTop() {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
+    try {
+        var content = document.getElementById('content');
+        if (content) {
+            // Tenta alinhar a primeira seção de conteúdo ao topo, compensando padding
+            var target = content.querySelector('.content-container') || content.firstElementChild;
+            var paddingTop = parseFloat(getComputedStyle(content).paddingTop) || 0;
+            // compensa a altura do header (definida em --header-h no template)
+            var headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 0;
+            var targetOffset = 0;
+            if (target) {
+                targetOffset = target.offsetTop - paddingTop - headerH;
+                if (targetOffset < 0) targetOffset = 0;
+            }
+            if (typeof content.scrollTo === 'function') {
+                content.scrollTo({ top: targetOffset, behavior: 'smooth' });
+            } else {
+                content.scrollTop = targetOffset;
+            }
+            return;
+        }
+    } catch (e) { }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Inicialização quando o DOM estiver pronto
@@ -106,6 +124,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Animação de entrada do header
     initHeaderAnimations();
+    // Inicializa comportamento do menu (toggle, overlay, links)
+    try { initMenu(); } catch (e) { /* ignore */ }
+
+    // Garante que ao carregar uma nova página o conteúdo comece no topo
+    try { scrollToTop(); } catch (e) { /* ignore */ }
 });
 
 // Inicializa animações nos fieldsets
@@ -407,3 +430,310 @@ window.hideLoadingOverlay = hideLoadingOverlay;
 window.toggleDarkMode = toggleDarkMode;
 window.initDarkMode = initDarkMode;
 window.initHeaderAnimations = initHeaderAnimations;
+
+// Menu mobile: funções e inicialização centralizada
+function toggleMenu() {
+    var menu = document.getElementById('menu');
+    var menuContainer = menu ? menu.querySelector('.menu-container') : null;
+    var overlay = document.querySelector('.menu-overlay');
+    var body = document.body;
+    if (!menuContainer || !overlay) return;
+    var isOpen = menuContainer.classList.contains('active');
+    if (isOpen) {
+        console.debug('[menu] toggleMenu: closing');
+        menuContainer.classList.remove('active');
+        body.classList.remove('menu-open');
+        body.style.overflow = '';
+    } else {
+        console.debug('[menu] toggleMenu: opening');
+        menuContainer.classList.add('active');
+        body.classList.add('menu-open');
+        body.style.overflow = 'hidden';
+    }
+}
+
+function closeMenu() {
+    var menu = document.getElementById('menu');
+    var menuContainer = menu ? menu.querySelector('.menu-container') : null;
+    var overlay = document.querySelector('.menu-overlay');
+    var body = document.body;
+    if (menuContainer) menuContainer.classList.remove('active');
+    body.classList.remove('menu-open');
+    body.style.overflow = '';
+}
+
+// Handler para cliques em links do menu (fecha em mobile)
+function _menuLinkHandler(e) {
+    var link = e.target.closest && e.target.closest('.menu-link');
+    if (link && window.innerWidth <= 768) {
+        // Delay curto para permitir navegação por link tradicional
+        setTimeout(closeMenu, 50);
+    }
+}
+
+function initMenu() {
+    // attach toggle and overlay listeners
+    var toggle = document.querySelector('.menu-toggle');
+    if (toggle) {
+        toggle.removeEventListener('click', toggleMenu);
+        toggle.addEventListener('click', toggleMenu);
+    }
+    var overlay = document.querySelector('.menu-overlay');
+    // listeners no overlay (visibilidade controlada por CSS via `body.menu-open`)
+    if (overlay) {
+        overlay.removeEventListener('click', closeMenu);
+        overlay.addEventListener('click', closeMenu);
+    }
+
+    // use event delegation on body for menu link clicks
+    document.body.removeEventListener('click', _menuLinkHandler);
+    document.body.addEventListener('click', _menuLinkHandler);
+
+    // calcula --header-h para compensar scrollToTop
+    try {
+        var header = document.getElementById('header');
+        if (header) {
+            document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+        }
+    } catch (e) { }
+
+    // Garantir estado fechado ao inicializar para evitar overlay ativo indevido
+    try {
+        var menu = document.getElementById('menu');
+        var container = menu ? menu.querySelector('.menu-container') : null;
+        var overlayEl = document.querySelector('.menu-overlay');
+        if (container) container.classList.remove('active');
+        if (overlayEl) { overlayEl.style.pointerEvents = 'none'; }
+        document.body.classList.remove('menu-open');
+        document.body.style.overflow = '';
+        console.debug('[menu] initMenu state:', { bodyClass: document.body.className, containerClass: container ? container.className : null, overlayDisplay: overlayEl ? overlayEl.style.display : null });
+    } catch (e) { }
+}
+
+// Re-inicializa menu após callbacks AJAX do PrimeFaces (compatível com várias versões)
+(function() {
+    function _onAjaxEvent(data) {
+        try {
+            if (!data || data.status === 'success' || data.status === 'complete') {
+                initMenu();
+            }
+        } catch (e) { }
+    }
+
+    if (window.PrimeFaces && PrimeFaces.ajax) {
+        try {
+            if (PrimeFaces.ajax.Request && typeof PrimeFaces.ajax.Request.addOnEventHandler === 'function') {
+                PrimeFaces.ajax.Request.addOnEventHandler(_onAjaxEvent);
+            } else if (typeof PrimeFaces.ajax.addOnEventHandler === 'function') {
+                PrimeFaces.ajax.addOnEventHandler(_onAjaxEvent);
+            } else {
+                // fallback: escuta eventos personalizados do PrimeFaces
+                document.addEventListener('pfAjaxComplete', function() { _onAjaxEvent(); }, false);
+                if (window.jQuery) jQuery(document).on('pfAjaxComplete', function() { _onAjaxEvent(); });
+            }
+        } catch (e) {
+            // se qualquer coisa falhar, usa fallback de evento
+            document.addEventListener('pfAjaxComplete', function() { _onAjaxEvent(); }, false);
+            if (window.jQuery) jQuery(document).on('pfAjaxComplete', function() { _onAjaxEvent(); });
+        }
+    } else {
+        // PrimeFaces não definido ainda — usa fallback nos eventos do documento/jQuery
+        document.addEventListener('pfAjaxComplete', function() { _onAjaxEvent(); }, false);
+        if (window.jQuery) jQuery(document).on('pfAjaxComplete', function() { _onAjaxEvent(); });
+    }
+})();
+
+// Tornar funções acessíveis globalmente (compatibilidade)
+window.toggleMenu = toggleMenu;
+window.closeMenu = closeMenu;
+window.initMenu = initMenu;
+
+// Busca rápida no menu (usada no onkeyup do input de busca)
+function filterMenu(query) {
+    var normalizedQuery = (query || '').toLowerCase().normalize('NFD').replace(/[{\u0300-\u036f}]/g, '').replace(/[\u0300-\u036f]/g, '');
+    var menuItems = document.querySelectorAll('.main-menu > li');
+    var noResults = document.getElementById('menuNoResults');
+    var hasVisible = false;
+    menuItems.forEach(function(section) {
+        var links = section.querySelectorAll('.submenu li');
+        var sectionHasMatch = false;
+        links.forEach(function(item) {
+            var text = (item.textContent || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            if (!normalizedQuery || text.indexOf(normalizedQuery) !== -1) {
+                item.style.display = '';
+                sectionHasMatch = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        section.style.display = sectionHasMatch ? '' : 'none';
+        if (sectionHasMatch) hasVisible = true;
+    });
+    if (noResults) {
+        noResults.style.display = (normalizedQuery && !hasVisible) ? 'flex' : 'none';
+    }
+}
+
+// Fecha menu ao redimensionar para desktop
+window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+        closeMenu();
+    }
+});
+
+/* ========================================
+   LOADING INDICATORS PARA DATATABLES
+======================================== */
+
+// Adiciona loading indicator nas dataTables durante filtros e paginação
+function initDataTableLoadingIndicators() {
+    // Intercepta eventos AJAX do PrimeFaces (compatível com várias versões)
+    if (typeof PrimeFaces !== 'undefined') {
+        var _dtHandler = function(data) {
+            try {
+                var source = data && data.source;
+                if (source && source.closest) {
+                    var table = source.closest('.ui-datatable');
+                    if (table && data.status === 'begin') {
+                        showDataTableLoading(table);
+                        return;
+                    }
+                    if (table && (data.status === 'complete' || data.status === 'success')) {
+                        hideDataTableLoading(table);
+                        return;
+                    }
+                }
+            } catch (e) { }
+        };
+
+        try {
+            if (PrimeFaces.ajax && PrimeFaces.ajax.Request && typeof PrimeFaces.ajax.Request.addOnEventHandler === 'function') {
+                PrimeFaces.ajax.Request.addOnEventHandler(_dtHandler);
+            } else if (PrimeFaces.ajax && typeof PrimeFaces.ajax.addOnEventHandler === 'function') {
+                PrimeFaces.ajax.addOnEventHandler(_dtHandler);
+            } else {
+                // fallback: usa eventos globais pfAjaxStart/pfAjaxComplete
+                document.addEventListener('pfAjaxStart', function() {
+                    document.querySelectorAll('.ui-datatable').forEach(function(table) { showDataTableLoading(table); });
+                });
+                document.addEventListener('pfAjaxComplete', function() {
+                    document.querySelectorAll('.ui-datatable').forEach(function(table) { hideDataTableLoading(table); });
+                });
+                if (window.jQuery) {
+                    jQuery(document).on('pfAjaxStart', function() { jQuery('.ui-datatable').each(function() { showDataTableLoading(this); }); });
+                    jQuery(document).on('pfAjaxComplete', function() { jQuery('.ui-datatable').each(function() { hideDataTableLoading(this); }); });
+                }
+            }
+        } catch (e) {
+            // último recurso: exibir/hide em eventos pfAjaxComplete (sem contexto)
+            document.addEventListener('pfAjaxStart', function() { document.querySelectorAll('.ui-datatable').forEach(function(table) { showDataTableLoading(table); }); });
+            document.addEventListener('pfAjaxComplete', function() { document.querySelectorAll('.ui-datatable').forEach(function(table) { hideDataTableLoading(table); }); });
+        }
+    }
+    
+    // Observer para detectar quando novas dataTables são adicionadas ao DOM
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === 1 && node.classList && node.classList.contains('ui-datatable')) {
+                    setupDataTableLoading(node);
+                }
+            });
+        });
+    });
+    
+    // Inicia observação do body
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+    
+    // Configura dataTables existentes
+    document.querySelectorAll('.ui-datatable').forEach(setupDataTableLoading);
+}
+
+// Configura uma dataTable específica para loading indicators
+function setupDataTableLoading(table) {
+    if (table.dataset.loadingConfigured) return;
+    table.dataset.loadingConfigured = 'true';
+    
+    // Adiciona listeners para filtros
+    const filterInputs = table.querySelectorAll('.ui-column-filter');
+    filterInputs.forEach(input => {
+        input.addEventListener('input', debounce(function() {
+            showDataTableLoading(table);
+        }, 100));
+    });
+    
+    // Adiciona listeners para paginação
+    const paginators = table.querySelectorAll('.ui-paginator a, .ui-paginator select');
+    paginators.forEach(element => {
+        element.addEventListener('click', function() {
+            showDataTableLoading(table);
+        });
+        if (element.tagName === 'SELECT') {
+            element.addEventListener('change', function() {
+                showDataTableLoading(table);
+            });
+        }
+    });
+}
+
+// Mostra loading indicator em uma dataTable
+function showDataTableLoading(table) {
+    if (!table) return;
+    
+    // Verifica se já existe overlay
+    let overlay = table.querySelector('.ui-datatable-loading-overlay');
+    if (overlay) return;
+    
+    // Cria overlay
+    overlay = document.createElement('div');
+    overlay.className = 'ui-datatable-loading-overlay';
+    overlay.innerHTML = `
+        <div class="ui-datatable-loading-content">
+            <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+            <span>Carregando...</span>
+        </div>
+    `;
+    
+    // Adiciona ao container da tabela
+    const tableWrapper = table.querySelector('.ui-datatable-tablewrapper') || table;
+    tableWrapper.style.position = 'relative';
+    tableWrapper.appendChild(overlay);
+}
+
+// Remove loading indicator de uma dataTable
+function hideDataTableLoading(table) {
+    if (!table) return;
+    
+    const overlay = table.querySelector('.ui-datatable-loading-overlay');
+    if (overlay) {
+        overlay.remove();
+    }
+}
+
+// Utility: debounce function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Inicializa loading indicators quando o DOM estiver pronto
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDataTableLoadingIndicators);
+} else {
+    initDataTableLoadingIndicators();
+}
+
+// Expõe funções de dataTable globalmente
+window.initDataTableLoadingIndicators = initDataTableLoadingIndicators;
+window.showDataTableLoading = showDataTableLoading;
+window.hideDataTableLoading = hideDataTableLoading;

@@ -12,7 +12,7 @@ import br.com.segueme.service.EncontroService;
 
 // Mantenha value, mas managed=true pode não ser necessário se a injeção direta não funcionar
 // Se managed=true causar problemas de deploy/inicialização, você pode removê-lo.
-@FacesConverter(value = "encontroConverter")
+@FacesConverter(value = "encontroConverter", forClass = Encontro.class)
 public class EncontroConverter implements Converter<Encontro> {
 
     // Removido @Inject private EncontroService encontroService;

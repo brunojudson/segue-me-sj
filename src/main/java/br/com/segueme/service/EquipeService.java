@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import br.com.segueme.entity.Encontro;
 import br.com.segueme.entity.Equipe;
@@ -184,7 +183,6 @@ public class EquipeService implements Serializable {
      * @param id ID da equipe a ser removida
      * @return true se removida com sucesso, false caso contrário
      */
-    @Transactional
     public boolean remover(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("ID da equipe não pode ser nulo");
@@ -228,5 +226,13 @@ public class EquipeService implements Serializable {
             equipe.setAtivo(false);
             equipeRepository.update(equipe);
         }
+    }
+
+    /**
+     * Conta o total de equipes usando COUNT(*) no banco
+     * @return total de equipes
+     */
+    public long contarTotal() {
+        return equipeRepository.count();
     }
 }

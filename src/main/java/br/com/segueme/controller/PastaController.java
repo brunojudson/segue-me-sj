@@ -12,6 +12,9 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import br.com.segueme.entity.Dirigente;
 import br.com.segueme.entity.Equipe;
 import br.com.segueme.entity.Pasta;
@@ -25,6 +28,8 @@ public class PastaController implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private static final Logger logger = LoggerFactory.getLogger(PastaController.class);
+
     @Inject
     private PastaService pastaService;
 
@@ -37,6 +42,7 @@ public class PastaController implements Serializable {
     private List<Pasta> pastas;
     private Pasta pasta;
     private Pasta pastaSelecionada;
+    private Pasta pastaDetalhes;
 
     private List<Equipe> equipesDirigentes;
 
@@ -71,7 +77,7 @@ public class PastaController implements Serializable {
     }
 
     public String salvar() {
-    	System.out.println(pasta.isAtivo());
+    	logger.debug("Pasta ativo: {}", pasta.isAtivo());
         try {
             if (pasta.getId() == null) {
                 pastaService.salvar(pasta);
@@ -151,6 +157,18 @@ public class PastaController implements Serializable {
             Long id = Long.valueOf(idParam);
             pastaService.buscarPorId(id).ifPresent(p -> this.pasta = p);
         }
+    }
+
+    public void abrirDetalhes(Pasta pasta) {
+        pastaService.buscarPorId(pasta.getId()).ifPresent(p -> this.pastaDetalhes = p);
+    }
+
+    public void fecharDetalhes() {
+        this.pastaDetalhes = null;
+    }
+
+    public Pasta getPastaDetalhes() {
+        return pastaDetalhes;
     }
 
     // Getters e Setters

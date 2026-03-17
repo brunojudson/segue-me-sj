@@ -2,6 +2,8 @@ package br.com.segueme.entity;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 import java.util.Set;
 import java.util.HashSet;
@@ -16,9 +18,12 @@ public class TipoEquipe implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @NotBlank(message = "Nome do tipo de equipe é obrigatório")
+    @Size(min = 2, max = 100, message = "Nome deve ter entre 2 e 100 caracteres")
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
     
+    @Size(max = 500, message = "Descrição deve ter no máximo 500 caracteres")
     @Column(name = "descricao")
     private String descricao;
     

@@ -36,6 +36,7 @@ public class DirigenteController implements Serializable {
     private List<Dirigente> dirigentes;
     private Dirigente dirigente;
     private Dirigente dirigenteSelecionado;
+    private Dirigente dirigenteDetalhes;
 
     private List<Trabalhador> trabalhadores;
     private List<Pasta> pastas;
@@ -70,28 +71,14 @@ public class DirigenteController implements Serializable {
     }
 
     public String salvar() {
-        try {
-            if (dirigente.getId() == null) {
-                dirigenteService.salvar(dirigente);
-                FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Dirigente cadastrado com sucesso!"));
-            } else {
-                dirigenteService.atualizar(dirigente);
-                FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Dirigente atualizado com sucesso!"));
-            }
-
-            carregarDirigentes();
-            limpar();
-            return "lista?faces-redirect=true";
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
-            return null;
-        }
+        return salvarInterno(true);
     }
     
     public String salvarEContinuar() {
+        return salvarInterno(false);
+    }
+
+    private String salvarInterno(boolean redirecionarParaLista) {
         try {
             if (dirigente.getId() == null) {
                 dirigenteService.salvar(dirigente);
@@ -105,7 +92,7 @@ public class DirigenteController implements Serializable {
 
             carregarDirigentes();
             limpar();
-            return "lista?faces-redirect=true";
+            return redirecionarParaLista ? "lista?faces-redirect=true" : "";
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
@@ -145,6 +132,18 @@ public class DirigenteController implements Serializable {
             Long id = Long.valueOf(idParam);
             dirigenteService.buscarPorId(id).ifPresent(d -> this.dirigente = d);
         }
+    }
+
+    public void abrirDetalhes(Dirigente dirigente) {
+        dirigenteService.buscarPorId(dirigente.getId()).ifPresent(d -> this.dirigenteDetalhes = d);
+    }
+
+    public void fecharDetalhes() {
+        this.dirigenteDetalhes = null;
+    }
+
+    public Dirigente getDirigenteDetalhes() {
+        return dirigenteDetalhes;
     }
 
     // Getters e Setters

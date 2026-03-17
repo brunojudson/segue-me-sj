@@ -36,7 +36,7 @@
 				</div>
 
 				<h:form id="usuarioForm">
-					<p:messages id="msgs" showDetail="true" closable="true"/>
+					<p:growl id="msgs" showDetail="true" closable="true"/>
 
 					<!-- Tabela moderna de usuários -->
 					<p:dataTable id="usuariosTable"
@@ -102,11 +102,14 @@
 
 					<p:column headerText="Ações" styleClass="text-center" width="120">
 						<div class="table-action-buttons">
-							<p:commandButton icon="pi pi-pencil" title="Editar"
-								action="#{usuarioController.editar(u)}"
-								styleClass="action-button-warn-table action-btn"
-								process="@this" />
+						<p:button icon="pi pi-pencil" title="Editar"
+							ariaLabel="Editar usuário"
+							outcome="/pages/usuario/cadastro.xhtml"
+							styleClass="action-button-warn-table action-btn">
+							<f:param name="id" value="#{u.id}" />
+						</p:button>
 							<p:commandButton icon="pi pi-trash" title="Excluir"
+								ariaLabel="Excluir usuário"
 								styleClass="action-button-danger-table action-btn"
 								update="usuariosTable usuarioForm:msgs" process="@this"
 								oncomplete="PF('confirmDialog').show()" />
@@ -144,95 +147,6 @@
 				</div>
 			</ui:fragment>
 		</div>
-
-		<style>
-			/* Estilos específicos para usuários */
-			.user-info {
-				display: flex;
-				align-items: center;
-				gap: 0.75rem;
-			}
-
-			.user-avatar {
-				width: 32px;
-				height: 32px;
-				background: linear-gradient(135deg, #dc2626, #b91c1c);
-				border-radius: 50%;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				color: white;
-				flex-shrink: 0;
-			}
-
-			.user-name {
-				font-weight: 600;
-				color: #333;
-			}
-
-			.email-display {
-				display: flex;
-				align-items: center;
-				gap: 0.5rem;
-				color: #6b7280;
-				font-family: 'Courier New', monospace;
-				font-size: 0.875rem;
-			}
-
-			.permissions-list {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 0.25rem;
-			}
-
-			.permission-tag {
-				display: inline-flex;
-				align-items: center;
-				gap: 0.25rem;
-				padding: 0.125rem 0.5rem;
-				background: #fef3c7;
-				border: 1px solid #f59e0b;
-				border-radius: 12px;
-				font-size: 0.75rem;
-				color: #92400e;
-				font-weight: 500;
-			}
-
-			.permission-tag i {
-				font-size: 0.625rem;
-			}
-
-			.access-denied {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				min-height: 400px;
-				padding: 2rem;
-			}
-
-			.access-denied-content {
-				text-align: center;
-				max-width: 400px;
-			}
-
-			.access-denied-icon {
-				font-size: 4rem;
-				color: #dc2626;
-				margin-bottom: 1rem;
-			}
-
-			.access-denied-title {
-				color: #dc2626;
-				margin-bottom: 0.5rem;
-				font-size: 1.5rem;
-			}
-
-			.access-denied-message {
-				color: #6b7280;
-				font-size: 1rem;
-				line-height: 1.5;
-			}
-		</style>
 	</ui:define>
 </ui:composition>
 </html>

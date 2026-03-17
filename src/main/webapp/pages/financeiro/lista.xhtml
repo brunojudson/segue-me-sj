@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="title">Gestão Financeira - Sistema Segue-me</ui:define>
+
+	<ui:define name="content">
+		<div class="content-container">
+			<!-- Cabeçalho da página -->
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-wallet page-icon"></i>
+							<span class="title-text">Gestão Financeira</span>
+						</h1>
+						<p class="page-subtitle">Controle de receitas e despesas por encontro</p>
+					</div>
+					<div class="header-actions">
+						<p:button value="Novo Movimento"
+							outcome="/pages/financeiro/cadastro.xhtml" icon="pi pi-plus"
+							styleClass="action-button-primary"
+							title="Cadastrar novo movimento financeiro" />
+					</div>
+				</div>
+			</div>
+
+			<h:form id="listForm" prependId="false">
+				<p:growl id="messages" showDetail="true" closable="true"
+					styleClass="modern-messages">
+					<p:autoUpdate />
+				</p:growl>
+
+				<!-- Filtro por Encontro -->
+				<div class="fin-filter-bar">
+					<div class="fin-filter-combo">
+						<label class="fin-filter-label">
+							<i class="pi pi-filter"></i> Filtrar por Encontro
+						</label>
+						<p:selectOneMenu id="filtroEncontro"
+							value="#{movimentoFinanceiroController.encontroFiltroId}"
+							style="width:100%">
+							<f:selectItem itemLabel="-- Todos os Encontros --" itemValue="" />
+							<f:selectItems value="#{movimentoFinanceiroController.encontros}"
+								var="enc" itemLabel="#{enc.nome}" itemValue="#{enc.id}" />
+						</p:selectOneMenu>
+					</div>
+					<p:commandButton value="Filtrar" icon="pi pi-search"
+						action="#{movimentoFinanceiroController.filtrarPorEncontro()}"
+						update="@form" styleClass="action-button-secundary"
+						aria-label="Filtrar movimentos por encontro" />
+				</div>
+
+				<!-- Cards de resumo (só aparece quando filtrado por encontro) -->
+				<ui:fragment rendered="#{not empty movimentoFinanceiroController.encontroFiltroId}">
+					<div class="fin-cards-row">
+						<div class="card-resumo card-receita">
+							<div class="card-resumo-icon"><i class="pi pi-arrow-up"></i></div>
+							<div class="card-resumo-info">
+								<span class="card-resumo-label">Total Receitas</span>
+								<span class="card-resumo-valor card-valor-receita">
+									<h:outputText value="#{movimentoFinanceiroController.totalReceitas}">
+										<f:convertNumber type="currency" currencySymbol="R$ " locale="pt_BR" />
+									</h:outputText>
+								</span>
+							</div>
+						</div>
+						<div class="card-resumo card-despesa">
+							<div class="card-resumo-icon"><i class="pi pi-arrow-down"></i></div>
+							<div class="card-resumo-info">
+								<span class="card-resumo-label">Total Despesas</span>
+								<span class="card-resumo-valor card-valor-despesa">
+									<h:outputText value="#{movimentoFinanceiroController.totalDespesas}">
+										<f:convertNumber type="currency" currencySymbol="R$ " locale="pt_BR" />
+									</h:outputText>
+								</span>
+							</div>
+						</div>
+						<div class="card-resumo #{movimentoFinanceiroController.saldo.signum() ge 0 ? 'card-saldo-positivo' : 'card-saldo-negativo'}">
+							<div class="card-resumo-icon"><i class="pi pi-chart-line"></i></div>
+							<div class="card-resumo-info">
+								<span class="card-resumo-label">Saldo</span>
+								<span class="card-resumo-valor #{movimentoFinanceiroController.saldo.signum() ge 0 ? 'card-valor-saldo-pos' : 'card-valor-saldo-neg'}">
+									<h:outputText value="#{movimentoFinanceiroController.saldo}">
+										<f:convertNumber type="currency" currencySymbol="R$ " locale="pt_BR" />
+									</h:outputText>
+								</span>
+							</div>
+						</div>
+					</div>
+				</ui:fragment>
+
+				<!-- Tabela de movimentos -->
+				<div class="modern-datatable datatable-animation">
+					<p:dataTable id="movimentosTable" var="mov"
+						value="#{movimentoFinanceiroController.movimentos}"
+						styleClass="modern-datatable financeiro enhanced-table"
+						emptyMessage=""
+						widgetVar="movimentosTableWidget" paginator="true" rows="15"
+						paginatorPosition="bottom" reflow="true"
+						loadingIcon="pi pi-spinner pi-spin"
+						paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						currentPageReportTemplate="Exibindo {startRecord} a {endRecord} de {totalRecords} movimentos"
+						rowsPerPageTemplate="10,15,25,50" sortMode="multiple"
+						resizableColumns="true"
+						filterable="true" filterDelay="300">
+
+						<!-- Empty State -->
+						<f:facet name="emptyMessage">
+							<div class="contribuicao-empty-state">
+								<div class="empty-icon">
+									<i class="pi pi-wallet"></i>
+								</div>
+								<h3>Nenhum movimento financeiro encontradoxxxxxx</h3>
+								<p>Não há movimentos registrados no sistema ainda.</p>
+								<p:button value="Cadastrar Primeiro Movimento"
+									outcome="/pages/financeiro/cadastro.xhtml" icon="pi pi-plus"
+									styleClass="action-button-primary" />
+							</div>
+						</f:facet>
+
+						<!-- Coluna ID -->
+						<p:column headerText="ID" sortBy="#{mov.id}" width="60"
+							responsivePriority="6" styleClass="text-center">
+							<div class="id-badge">#{mov.id}</div>
+						</p:column>
+
+						<!-- Coluna Tipo -->
+						<p:column headerText="Tipo" sortBy="#{mov.tipo}"
+							filterBy="#{mov.tipo}" filterMatchMode="exact"
+							responsivePriority="1" width="120">
+							<f:facet name="filter">
+								<p:selectOneMenu onchange="PF('movimentosTableWidget').filter()"
+									styleClass="filter-input">
+									<f:selectItem itemLabel="Todos" itemValue="" />
+									<f:selectItem itemLabel="Receita" itemValue="RECEITA" />
+									<f:selectItem itemLabel="Despesa" itemValue="DESPESA" />
+								</p:selectOneMenu>
+							</f:facet>
+							<span class="tipo-badge tipo-#{mov.tipo}">
+								<i class="pi #{mov.tipo == 'RECEITA' ? 'pi-arrow-up' : 'pi-arrow-down'}"></i>
+								#{mov.tipo.descricao}
+							</span>
+						</p:column>
+
+						<!-- Coluna Categoria -->
+						<p:column headerText="Categoria" sortBy="#{mov.categoria}"
+							filterBy="#{mov.categoria.descricao}" filterMatchMode="contains"
+							filterStyleClass="filter-input"
+							responsivePriority="2">
+							<span class="categoria-tag">#{mov.categoria.descricao}</span>
+						</p:column>
+
+						<!-- Coluna Descrição -->
+						<p:column headerText="Descrição" sortBy="#{mov.descricao}"
+							filterBy="#{mov.descricao}" filterMatchMode="contains"
+							filterStyleClass="filter-input"
+							responsivePriority="1">
+							<p:commandLink value="#{mov.descricao}" styleClass="nome-link"
+								action="#{movimentoFinanceiroController.abrirDetalhes(mov)}"
+								update=":detalhesForm:detalhesModal"
+								oncomplete="PF('detalhesDialog').show()" />
+						</p:column>
+
+						<!-- Coluna Valor -->
+						<p:column headerText="Valor" sortBy="#{mov.valor}"
+							responsivePriority="1" styleClass="text-right" width="140">
+							<span class="valor-#{mov.tipo}">
+								<h:outputText value="#{mov.valor}">
+									<f:convertNumber type="currency" currencySymbol="R$ " locale="pt_BR" />
+								</h:outputText>
+							</span>
+						</p:column>
+
+						<!-- Coluna Data -->
+						<p:column headerText="Data" sortBy="#{mov.dataMovimento}"
+							styleClass="text-center" responsivePriority="2" width="120">
+							<h:outputText value="#{mov.dataMovimento}">
+								<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
+							</h:outputText>
+						</p:column>
+
+						<!-- Coluna Encontro -->
+						<p:column headerText="Encontro" sortBy="#{mov.encontro.nome}"
+							filterBy="#{mov.encontro.nome}" filterMatchMode="contains"
+							filterStyleClass="filter-input"
+							responsivePriority="3">
+							<span class="encontro-tag">
+								<i class="pi pi-calendar"></i>
+								#{mov.encontro.nome}
+							</span>
+						</p:column>
+
+						<!-- Coluna Ações -->
+						<p:column headerText="Ações" styleClass="text-center" width="140"
+							responsivePriority="1" exportable="false">
+							<div class="table-action-buttons">
+								<!-- Visualizar -->
+								<!-- <p:button icon="pi pi-eye"
+									title="Visualizar detalhes do movimento"
+									outcome="/pages/financeiro/visualizar.xhtml"
+									styleClass="action-button-secondary-table action-btn"
+									ariaLabel="Visualizar movimento">
+									<f:param name="id" value="#{mov.id}" />
+								</p:button> -->
+
+								<!-- Editar -->
+								<p:button icon="pi pi-pencil" title="Editar movimento"
+									outcome="/pages/financeiro/cadastro.xhtml"
+									styleClass="action-button-warn-table action-btn"
+									ariaLabel="Editar movimento">
+									<f:param name="id" value="#{mov.id}" />
+								</p:button>
+
+								<!-- Excluir -->
+								<p:commandButton icon="pi pi-trash" title="Excluir movimento"
+									action="#{movimentoFinanceiroController.prepararExclusao(mov)}"
+									update=":confirmDialog" oncomplete="PF('confirmDialog').show()"
+									styleClass="action-button-danger-table action-btn"
+									ariaLabel="Excluir movimento">
+									<p:confirm header="Confirmar Exclusão"
+										message="Tem certeza que deseja excluir este movimento financeiro?"
+										icon="pi pi-exclamation-triangle" />
+								</p:commandButton>
+							</div>
+						</p:column>
+					</p:dataTable>
+				</div>
+
+				<!-- Dialog de Confirmação -->
+				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
+					header="Confirmar Exclusão"
+					message="Tem certeza que deseja excluir este movimento? Esta ação não pode ser desfeita."
+					closeOnEscape="true" responsive="true" modal="true"
+					showEffect="fade" hideEffect="fade">
+					<div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+						<p:commandButton value="Sim, Excluir"
+							action="#{movimentoFinanceiroController.excluir()}"
+							oncomplete="PF('confirmDialog').hide()"
+							update="movimentosTable,messages" styleClass="ui-button-danger"
+							icon="pi pi-trash" />
+						<p:commandButton value="Cancelar"
+							onclick="PF('confirmDialog').hide()" type="button"
+							styleClass="ui-button-secondary" icon="pi pi-times" />
+					</div>
+				</p:confirmDialog>
+			</h:form>
+
+			<!-- Modal de Detalhes do Movimento Financeiro -->
+			<h:form id="detalhesForm">
+			<p:dialog id="detalhesModal" widgetVar="detalhesDialog"
+				header="Detalhes do Movimento Financeiro" 
+				styleClass="detalhes-pessoa-dialog"
+				modal="true" responsive="true"
+				closable="true" closeOnEscape="true"
+				showEffect="fade" hideEffect="fade"
+				style="max-width:800px; width: calc(100% - 32px);">
+
+				<p:ajax event="close" listener="#{movimentoFinanceiroController.fecharDetalhes()}" />
+
+				<h:panelGroup id="detalhesContent" rendered="#{movimentoFinanceiroController.movimentoDetalhes != null}">
+					<div class="modal-pessoa-header">
+						<div class="modal-pessoa-avatar-section">
+							<div class="modal-pessoa-avatar">
+								<i class="pi pi-wallet" style="font-size: 2rem;"></i>
+							</div>
+							<div class="modal-pessoa-info-principal">
+								<h2 class="modal-pessoa-nome">#{movimentoFinanceiroController.movimentoDetalhes.descricao}</h2>
+								<div class="modal-pessoa-meta">
+									<span class="sm-tag #{movimentoFinanceiroController.movimentoDetalhes.tipo == 'RECEITA' ? 'sm-tag-green' : 'sm-tag-red'}">
+										<i class="pi #{movimentoFinanceiroController.movimentoDetalhes.tipo == 'RECEITA' ? 'pi-arrow-up' : 'pi-arrow-down'}"></i>
+										#{movimentoFinanceiroController.movimentoDetalhes.tipo.descricao}
+									</span>
+									<span class="sm-tag sm-tag-purple">
+										#{movimentoFinanceiroController.movimentoDetalhes.categoria.descricao}
+									</span>
+									<span class="modal-pessoa-id">ID: #{movimentoFinanceiroController.movimentoDetalhes.id}</span>
+								</div>
+							</div>
+						</div>
+						<div class="modal-pessoa-actions">
+							<p:button icon="pi pi-pencil" title="Editar"
+								outcome="/pages/financeiro/cadastro.xhtml"
+								styleClass="action-button-primary">
+								<f:param name="id" value="#{movimentoFinanceiroController.movimentoDetalhes.id}" />
+							</p:button>
+						</div>
+					</div>
+
+					<div class="info-grid" style="padding: 0 1.5rem 1.5rem;">
+						<div class="info-item">
+							<label>Valor</label>
+							<span class="info-value highlight">
+								R$ <h:outputText value="#{movimentoFinanceiroController.movimentoDetalhes.valor}">
+									<f:convertNumber pattern="#,##0.00" locale="pt_BR" />
+								</h:outputText>
+							</span>
+						</div>
+						<div class="info-item">
+							<label>Data do Movimento</label>
+							<span>
+								<h:outputText value="#{movimentoFinanceiroController.movimentoDetalhes.dataMovimento}">
+									<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
+								</h:outputText>
+							</span>
+						</div>
+						<div class="info-item">
+							<label>Encontro</label>
+							<span class="encontro-tag">
+								<i class="pi pi-calendar"></i>
+								<h:outputText value="#{movimentoFinanceiroController.movimentoDetalhes.encontro.nome}" />
+							</span>
+						</div>
+						<div class="info-item">
+							<label>Responsável</label>
+							<span>
+								<h:outputText value="#{movimentoFinanceiroController.movimentoDetalhes.responsavel}" rendered="#{not empty movimentoFinanceiroController.movimentoDetalhes.responsavel}" />
+								<h:outputText value="Não informado" rendered="#{empty movimentoFinanceiroController.movimentoDetalhes.responsavel}" styleClass="empty-value" />
+							</span>
+						</div>
+						<div class="info-item">
+							<label>Comprovante</label>
+							<span>
+								<h:outputLink value="#{movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl}" target="_blank" rendered="#{not empty movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl}">
+									<i class="pi pi-external-link"></i> Ver comprovante
+								</h:outputLink>
+								<h:outputText value="Não informado" rendered="#{empty movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl}" styleClass="empty-value" />
+							</span>
+						</div>
+						<div class="info-item">
+							<label>Data de Criação</label>
+							<span>
+								<h:outputText value="#{movimentoFinanceiroController.movimentoDetalhes.dataCriacao}" rendered="#{not empty movimentoFinanceiroController.movimentoDetalhes.dataCriacao}">
+									<f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm" />
+								</h:outputText>
+								<h:outputText value="Não informada" rendered="#{empty movimentoFinanceiroController.movimentoDetalhes.dataCriacao}" styleClass="empty-value" />
+							</span>
+						</div>
+						<div class="info-item full-width" rendered="#{not empty movimentoFinanceiroController.movimentoDetalhes.observacoes}">
+							<label>Observações</label>
+							<span>
+								<h:outputText value="#{movimentoFinanceiroController.movimentoDetalhes.observacoes}" />
+							</span>
+						</div>
+					</div>
+				</h:panelGroup>
+			</p:dialog>
+			</h:form>
+		</div>
+
+		<script>
+			// Initialize enhanced table features
+			document.addEventListener('DOMContentLoaded', function() {
+				if (typeof PrimeFaces !== 'undefined') {
+					PrimeFaces.widget.DataTable.prototype.showLoadingStatus = function() {
+						this.jq.addClass('ui-datatable-loading');
+					};
+					PrimeFaces.widget.DataTable.prototype.hideLoadingStatus = function() {
+						this.jq.removeClass('ui-datatable-loading');
+					};
+				}
+			});
+		</script>
+	</ui:define>
+</ui:composition>
+</html>

@@ -19,6 +19,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import br.com.segueme.enums.Escolaridade;
 import br.com.segueme.enums.Sacramento;
@@ -33,21 +39,29 @@ public class Pessoa implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Nome é obrigatório")
+    @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres")
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 
     @Column(name = "cpf", nullable = true, length = 14, unique = true)
     private String cpf;
 
+    @NotNull(message = "Data de nascimento é obrigatória")
+    @Past(message = "Data de nascimento deve ser no passado")
     @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
 
+    @Size(max = 200, message = "Endereço deve ter no máximo 200 caracteres")
     @Column(name = "endereco", length = 200)
     private String endereco;
 
+    @Pattern(regexp = "\\(\\d{2}\\) \\d{4,5}-\\d{4}", message = "Telefone deve estar no formato (00) 00000-0000")
     @Column(name = "telefone", length = 15, unique = true)
     private String telefone;
 
+    @Email(message = "Email deve ser válido")
+    @Size(max = 100, message = "Email deve ter no máximo 100 caracteres")
     @Column(name = "email", length = 100)
     private String email;
 
@@ -63,7 +77,7 @@ public class Pessoa implements Serializable {
     @Column(name = "foto")
     private String foto;
 
-    @Column(name = "idade")
+    @Transient
     private Integer idade;
 
     @ElementCollection(targetClass = Sacramento.class)
@@ -204,7 +218,10 @@ public class Pessoa implements Serializable {
     }
 
     public Integer getIdade() {
-        return idade;
+        if (this.dataNascimento != null) {
+            return java.time.Period.between(this.dataNascimento, java.time.LocalDate.now()).getYears();
+        }
+        return null;
     }
 
     public void setIdade(Integer idade) {

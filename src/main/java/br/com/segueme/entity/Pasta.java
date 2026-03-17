@@ -17,6 +17,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "pasta", schema="public")
@@ -28,20 +31,26 @@ public class Pasta implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Nome da pasta é obrigatório")
+    @Size(min = 2, max = 100, message = "Nome deve ter entre 2 e 100 caracteres")
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 
+    @NotNull(message = "Equipe é obrigatória")
     @JsonbTransient
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "equipe_id", nullable = false)
     private Equipe equipe;
 
+    @Size(max = 500, message = "Descrição deve ter no máximo 500 caracteres")
     @Column(name = "descricao")
     private String descricao;
 
+    @NotNull(message = "Data de início é obrigatória")
     @Column(name = "data_inicio", nullable = false)
     private LocalDate dataInicio;
 
+    @NotNull(message = "Data de fim é obrigatória")
     @Column(name = "data_fim", nullable = false)
     private LocalDate dataFim;
 

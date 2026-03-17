@@ -35,6 +35,13 @@ public interface PessoaRepository {
      * @return Lista de pessoas
      */
     List<Pessoa> findAll();
+
+    /**
+     * Busca todas as pessoas com sacramentos carregados (eager fetch).
+     * Usa LEFT JOIN FETCH para evitar LazyInitializationException.
+     * @return Lista de pessoas com sacramentos
+     */
+    List<Pessoa> findAllWithSacramentos();
     
 
     List<Pessoa> findAllExcludingActiveEncontristas();

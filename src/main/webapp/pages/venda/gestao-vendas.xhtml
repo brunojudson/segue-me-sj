@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">Gestão de Vendas - Sistema Segue-me</ui:define>
+    
+    <ui:define name="content">
+        <h:outputStylesheet name="css/relatorios-dashboard.css" />
+        <div class="content-container">
+            <!-- Cabeçalho moderno da página -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">
+                            <i class="pi pi-shopping-cart page-icon"></i> 
+                            <span class="title-text">Gestão de Vendas</span>
+                        </h1>
+                        <p class="page-subtitle">Realize vendas, gerencie pedidos e controle pagamentos</p>
+                    </div>
+                </div>
+            </div>
+
+            <h:form id="formGestaoVendas" prependId="false">
+                <p:growl id="growl" showDetail="true" closable="true" styleClass="modern-messages" />
+                
+                <!-- Encontro exibido no formulário; cards superiores removidos -->
+                
+                <!-- Painel: Nova Venda / Adicionar Itens -->
+                <h:panelGroup id="pnlNovaVenda" rendered="#{vendaPedidoController.encontroSelecionadoId != null}">
+                    <p:fieldset legend="#{vendaPedidoController.pedidoAtual == null ? '🛒 Nova Venda' : '➕ Adicionar Itens ao Pedido'}" 
+                                toggleable="false" styleClass="modern-fieldset">
+                        
+                        <!-- Modo: Iniciar Nova Venda -->
+                        <h:panelGroup id="pnlIniciarVenda" rendered="#{vendaPedidoController.pedidoAtual == null}">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label for="encontro">Encontro: *</label>
+                                    <p:selectOneMenu id="encontro" value="#{vendaPedidoController.encontroSelecionadoId}" 
+                                                     required="true" requiredMessage="Selecione um encontro"
+                                                     filter="true" styleClass="w-full" style="width: 100%;">
+                                        <f:selectItem itemLabel="-- Selecione um encontro --" itemValue="#{null}" noSelectionOption="true"/>
+                                        <f:selectItems value="#{vendaPedidoController.encontrosAtivos}" 
+                                                       var="enc" itemLabel="#{enc.nome}" itemValue="#{enc.id}"/>
+                                        <p:ajax listener="#{vendaPedidoController.onEncontroChanged}" 
+                                                update="pnlNovaVenda pnlContasAbertas pnlItens pnlAguardandoPagamento" />
+                                    </p:selectOneMenu>
+                                    <p:messages id="mensagensEncontro" for="encontro" showDetail="true" closable="true" />
+                                    <div style="margin-top:0.4rem; font-size:0.95rem; color:var(--text-muted);">Status: <strong>#{vendaPedidoController.encontroAtivo ? 'ATIVO' : 'Inativo'}</strong></div>
+                                </div>
+
+                                <div class="info-item">
+                                    <label for="trabalhador">Trabalhador Responsável: *</label>
+                                    <p:selectOneMenu id="trabalhador" value="#{vendaPedidoController.trabalhadorSelecionadoId}" 
+                                                     filter="true" filterMatchMode="contains">
+                                        <f:selectItem itemLabel="-- Selecione o trabalhador --" itemValue="#{null}" noSelectionOption="true"/>
+                                        <f:selectItems value="#{vendaPedidoController.trabalhadores}"
+                                                       var="trab"
+                                                       itemLabel="#{not empty trab.equipe ? trab.pessoa.nome.concat(' (').concat(trab.equipe.nome).concat(')') : trab.pessoa.nome}"
+                                                       itemValue="#{trab.id}"/>
+                                            <p:ajax update="pnlEquipeSelecionada mensagensTrabalhador" process="@this" />
+                                    </p:selectOneMenu>
+                                                <h:panelGroup id="pnlEquipeSelecionada" rendered="#{not empty vendaPedidoController.equipeNomeSelecionada}">
+                                                    <small style="display:block; margin-top:0.35rem; color:var(--text-muted);">Equipe: <strong>#{vendaPedidoController.equipeNomeSelecionada}</strong></small>
+                                                </h:panelGroup>
+                                    <p:messages id="mensagensTrabalhador" for="trabalhador" showDetail="true" closable="true" />
+
+                                    <h:outputScript target="body">
+                                        $(function(){
+                                            var el = document.getElementById('trabalhador_input');
+                                            if (el) { try { el.focus(); } catch(e) { /* ignored */ } }
+                                        });
+                                    </h:outputScript>
+                                </div>
+                            </div>
+                            
+                            <div class="form-buttons" style="margin-top: 1rem;">
+                                <p:commandButton value="Iniciar Nova Venda (Alt+N)" icon="pi pi-plus" 
+                                                 actionListener="#{vendaPedidoController.iniciarNovaVenda}"
+                                                 process="@this trabalhador"
+                                                     update="growl mensagensTrabalhador pnlNovaVenda pnlContasAbertas pnlAdicionarItem"
+                                                 ajax="true"
+                                                 oncomplete="if (!args || !args.validationFailed) {setTimeout(function(){var el=document.getElementById('artigo_input'); if(el) el.focus();},50);}"
+                                                 styleClass="action-button-primary"
+                                                 accesskey="N" />
+                            </div>
+                        </h:panelGroup>
+                        
+                        <!-- Modo: Adicionar Item -->
+                        <h:panelGroup id="pnlAdicionarItem" rendered="#{vendaPedidoController.pedidoAtual != null}">
+                            <div class="pedido-info-bar">
+                                <div class="pedido-info-item">
+                                    <strong>Pedido:</strong> 
+                                    <span class="id-badge">#{vendaPedidoController.pedidoAtual.numeroPedido}</span>
+                                </div>
+                                <div class="pedido-info-item">
+                                    <strong>Trabalhador:</strong> 
+                                    <span class="worker-name">#{vendaPedidoController.pedidoAtual.trabalhadorResponsavel.pessoa.nome}</span>
+                                </div>
+                                <div class="pedido-info-item">
+                                    <strong>Equipe:</strong>
+                                    <span class="team-name" style="color:var(--text-muted);">#{vendaPedidoController.equipeNomePedidoAtual}</span>
+                                </div>
+                                <div class="pedido-info-total">
+                                    <strong>Total:</strong> 
+                                    <span class="price-value price-lg">
+                                        <h:outputText value="#{vendaPedidoController.pedidoAtual.valorTotal}">
+                                            <f:convertNumber type="currency" currencySymbol="R$ " />
+                                        </h:outputText>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label for="artigo">Artigo: *</label>
+                                    <p:selectOneMenu id="artigo" value="#{vendaPedidoController.artigoSelecionadoId}" 
+                                                     filter="true" filterMatchMode="contains" required="true">
+                                        <f:selectItem itemLabel="-- Selecione o artigo --" itemValue="#{null}" noSelectionOption="true"/>
+                                        <f:selectItems value="#{vendaPedidoController.artigosAtivos}" 
+                                                       var="art" itemLabel="#{art.nome} - R$ #{art.precoBase}" itemValue="#{art.id}"/>
+                                        <p:ajax listener="#{vendaPedidoController.onArtigoSelecionado}" 
+                                                update="valorUnitario" />
+                                    </p:selectOneMenu>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <label for="quantidade">Quantidade: *</label>
+                                    <p:inputNumber id="quantidade" value="#{vendaPedidoController.quantidadeItem}" 
+                                                   decimalPlaces="0" minValue="1" required="true" />
+                                </div>
+                                
+                                <div class="info-item">
+                                    <label for="valorUnitario">Valor Unitário: *</label>
+                                    <p:inputNumber id="valorUnitario" value="#{vendaPedidoController.valorUnitarioItem}" 
+                                                   mode="currency" currencySymbol="R$ " required="true" />
+                                </div>
+                            </div>
+                            
+                            <div class="form-buttons">
+                                <p:commandButton value="Adicionar Item (Alt+I)" icon="pi pi-plus-circle" 
+                                                 actionListener="#{vendaPedidoController.adicionarItem}"
+                                                 process="@this artigo quantidade valorUnitario"
+                                                 update="@form" styleClass="action-button-success"
+                                                 accesskey="I" />
+                                
+                                <p:commandButton value="Cancelar / Nova Venda" icon="pi pi-times" 
+                                                 actionListener="#{vendaPedidoController.limpar}"
+                                                 process="@this"
+                                                 update="@form" styleClass="action-button-secondary" />
+                            </div>
+                        </h:panelGroup>
+                    </p:fieldset>
+                </h:panelGroup>
+                <!-- Painel: Itens do Pedido Atual -->
+                <p:fieldset id="pnlItens" legend="🛍️ Itens do Pedido" toggleable="true" collapsed="false" 
+                            styleClass="modern-fieldset"
+                            rendered="#{vendaPedidoController.pedidoAtual != null}">
+                    
+                    <p:dataTable id="tblItens" value="#{vendaPedidoController.pedidoAtual.itens}" 
+                                 var="item" emptyMessage="Nenhum item adicionado"
+                                 styleClass="modern-datatable datatable-animation">
+                        
+                        <p:column headerText="Artigo" width="35%">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="pi pi-shopping-bag" style="color: var(--sm-accent);"></i>
+                                <strong>#{item.artigo.nome}</strong>
+                            </div>
+                        </p:column>
+                        
+                        <p:column headerText="Categoria" width="15%">
+                            <span class="team-badge">
+                                <i class="pi pi-tag"></i>
+                                #{item.artigo.categoria}
+                            </span>
+                        </p:column>
+                        
+                        <p:column headerText="Quantidade" width="12%" styleClass="text-center">
+                            <span style="font-weight: 600; font-size: 1.1rem;">#{item.quantidade}</span>
+                        </p:column>
+                        
+                        <p:column headerText="Valor Unit." width="13%" styleClass="text-right">
+                            <h:outputText value="#{item.valorUnitario}">
+                                <f:convertNumber type="currency" currencySymbol="R$ " />
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Valor Total" width="13%" styleClass="text-right">
+                            <h:outputText value="#{item.valorTotalItem}" styleClass="price-value">
+                                <f:convertNumber type="currency" currencySymbol="R$ " />
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Ação" width="12%" styleClass="text-center">
+                            <p:commandButton icon="pi pi-trash" title="Remover item" 
+                                             actionListener="#{vendaPedidoController.removerItem(item.id)}"
+                                             process="@this"
+                                             update="@form" styleClass="action-button-danger-table action-btn"
+                                             disabled="#{!vendaPedidoController.pedidoAtual.status.permiteAlteracao()}">
+                                <p:confirm header="Confirmação" message="Deseja remover este item?" 
+                                           icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                        </p:column>
+                        
+                        <f:facet name="footer">
+                            <div class="datatable-total-footer">
+                                <i class="pi pi-shopping-cart"></i>
+                                Total do Pedido: 
+                                <h:outputText value="#{vendaPedidoController.pedidoAtual.valorTotal}">
+                                    <f:convertNumber type="currency" currencySymbol="R$ " />
+                                </h:outputText>
+                            </div>
+                        </f:facet>
+                    </p:dataTable>
+                    
+                    <!-- Botões de Ação Principal -->
+                    <div class="form-buttons">
+                        <p:commandButton value="Fechar Pedido (Alt+F)" icon="pi pi-check-circle" 
+                                         onclick="PF('dlgFecharPedido').show(); return false;"
+                                         styleClass="action-button-primary" accesskey="F"
+                                         disabled="#{empty vendaPedidoController.pedidoAtual.itens}" />
+                        
+                        <p:commandButton value="Adicionar Mais Itens (Alt+I)" icon="pi pi-plus" 
+                                         onclick="document.getElementById('artigo_input').focus(); return false;"
+                                         styleClass="action-button-success" accesskey="I" />
+                    </div>
+                </p:fieldset>
+                <!-- Painel: Contas Abertas -->
+                <p:fieldset id="pnlContasAbertas" legend="📋 Contas Abertas" toggleable="true" collapsed="false" 
+                            styleClass="modern-fieldset" rendered="#{vendaPedidoController.encontroSelecionadoId != null}">
+                    
+                    <p:dataTable id="tblContasAbertas" value="#{vendaPedidoController.pedidosAbertos}" 
+                                 var="pedido" emptyMessage="Nenhuma conta aberta"
+                                 paginator="true" rows="20" paginatorPosition="bottom"
+                                 scrollHeight="480"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                 rowsPerPageTemplate="10,20,50"
+                                 styleClass="modern-datatable datatable-animation" 
+                                 selectionMode="single"
+                                 selection="#{vendaPedidoController.pedidoAtual}" 
+                                 rowKey="#{pedido.id}">
+                        
+                        <p:ajax event="rowSelect" listener="#{vendaPedidoController.selecionarPedido}" 
+                            update="@form pnlNovaVenda pnlItens growl"
+                            oncomplete="if (!args || !args.validationFailed) {setTimeout(function(){var el=document.getElementById('artigo_input'); if(el) el.focus();},50);}" />
+                        
+                        <p:column headerText="Código" width="10%" styleClass="text-center" responsivePriority="1">
+                            <div class="id-badge">#{pedido.numeroPedido}</div>
+                        </p:column>
+                        
+                        <p:column headerText="Trabalhador" sortBy="#{pedido.trabalhadorResponsavel.pessoa.nome}"
+                                  width="30%" responsivePriority="1">
+                            <div class="worker-info">
+                                <div class="worker-avatar">
+                                    <i class="pi pi-user"></i>
+                                </div>
+                                <div class="worker-name">#{pedido.trabalhadorResponsavel.pessoa.nome}</div>
+                            </div>
+                        </p:column>
+                        
+                        <p:column headerText="Data Abertura" width="12%" styleClass="text-center" responsivePriority="3">
+                            <h:outputText value="#{pedido.dataAberturaFormatada}" />
+                        </p:column>
+                        
+                        <p:column headerText="Itens" width="8%" styleClass="text-center" responsivePriority="4">
+                            <span class="team-badge">
+                                <i class="pi pi-shopping-bag"></i>
+                                #{pedido.quantidadeTotalItens}
+                            </span>
+                        </p:column>
+                        
+                        <p:column headerText="Valor Total" width="12%" styleClass="text-right" responsivePriority="2">
+                            <h:outputText value="#{pedido.valorTotal}" styleClass="price-value">
+                                <f:convertNumber type="currency" currencySymbol="R$ " />
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Status" width="10%" styleClass="text-center" responsivePriority="3">
+                            <span class="status-badge aberto">
+                                <i class="pi pi-circle-fill"></i>
+                                #{pedido.status.descricao}
+                            </span>
+                        </p:column>
+                        
+                        <p:column headerText="Ações" width="18%" styleClass="text-center" responsivePriority="1">
+                            <div class="table-action-buttons">
+                                <p:commandButton icon="pi pi-pencil" title="Editar pedido" 
+                                                 action="#{vendaPedidoController.selecionarPedidoPorId(pedido.id)}"
+                                                 process="@this"
+                                                 update="pnlNovaVenda pnlItens growl"
+                                                 oncomplete="if (!args || !args.validationFailed) {setTimeout(function(){var el=document.getElementById('artigo_input'); if(el) el.focus();},50);}"
+                                                 styleClass="action-button-warn-table action-btn" />
+
+                                <p:commandButton icon="pi pi-check-circle" title="Fechar pedido"
+                                                 action="#{vendaPedidoController.selecionarPedidoPorId(pedido.id)}"
+                                                 process="@this"
+                                                 update="pnlNovaVenda pnlItens growl dlgFecharPedido"
+                                                 oncomplete="PF('dlgFecharPedido').show()"
+                                                 styleClass="action-button-primary action-btn"
+                                                 rendered="#{not empty pedido.itens}" />
+                                
+                                <p:commandButton icon="pi pi-times" title="Cancelar pedido" 
+                                                 actionListener="#{vendaPedidoController.cancelarPedido(pedido.id)}"
+                                                 process="@this"
+                                                 update="@form" styleClass="action-button-danger-table action-btn">
+                                    <p:confirm header="Confirmação" message="Deseja realmente cancelar este pedido?" 
+                                               icon="pi pi-exclamation-triangle" />
+                                </p:commandButton>
+                            </div>
+                        </p:column>
+                    </p:dataTable>
+                    
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no ui-button-secondary" icon="pi pi-times" />
+                        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes ui-button-danger" icon="pi pi-check" />
+                    </p:confirmDialog>
+                </p:fieldset>
+                
+                <!-- Painel: Pedidos Aguardando Pagamento -->
+            <h:panelGroup id="pnlAguardandoPagamento">
+                <p:fieldset legend="💳 Pedidos Aguardando Pagamento" toggleable="true" collapsed="true" 
+                            styleClass="modern-fieldset"
+                            rendered="#{vendaPedidoController.encontroSelecionadoId != null and not empty vendaPedidoController.pedidosAguardandoPagamento}">
+                    
+                    <p:dataTable id="tblAguardandoPagamento" value="#{vendaPedidoController.pedidosAguardandoPagamento}" 
+                                 var="pedido" emptyMessage="Nenhum pedido aguardando pagamento"
+                                 styleClass="modern-datatable datatable-animation">
+                        
+                        <p:column headerText="Código" width="12%" styleClass="text-center">
+                            <div class="id-badge">#{pedido.numeroPedido}</div>
+                        </p:column>
+                        
+                        <p:column headerText="Trabalhador" width="35%">
+                            <div class="worker-info">
+                                <div class="worker-avatar">
+                                    <i class="pi pi-user"></i>
+                                </div>
+                                <div class="worker-name">#{pedido.trabalhadorResponsavel.pessoa.nome}</div>
+                            </div>
+                        </p:column>
+                        
+                        <p:column headerText="Data Fechamento" width="15%" styleClass="text-center">
+                            <h:outputText value="#{pedido.dataFechamentoFormatada}" />
+                        </p:column>
+                        
+                        <p:column headerText="Valor Total" width="15%" styleClass="text-right">
+                            <h:outputText value="#{pedido.valorTotal}" styleClass="price-value">
+                                <f:convertNumber type="currency" currencySymbol="R$ " />
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Ação" width="23%" styleClass="text-center">
+                            <p:commandButton value="Marcar como Pago" icon="pi pi-dollar" 
+                                             actionListener="#{vendaPedidoController.prepararMarcarComoPago(pedido)}"
+                                             onclick="PF('dlgMarcarPago').show(); return false;"
+                                             styleClass="action-button-success" />
+                        </p:column>
+                    </p:dataTable>
+                </p:fieldset>
+</h:panelGroup>
+                
+                <!-- Dialog: Fechar Pedido -->
+                <p:dialog id="dlgFecharPedido" header="Fechar Pedido" widgetVar="dlgFecharPedido" 
+                          styleClass="modern-dialog" modal="true" responsive="true" width="550" closeOnEscape="true">
+                    
+                    <div style="padding: 1rem 0;">
+                        <div class="info-grid" style="grid-template-columns: 1fr;">
+                            <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                                <div style="display: grid; grid-template-columns: 150px 1fr; gap: 0.75rem;">
+                                    <strong>Número do Pedido:</strong>
+                                    <span class="id-badge" style="justify-self: start;">#{vendaPedidoController.pedidoAtual.numeroPedido}</span>
+                                    
+                                    <strong>Trabalhador:</strong>
+                                    <span>#{vendaPedidoController.pedidoAtual.trabalhadorResponsavel.pessoa.nome}</span>
+                                    <div style="grid-column: 2 / 3; margin-top: 0.25rem; color:var(--text-muted);">Equipe: <strong>#{vendaPedidoController.equipeNomePedidoAtual}</strong></div>
+                                    
+                                    <strong>Valor Total:</strong>
+                                    <span class="price-value" style="font-size: 1.3rem;">
+                                        <h:outputText value="#{vendaPedidoController.pedidoAtual.valorTotal}">
+                                            <f:convertNumber type="currency" currencySymbol="R$ " />
+                                        </h:outputText>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <p:separator />
+                            
+                            <div class="info-item" style="padding: 0.5rem 0;">
+                                        <div class="checkbox-container">
+                                            <p:selectBooleanCheckbox id="pagarAgora" value="#{vendaPedidoController.pagarAgora}">
+                                                <p:ajax update="pnlPagamento" />
+                                            </p:selectBooleanCheckbox>
+                                            <label for="pagarAgora" class="checkbox-label">Receber pagamento agora</label>
+                                        </div>
+                            </div>
+                            
+                            <h:panelGroup id="pnlPagamento" style="#{not vendaPedidoController.pagarAgora ? 'display:none;' : ''}">
+                                <div class="info-item" style="margin-top: 1rem;">
+                                    <label for="formaPagamento">Forma de Pagamento: *</label>
+                                    <p:selectOneMenu id="formaPagamento" value="#{vendaPedidoController.formaPagamento}" required="#{vendaPedidoController.pagarAgora}">
+                                        <f:selectItem itemLabel="-- Selecione a forma de pagamento --" itemValue="#{null}" />
+                                        <f:selectItem itemLabel="💵 Dinheiro" itemValue="DINHEIRO" />
+                                        <f:selectItem itemLabel="📱 PIX" itemValue="PIX" />
+                                        <f:selectItem itemLabel="💳 Cartão de Débito" itemValue="DEBITO" />
+                                        <f:selectItem itemLabel="💳 Cartão de Crédito" itemValue="CREDITO" />
+                                    </p:selectOneMenu>
+                                    <p:message for="formaPagamento" />
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    
+                    <f:facet name="footer">
+                        <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                            <p:commandButton value="Confirmar" icon="pi pi-check" 
+                                             actionListener="#{vendaPedidoController.fecharPedido}"
+                                             process="@this pagarAgora formaPagamento"
+                                             update="growl tblContasAbertas tblAguardandoPagamento pnlNovaVenda pnlItens"
+                                             oncomplete="if (!args.validationFailed) PF('dlgFecharPedido').hide();"
+                                             styleClass="action-button-primary" />
+                            
+                            <p:commandButton value="Cancelar" icon="pi pi-times" 
+                                             onclick="PF('dlgFecharPedido').hide(); return false;"
+                                             styleClass="action-button-secondary" />
+                        </div>
+                    </f:facet>
+                </p:dialog>
+                
+                <!-- Dialog: Marcar como Pago -->
+                <p:dialog id="dlgMarcarPago" header="Confirmar Pagamento" widgetVar="dlgMarcarPago" 
+                          styleClass="modern-dialog" modal="true" responsive="true" width="550" closeOnEscape="true">
+                    
+                    <div style="padding: 1rem 0;">
+                        <div class="info-grid" style="grid-template-columns: 1fr;">
+                            <div style="background: #d4edda; border-left: 4px solid #28a745; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                                <div style="display: grid; grid-template-columns: 150px 1fr; gap: 0.75rem;">
+                                    <strong>Pedido:</strong>
+                                    <span class="id-badge" style="justify-self: start;">#{vendaPedidoController.pedidoParaPagamento.numeroPedido}</span>
+                                    
+                                    <strong>Trabalhador:</strong>
+                                    <span>#{vendaPedidoController.pedidoParaPagamento.trabalhadorResponsavel.pessoa.nome}</span>
+                                    
+                                    <strong>Valor Total:</strong>
+                                    <span class="price-value" style="font-size: 1.3rem;">
+                                        <h:outputText value="#{vendaPedidoController.pedidoParaPagamento.valorTotal}">
+                                            <f:convertNumber type="currency" currencySymbol="R$ " />
+                                        </h:outputText>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <p:separator />
+                            
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label for="formaPagamentoPago">Forma de Pagamento: *</label>
+                                    <p:selectOneMenu id="formaPagamentoPago" value="#{vendaPedidoController.formaPagamento}" required="true">
+                                        <f:selectItem itemLabel="-- Selecione --" itemValue="#{null}" />
+                                        <f:selectItem itemLabel="💵 Dinheiro" itemValue="DINHEIRO" />
+                                        <f:selectItem itemLabel="📱 PIX" itemValue="PIX" />
+                                        <f:selectItem itemLabel="💳 Cartão de Débito" itemValue="DEBITO" />
+                                        <f:selectItem itemLabel="💳 Cartão de Crédito" itemValue="CREDITO" />
+                                    </p:selectOneMenu>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <label for="valorPagamento">Valor Pago: *</label>
+                                    <p:inputNumber id="valorPagamento" value="#{vendaPedidoController.valorPagamento}" 
+                                                   mode="currency" currencySymbol="R$ " required="true" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <f:facet name="footer">
+                        <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                            <p:commandButton value="Confirmar Pagamento" icon="pi pi-check" 
+                                             actionListener="#{vendaPedidoController.marcarComoPago}"
+                                             process="@this formaPagamentoPago valorPagamento"
+                                             update="growl tblAguardandoPagamento tblContasAbertas pnlAguardandoPagamento"
+                                             oncomplete="if (!args.validationFailed) PF('dlgMarcarPago').hide();"
+                                             styleClass="action-button-primary" />
+                            
+                            <p:commandButton value="Cancelar" icon="pi pi-times" 
+                                             onclick="PF('dlgMarcarPago').hide(); return false;"
+                                             styleClass="action-button-secondary" />
+                        </div>
+                    </f:facet>
+                </p:dialog>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

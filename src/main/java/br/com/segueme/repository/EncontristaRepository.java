@@ -76,4 +76,17 @@ public interface EncontristaRepository {
      * @return true se possui associações, false caso contrário
      */
     boolean hasAssociations(Long id);
+
+    /**
+     * Conta o total de encontristas cadastrados
+     * @return total de encontristas
+     */
+    long count();
+
+    /**
+     * Busca um encontrista pelo token da ficha digital
+     * @param token Token UUID da ficha digital
+     * @return Optional contendo o encontrista, se encontrado
+     */
+    Optional<Encontrista> findByToken(String token);
 }

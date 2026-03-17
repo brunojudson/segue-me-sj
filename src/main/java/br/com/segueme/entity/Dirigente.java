@@ -16,6 +16,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "dirigente", uniqueConstraints = { @UniqueConstraint(columnNames = { "trabalhador_id", "pasta_id" }) })
@@ -27,20 +29,25 @@ public class Dirigente implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@NotNull(message = "Trabalhador é obrigatório")
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "trabalhador_id", nullable = false)
 	private Trabalhador trabalhador;
 
+	@NotNull(message = "Pasta é obrigatória")
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "pasta_id", nullable = false)
 	private Pasta pasta;
 
+	@NotNull(message = "Data de início é obrigatória")
 	@Column(name = "data_inicio", nullable = false)
 	private LocalDate dataInicio;
 
+	@NotNull(message = "Data de fim é obrigatória")
 	@Column(name = "data_fim", nullable = false)
 	private LocalDate dataFim;
 
+	@Size(max = 500, message = "Observações devem ter no máximo 500 caracteres")
 	@Column(name = "observacoes")
 	private String observacoes;
 

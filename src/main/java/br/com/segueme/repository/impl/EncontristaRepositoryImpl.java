@@ -70,7 +70,7 @@ public class EncontristaRepositoryImpl implements EncontristaRepository {
     @Override
     public List<Encontrista> findByPessoa(Long pessoaId) {
         return entityManager.createQuery(
-                "SELECT e FROM Encontrista e WHERE e.pessoa.id = :pessoaId",
+                "SELECT e FROM Encontrista e JOIN FETCH e.encontro WHERE e.pessoa.id = :pessoaId",
                 Encontrista.class)
                 .setParameter("pessoaId", pessoaId)
                 .getResultList();
@@ -153,5 +153,29 @@ public class EncontristaRepositoryImpl implements EncontristaRepository {
                 Encontrista.class)
                 .setParameter("encontroId", encontroAnteriorId)
                 .getResultList();
+    }
+
+    @Override
+    public long count() {
+        return entityManager.createQuery("SELECT COUNT(e) FROM Encontrista e", Long.class)
+                .getSingleResult();
+    }
+
+    @Override
+    public Optional<Encontrista> findByToken(String token) {
+        try {
+            Encontrista encontrista = entityManager.createQuery(
+                    "SELECT e FROM Encontrista e " +
+                    "JOIN FETCH e.pessoa p " +
+                    "LEFT JOIN FETCH p.sacramentos " +
+                    "JOIN FETCH e.encontro " +
+                    "LEFT JOIN FETCH e.trabalhador " +
+                    "WHERE e.tokenFicha = :token", Encontrista.class)
+                    .setParameter("token", token)
+                    .getSingleResult();
+            return Optional.of(encontrista);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 }

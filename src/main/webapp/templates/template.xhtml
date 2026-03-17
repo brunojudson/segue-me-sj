@@ -10,57 +10,21 @@
 <h:head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta name="theme-color" content="#3f51b5" />
+	<meta name="theme-color" content="#0b0c10" />
 	<meta name="description" content="Sistema de gerenciamento de encontros de jovens" />
 	<title>
 		<ui:insert name="title">Sistema Segue-me</ui:insert>
 	</title>
 	<h:outputStylesheet name="css/style.css" />
+	<h:outputStylesheet name="css/pages-common.css" />
+	<h:outputStylesheet name="css/components.css" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 	<link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css" />
+	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
 	<h:outputScript library="js" name="locale.primefaces.js" />
 	<h:outputScript library="js" name="main.js" />
 	
 	<link href="favicon.ico" rel="shortcut icon" />
-<style>
-    .compact-content {
-        font-size: 0.92rem;
-    }
-    .compact-content .modern-form,
-    .compact-content .form-section,
-    .compact-content .field-group,
-    .compact-content .ui-inputfield,
-    .compact-content .ui-selectonemenu,
-    .compact-content .ui-button,
-    .compact-content .ui-messages,
-    .compact-content .ui-datatable,
-    .compact-content .ui-fileupload {
-        font-size: 0.92rem !important;
-        padding: 0.4rem 0.7rem !important;
-    }
-    .compact-content .page-title {
-        font-size: 1.3rem !important;
-    }
-    .compact-content .page-subtitle {
-        font-size: 1rem !important;
-    }
-    .compact-content .ui-selectonemenu .ui-selectonemenu-label {
-        padding: 0.4rem 0.7rem !important;
-    }
-    .compact-content .ui-button {
-        min-height: 32px !important;
-        font-size: 0.95rem !important;
-    }
-    .compact-content .ui-inputfield {
-        min-height: 28px !important;
-    }
-    .compact-content .ui-datatable-tablewrapper {
-        font-size: 0.92rem !important;
-    }
-    .compact-content .ui-messages {
-        font-size: 0.92rem !important;
-    }
-</style>
 	
 </h:head>
 
@@ -82,15 +46,27 @@
 	</div>
 
 	<div id="layout">
+		<!-- Botão toggle para mobile -->
+		<button type="button" class="menu-toggle" 
+			aria-label="Alternar menu" title="Abrir/Fechar menu">
+			<i class="pi pi-bars"></i>
+		</button>
+		<!-- Overlay para mobile -->
+		<button class="menu-overlay" aria-label="Fechar menu" type="button"></button>
+		
 		<nav id="menu" role="navigation">
-			<h:form>
-				<ui:insert name="menu">
-					<ui:include src="/templates/menu.xhtml" />
-				</ui:insert>
-			</h:form>
+			<ui:insert name="menu">
+				<ui:include src="/templates/menu.xhtml" />
+			</ui:insert>
 		</nav>
 
 		<main id="content" role="main" class="compact-content">
+			<!-- Mensagens globais com autoUpdate -->
+			<p:growl id="globalMessages" showDetail="true" closable="true" 
+					 autoUpdate="true" life="4000"
+					 styleClass="modern-messages" 
+					 aria-live="polite" aria-atomic="true" />
+			
 			<ui:insert name="content">
 				<ui:include src="/templates/content.xhtml" />
 			</ui:insert>

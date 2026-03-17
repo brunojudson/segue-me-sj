@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<f:metadata>
+    <f:viewParam name="id" value="#{fichaDigitalController.id}" converter="javax.faces.Long" />
+    <f:viewAction action="#{fichaDigitalController.carregarFicha()}" />
+</f:metadata>
+
+<h:head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ficha Digital - Segue-me SJ</title>
+    <style>
+        :root {
+            --primary: #1565C0;
+            --primary-light: #1976D2;
+            --primary-dark: #0D47A1;
+            --accent: #FF6F00;
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --text: #212529;
+            --text-muted: #6c757d;
+            --success: #2e7d32;
+            --danger: #c62828;
+            --border: #dee2e6;
+            --shadow: 0 4px 24px rgba(0,0,0,0.10);
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0.5rem;
+        }
+
+        .ficha-container {
+            width: 100%;
+            max-width: 700px;
+            margin: 0.5rem auto;
+        }
+
+        /* Header / Banner */
+        .ficha-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border-radius: var(--radius) var(--radius) 0 0;
+            padding: 1rem 1rem 2.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .ficha-header .logo-text {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.85;
+            margin-bottom: 0.15rem;
+        }
+
+        .ficha-header .titulo {
+            font-size: 0.9rem;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        /* Foto avatar */
+        .foto-wrapper {
+            position: relative;
+            margin-top: -2rem;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .foto-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: 3px solid var(--card-bg);
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            background: #e0e0e0;
+        }
+
+        /* Card corpo */
+        .ficha-body {
+            background: var(--card-bg);
+            border-radius: 0 0 var(--radius) var(--radius);
+            box-shadow: var(--shadow);
+            padding: 0 1.25rem 1rem;
+        }
+
+        .ficha-nome {
+            text-align: center;
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-top: 0.4rem;
+            color: var(--text);
+            line-height: 1.2;
+        }
+
+        .ficha-encontro {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 500;
+            margin-top: 0.1rem;
+        }
+
+        /* Badge de status */
+        .status-badge {
+            display: inline-block;
+            margin: 0.35rem auto 0;
+            padding: 0.15rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-ativo { background: #e8f5e9; color: var(--success); }
+        .status-inativo { background: #ffebee; color: var(--danger); }
+        .status-indefinido { background: #f5f5f5; color: var(--text-muted); }
+        .status-center { text-align: center; }
+
+        /* Separador */
+        .ficha-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0.5rem 0;
+        }
+
+        /* Seção */
+        .ficha-secao {
+            margin-bottom: 0.15rem;
+        }
+
+        .secao-titulo {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+            padding-bottom: 0.2rem;
+            border-bottom: 1.5px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .secao-icon {
+            font-size: 0.85rem;
+        }
+
+        /* Dados grid */
+        .ficha-dados-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.15rem 1rem;
+        }
+
+        .ficha-dados-grid .dado-item-full {
+            grid-column: 1 / -1;
+        }
+
+        .dado-item {
+            display: flex;
+            flex-direction: column;
+            padding: 0.1rem 0;
+        }
+
+        .dado-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            font-weight: 600;
+            margin-bottom: 0;
+            line-height: 1.3;
+        }
+
+        .dado-valor {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        .dado-valor.nao-informado {
+            color: var(--text-muted);
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        /* Circulo badge */
+        .circulo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.1rem 0.45rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .circulo-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .circulo-ROSA .circulo-dot { background: #e91e63; }
+        .circulo-AZUL .circulo-dot { background: #1565c0; }
+        .circulo-VERDE .circulo-dot { background: #2e7d32; }
+        .circulo-VERMELHO .circulo-dot { background: #c62828; }
+        .circulo-AMARELO .circulo-dot { background: #f9a825; }
+
+        .circulo-ROSA { background: #fce4ec; color: #c2185b; }
+        .circulo-AZUL { background: #e3f2fd; color: #1565c0; }
+        .circulo-VERDE { background: #e8f5e9; color: #2e7d32; }
+        .circulo-VERMELHO { background: #ffebee; color: #c62828; }
+        .circulo-AMARELO { background: #fff8e1; color: #f57f17; }
+
+        /* Sacramento tags */
+        .sacramento-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .sacramento-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.15rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.68rem;
+            font-weight: 600;
+        }
+
+        .sacramento-0 { background: #e8f5e9; color: #2e7d32; }
+        .sacramento-1 { background: #e3f2fd; color: #1565c0; }
+        .sacramento-2 { background: #fff3e0; color: #e65100; }
+        .sacramento-3 { background: #f3e5f5; color: #7b1fa2; }
+
+        /* Footer */
+        .ficha-footer {
+            text-align: center;
+            margin-top: 0.5rem;
+            padding-top: 0.4rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .ficha-footer span {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+        }
+
+        /* Botão imprimir */
+        .btn-imprimir {
+            display: block;
+            width: 100%;
+            padding: 0.6rem;
+            margin-top: 0.75rem;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s;
+        }
+
+        .btn-imprimir:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Página de erro */
+        .ficha-erro {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .ficha-erro .erro-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .ficha-erro h2 {
+            font-size: 1.2rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .ficha-erro p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsivo */
+        @media (max-width: 600px) {
+            body { padding: 0.25rem; }
+            .ficha-header { padding: 0.75rem 0.75rem 2rem; }
+            .ficha-body { padding: 0 0.75rem 0.75rem; }
+            .ficha-nome { font-size: 1rem; }
+            .ficha-dados-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Print - compacto para caber em 1 folha */
+        @media print {
+            @page { margin: 8mm 10mm; size: A4; }
+            body { background: #fff; padding: 0; font-size: 9pt; }
+            .ficha-container { box-shadow: none; max-width: 100%; margin: 0; }
+            .ficha-header {
+                background: var(--primary) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding: 8px 10px 20px;
+            }
+            .ficha-header .logo-text { font-size: 8pt; }
+            .ficha-header .titulo { font-size: 9pt; }
+            .foto-wrapper { margin-top: -16px; }
+            .foto-avatar { width: 56px; height: 56px; border-width: 2px; }
+            .ficha-body { box-shadow: none; padding: 0 10px 8px; }
+            .ficha-nome { font-size: 12pt; margin-top: 4px; }
+            .ficha-encontro { font-size: 8pt; }
+            .status-badge { font-size: 6pt; padding: 1px 6px; margin-top: 2px; }
+            .ficha-divider { margin: 4px 0; }
+            .ficha-secao { margin-bottom: 1px; }
+            .secao-titulo { font-size: 6.5pt; margin-bottom: 2px; padding-bottom: 1px; }
+            .secao-icon { font-size: 8pt; }
+            .ficha-dados-grid { gap: 1px 8px; }
+            .dado-item { padding: 1px 0; }
+            .dado-label { font-size: 6pt; }
+            .dado-valor { font-size: 8pt; }
+            .sacramento-list { gap: 2px; }
+            .sacramento-tag { font-size: 6.5pt; padding: 0 3px; }
+            .circulo-badge { font-size: 7.5pt; padding: 0 4px; }
+            .circulo-dot { width: 6px; height: 6px; }
+            .ficha-footer { margin-top: 4px; padding-top: 3px; }
+            .ficha-footer span { font-size: 6pt; }
+            .btn-imprimir { display: none !important; }
+            .status-badge, .circulo-badge, .sacramento-tag,
+            .circulo-ROSA, .circulo-AZUL, .circulo-VERDE, .circulo-VERMELHO, .circulo-AMARELO,
+            .sacramento-0, .sacramento-1, .sacramento-2, .sacramento-3,
+            .status-ativo, .status-inativo {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="ficha-container">
+        <!-- Ficha ENCONTRADA -->
+        <ui:fragment rendered="#{fichaDigitalController.fichaEncontrada}">
+            <!-- Header -->
+            <div class="ficha-header">
+                <div class="logo-text">Segue-me SJ</div>
+                <div class="titulo">Ficha Digital do Seguimista</div>
+            </div>
+
+            <div class="ficha-body">
+                <!-- Foto -->
+                <div class="foto-wrapper">
+                    <h:graphicImage value="#{fichaDigitalController.fotoUrl}"
+                                    alt="Foto do seguimista"
+                                    styleClass="foto-avatar" />
+                </div>
+
+                <!-- Nome e Encontro -->
+                <div class="ficha-nome">
+                    <h:outputText value="#{fichaDigitalController.nomeCompleto}" />
+                </div>
+                <div class="ficha-encontro">
+                    <h:outputText value="#{fichaDigitalController.nomeEncontro}" />
+                </div>
+
+                <!-- Status -->
+                <div class="status-center">
+                    <span class="status-badge #{fichaDigitalController.statusClass}">
+                        <h:outputText value="#{fichaDigitalController.status}" />
+                    </span>
+                </div>
+
+                <div class="ficha-divider" />
+
+                <!-- =============================== -->
+                <!-- SEÇÃO: DADOS PESSOAIS           -->
+                <!-- =============================== -->
+                <div class="ficha-secao">
+                    <div class="secao-titulo">
+                        <span class="secao-icon">&#128100;</span> Dados Pessoais
+                    </div>
+                    <div class="ficha-dados-grid">
+                        <div class="dado-item">
+                            <span class="dado-label">Data de Nascimento</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.dataNascimentoFormatada}" />
+                            </span>
+                        </div>
+                        <div class="dado-item">
+                            <span class="dado-label">Idade</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.idadeTexto}" />
+                            </span>
+                        </div>
+                        <div class="dado-item">
+                            <span class="dado-label">Sexo</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.sexo}" />
+                            </span>
+                        </div>
+                        <div class="dado-item">
+                            <span class="dado-label">CPF</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.cpf}" />
+                            </span>
+                        </div>
+                        <div class="dado-item dado-item-full">
+                            <span class="dado-label">Naturalidade</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.naturalidade}" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ficha-divider" />
+
+                <!-- =============================== -->
+                <!-- SEÇÃO: FILIAÇÃO                 -->
+                <!-- =============================== -->
+                <div class="ficha-secao">
+                    <div class="secao-titulo">
+                        <span class="secao-icon">&#128106;</span> Filia&#231;&#227;o
+                    </div>
+                    <div class="ficha-dados-grid">
+                        <div class="dado-item">
+                            <span class="dado-label">Pai</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.filiacaoPai}" />
+                            </span>
+                        </div>
+                        <div class="dado-item">
+                            <span class="dado-label">M&#227;e</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.filiacaoMae}" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ficha-divider" />
+
+                <!-- =============================== -->
+                <!-- SEÇÃO: CONTATO E ENDEREÇO       -->
+                <!-- =============================== -->
+                <div class="ficha-secao">
+                    <div class="secao-titulo">
+                        <span class="secao-icon">&#128222;</span> Contato e Endere&#231;o
+                    </div>
+                    <div class="ficha-dados-grid">
+                        <div class="dado-item dado-item-full">
+                            <span class="dado-label">Endere&#231;o</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.endereco}" />
+                            </span>
+                        </div>
+                        <div class="dado-item">
+                            <span class="dado-label">Telefone</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.telefone}" />
+                            </span>
+                        </div>
+                        <div class="dado-item">
+                            <span class="dado-label">E-mail</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.email}" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ficha-divider" />
+
+                <!-- =============================== -->
+                <!-- SEÇÃO: FORMAÇÃO                 -->
+                <!-- =============================== -->
+                <div class="ficha-secao">
+                    <div class="secao-titulo">
+                        <span class="secao-icon">&#127891;</span> Forma&#231;&#227;o
+                    </div>
+                    <div class="ficha-dados-grid">
+                        <div class="dado-item">
+                            <span class="dado-label">Escolaridade</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.escolaridade}" />
+                            </span>
+                        </div>
+                        <div class="dado-item">
+                            <span class="dado-label">Curso</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.curso}" />
+                            </span>
+                        </div>
+                        <div class="dado-item dado-item-full">
+                            <span class="dado-label">Institui&#231;&#227;o de Ensino</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.instituicaoEnsino}" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ficha-divider" />
+
+                <!-- =============================== -->
+                <!-- SEÇÃO: VIDA ESPIRITUAL          -->
+                <!-- =============================== -->
+                <div class="ficha-secao">
+                    <div class="secao-titulo">
+                        <span class="secao-icon">&#9969;</span> Vida Espiritual
+                    </div>
+                    <div class="ficha-dados-grid">
+                        <div class="dado-item">
+                            <span class="dado-label">Religi&#227;o</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.religiao}" />
+                            </span>
+                        </div>
+                        <div class="dado-item">
+                            <span class="dado-label">Igreja que Frequenta</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.igrejaFrequenta}" />
+                            </span>
+                        </div>
+                        <div class="dado-item dado-item-full">
+                            <span class="dado-label">Movimento que Participou</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.movimentoParticipou}" />
+                            </span>
+                        </div>
+                        <div class="dado-item dado-item-full">
+                            <span class="dado-label">Sacramentos</span>
+                            <div class="sacramento-list">
+                                <ui:repeat value="#{fichaDigitalController.sacramentos}" var="sac">
+                                    <span class="sacramento-tag sacramento-#{sac.ordinal() mod 4}">
+                                        &#10003; <h:outputText value="#{sac.descricao}" />
+                                    </span>
+                                </ui:repeat>
+                                <h:outputText value="Nenhum sacramento informado"
+                                    rendered="#{empty fichaDigitalController.sacramentos}"
+                                    styleClass="dado-valor nao-informado" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ficha-divider" />
+
+                <!-- =============================== -->
+                <!-- SEÇÃO: DADOS DO ENCONTRO        -->
+                <!-- =============================== -->
+                <div class="ficha-secao">
+                    <div class="secao-titulo">
+                        <span class="secao-icon">&#128197;</span> Dados do Encontro
+                    </div>
+                    <div class="ficha-dados-grid">
+                        <div class="dado-item">
+                            <span class="dado-label">Data de Inscri&#231;&#227;o</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.dataInscricaoFormatada}" />
+                            </span>
+                        </div>
+
+                        <div class="dado-item" style="#{empty fichaDigitalController.encontrista.circulo ? 'display:none' : ''}">
+                            <span class="dado-label">C&#237;rculo</span>
+                            <span class="dado-valor">
+                                <span class="circulo-badge circulo-#{fichaDigitalController.encontrista.circulo}">
+                                    <span class="circulo-dot"></span>
+                                    <h:outputText value="#{fichaDigitalController.circulo}" />
+                                </span>
+                            </span>
+                        </div>
+
+                        <div class="dado-item">
+                            <span class="dado-label">Forma de Pagamento</span>
+                            <span class="dado-valor">
+                                <h:outputText value="#{fichaDigitalController.formaPagamento}" />
+                            </span>
+                        </div>
+
+                        <div class="dado-item" style="#{empty fichaDigitalController.encontrista.valorPago ? 'display:none' : ''}">
+                            <span class="dado-label">Valor Pago</span>
+                            <span class="dado-valor">
+                                R$ <h:outputText value="#{fichaDigitalController.encontrista.valorPago}">
+                                    <f:convertNumber pattern="#,##0.00" locale="pt_BR" />
+                                </h:outputText>
+                            </span>
+                        </div>
+
+                        <ui:fragment rendered="#{not empty fichaDigitalController.observacoes}">
+                            <div class="dado-item dado-item-full">
+                                <span class="dado-label">Observa&#231;&#245;es</span>
+                                <span class="dado-valor">
+                                    <h:outputText value="#{fichaDigitalController.observacoes}" />
+                                </span>
+                            </div>
+                        </ui:fragment>
+                    </div>
+                </div>
+
+                <!-- Botão Imprimir -->
+                <button type="button" class="btn-imprimir" onclick="window.print()">
+                    &#128424; Imprimir Ficha
+                </button>
+
+                <!-- Footer -->
+                <div class="ficha-footer">
+                    <span>Segue-me S&#227;o Jos&#233; dos Campos &#8226; Ficha Digital do Seguimista</span>
+                </div>
+            </div>
+        </ui:fragment>
+
+        <!-- Ficha NÃO encontrada -->
+        <ui:fragment rendered="#{!fichaDigitalController.fichaEncontrada}">
+            <div class="ficha-erro">
+                <div class="erro-icon">&#128533;</div>
+                <h2>Ficha n&#227;o encontrada</h2>
+                <p><h:outputText value="#{fichaDigitalController.mensagemErro}" /></p>
+            </div>
+        </ui:fragment>
+    </div>
+</h:body>
+
+</html>

@@ -67,6 +67,13 @@ public class PessoaRepositoryImpl implements PessoaRepository {
     }
 
     @Override
+    public List<Pessoa> findAllWithSacramentos() {
+        return entityManager.createQuery(
+                "SELECT DISTINCT p FROM Pessoa p LEFT JOIN FETCH p.sacramentos ORDER BY p.nome", Pessoa.class)
+                .getResultList();
+    }
+
+    @Override
     public List<Pessoa> findAllExcludingActiveEncontristas() {
         return entityManager.createQuery(
                 "SELECT p FROM Pessoa p WHERE p.id NOT IN " +
@@ -157,14 +164,11 @@ public class PessoaRepositoryImpl implements PessoaRepository {
 
     @Override
     public void atualizarIdades() {
-        List<Pessoa> pessoas = entityManager.createQuery("SELECT p FROM Pessoa p", Pessoa.class).getResultList();
-        for (Pessoa pessoa : pessoas) {
-            if (pessoa.getDataNascimento() != null) {
-                int idade = Period.between(pessoa.getDataNascimento(), LocalDate.now()).getYears();
-                pessoa.setIdade(idade);
-                entityManager.merge(pessoa);
-            }
-        }
+        // Atualização batch diretamente no banco, sem carregar entidades em memória
+        entityManager.createNativeQuery(
+                "UPDATE pessoa SET idade = EXTRACT(YEAR FROM AGE(CURRENT_DATE, data_nascimento)) " +
+                "WHERE data_nascimento IS NOT NULL")
+                .executeUpdate();
     }
     
     @Override

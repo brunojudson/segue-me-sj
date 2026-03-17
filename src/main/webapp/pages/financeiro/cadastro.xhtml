@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">
+        #{empty param.id ? 'Cadastrar' : 'Editar'} Movimento Financeiro - Sistema Segue-me
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="content-container">
+            <!-- Cabeçalho da página -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">
+                            <i class="pi pi-wallet page-icon"></i>
+                            <span class="title-text">#{empty param.id ? 'Cadastrar' : 'Editar'} Movimento Financeiro</span>
+                        </h1>
+                        <p class="page-subtitle">
+                            #{empty param.id ? 'Registre uma nova receita ou despesa' : 'Atualize os dados do movimento financeiro'}
+                        </p>
+                    </div>
+                    <div class="page-actions">
+                        <p:button value="Voltar à Lista"
+                                  outcome="/pages/financeiro/lista.xhtml"
+                                  icon="pi pi-arrow-left"
+                                  styleClass="action-button-primary" />
+                    </div>
+                </div>
+            </div>
+
+            <h:form id="movimentoForm" styleClass="modern-form">
+                <p:growl id="messages" showDetail="true" closable="true" styleClass="modern-messages"
+                    onshow="scrollToTopOnError()">
+                    <p:autoUpdate />
+                </p:growl>
+
+                <f:metadata>
+                    <f:viewParam name="id" />
+                    <f:viewAction action="#{movimentoFinanceiroController.carregarMovimento}" if="#{not empty param.id}" />
+                </f:metadata>
+
+                <!-- Seção: Tipo e Categoria -->
+                <div class="form-section">
+                    <p:fieldset legend="🏷️ Classificação" styleClass="modern-fieldset" toggleable="true">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="tipo" value="Tipo" styleClass="required-field" />
+                                <p:selectOneMenu id="tipo"
+                                    value="#{movimentoFinanceiroController.movimento.tipo}"
+                                    required="true" requiredMessage="Tipo é obrigatório"
+                                    style="width:100%">
+                                    <f:selectItem itemLabel="-- Selecione --" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{movimentoFinanceiroController.tiposMovimento}"
+                                        var="t" itemLabel="#{t.descricao}" itemValue="#{t}" />
+                                </p:selectOneMenu>
+                                <small class="field-hint">Tipo do movimento: Receita ou Despesa</small>
+                            </div>
+                            <div class="field-group">
+                                <p:outputLabel for="categoria" value="Categoria" styleClass="required-field" />
+                                <p:selectOneMenu id="categoria"
+                                    value="#{movimentoFinanceiroController.movimento.categoria}"
+                                    required="true" requiredMessage="Categoria é obrigatória"
+                                    style="width:100%">
+                                    <f:selectItem itemLabel="-- Selecione --" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{movimentoFinanceiroController.categorias}"
+                                        var="c" itemLabel="#{c.descricao}" itemValue="#{c}" />
+                                </p:selectOneMenu>
+                                <small class="field-hint">Categoria do movimento financeiro</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção: Dados do Movimento -->
+                <div class="form-section">
+                    <p:fieldset legend="💰 Dados do Movimento" styleClass="modern-fieldset" toggleable="true">
+                        <div class="field-grid">
+                            <div class="field-group full-width">
+                                <p:outputLabel for="descricao" value="Descrição" styleClass="required-field" />
+                                <p:inputText id="descricao"
+                                    value="#{movimentoFinanceiroController.movimento.descricao}"
+                                    required="true" requiredMessage="Descrição é obrigatória"
+                                    maxlength="255" placeholder="Ex: Pagamento de alimentação do encontro" />
+                                <small class="field-hint">Breve descrição do movimento financeiro (máximo 255 caracteres)</small>
+                            </div>
+                            
+                            <div class="field-group">
+                                <p:outputLabel for="valor" value="Valor (R$)" styleClass="required-field" />
+                                <p:inputNumber id="valor"
+                                    value="#{movimentoFinanceiroController.movimento.valor}"
+                                    required="true" requiredMessage="Valor é obrigatório"
+                                    decimalSeparator="," thousandSeparator="."
+                                    decimalPlaces="2" minValue="0.01"
+                                    symbol="R$ " symbolPosition="p"
+                                    padControl="false"
+                                    placeholder="0,00" />
+                                <small class="field-hint">Valor em reais do movimento</small>
+                            </div>
+                            
+                            <div class="field-group">
+                                <p:outputLabel for="dataMovimento" value="Data do Movimento" styleClass="required-field" />
+                                <p:datePicker id="dataMovimento"
+                                    value="#{movimentoFinanceiroController.movimento.dataMovimento}"
+                                    required="true" requiredMessage="Data do movimento é obrigatória"
+                                    pattern="dd/MM/yyyy" showIcon="true" showOnFocus="false" />
+                                <small class="field-hint">Data em que o movimento foi realizado</small>
+                            </div>
+                            
+                            <div class="field-group">
+                                <p:outputLabel for="encontro" value="Encontro" styleClass="required-field" />
+                                <p:selectOneMenu id="encontro"
+                                    value="#{movimentoFinanceiroController.movimento.encontro}"
+                                    required="true" requiredMessage="Encontro é obrigatório"
+                                    converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="-- Selecione --" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{movimentoFinanceiroController.encontros}"
+                                        var="enc" itemLabel="#{enc.nome}" itemValue="#{enc}" />
+                                </p:selectOneMenu>
+                                <small class="field-hint">Encontro relacionado ao movimento</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção: Informações Complementares -->
+                <div class="form-section">
+                    <p:fieldset legend="📝 Informações Complementares" styleClass="modern-fieldset" toggleable="true" collapsed="true">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="responsavel" value="Responsável" />
+                                <p:inputText id="responsavel"
+                                    value="#{movimentoFinanceiroController.movimento.responsavel}"
+                                    maxlength="100" placeholder="Nome do responsável" />
+                                <small class="field-hint">Pessoa responsável pelo movimento (opcional)</small>
+                            </div>
+                            <div class="field-group">
+                                <p:outputLabel for="comprovanteUrl" value="URL do Comprovante" />
+                                <p:inputText id="comprovanteUrl"
+                                    value="#{movimentoFinanceiroController.movimento.comprovanteUrl}"
+                                    maxlength="255" placeholder="Link do comprovante (opcional)" />
+                                <small class="field-hint">Link para o comprovante do movimento (opcional)</small>
+                            </div>
+                            <div class="field-group full-width">
+                                <p:outputLabel for="observacoes" value="Observações" />
+                                <p:inputTextarea id="observacoes"
+                                    value="#{movimentoFinanceiroController.movimento.observacoes}"
+                                    maxlength="500" rows="3" placeholder="Observações adicionais"
+                                    autoResize="true" />
+                                <small class="field-hint">Informações adicionais sobre o movimento (máximo 500 caracteres)</small>
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Botões de ação -->
+                <div class="form-actions">
+                    <div class="action-buttons">
+                        <p:commandButton value="💾 Salvar Dados" icon="pi pi-save"
+                            styleClass="ui-button-success action-button-primary" 
+                            action="#{movimentoFinanceiroController.salvar()}"
+                            update="@form"
+                            aria-label="Salvar movimento financeiro" />
+                        <p:commandButton value="📋 Salvar e Continuar" icon="pi pi-plus"
+                            styleClass="ui-button-info action-button-secondary" 
+                            action="#{movimentoFinanceiroController.salvarEContinuar()}"
+                            update="@form messages"
+                            aria-label="Salvar e cadastrar outro" />
+                        <p:button value="❌ Cancelar" 
+                            outcome="/pages/financeiro/lista.xhtml"
+                            icon="pi pi-times" styleClass="ui-button-secondary action-button-cancel"
+                            aria-label="Cancelar e voltar à lista" />
+                    </div>
+                    
+                    <div class="form-help">
+                        <small>
+                            <i class="pi pi-info-circle"></i>
+                            Campos marcados com * são obrigatórios. 
+                            Use Tab para navegar entre os campos.
+                        </small>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

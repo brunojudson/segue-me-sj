@@ -36,9 +36,9 @@
                 </div>
 
                 <h:form id="cadastroUsuarioForm" styleClass="modern-form">
-                    <p:messages id="msgs" showDetail="true" closable="true" styleClass="modern-messages">
+                    <p:growl id="msgs" showDetail="true" closable="true" styleClass="modern-messages">
                         <p:autoUpdate />
-                    </p:messages>
+                    </p:growl>
 
                     <f:metadata>
                         <f:viewParam name="id" />
@@ -63,7 +63,7 @@
                                 <div class="field-group">
                                     <p:outputLabel for="email" value="E-mail/Login" styleClass="required-field" />
                                     <p:inputText id="email" value="#{usuarioController.usuario.email}"
-                                                required="true" 
+             s                                   required="true" 
                                                 type="email"
                                                 requiredMessage="O e-mail é obrigatório"
                                                 placeholder="exemplo@email.com"

@@ -6,8 +6,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
-
 import br.com.segueme.entity.Casal;
 import br.com.segueme.entity.Palestrante;
 import br.com.segueme.entity.Pessoa;
@@ -56,7 +54,8 @@ public class PalestranteRepositoryImpl implements PalestranteRepository {
     @Override
     public List<Palestrante> findByPessoa(Pessoa pessoa) {
         TypedQuery<Palestrante> query = entityManager.createQuery(
-            "SELECT p FROM Palestrante p WHERE p.tipoPalestrante = :tipoIndividual AND p.pessoaIndividual = :pessoa " +
+            "SELECT DISTINCT p FROM Palestrante p LEFT JOIN FETCH p.palestras pal LEFT JOIN FETCH pal.encontro " +
+            "WHERE (p.tipoPalestrante = :tipoIndividual AND p.pessoaIndividual = :pessoa) " +
             "OR :pessoa MEMBER OF p.membrosGrupo", Palestrante.class);
         query.setParameter("tipoIndividual", TipoPalestrante.INDIVIDUAL);
         query.setParameter("pessoa", pessoa);
@@ -66,26 +65,24 @@ public class PalestranteRepositoryImpl implements PalestranteRepository {
     @Override
     public List<Palestrante> findByCasal(Casal casal) {
         TypedQuery<Palestrante> query = entityManager.createQuery(
-            "SELECT p FROM Palestrante p WHERE p.tipoPalestrante = :tipoCasal AND p.casal = :casal", Palestrante.class);
+            "SELECT DISTINCT p FROM Palestrante p LEFT JOIN FETCH p.palestras pal LEFT JOIN FETCH pal.encontro " +
+            "WHERE p.tipoPalestrante = :tipoCasal AND p.casal = :casal", Palestrante.class);
         query.setParameter("tipoCasal", TipoPalestrante.CASAL);
         query.setParameter("casal", casal);
         return query.getResultList();
     }
 
     @Override
-    @Transactional
     public void save(Palestrante palestrante) {
         entityManager.persist(palestrante);
     }
 
     @Override
-    @Transactional
     public void update(Palestrante palestrante) {
         entityManager.merge(palestrante);
     }
 
     @Override
-    @Transactional
     public void delete(Long id) {
         Palestrante palestrante = findById(id);
         if (palestrante != null) {

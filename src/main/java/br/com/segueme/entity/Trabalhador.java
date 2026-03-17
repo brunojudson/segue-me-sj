@@ -3,6 +3,8 @@ package br.com.segueme.entity;
 import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 import java.util.Set;
 import java.util.HashSet;
@@ -13,16 +15,19 @@ import java.util.HashSet;
 })
 public class Trabalhador implements Serializable {
 
+
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Pessoa é obrigatória")
     @ManyToOne
     @JoinColumn(name = "pessoa_id", nullable = false)
     private Pessoa pessoa;
 
+    @NotNull(message = "Equipe é obrigatória")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "equipe_id", nullable = false)
     private Equipe equipe;
@@ -41,12 +46,14 @@ public class Trabalhador implements Serializable {
     @JoinColumn(name = "encontrista_id")
     private Encontrista encontrista;
 
+    @NotNull(message = "Data de início é obrigatória")
     @Column(name = "data_inicio", nullable = false)
     private LocalDate dataInicio;
 
     @Column(name = "data_fim")
     private LocalDate dataFim;
 
+    @Size(max = 500, message = "Observações devem ter no máximo 500 caracteres")
     @Column(name = "observacoes")
     private String observacoes;
 
@@ -64,6 +71,12 @@ public class Trabalhador implements Serializable {
 
     @Transient
     private boolean ehCasal;
+
+    @Column(name = "apto_para_palestrar")
+    private Boolean aptoParaPalestrar = false;
+
+    @Column(name = "apto_para_coordenar")
+    private Boolean aptoParaCoordenar = false;
 
     public boolean isEhCasal() {
         return ehCasal;
@@ -205,6 +218,21 @@ public class Trabalhador implements Serializable {
 
     public void setIdade(Integer idade) {
         this.idade = idade;
+    }
+     public Boolean getAptoParaPalestrar() {
+        return aptoParaPalestrar;
+    }
+
+    public void setAptoParaPalestrar(Boolean aptoParaPalestrar) {
+        this.aptoParaPalestrar = aptoParaPalestrar;
+    }
+
+    public Boolean getAptoParaCoordenar() {
+        return aptoParaCoordenar;
+    }
+
+    public void setAptoParaCoordenar(Boolean aptoParaCoordenar) {
+        this.aptoParaCoordenar = aptoParaCoordenar;
     }
 
     // Métodos auxiliares

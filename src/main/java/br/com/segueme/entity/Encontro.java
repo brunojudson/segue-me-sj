@@ -17,6 +17,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "encontro", schema="public")
@@ -28,30 +33,41 @@ public class Encontro implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Nome do encontro é obrigatório")
+    @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres")
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 
+    @Size(max = 200, message = "Tema deve ter no máximo 200 caracteres")
     @Column(name = "tema", length = 200)
     private String tema;
 
+    @NotNull(message = "Data de início é obrigatória")
     @Column(name = "data_inicio", nullable = false)
     private LocalDate dataInicio;
 
+    @NotNull(message = "Data de fim é obrigatória")
     @Column(name = "data_fim", nullable = false)
     private LocalDate dataFim;
 
+    @NotBlank(message = "Local é obrigatório")
+    @Size(min = 3, max = 200, message = "Local deve ter entre 3 e 200 caracteres")
     @Column(name = "local", nullable = false, length = 200)
     private String local;
 
+    @Size(max = 1000, message = "Descrição deve ter no máximo 1000 caracteres")
     @Column(name = "descricao")
     private String descricao;
 
+    @Positive(message = "Capacidade máxima deve ser positiva")
     @Column(name = "capacidade_maxima")
     private Integer capacidadeMaxima;
 
+    @DecimalMin(value = "0.0", inclusive = true, message = "Valor de inscrição não pode ser negativo")
     @Column(name = "valor_inscricao", precision = 10, scale = 2)
     private BigDecimal valorInscricao;
 
+    @DecimalMin(value = "0.0", inclusive = true, message = "Valor de contribuição não pode ser negativo")
     @Column(name = "valor_contribuicao_trabalhador", precision = 10, scale = 2)
     private BigDecimal valorContribuicaoTrabalhador;
 

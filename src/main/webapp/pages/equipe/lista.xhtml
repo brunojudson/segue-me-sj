@@ -35,7 +35,7 @@
 			</div>
 
 			<h:form id="listForm" prependId="false">
-				<p:messages id="messages" showDetail="true" closable="true" />
+				<p:growl id="messages" showDetail="true" closable="true" />
 				
 				<!-- Tabela moderna de equipes -->
 				<p:dataTable id="equipesTable" var="equipe" value="#{equipeController.equipes}"
@@ -63,7 +63,10 @@
 							<div class="team-icon">
 								<i class="pi pi-sitemap"></i>
 							</div>
-							<h:outputText value="#{equipe.nome}" styleClass="team-name" />
+							<p:commandLink value="#{equipe.nome}" styleClass="nome-link team-name"
+								action="#{equipeController.abrirDetalhes(equipe)}"
+								update=":detalhesForm:detalhesModal"
+								oncomplete="PF('detalhesDialog').show()" />
 						</div>
 					</p:column>
 					
@@ -102,15 +105,22 @@
 					
 					<p:column headerText="Ações" styleClass="text-center" width="140">
 						<div class="table-action-buttons">
-							<p:commandButton icon="pi pi-eye" title="Visualizar" 
-								action="#{equipeController.visualizar(equipe)}"
-								styleClass="action-button-secondary-table action-btn" />
+							<!-- <p:button icon="pi pi-eye" title="Visualizar" 
+								ariaLabel="Visualizar equipe"
+								outcome="/pages/equipe/visualizar.xhtml"
+								styleClass="action-button-secondary-table action-btn">
+								<f:param name="id" value="#{equipe.id}" />
+							</p:button> -->
 							
-							<p:commandButton icon="pi pi-pencil" title="Editar" 
-								action="#{equipeController.editar(equipe)}"
-								styleClass="action-button-warn-table action-btn" />
+							<p:button icon="pi pi-pencil" title="Editar" 
+								ariaLabel="Editar equipe"
+								outcome="/pages/equipe/cadastro.xhtml"
+								styleClass="action-button-warn-table action-btn">
+								<f:param name="id" value="#{equipe.id}" />
+							</p:button>
 							
 							<p:commandButton icon="pi pi-trash" title="Excluir" 
+								ariaLabel="Excluir equipe"
 								action="#{equipeController.prepararExclusao(equipe)}"
 								styleClass="action-button-danger-table action-btn"
 								update=":confirmDialog" 
@@ -140,69 +150,118 @@
 									 icon="pi pi-times" />
 				</p:confirmDialog>
 			</h:form>
+
+			<!-- Modal de Detalhes da Equipe -->
+			<h:form id="detalhesForm">
+			<p:dialog id="detalhesModal" widgetVar="detalhesDialog"
+				header="Detalhes da Equipe" 
+				styleClass="detalhes-pessoa-dialog"
+				modal="true" responsive="true"
+				closable="true" closeOnEscape="true"
+				showEffect="fade" hideEffect="fade"
+				style="max-width:900px; width: calc(100% - 32px);">
+
+				<p:ajax event="close" listener="#{equipeController.fecharDetalhes()}" />
+
+				<h:panelGroup id="detalhesContent" rendered="#{equipeController.equipeDetalhes != null}">
+					<div class="modal-pessoa-header">
+						<div class="modal-pessoa-avatar-section">
+							<div class="modal-pessoa-avatar">
+								<i class="pi pi-sitemap" style="font-size: 2rem;"></i>
+							</div>
+							<div class="modal-pessoa-info-principal">
+								<h2 class="modal-pessoa-nome">#{equipeController.equipeDetalhes.nome}</h2>
+								<div class="modal-pessoa-meta">
+									<span class="sm-tag sm-tag-green">
+										<i class="pi pi-calendar"></i> #{equipeController.equipeDetalhes.encontro.nome}
+									</span>
+									<span class="sm-tag #{equipeController.equipeDetalhes.ativo ? 'sm-tag-green' : 'sm-tag-red'}">
+										#{equipeController.equipeDetalhes.ativo ? 'Ativa' : 'Inativa'}
+									</span>
+									<span class="modal-pessoa-id">ID: #{equipeController.equipeDetalhes.id}</span>
+								</div>
+							</div>
+						</div>
+						<div class="modal-pessoa-actions">
+							<p:button icon="pi pi-pencil" title="Editar"
+								outcome="/pages/equipe/cadastro.xhtml"
+								styleClass="action-button-primary">
+								<f:param name="id" value="#{equipeController.equipeDetalhes.id}" />
+							</p:button>
+						</div>
+					</div>
+
+					<div class="info-grid" style="padding: 0 1.5rem 1rem;">
+						<div class="info-item">
+							<label>Nome da Equipe</label>
+							<span>#{equipeController.equipeDetalhes.nome}</span>
+						</div>
+						<div class="info-item">
+							<label>Tipo de Equipe</label>
+							<span>
+								<h:outputText value="#{equipeController.equipeDetalhes.tipoEquipe.nome}" rendered="#{equipeController.equipeDetalhes.tipoEquipe != null}" />
+								<h:outputText value="Não informado" rendered="#{equipeController.equipeDetalhes.tipoEquipe == null}" styleClass="empty-value" />
+							</span>
+						</div>
+						<div class="info-item">
+							<label>Encontro</label>
+							<span>
+								<h:outputText value="#{equipeController.equipeDetalhes.encontro.nome}" rendered="#{equipeController.equipeDetalhes.encontro != null}" />
+								<h:outputText value="Não informado" rendered="#{equipeController.equipeDetalhes.encontro == null}" styleClass="empty-value" />
+							</span>
+						</div>
+						<div class="info-item">
+							<label>Equipe Dirigente</label>
+							<span>
+								<span class="sm-tag #{equipeController.equipeDetalhes.ehEquipeDirigente() ? 'sm-tag-green' : 'sm-tag-muted'}">
+									#{equipeController.equipeDetalhes.ehEquipeDirigente() ? 'Sim' : 'Não'}
+								</span>
+							</span>
+						</div>
+						<div class="info-item full-width">
+							<label>Descrição</label>
+							<span>
+								<h:outputText value="#{equipeController.equipeDetalhes.descricao}" rendered="#{not empty equipeController.equipeDetalhes.descricao}" />
+								<h:outputText value="Sem descrição" rendered="#{empty equipeController.equipeDetalhes.descricao}" styleClass="empty-value" />
+							</span>
+						</div>
+					</div>
+
+					<!-- Trabalhadores -->
+					<div style="padding: 0 1.5rem 1.5rem;">
+						<h3 class="detail-section-title"><i class="pi pi-users"></i> Trabalhadores</h3>
+						<p:dataTable value="#{equipeController.equipeDetalhes.trabalhadores}" var="trabalhador"
+							emptyMessage="Nenhum trabalhador cadastrado para esta equipe"
+							styleClass="modern-datatable">
+							<p:column headerText="Nome" sortBy="#{trabalhador.pessoa.nome}">
+								<h:outputText value="#{trabalhador.pessoa.nome}" />
+							</p:column>
+							<p:column headerText="Coordenador" style="text-align:center; width:150px;">
+								<h:panelGroup rendered="#{trabalhador.ehCoordenador}">
+									<span class="sm-tag sm-tag-purple">
+										<i class="pi pi-star"></i> Coordenador
+									</span>
+								</h:panelGroup>
+								<h:outputText value="Membro" rendered="#{not trabalhador.ehCoordenador}" styleClass="text-muted" />
+							</p:column>
+							<p:column headerText="Data de Início" style="text-align:center; width:120px;">
+								<h:outputText value="#{trabalhador.dataInicio}" rendered="#{trabalhador.dataInicio != null}">
+									<f:converter converterId="localDateConverter" />
+								</h:outputText>
+								<h:outputText value="N/I" rendered="#{trabalhador.dataInicio == null}" styleClass="empty-value" />
+							</p:column>
+							<p:column headerText="Casal" style="text-align:center; width:80px;">
+								<h:panelGroup rendered="#{trabalhador.ehCasal}">
+									<i class="pi pi-heart" style="color:var(--sm-accent2);"></i>
+								</h:panelGroup>
+								<h:outputText value="-" rendered="#{not trabalhador.ehCasal}" styleClass="empty-value" />
+							</p:column>
+						</p:dataTable>
+					</div>
+				</h:panelGroup>
+			</p:dialog>
+			</h:form>
 		</div>
-
-		<style>
-		/* Badges de status modernos */
-			.status-badge {
-				display: inline-flex;
-				align-items: center;
-				gap: 0.25rem;
-				padding: 0.375rem 0.75rem;
-				border-radius: 20px;
-				font-size: 0.75rem;
-				font-weight: 600;
-				text-transform: uppercase;
-				letter-spacing: 0.5px;
-			}
-
-			.status-badge.ativo {
-				background-color: #e8f5e8;
-				color: #2e7d32;
-				border: 1px solid #c8e6c9;
-			}
-
-			.status-badge.inativo {
-				background-color: #ffebee;
-				color: #c62828;
-				border: 1px solid #ffcdd2;
-			}
-			/* Estilos específicos para equipes */
-			.team-info {
-				display: flex;
-				align-items: center;
-				gap: 0.75rem;
-			}
-
-			.team-icon {
-				width: 32px;
-				height: 32px;
-				background: linear-gradient(135deg, #10b981, #059669);
-				border-radius: 8px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				color: white;
-				flex-shrink: 0;
-			}
-
-			.team-name {
-				font-weight: 600;
-				color: #333;
-			}
-
-			.team-type-badge {
-				display: inline-flex;
-				align-items: center;
-				gap: 0.5rem;
-				padding: 0.25rem 0.75rem;
-				border-radius: 12px;
-				font-size: 0.875rem;
-				font-weight: 500;
-				background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-				color: white;
-			}
-		</style>
 	</ui:define>
 </ui:composition>
 

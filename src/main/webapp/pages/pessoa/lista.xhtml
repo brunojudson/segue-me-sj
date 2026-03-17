@@ -10,383 +10,6 @@
 
 <ui:composition template="/templates/template.xhtml">
 	<ui:define name="content">
-		<style>
-/* Layout da página de listagem */
-.page-header {
-	background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
-	color: white;
-	padding: 2rem;
-	margin: 0 0 2rem 0;
-	border-radius: 12px;
-	box-shadow: 0 4px 20px rgba(33, 150, 243, 0.3);
-	position: relative;
-	overflow: hidden;
-}
-
-.page-header::before {
-	content: '';
-	position: absolute;
-	top: -50%;
-	right: -10%;
-	width: 200px;
-	height: 200px;
-	background: rgba(255, 255, 255, 0.1);
-	border-radius: 50%;
-	backdrop-filter: blur(10px);
-}
-
-.page-header .page-title {
-	margin: 0;
-	font-size: 2rem;
-	font-weight: 700;
-	position: relative;
-	z-index: 2;
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.page-header .page-icon {
-	font-size: 1.8rem;
-}
-
-.page-header .page-subtitle {
-	font-size: 1rem;
-	opacity: 0.9;
-	margin-top: 0.5rem;
-	position: relative;
-	z-index: 2;
-}
-
-/* Área de ações */
-.actions-bar {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 1.5rem;
-	gap: 1rem;
-	flex-wrap: wrap;
-}
-
-.action-group {
-	display: flex;
-	gap: 0.75rem;
-	align-items: center;
-}
-
-.stats-card {
-	background: #f8f9fa;
-	border: 1px solid #e9ecef;
-	border-radius: 12px;
-	padding: 1rem 1.5rem;
-	font-size: 0.9rem;
-	color: #495057;
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.stats-number {
-	font-weight: 700;
-	color: #2196f3;
-	font-size: 1.1rem;
-}
-
-/* Tabela moderna */
-.modern-datatable {
-	background: white;
-	border-radius: 16px;
-	overflow: hidden;
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.ui-datatable .ui-datatable-thead>tr>th {
-	background: #f8f9fa !important;
-	color: #495057 !important;
-	font-weight: 600 !important;
-	border: none !important;
-	padding: 1rem !important;
-	font-size: 0.875rem !important;
-	text-transform: uppercase !important;
-	letter-spacing: 0.5px !important;
-}
-
-.ui-datatable .ui-datatable-tbody>tr>td {
-	padding: 1rem !important;
-	border: none !important;
-	border-bottom: 1px solid #f0f0f0 !important;
-	vertical-align: middle !important;
-}
-
-.ui-datatable .ui-datatable-tbody>tr:hover {
-	background-color: #f8f9fa !important;
-	transition: background-color 0.2s ease !important;
-}
-
-.ui-datatable .ui-datatable-tbody>tr:last-child>td {
-	border-bottom: none !important;
-}
-
-/* Layout da linha da pessoa */
-.person-row {
-	display: flex;
-	align-items: center;
-	gap: 0.75rem;
-}
-
-/* Avatar das pessoas */
-.person-avatar {
-	width: 40px;
-	height: 40px;
-	background: linear-gradient(135deg, #2196f3, #42a5f5);
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: white;
-	font-weight: bold;
-	font-size: 0.9rem;
-	margin-right: 0.75rem;
-	flex-shrink: 0;
-}
-
-/* Informações da pessoa */
-.person-table-info {
-	display: flex;
-	flex-direction: column;
-}
-
-.person-name {
-	font-weight: 600;
-	color: #333;
-	margin-bottom: 0.25rem;
-}
-
-.person-email {
-	font-size: 0.8rem;
-	color: #666;
-	display: flex;
-	align-items: center;
-	gap: 0.25rem;
-}
-
-/* Badges de status modernos */
-.status-badge {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.25rem;
-	padding: 0.375rem 0.75rem;
-	border-radius: 20px;
-	font-size: 0.75rem;
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
-}
-
-.status-badge.ativo {
-	background-color: #e8f5e8;
-	color: #2e7d32;
-	border: 1px solid #c8e6c9;
-}
-
-.status-badge.inativo {
-	background-color: #ffebee;
-	color: #c62828;
-	border: 1px solid #ffcdd2;
-}
-
-/* Botões de ação */
-
-/* Indicadores com ícones */
-.info-indicator {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.25rem;
-}
-
-.info-indicator i {
-	font-size: 0.8rem;
-}
-
-.info-indicator.age i {
-	color: #2196f3;
-}
-
-.info-indicator.phone i {
-	color: #4caf50;
-}
-
-/* Empty state melhorado */
-.empty-value {
-	color: #999;
-	font-style: italic;
-	font-size: 0.9rem;
-}
-
-/* Paginação moderna */
-.ui-paginator {
-	background: #f8f9fa !important;
-	border: none !important;
-	padding: 1rem !important;
-	border-radius: 0 0 16px 16px !important;
-}
-
-/* Filtros da tabela - Corrigido para não interferir */
-.ui-datatable .ui-datatable-thead > tr.ui-filter-row > td {
-	background: #ffffff !important;
-	padding: 0.75rem !important;
-	border: none !important;
-}
-
-.ui-datatable .ui-datatable-thead > tr.ui-filter-row > td > .ui-inputfield,
-.ui-datatable .ui-datatable-thead > tr.ui-filter-row > td input {
-	border-radius: 8px !important;
-	border: 1px solid #dee2e6 !important;
-	padding: 0.5rem !important;
-	width: 100% !important;
-	box-sizing: border-box !important;
-}
-
-/* Melhorias nos filtros globais */
-.ui-datatable .ui-datatable-header {
-	background: #f8f9fa !important;
-	border: none !important;
-	padding: 1rem !important;
-	border-radius: 16px 16px 0 0 !important;
-}
-
-.table-header-content {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	min-height: 1rem;
-}
-
-.filter-input {
-	width: 100% !important;
-	border-radius: 8px !important;
-	border: 1px solid #dee2e6 !important;
-	padding: 0.5rem !important;
-}
-
-/* Empty state da tabela */
-.ui-datatable-empty-message {
-	text-align: center !important;
-	color: #6c757d !important;
-	font-style: italic !important;
-	padding: 3rem 2rem !important;
-	background: #f8f9fa !important;
-}
-
-/* Diálogos modernos */
-.ui-dialog .ui-dialog-titlebar {
-	background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%) !important;
-	color: white !important;
-	border: none !important;
-	border-radius: 12px 12px 0 0 !important;
-}
-
-.ui-dialog .ui-dialog-content {
-	border-radius: 0 0 12px 12px !important;
-}
-
-/* Loading state para botão de atualizar idades */
-.loading-button {
-	position: relative;
-	overflow: hidden;
-}
-
-.loading-button::after {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: -100%;
-	width: 100%;
-	height: 100%;
-	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3),
-		transparent);
-	animation: loading-sweep 1.5s infinite;
-}
-
-@
-keyframes loading-sweep { 0% {
-	left: -100%;
-}
-
-100
-
-
-%
-{
-left
-
-
-:
-
-
-100
-%;
-
-
-}
-}
-
-/* Responsividade */
-@media ( max-width : 768px) {
-	.page-header {
-		padding: 1.5rem 1rem;
-		margin: -1rem -1rem 1.5rem -1rem;
-	}
-	.page-header .page-title {
-		font-size: 1.5rem;
-	}
-	.actions-bar {
-		flex-direction: column;
-		align-items: stretch;
-	}
-	.action-group {
-		justify-content: center;
-	}
-	.stats-card {
-		text-align: center;
-	}
-	.ui-datatable .ui-datatable-thead>tr>th, .ui-datatable .ui-datatable-tbody>tr>td
-		{
-		padding: 0.75rem 0.5rem !important;
-	}
-}
-
-/* Animações */
-.datatable-animation {
-	animation: fadeInUp 0.6s ease-out;
-}
-
-@
-keyframes fadeInUp {from { opacity:0;
-	transform: translateY(20px);
-}
-
-to {
-	opacity: 1;
-	transform: translateY(0);
-}
-
-}
-
-/* Classes utilitárias */
-.text-center {
-	text-align: center !important;
-}
-
-.text-left {
-	text-align: left !important;
-}
-
-.text-right {
-	text-align: right !important;
-}
-</style>
 
 		<div class="content-container">
 			<!-- Cabeçalho moderno da página -->
@@ -417,18 +40,17 @@ to {
 							<i class="pi pi-chart-bar"></i> <span class="stats-number">#{pessoaController.pessoas.size()}</span>
 							<span>seguidores(s) cadastrado(s)</span>
 						</div>
-					</div>
-
-					<div class="action-group">
-						<p:commandButton value="Atualizar Idades"
-							rendered="#{loginController.hasPermission('ADMIN')}"
-							icon="pi pi-refresh"
-							onclick="PF('confirmAtualizarIdades').show(); return false;"
-							styleClass="ui-button-help" />
+						<h:panelGroup rendered="#{loginController.hasPermission('ADMIN')}">
+							<button type="button" class="action-button-primary"
+								onclick="PF('confirmAtualizarIdades').show();"
+								style="display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;font-size:.875rem;cursor:pointer;">
+								<i class="pi pi-refresh"></i> Atualizar Idades
+							</button>
+						</h:panelGroup>
 					</div>
 				</div>
 
-				<p:messages id="messages" showDetail="true" closable="true"
+				<p:growl id="messages" showDetail="true" closable="true"
 					styleClass="modern-messages" onshow="scrollToTopOnError()" />
 
 				<!-- Tabela moderna de pessoas -->
@@ -446,19 +68,30 @@ to {
 
 					<p:column headerText="Código" sortBy="#{pessoa.id}"
 						filterBy="#{pessoa.id}" filterMatchMode="contains"
-						styleClass="text-center" width="80">
+						styleClass="text-center hide-mobile" headerStyleClass="hide-mobile" width="80">
 						<h:outputText value="#{pessoa.id}" />
 					</p:column>
 
 					<p:column headerText="Nome" sortBy="#{pessoa.nome}"
 						filterBy="#{pessoa.nome}" filterMatchMode="contains"
-						styleClass="text-left" width="35%">
+						styleClass="text-left" width="60%">
 						<div class="person-row">
-							<div class="person-avatar">#{pessoa.nome.substring(0,
-								1).toUpperCase()}</div>
+							<!-- Avatar com foto ou inicial -->
+							<!-- <h:panelGroup rendered="#{not empty pessoa.foto}">
+							</h:panelGroup> -->
+							<h:panelGroup >
+								<div class="person-avatar">#{pessoa.nome.substring(0,
+									1).toUpperCase()}</div>
+							</h:panelGroup>
 							<div class="person-table-info">
 								<div class="person-name">
-									<h:outputText value="#{pessoa.nome}" />
+									<p:commandLink styleClass="nome-link" 
+										action="#{pessoaController.abrirDetalhes(pessoa)}"
+										update=":detalhesForm:detalhesModal"
+										oncomplete="PF('detalhesDialog').show()"
+										process="@this">
+										<h:outputText value="#{pessoa.nome}" />
+									</p:commandLink>
 								</div>
 								<div class="person-email" rendered="#{not empty pessoa.email}">
 									<i class="pi pi-envelope"></i>
@@ -469,14 +102,14 @@ to {
 					</p:column>
 
 					<p:column headerText="CPF" sortBy="#{pessoa.cpf}"
-						styleClass="text-center" responsivePriority="3" width="140">
+						styleClass="text-center hide-mobile" headerStyleClass="hide-mobile" responsivePriority="3" width="140">
 						<h:outputText value="#{pessoa.cpf}"
 							rendered="#{not empty pessoa.cpf}" />
 						<h:outputText value="Não informado" styleClass="empty-value"
 							rendered="#{empty pessoa.cpf}" />
 					</p:column>
 
-					<p:column headerText="Idade" styleClass="text-center" width="80">
+					<p:column headerText="Idade" styleClass="text-center hide-mobile" headerStyleClass="hide-mobile" width="80">
 						<div class="info-indicator age">
 							<i class="pi pi-calendar"></i>
 							<h:outputText value="#{pessoa.idade}"
@@ -487,7 +120,7 @@ to {
 					</p:column>
 
 					<p:column headerText="Telefone" styleClass="text-center"
-						responsivePriority="4" width="140">
+						responsivePriority="4" width="20%">
 						<div class="info-indicator phone"
 							rendered="#{not empty pessoa.telefone}">
 							<i class="pi pi-phone"></i>
@@ -497,37 +130,38 @@ to {
 							rendered="#{empty pessoa.telefone}" />
 					</p:column>
 
-					<p:column headerText="Status" styleClass="text-center" width="100">
+					<p:column headerText="Ativo" styleClass="text-center hide-mobile" headerStyleClass="hide-mobile" width="10%">
 						<span class="status-badge #{pessoa.ativo ? 'ativo' : 'inativo'}">
 							<i
 							class="pi #{pessoa.ativo ? 'pi-check-circle' : 'pi-times-circle'}"></i>
 							#{pessoa.ativo ? 'Ativo' : 'Inativo'}
 						</span>
 					</p:column>
+                    
+							<p:column headerText="Ações" styleClass="text-center" width="140">
+								<div class="table-action-buttons">
+									<p:button icon="pi pi-pencil" title="Editar"
+										ariaLabel="Editar pessoa"
+										outcome="/pages/pessoa/cadastro.xhtml"
+										styleClass="action-button-warn-table action-btn">
+										<f:param name="id" value="#{pessoa.id}" />
+									</p:button>
 
-					<p:column headerText="Ações" styleClass="text-center" width="140">
-						<div class="table-action-buttons">
-							<p:commandButton icon="pi pi-eye" title="Visualizar"
-								action="#{pessoaController.visualizar(pessoa)}"
-								styleClass="action-button-secondary-table action-btn" />
-
-							<p:commandButton icon="pi pi-pencil" title="Editar"
-								action="#{pessoaController.editar(pessoa)}"
-								styleClass="action-button-warn-table action-btn" />
-
-							<p:commandButton icon="pi pi-trash" title="Excluir"
-								action="#{pessoaController.prepararExclusao(pessoa)}"
-								styleClass="action-button-danger-table action-btn"
-								update=":confirmDialog" oncomplete="PF('confirmDialog').show()" />
-						</div>
-					</p:column>
+									<p:commandButton icon="pi pi-trash" title="Excluir"
+										ariaLabel="Excluir pessoa"
+										action="#{pessoaController.prepararExclusao(pessoa)}"
+										styleClass="action-button-danger-table action-btn"
+										update=":confirmDialog" oncomplete="PF('confirmDialog').show()" />
+								</div>
+							</p:column>
+                    
 				</p:dataTable>
 
 				<!-- Diálogo de confirmação de exclusão -->
 				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
 					header="Confirmar Exclusão" styleClass="modern-dialog"
 					message="Tem certeza que deseja excluir esta pessoa?"
-					closeOnEscape="true" width="450" height="200">
+					closeOnEscape="true">
 					<p:commandButton value="Sim, excluir"
 						action="#{pessoaController.excluir}"
 						oncomplete="PF('confirmDialog').hide()"
@@ -544,7 +178,7 @@ to {
 					styleClass="modern-dialog"
 					message="Deseja realmente atualizar as idades? Isso pode demorar alguns segundos."
 					closeOnEscape="false" closable="false" showEffect="fade"
-					hideEffect="fade" width="500" height="250">
+					hideEffect="fade">
 
 					<p:commandButton id="btnSimAtualizar"
 						value="#{pessoaController.processandoAtualizacao ? 'Atualizando...' : (pessoaController.idadesAtualizadas ? 'Atualizado!' : 'Sim, atualizar')}"
@@ -559,6 +193,271 @@ to {
 						styleClass="ui-button-secondary" icon="pi pi-times"
 						disabled="#{pessoaController.processandoAtualizacao}" />
 				</p:confirmDialog>
+			</h:form>
+
+			<!-- Modal de Detalhes da Pessoa -->
+			<h:form id="detalhesForm">
+			<p:dialog id="detalhesModal" widgetVar="detalhesDialog"
+				header="Detalhes do Seguidor" 
+				styleClass="detalhes-pessoa-dialog"
+				modal="true" responsive="true"
+				closable="true" closeOnEscape="true"
+				showEffect="fade" hideEffect="fade"
+				style="max-width:850px; width: calc(100% - 32px);">
+
+				<p:ajax event="close" listener="#{pessoaController.fecharDetalhes()}" />
+
+				<h:panelGroup id="detalhesContent" rendered="#{pessoaController.pessoaDetalhes != null}">
+					<!-- Header do modal -->
+					<div class="modal-pessoa-header">
+						<div class="modal-pessoa-avatar-section">
+							<h:panelGroup rendered="#{not empty pessoaController.pessoaDetalhes.foto}">
+								<h:graphicImage value="/fotos/#{pessoaController.pessoaDetalhes.foto}" alt="Foto"
+									styleClass="modal-pessoa-foto" />
+							</h:panelGroup>
+							<h:panelGroup rendered="#{empty pessoaController.pessoaDetalhes.foto}">
+								<h:graphicImage name="images/default_avatar.png" alt="Foto padrão"
+									styleClass="modal-pessoa-foto" />
+							</h:panelGroup>
+							<div class="modal-pessoa-info-principal">
+								<h2 class="modal-pessoa-nome">#{pessoaController.pessoaDetalhes.nome}</h2>
+								<div class="modal-pessoa-meta">
+									<span class="sm-tag #{pessoaController.pessoaDetalhes.ativo ? 'sm-tag-green' : 'sm-tag-red'}">
+										#{pessoaController.pessoaDetalhes.ativo ? 'Ativo' : 'Inativo'}
+									</span>
+									<span class="modal-pessoa-id">ID: #{pessoaController.pessoaDetalhes.id}</span>
+									<h:panelGroup rendered="#{pessoaController.pessoaDetalhes.idade != null}">
+										<span class="modal-pessoa-idade">
+											<i class="pi pi-calendar"></i> #{pessoaController.pessoaDetalhes.idade} anos
+										</span>
+									</h:panelGroup>
+								</div>
+							</div>
+						</div>
+						<div class="modal-pessoa-actions">
+							<p:button icon="pi pi-pencil" title="Editar"
+								outcome="/pages/pessoa/cadastro.xhtml"
+								styleClass="action-button-primary">
+								<f:param name="id" value="#{pessoaController.pessoaDetalhes.id}" />
+							</p:button>
+						</div>
+					</div>
+
+					<!-- Stats bar -->
+					<div class="stats-bar">
+						<div class="stat-item">
+							<span class="stat-value">#{pessoaController.encontrosParticipados != null ? pessoaController.encontrosParticipados.size() : 0}</span>
+							<span class="stat-label">Encontro(s)</span>
+						</div>
+						<div class="stat-item">
+							<span class="stat-value">#{pessoaController.equipesTrabalhou != null ? pessoaController.equipesTrabalhou.size() : 0}</span>
+							<span class="stat-label">Equipe(s)</span>
+						</div>
+						<div class="stat-item">
+							<span class="stat-value">#{pessoaController.palestrasRealizadas != null ? pessoaController.palestrasRealizadas.size() : 0}</span>
+							<span class="stat-label">Palestra(s)</span>
+						</div>
+					</div>
+
+					<!-- Tabs com conteúdo -->
+					<p:tabView styleClass="modal-tabview" dynamic="false">
+						<!-- Tab: Dados Pessoais -->
+						<p:tab title="Dados Pessoais">
+							<div class="info-grid">
+								<div class="info-item">
+									<label>Data de Nascimento</label>
+									<span>
+										<h:outputText value="#{pessoaController.pessoaDetalhes.dataNascimento}">
+											<f:converter converterId="localDateConverter" />
+										</h:outputText>
+									</span>
+								</div>
+								<div class="info-item">
+									<label>Sexo</label>
+									<span>#{pessoaController.pessoaDetalhes.sexo != null and pessoaController.pessoaDetalhes.sexo.toString() eq 'F' ? 'Feminino' : 'Masculino'}</span>
+								</div>
+								<div class="info-item">
+									<label>CPF</label>
+									<span>
+										<h:outputText value="#{pessoaController.pessoaDetalhes.cpf}" rendered="#{not empty pessoaController.pessoaDetalhes.cpf}" />
+										<h:outputText value="Não informado" rendered="#{empty pessoaController.pessoaDetalhes.cpf}" styleClass="empty-value" />
+									</span>
+								</div>
+								<div class="info-item">
+									<label>Naturalidade</label>
+									<span>
+										<h:outputText value="#{pessoaController.pessoaDetalhes.naturalidade}" rendered="#{not empty pessoaController.pessoaDetalhes.naturalidade}" />
+										<h:outputText value="Não informado" rendered="#{empty pessoaController.pessoaDetalhes.naturalidade}" styleClass="empty-value" />
+									</span>
+								</div>
+								<div class="info-item">
+									<label>Telefone</label>
+									<span>
+										<h:outputText value="#{pessoaController.pessoaDetalhes.telefone}" rendered="#{not empty pessoaController.pessoaDetalhes.telefone}" />
+										<h:outputText value="Não informado" rendered="#{empty pessoaController.pessoaDetalhes.telefone}" styleClass="empty-value" />
+									</span>
+								</div>
+								<div class="info-item">
+									<label>E-mail</label>
+									<span>
+										<h:outputText value="#{pessoaController.pessoaDetalhes.email}" rendered="#{not empty pessoaController.pessoaDetalhes.email}" />
+										<h:outputText value="Não informado" rendered="#{empty pessoaController.pessoaDetalhes.email}" styleClass="empty-value" />
+									</span>
+								</div>
+								<div class="info-item full-width">
+									<label>Endereço</label>
+									<span>
+										<h:outputText value="#{pessoaController.pessoaDetalhes.endereco}" rendered="#{not empty pessoaController.pessoaDetalhes.endereco}" />
+										<h:outputText value="Não informado" rendered="#{empty pessoaController.pessoaDetalhes.endereco}" styleClass="empty-value" />
+									</span>
+								</div>
+								<div class="info-item">
+									<label>Pai</label>
+									<span>
+										<h:outputText value="#{pessoaController.pessoaDetalhes.filiacaoPai}" rendered="#{not empty pessoaController.pessoaDetalhes.filiacaoPai}" />
+										<h:outputText value="Não informado" rendered="#{empty pessoaController.pessoaDetalhes.filiacaoPai}" styleClass="empty-value" />
+									</span>
+								</div>
+								<div class="info-item">
+									<label>Mãe</label>
+									<span>
+										<h:outputText value="#{pessoaController.pessoaDetalhes.filiacaoMae}" rendered="#{not empty pessoaController.pessoaDetalhes.filiacaoMae}" />
+										<h:outputText value="Não informado" rendered="#{empty pessoaController.pessoaDetalhes.filiacaoMae}" styleClass="empty-value" />
+									</span>
+								</div>
+								<div class="info-item full-width">
+									<label>Sacramentos</label>
+									<div class="tag-list">
+										<ui:repeat value="#{pessoaController.pessoaDetalhes.sacramentos}" var="sacramento">
+											<span class="sacramento-tag sacramento-#{sacramento.ordinal() mod 4}">
+												<i class="pi pi-check"></i>
+												<h:outputText value="#{sacramento eq 'BATISMO' ? 'Batismo' :
+													sacramento eq 'EUCARISTIA' ? 'Eucaristia' :
+													sacramento eq 'CRISMA' ? 'Crisma' :
+													sacramento eq 'MATRIMONIO' ? 'Matrimônio' : sacramento}" />
+											</span>
+										</ui:repeat>
+										<h:outputText value="Nenhum sacramento informado"
+											rendered="#{empty pessoaController.pessoaDetalhes.sacramentos}"
+											styleClass="empty-value" />
+									</div>
+								</div>
+							</div>
+						</p:tab>
+
+						<!-- Tab: Encontros Participados -->
+						<p:tab title="Encontros">
+							<h:panelGroup rendered="#{not empty pessoaController.encontrosParticipados}">
+								<div class="lista-cards">
+									<ui:repeat value="#{pessoaController.encontrosParticipados}" var="enc">
+										<div class="card-item">
+											<div class="card-title">
+												<i class="pi pi-calendar" style="color: var(--sm-accent);"></i>
+												#{enc.nome}
+											</div>
+											<div class="card-info">
+												<strong>Data:</strong> 
+												<h:outputText value="#{enc.dataInicio}">
+													<f:converter converterId="localDateConverter" />
+												</h:outputText>
+												a 
+												<h:outputText value="#{enc.dataFim}">
+													<f:converter converterId="localDateConverter" />
+												</h:outputText>
+												<br/>
+												<strong>Local:</strong> #{enc.local}
+												<h:panelGroup rendered="#{not empty enc.tema}">
+													<br/><strong>Tema:</strong> #{enc.tema}
+												</h:panelGroup>
+											</div>
+										</div>
+									</ui:repeat>
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{empty pessoaController.encontrosParticipados}">
+								<div class="empty-state-modal">
+									<i class="pi pi-calendar"></i>
+									<p>Nenhum encontro registrado</p>
+								</div>
+							</h:panelGroup>
+						</p:tab>
+
+						<!-- Tab: Equipes que Trabalhou -->
+						<p:tab title="Equipes">
+							<h:panelGroup rendered="#{not empty pessoaController.equipesTrabalhou}">
+								<div class="lista-cards">
+									<ui:repeat value="#{pessoaController.equipesTrabalhou}" var="trab">
+										<div class="card-item">
+											<div class="card-title">
+												<i class="pi pi-users" style="color: var(--sm-accent2);"></i>
+												#{trab.equipe.nome}
+												<h:panelGroup rendered="#{trab.ehCoordenador}">
+													<span class="sm-tag sm-tag-green" style="margin-left:auto;">Coordenador</span>
+												</h:panelGroup>
+											</div>
+											<div class="card-info">
+												<h:panelGroup rendered="#{trab.encontro != null}">
+													<strong>Encontro:</strong> #{trab.encontro.nome}<br/>
+												</h:panelGroup>
+												<strong>Início:</strong> 
+												<h:outputText value="#{trab.dataInicio}">
+													<f:converter converterId="localDateConverter" />
+												</h:outputText>
+												<h:panelGroup rendered="#{trab.dataFim != null}">
+													 — <strong>Fim:</strong> 
+													<h:outputText value="#{trab.dataFim}">
+														<f:converter converterId="localDateConverter" />
+													</h:outputText>
+												</h:panelGroup>
+											</div>
+										</div>
+									</ui:repeat>
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{empty pessoaController.equipesTrabalhou}">
+								<div class="empty-state-modal">
+									<i class="pi pi-users"></i>
+									<p>Nenhuma equipe registrada</p>
+								</div>
+							</h:panelGroup>
+						</p:tab>
+
+						<!-- Tab: Palestras Realizadas -->
+						<p:tab title="Palestras">
+							<h:panelGroup rendered="#{not empty pessoaController.palestrasRealizadas}">
+								<div class="lista-cards">
+									<ui:repeat value="#{pessoaController.palestrasRealizadas}" var="pal">
+										<div class="card-item">
+											<div class="card-title">
+												<i class="pi pi-microphone" style="color: #f472b6;"></i>
+												#{pal.titulo}
+											</div>
+											<div class="card-info">
+												<strong>Tema:</strong> #{pal.tema}
+												<h:panelGroup rendered="#{pal.encontro != null}">
+													<br/><strong>Encontro:</strong> #{pal.encontro.nome}
+												</h:panelGroup>
+												<h:panelGroup rendered="#{pal.dataHora != null}">
+													<br/><strong>Data:</strong> 
+													<h:outputText value="#{pal.dataHora}">
+														<f:converter converterId="localDateTimeConverter" />
+													</h:outputText>
+												</h:panelGroup>
+											</div>
+										</div>
+									</ui:repeat>
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{empty pessoaController.palestrasRealizadas}">
+								<div class="empty-state-modal">
+									<i class="pi pi-microphone"></i>
+									<p>Nenhuma palestra registrada</p>
+								</div>
+							</h:panelGroup>
+						</p:tab>
+					</p:tabView>
+				</h:panelGroup>
+			</p:dialog>
 			</h:form>
 		</div>
 		<h:outputScript>

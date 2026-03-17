@@ -18,20 +18,72 @@
 						<h1 class="page-title">
 							<i class="pi pi-users page-icon"></i> <span class="title-text">Trabalhadores</span>
 						</h1>
-						<p class="page-subtitle">Gerencie os trabalhadores do sistema
-						</p>
+						<p class="page-subtitle">Gerencie os trabalhadores do sistema</p>
 					</div>
 					<div class="header-actions">
-						<p:button value="Novo Trabalhador"
-							outcome="/pages/trabalhador/cadastro.xhtml" icon="pi pi-plus"
-							styleClass="action-button-primary"
-							title="Cadastrar novo trabalhador" />
+						<p:button value="Novo Trabalhador" outcome="/pages/trabalhador/cadastro.xhtml" icon="pi pi-plus" styleClass="action-button-primary" title="Cadastrar novo trabalhador" />
 					</div>
 				</div>
-			</div>
+				</div>
+				<h:form id="listForm" prependId="false" styleClass="modern-form">
+					<!-- Filtros para trabalhadores -->
+					<div class="filter-section" style="margin-bottom: 1.5rem;">
+						<p:fieldset legend="🔎 Filtros" toggleable="false" styleClass="modern-fieldset">
+							<div class="field-grid">
+								<div class="field-group">
+									<p:outputLabel for="filtroNome" value="Nome" />
+									<p:inputText id="filtroNome" value="#{trabalhadorController.filtroNome}" placeholder="Digite o nome" />
+									<small class="field-hint">Pesquisar por nome (contém)</small>
+								</div>
 
-			<h:form id="listForm" prependId="false">
-				<p:messages id="messages" showDetail="true" closable="true" />
+								<div class="field-group">
+									<p:outputLabel for="filtroEncontro" value="Encontro" />
+									<p:selectOneMenu id="filtroEncontro" value="#{trabalhadorController.filtroEncontroId}" styleClass="modern-select">
+										<f:selectItem itemLabel="Todos" itemValue="#{null}" />
+										<f:selectItems value="#{trabalhadorController.encontros}" var="encontro" itemLabel="#{encontro.nome}" itemValue="#{encontro.id}" />
+										<p:ajax event="change" listener="#{trabalhadorController.carregarEquipesPorEncontro}" process="@this" update="filtroEquipe" />
+									</p:selectOneMenu>
+									<small class="field-hint">Filtrar por encontro</small>
+								</div>
+
+								<div class="field-group">
+									<p:outputLabel for="filtroEquipe" value="Equipe" />
+									<p:selectOneMenu id="filtroEquipe" value="#{trabalhadorController.filtroEquipeId}" styleClass="modern-select">
+										<f:selectItem itemLabel="Todas" itemValue="#{null}" />
+										<f:selectItems value="#{trabalhadorController.equipes}" var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}" />
+									</p:selectOneMenu>
+									<small class="field-hint">Filtrar por equipe</small>
+								</div>
+
+								<div class="field-group checkbox-pair">
+									<div class="checkbox-item">
+										<p:outputLabel for="filtroAptoPalestrar" value="Apto p/ palestrar" />
+										<div class="checkbox-container">
+											<p:selectBooleanCheckbox id="filtroAptoPalestrar" value="#{trabalhadorController.filtroAptoParaPalestrar}" />
+											<span class="checkbox-label">Pode palestrar</span>
+										</div>
+									</div>
+								</div>
+								<div class="field-group checkbox-pair">
+									<div class="checkbox-item">
+										<p:outputLabel for="filtroAptoCoordenar" value="Apto p/ coordenar" />
+										<div class="checkbox-container">
+											<p:selectBooleanCheckbox id="filtroAptoCoordenar" value="#{trabalhadorController.filtroAptoParaCoordenar}" />
+											<span class="checkbox-label">Pode coordenar</span>
+										</div>
+									</div>
+								</div>
+
+							</div>
+							<div class="form-actions" style="margin-top:1rem;">
+								<div class="action-buttons" style="margin-bottom: 1px !important;">
+									<p:commandButton id="btnFiltrar" value="Filtrar" icon="pi pi-filter" action="#{trabalhadorController.aplicarFiltros}" process="@form" update="@form" oncomplete="try{PF('trabalhadoresTableWidget').clearFilters(); PF('trabalhadoresTableWidget').getPaginator().cfg.page=0;}catch(e){}" styleClass="ui-button-info action-button-primary" />
+									<p:commandButton id="btnLimpar" value="Limpar" icon="pi pi-times" action="#{trabalhadorController.limparFiltros}" process="@form" update="@form" oncomplete="try{PF('trabalhadoresTableWidget').clearFilters(); PF('trabalhadoresTableWidget').getPaginator().cfg.page=0;}catch(e){}" styleClass="ui-button-secondary" />
+								</div>
+							</div>
+						</p:fieldset>
+					</div>
+					<p:growl id="messages" showDetail="true" closable="true" />
 
 				<!-- Tabela moderna de trabalhadores -->
 				<p:dataTable id="trabalhadoresTable" var="trabalhador"
@@ -41,9 +93,7 @@
 					rows="20" paginatorPosition="bottom" stripeRows="true"
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 					currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
-					rowsPerPageTemplate="20,50,100"
-					filterable="true"
-					filterDelay="300"
+					rowsPerPageTemplate="20,50,100" filterable="true" filterDelay="300"
 					widgetVar="trabalhadoresTableWidget">
 
 					<p:column headerText="ID" sortBy="#{trabalhador.id}"
@@ -55,17 +105,25 @@
 						filterBy="#{trabalhador.pessoa.nome}" filterMatchMode="contains"
 						styleClass="text-left" width="25%">
 						<div class="worker-info">
-							<div class="worker-avatar">
-								<i class="pi pi-user"></i>
-							</div>
-							<h:outputText value="#{trabalhador.pessoa.nome}"
-								styleClass="worker-name" />
+							<!-- Avatar com foto ou ícone -->
+							<h:panelGroup rendered="#{not empty trabalhador.pessoa.foto}">
+							</h:panelGroup>
+							<h:panelGroup>
+								<div class="worker-avatar">
+									<i class="pi pi-user"></i>
+								</div>
+							</h:panelGroup>
+							<p:commandLink value="#{trabalhador.pessoa.nome}"
+								styleClass="nome-link worker-name"
+								action="#{trabalhadorController.abrirDetalhes(trabalhador)}"
+								update=":detalhesForm:detalhesModal"
+								oncomplete="PF('detalhesDialog').show()" />
 						</div>
 					</p:column>
 					<p:column headerText="Equipe" sortBy="#{trabalhador.equipe.nome}"
 						filterBy="#{trabalhador.equipe.nome}" filterMatchMode="contains"
 						styleClass="text-left" width="13%" responsivePriority="2">
-						<span class="team-badge"> <i class="pi pi-users"></i>
+						<span class="team-badge"> <i class="pi pi-sitemap"></i>
 							#{trabalhador.equipe.nome}
 						</span>
 					</p:column>
@@ -116,15 +174,22 @@
 
 					<p:column headerText="Ações" styleClass="text-center" width="11%">
 						<div class="table-action-buttons">
-							<p:commandButton icon="pi pi-eye" title="Visualizar"
-								action="#{trabalhadorController.visualizar(trabalhador)}"
-								styleClass="action-button-secondary-table action-btn" />
+							<!-- <p:button icon="pi pi-eye" title="Visualizar"
+								ariaLabel="Visualizar trabalhador"
+								outcome="/pages/trabalhador/visualizar.xhtml"
+								styleClass="action-button-secondary-table action-btn">
+								<f:param name="id" value="#{trabalhador.id}" />
+							</p:button> -->
 
-							<p:commandButton icon="pi pi-pencil" title="Editar"
-								action="#{trabalhadorController.editar(trabalhador)}"
-								styleClass="action-button-warn-table action-btn" />
+							<p:button icon="pi pi-pencil" title="Editar"
+								ariaLabel="Editar trabalhador"
+								outcome="/pages/trabalhador/cadastro.xhtml"
+								styleClass="action-button-warn-table action-btn">
+								<f:param name="id" value="#{trabalhador.id}" />
+							</p:button>
 
 							<p:commandButton icon="pi pi-trash" title="Excluir"
+								ariaLabel="Excluir trabalhador"
 								action="#{trabalhadorController.prepararExclusao(trabalhador)}"
 								styleClass="action-button-danger-table action-btn"
 								update=":confirmDialog" oncomplete="PF('confirmDialog').show()" />
@@ -136,7 +201,7 @@
 				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
 					header="Confirmar Exclusão" styleClass="modern-dialog"
 					message="Tem certeza que deseja excluir este trabalhador?"
-					closeOnEscape="true" width="450" height="200">
+					closeOnEscape="true">
 					<p:commandButton value="Sim, excluir"
 						action="#{trabalhadorController.excluir}"
 						oncomplete="PF('confirmDialog').hide()"
@@ -147,82 +212,190 @@
 						styleClass="ui-button-secondary" icon="pi pi-times" />
 				</p:confirmDialog>
 			</h:form>
+
+			<!-- Modal de Detalhes do Trabalhador -->
+			<h:form id="detalhesForm">
+				<p:dialog id="detalhesModal" widgetVar="detalhesDialog"
+					header="Detalhes do Trabalhador"
+					styleClass="detalhes-pessoa-dialog" modal="true" responsive="true"
+					closable="true" closeOnEscape="true" showEffect="fade"
+					hideEffect="fade" style="max-width:900px; width: calc(100% - 32px);">
+
+					<p:ajax event="close"
+						listener="#{trabalhadorController.fecharDetalhes()}" />
+
+					<h:panelGroup id="detalhesContent"
+						rendered="#{trabalhadorController.trabalhadorDetalhes != null}">
+						<div class="modal-pessoa-header">
+							<div class="modal-pessoa-avatar-section">
+								<h:panelGroup
+									rendered="#{not empty trabalhadorController.trabalhadorDetalhes.pessoa.foto}">
+									<h:graphicImage
+										value="/fotos/#{trabalhadorController.trabalhadorDetalhes.pessoa.foto}"
+										alt="Foto" styleClass="modal-pessoa-foto" />
+								</h:panelGroup>
+								<h:panelGroup
+									rendered="#{empty trabalhadorController.trabalhadorDetalhes.pessoa.foto}">
+									<h:graphicImage name="images/default_avatar.png"
+										alt="Foto padrão" styleClass="modal-pessoa-foto" />
+								</h:panelGroup>
+								<div class="modal-pessoa-info-principal">
+									<h2 class="modal-pessoa-nome">#{trabalhadorController.trabalhadorDetalhes.pessoa.nome}</h2>
+									<div class="modal-pessoa-meta">
+										<span class="sm-tag sm-tag-green"> <i
+											class="pi pi-sitemap"></i>
+											#{trabalhadorController.trabalhadorDetalhes.equipe.nome}
+										</span>
+										<h:panelGroup
+											rendered="#{trabalhadorController.trabalhadorDetalhes.ehCoordenador}">
+											<span class="sm-tag sm-tag-purple"> <i
+												class="pi pi-star"></i> Coordenador
+											</span>
+										</h:panelGroup>
+										<span class="modal-pessoa-id">ID:
+											#{trabalhadorController.trabalhadorDetalhes.id}</span>
+									</div>
+								</div>
+							</div>
+							<div class="modal-pessoa-actions">
+								<p:button icon="pi pi-pencil" title="Editar"
+									outcome="/pages/trabalhador/cadastro.xhtml"
+									styleClass="action-button-primary">
+									<f:param name="id"
+										value="#{trabalhadorController.trabalhadorDetalhes.id}" />
+								</p:button>
+							</div>
+						</div>
+
+						<p:tabView styleClass="modal-tabview" dynamic="false">
+							<!-- Tab Informações Básicas -->
+							<p:tab title="Informações Básicas">
+								<div class="info-grid" style="padding: 1rem;">
+									<div class="info-item">
+										<label>Pessoa</label> <span>#{trabalhadorController.trabalhadorDetalhes.pessoa.nome}</span>
+									</div>
+									<div class="info-item">
+										<label>Equipe</label> <span> <h:outputText
+												value="#{trabalhadorController.trabalhadorDetalhes.equipe.nome}"
+												rendered="#{not empty trabalhadorController.trabalhadorDetalhes.equipe.nome}" />
+											<h:outputText value="Não informada" styleClass="empty-value"
+												rendered="#{empty trabalhadorController.trabalhadorDetalhes.equipe.nome}" />
+										</span>
+									</div>
+									<div class="info-item">
+										<label>Encontro</label> <span> <h:outputText
+												value="#{trabalhadorController.trabalhadorDetalhes.encontro.nome}"
+												rendered="#{not empty trabalhadorController.trabalhadorDetalhes.encontro.nome}" />
+											<h:outputText value="Não informado" styleClass="empty-value"
+												rendered="#{empty trabalhadorController.trabalhadorDetalhes.encontro.nome}" />
+										</span>
+									</div>
+									<div class="info-item">
+										<label>Data de Início</label> <span> <h:outputText
+												value="#{trabalhadorController.trabalhadorDetalhes.dataInicio}"
+												rendered="#{not empty trabalhadorController.trabalhadorDetalhes.dataInicio}">
+												<f:converter converterId="localDateConverter" />
+											</h:outputText> <h:outputText value="Não informada" styleClass="empty-value"
+												rendered="#{empty trabalhadorController.trabalhadorDetalhes.dataInicio}" />
+										</span>
+									</div>
+								</div>
+							</p:tab>
+
+							<!-- Tab Características -->
+							<p:tab title="Características">
+								<div class="info-grid" style="padding: 1rem;">
+									<h:panelGroup
+										rendered="#{not empty trabalhadorController.trabalhadorDetalhes.idade}">
+										<div class="info-item">
+											<label>Idade</label> <span>#{trabalhadorController.trabalhadorDetalhes.idade}
+												anos</span>
+										</div>
+									</h:panelGroup>
+									<div class="info-item">
+										<label>Coordenador</label> <span> <h:panelGroup
+												rendered="#{trabalhadorController.trabalhadorDetalhes.ehCoordenador}">
+												<span class="sm-tag sm-tag-purple"><i
+													class="pi pi-star-fill"></i> Sim</span>
+											</h:panelGroup> <h:outputText
+												rendered="#{not trabalhadorController.trabalhadorDetalhes.ehCoordenador}"
+												value="Não" />
+										</span>
+									</div>
+									<div class="info-item">
+										<label>Apto para palestrar</label>
+										<span>
+											<h:panelGroup rendered="#{trabalhadorController.trabalhadorDetalhes.aptoParaPalestrar}">
+												<span class="sm-tag sm-tag-blue"><i class="pi pi-microphone"></i> Sim</span>
+											</h:panelGroup>
+											<h:outputText rendered="#{not trabalhadorController.trabalhadorDetalhes.aptoParaPalestrar}" value="Não" />
+										</span>
+									</div>
+									<div class="info-item">
+										<label>Apto para coordenar</label>
+										<span>
+											<h:panelGroup rendered="#{trabalhadorController.trabalhadorDetalhes.aptoParaCoordenar}">
+												<span class="sm-tag sm-tag-orange"><i class="pi pi-users"></i> Sim</span>
+											</h:panelGroup>
+											<h:outputText rendered="#{not trabalhadorController.trabalhadorDetalhes.aptoParaCoordenar}" value="Não" />
+										</span>
+									</div>
+									<div class="info-item">
+										<label>Foi Encontrista</label> <span>#{trabalhadorController.trabalhadorDetalhes.foiEncontrista
+											? 'Sim' : 'Não'}</span>
+									</div>
+									<div class="info-item full-width">
+										<label>Observações</label> <span> <h:outputText
+												value="#{trabalhadorController.trabalhadorDetalhes.observacoes}"
+												rendered="#{not empty trabalhadorController.trabalhadorDetalhes.observacoes}" />
+											<h:outputText value="Sem observações"
+												styleClass="empty-value"
+												rendered="#{empty trabalhadorController.trabalhadorDetalhes.observacoes}" />
+										</span>
+									</div>
+								</div>
+							</p:tab>
+
+							<!-- Tab Contribuições -->
+							<p:tab title="Contribuições">
+								<div style="padding: 1rem;">
+									<p:dataTable
+										value="#{trabalhadorController.trabalhadorDetalhes.contribuicoes}"
+										var="contribuicao"
+										emptyMessage="Nenhuma contribuição cadastrada"
+										styleClass="modern-datatable">
+										<p:column headerText="Data"
+											sortBy="#{contribuicao.dataPagamento}">
+											<h:outputText value="#{contribuicao.dataPagamento}"
+												rendered="#{not empty contribuicao.dataPagamento}">
+												<f:converter converterId="localDateTimeConverter" />
+											</h:outputText>
+											<h:outputText value="Não informada" styleClass="empty-value"
+												rendered="#{empty contribuicao.dataPagamento}" />
+										</p:column>
+										<p:column headerText="Valor" sortBy="#{contribuicao.valor}">
+											<h:outputText value="#{contribuicao.valor}"
+												rendered="#{not empty contribuicao.valor}">
+												<f:convertNumber type="currency" currencySymbol="R$"
+													locale="pt_BR" />
+											</h:outputText>
+											<h:outputText value="Não informado" styleClass="empty-value"
+												rendered="#{empty contribuicao.valor}" />
+										</p:column>
+										<p:column headerText="Forma de Pagamento">
+											<h:outputText value="#{contribuicao.formaPagamento}"
+												rendered="#{not empty contribuicao.formaPagamento}" />
+											<h:outputText value="Não informada" styleClass="empty-value"
+												rendered="#{empty contribuicao.formaPagamento}" />
+										</p:column>
+									</p:dataTable>
+								</div>
+							</p:tab>
+						</p:tabView>
+					</h:panelGroup>
+				</p:dialog>
+			</h:form>
 		</div>
-
-		<style>
-/* Badges de status modernos */
-.status-badge {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.25rem;
-	padding: 0.375rem 0.75rem;
-	border-radius: 20px;
-	font-size: 0.75rem;
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
-}
-
-.status-badge.ativo {
-	background-color: #e8f5e8;
-	color: #2e7d32;
-	border: 1px solid #c8e6c9;
-}
-
-.status-badge.inativo {
-	background-color: #ffebee;
-	color: #c62828;
-	border: 1px solid #ffcdd2;
-}
-/* Estilos específicos para trabalhadores */
-.worker-info {
-	display: flex;
-	align-items: center;
-	gap: 0.75rem;
-}
-
-.worker-avatar {
-	width: 32px;
-	height: 32px;
-	background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: white;
-	flex-shrink: 0;
-}
-
-.worker-name {
-	font-weight: 600;
-	color: #333;
-}
-
-.team-badge {
-	display: inline-block;
-	white-space: nowrap;
-	max-width: 140px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	vertical-align: middle;
-	align-items: center;
-	gap: 0.5rem;
-	padding: 0.25rem 0.75rem;
-	border-radius: 12px;
-	font-size: 0.875rem;
-	font-weight: 500;
-	background: linear-gradient(135deg, #10b981, #059669);
-	color: white;
-}
-
-.age-info {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-weight: 600;
-	color: #374151;
-}
-</style>
 	</ui:define>
 </ui:composition>
 

@@ -16,8 +16,8 @@
 						<i class="fas fa-heart"></i>
 					</div>
 					<div class="logo-text">
-						<!-- <span class="logo-main">Segue-me</span>
-						<span class="logo-sub">Sistema de Encontros</span> -->
+						<span class="logo-main">-</span>
+						<span class="logo-sub">Sistema de Encontros</span>
 					</div>
 				</div>
 			</h:link>
@@ -29,6 +29,7 @@
 				icon="pi pi-moon"
 				styleClass="header-btn dark-mode-btn"
 				title="Alternar modo escuro"
+				ariaLabel="Alternar modo escuro"
 				onclick="toggleDarkMode(); return false;" />
 			
 			<!-- Informações do usuário -->
@@ -39,7 +40,7 @@
 					</div>
 					<div class="user-details">
 						<span class="user-name">#{loginController.usuarioLogado.nome}</span>
-						<span class="user-role">Usuário do Sistema</span>
+						<span class="user-role">Usuário</span>
 					</div>
 				</div>
 				
@@ -47,7 +48,8 @@
 					action="#{loginController.logout}"
 					icon="pi pi-sign-out" 
 					styleClass="header-btn logout-btn"
-					title="Sair do sistema">
+					title="Sair do sistema"
+					ariaLabel="Sair do sistema">
 					<p:confirm header="Confirmação" 
 						message="Tem certeza que deseja sair do sistema?" 
 						icon="pi pi-exclamation-triangle" />

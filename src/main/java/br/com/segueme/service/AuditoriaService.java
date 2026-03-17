@@ -2,7 +2,6 @@ package br.com.segueme.service;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import br.com.segueme.entity.Auditoria;
 import br.com.segueme.repository.AuditoriaRepository;
@@ -13,7 +12,6 @@ public class AuditoriaService {
     @Inject
     private AuditoriaRepository auditoriaRepository;
 
-    @Transactional
     public void registrar(String entidade, Long entidadeId, String acao, String usuario, String detalhes) {
         Auditoria audit = new Auditoria();
         audit.setEntidade(entidade);
