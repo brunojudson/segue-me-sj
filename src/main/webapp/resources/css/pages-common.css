@@ -2056,6 +2056,49 @@ body.dark-mode .circle-indicator .pi-circle-fill { filter: brightness(1.2); }
     padding: 1rem 1.5rem !important;
 }
 
+/* Responsividade para dialogs em telas pequenas */
+@media (max-width: 768px) {
+    .modern-dialog.ui-dialog,
+    .ui-dialog {
+        width: calc(100% - 32px) !important;
+        max-width: calc(100% - 32px) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        top: 16px !important;
+        height: auto !important;
+        max-height: calc(100vh - 32px) !important;
+        margin: 0 auto !important;
+        border-radius: 12px !important;
+    }
+
+    .modern-dialog .ui-dialog-content,
+    .ui-dialog .ui-dialog-content {
+        max-height: calc(100vh - 160px) !important;
+        overflow: auto !important;
+        padding: 1rem !important;
+    }
+
+    .modern-dialog .ui-dialog-titlebar .ui-dialog-title {
+        font-size: 1rem !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .modern-dialog.ui-dialog,
+    .ui-dialog {
+        width: calc(100% - 12px) !important;
+        max-width: calc(100% - 12px) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        top: 8px !important;
+        border-radius: 8px !important;
+    }
+    .modern-dialog .ui-dialog-content,
+    .ui-dialog .ui-dialog-content {
+        max-height: calc(100vh - 120px) !important;
+    }
+}
+
 /* ══════════════════════════════════════════════════════════════════════
    PRIMEFACES FORM COMPONENTS OVERRIDE
    ══════════════════════════════════════════════════════════════════════ */

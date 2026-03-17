@@ -115,7 +115,7 @@
 				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
 					header="Confirmar Exclusão" styleClass="modern-dialog"
 					message="Tem certeza que deseja excluir este tipo de equipe?"
-					closeOnEscape="true" width="450" height="200">
+					closeOnEscape="true">
 					<p:commandButton value="Sim, excluir"
 						action="#{tipoEquipeController.excluir}"
 						oncomplete="PF('confirmDialog').hide()"
@@ -133,7 +133,7 @@
 					header="Detalhes do Tipo de Equipe"
 					styleClass="detalhes-pessoa-dialog" modal="true" responsive="true"
 					closable="true" closeOnEscape="true" showEffect="fade"
-					hideEffect="fade" width="650" minWidth="400">
+					hideEffect="fade" style="max-width:650px; width: calc(100% - 32px);">
 
 					<p:ajax event="close"
 						listener="#{tipoEquipeController.fecharDetalhes()}" />

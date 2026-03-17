@@ -140,7 +140,7 @@
 					<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
 						header="Confirmar Exclusão" styleClass="modern-dialog"
 						message="Tem certeza que deseja excluir este dirigente?"
-						closeOnEscape="true" width="450" height="200">
+						closeOnEscape="true">
 						<p:commandButton value="Sim, excluir"
 							action="#{dirigenteController.excluir}"
 							oncomplete="PF('confirmDialog').hide()" 
@@ -162,7 +162,7 @@
 					modal="true" responsive="true"
 					closable="true" closeOnEscape="true"
 					showEffect="fade" hideEffect="fade"
-					width="800" minWidth="400">
+					style="max-width:800px; width: calc(100% - 32px);">
 
 					<p:ajax event="close" listener="#{dirigenteController.fecharDetalhes()}" />
 

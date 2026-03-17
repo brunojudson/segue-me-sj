@@ -154,7 +154,7 @@
 				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
 					header="Confirmar Exclusão" styleClass="modern-dialog"
 					message="Tem certeza que deseja excluir este encontrista?"
-					closeOnEscape="true" width="450" height="200">
+					closeOnEscape="true">
 					<p:commandButton value="Sim, excluir"
 						action="#{encontristaController.excluir}"
 						oncomplete="PF('confirmDialog').hide()"
@@ -174,7 +174,7 @@
 				modal="true" responsive="true"
 				closable="true" closeOnEscape="true"
 				showEffect="fade" hideEffect="fade"
-				width="850" minWidth="400">
+				style="max-width:850px; width: calc(100% - 32px);">
 
 				<p:ajax event="close" listener="#{encontristaController.fecharDetalhes()}" />
 

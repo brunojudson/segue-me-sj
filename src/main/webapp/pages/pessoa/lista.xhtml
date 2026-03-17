@@ -68,17 +68,17 @@
 
 					<p:column headerText="Código" sortBy="#{pessoa.id}"
 						filterBy="#{pessoa.id}" filterMatchMode="contains"
-						styleClass="text-center" width="80">
+						styleClass="text-center hide-mobile" headerStyleClass="hide-mobile" width="80">
 						<h:outputText value="#{pessoa.id}" />
 					</p:column>
 
 					<p:column headerText="Nome" sortBy="#{pessoa.nome}"
 						filterBy="#{pessoa.nome}" filterMatchMode="contains"
-						styleClass="text-left" width="35%">
+						styleClass="text-left" width="60%">
 						<div class="person-row">
 							<!-- Avatar com foto ou inicial -->
-							<h:panelGroup rendered="#{not empty pessoa.foto}">
-							</h:panelGroup>
+							<!-- <h:panelGroup rendered="#{not empty pessoa.foto}">
+							</h:panelGroup> -->
 							<h:panelGroup >
 								<div class="person-avatar">#{pessoa.nome.substring(0,
 									1).toUpperCase()}</div>
@@ -102,14 +102,14 @@
 					</p:column>
 
 					<p:column headerText="CPF" sortBy="#{pessoa.cpf}"
-						styleClass="text-center" responsivePriority="3" width="140">
+						styleClass="text-center hide-mobile" headerStyleClass="hide-mobile" responsivePriority="3" width="140">
 						<h:outputText value="#{pessoa.cpf}"
 							rendered="#{not empty pessoa.cpf}" />
 						<h:outputText value="Não informado" styleClass="empty-value"
 							rendered="#{empty pessoa.cpf}" />
 					</p:column>
 
-					<p:column headerText="Idade" styleClass="text-center" width="80">
+					<p:column headerText="Idade" styleClass="text-center hide-mobile" headerStyleClass="hide-mobile" width="80">
 						<div class="info-indicator age">
 							<i class="pi pi-calendar"></i>
 							<h:outputText value="#{pessoa.idade}"
@@ -120,7 +120,7 @@
 					</p:column>
 
 					<p:column headerText="Telefone" styleClass="text-center"
-						responsivePriority="4" width="140">
+						responsivePriority="4" width="20%">
 						<div class="info-indicator phone"
 							rendered="#{not empty pessoa.telefone}">
 							<i class="pi pi-phone"></i>
@@ -130,44 +130,38 @@
 							rendered="#{empty pessoa.telefone}" />
 					</p:column>
 
-					<p:column headerText="Status" styleClass="text-center" width="100">
+					<p:column headerText="Ativo" styleClass="text-center hide-mobile" headerStyleClass="hide-mobile" width="10%">
 						<span class="status-badge #{pessoa.ativo ? 'ativo' : 'inativo'}">
 							<i
 							class="pi #{pessoa.ativo ? 'pi-check-circle' : 'pi-times-circle'}"></i>
 							#{pessoa.ativo ? 'Ativo' : 'Inativo'}
 						</span>
 					</p:column>
+                    
+							<p:column headerText="Ações" styleClass="text-center" width="140">
+								<div class="table-action-buttons">
+									<p:button icon="pi pi-pencil" title="Editar"
+										ariaLabel="Editar pessoa"
+										outcome="/pages/pessoa/cadastro.xhtml"
+										styleClass="action-button-warn-table action-btn">
+										<f:param name="id" value="#{pessoa.id}" />
+									</p:button>
 
-					<p:column headerText="Ações" styleClass="text-center" width="140">
-						<div class="table-action-buttons">
-							<!-- <p:button icon="pi pi-eye" title="Visualizar"
-								ariaLabel="Visualizar pessoa"
-								outcome="/pages/pessoa/visualizar.xhtml"
-								styleClass="action-button-secondary-table action-btn">
-								<f:param name="id" value="#{pessoa.id}" />
-							</p:button> -->
-
-							<p:button icon="pi pi-pencil" title="Editar"
-								ariaLabel="Editar pessoa"
-								outcome="/pages/pessoa/cadastro.xhtml"
-								styleClass="action-button-warn-table action-btn">
-								<f:param name="id" value="#{pessoa.id}" />
-							</p:button>
-
-							<p:commandButton icon="pi pi-trash" title="Excluir"
-								ariaLabel="Excluir pessoa"
-								action="#{pessoaController.prepararExclusao(pessoa)}"
-								styleClass="action-button-danger-table action-btn"
-								update=":confirmDialog" oncomplete="PF('confirmDialog').show()" />
-						</div>
-					</p:column>
+									<p:commandButton icon="pi pi-trash" title="Excluir"
+										ariaLabel="Excluir pessoa"
+										action="#{pessoaController.prepararExclusao(pessoa)}"
+										styleClass="action-button-danger-table action-btn"
+										update=":confirmDialog" oncomplete="PF('confirmDialog').show()" />
+								</div>
+							</p:column>
+                    
 				</p:dataTable>
 
 				<!-- Diálogo de confirmação de exclusão -->
 				<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
 					header="Confirmar Exclusão" styleClass="modern-dialog"
 					message="Tem certeza que deseja excluir esta pessoa?"
-					closeOnEscape="true" width="450" height="200">
+					closeOnEscape="true">
 					<p:commandButton value="Sim, excluir"
 						action="#{pessoaController.excluir}"
 						oncomplete="PF('confirmDialog').hide()"
@@ -184,7 +178,7 @@
 					styleClass="modern-dialog"
 					message="Deseja realmente atualizar as idades? Isso pode demorar alguns segundos."
 					closeOnEscape="false" closable="false" showEffect="fade"
-					hideEffect="fade" width="500" height="250">
+					hideEffect="fade">
 
 					<p:commandButton id="btnSimAtualizar"
 						value="#{pessoaController.processandoAtualizacao ? 'Atualizando...' : (pessoaController.idadesAtualizadas ? 'Atualizado!' : 'Sim, atualizar')}"
@@ -209,7 +203,7 @@
 				modal="true" responsive="true"
 				closable="true" closeOnEscape="true"
 				showEffect="fade" hideEffect="fade"
-				width="850" minWidth="400">
+				style="max-width:850px; width: calc(100% - 32px);">
 
 				<p:ajax event="close" listener="#{pessoaController.fecharDetalhes()}" />
 
