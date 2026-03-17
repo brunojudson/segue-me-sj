@@ -1213,6 +1213,7 @@ input.ui-inputfield.ui-datepicker-input {
 }
 
 .confirm-dialog-content {
+    text-align: left;
     margin: 1rem 0;
 }
 
