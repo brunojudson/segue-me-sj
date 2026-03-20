@@ -35,7 +35,7 @@
                             <f:selectItems value="#{vendaPedidoController.todosEncontros}" var="enc"
                                            itemLabel="#{enc.nome}" itemValue="#{enc.id}" />
                         </p:selectOneMenu>
-                        <p:messages id="mensagensFiltroEncontro" for="filtroEncontro" showDetail="true" />
+                        <p:messages id="mensagensFiltroEncontro" for="filtroEncontro" showDetail="true" rendered="#{facesContext.maximumSeverity != null}" />
                     </div>
 
                     <div class="info-item">
@@ -45,7 +45,7 @@
                             <f:selectItems value="#{vendaPedidoController.todosStatus}" var="st"
                                            itemLabel="#{st.descricao}" itemValue="#{st}" />
                         </p:selectOneMenu>
-                        <p:messages id="mensagensFiltroStatus" for="filtroStatus" showDetail="true" />
+                        <p:messages id="mensagensFiltroStatus" for="filtroStatus" showDetail="true" rendered="#{facesContext.maximumSeverity != null}" />
                     </div>
                     <div class="info-item">
                         <p:outputLabel for="dataInicio" value="Data Início:" />

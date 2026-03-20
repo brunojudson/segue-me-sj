@@ -24,11 +24,12 @@
                     </div>
                     <div class="header-actions">
                         <p:commandButton value="Novo Artigo"
-                            icon="pi pi-plus" 
+                            icon="pi pi-plus"
                             styleClass="action-button-primary"
                             title="Cadastrar novo artigo"
-                            action="#{vendaArtigoController.prepararNovo}"
-                            onclick="PF('dlgArtigo').show(); return false;" />
+                            actionListener="#{vendaArtigoController.prepararNovo}"
+                            update=":dlgArtigoForm:dlgArtigoContent :artigosForm:artigosTable :artigosForm:messages"
+                            oncomplete="PF('dlgArtigo').show()" />
                     </div>
                 </div>
             </div>

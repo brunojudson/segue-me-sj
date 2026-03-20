@@ -50,7 +50,9 @@
                                             process="@this" 
                                             update="pnlNovaVenda pnlContasAbertas pnlItens pnlAguardandoPagamento trabalhador mensagensEncontro" />
                                     </p:selectOneMenu>
-                                    <p:messages id="mensagensEncontro" for="encontro" showDetail="true" closable="true" />
+                                    <h:panelGroup rendered="#{not empty facesContext.maximumSeverity}">
+                                        <p:messages id="mensagensEncontro" for="encontro" showDetail="true" closable="true" />
+                                    </h:panelGroup>
                                     <div style="margin-top:0.4rem; font-size:0.95rem; color:var(--text-muted);">Status: <strong>#{vendaPedidoController.encontroAtivo ? 'ATIVO' : 'Inativo'}</strong></div>
                                 </div>
 
