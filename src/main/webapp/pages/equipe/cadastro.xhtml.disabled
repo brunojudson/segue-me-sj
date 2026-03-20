@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">
+        #{empty param.id ? 'Cadastrar' : 'Editar'} Equipe - Sistema Segue-me
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="content-container">
+            <!-- Arquivo arquivado: cadastro manual de equipes foi desativado. -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">
+                            <i class="pi pi-users page-icon"></i>
+                            <span class="title-text">Cadastro de Equipe (arquivado)</span>
+                        </h1>
+                        <p class="page-subtitle">
+                            Esta página foi arquivada porque as equipes agora são criadas automaticamente ao cadastrar um encontro.
+                        </p>
+                    </div>
+                    <div class="page-actions">
+                        <p:button value="Voltar à Lista" 
+                                  outcome="/pages/equipe/lista.xhtml"
+                                  icon="pi pi-arrow-left" 
+                                  styleClass="action-button-primary" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <p:panel header="Informação">
+                    <p:outputLabel value="A criação/edição manual de equipes foi desativada." />
+                    <p:outputLabel value="Use a página de Encontros para criar equipes automaticamente." />
+                </p:panel>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+
+</html>

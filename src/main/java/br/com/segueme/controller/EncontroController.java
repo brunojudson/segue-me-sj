@@ -21,6 +21,9 @@ import br.com.segueme.service.AuditoriaService;
 import br.com.segueme.service.EncontristaService;
 import br.com.segueme.service.EncontroService;
 import br.com.segueme.service.EquipeService;
+import br.com.segueme.service.TipoEquipeService;
+import br.com.segueme.entity.TipoEquipe;
+import br.com.segueme.entity.Equipe;
 import br.com.segueme.service.TrabalhadorService;
 import br.com.segueme.service.UsuarioService;
 
@@ -41,6 +44,9 @@ public class EncontroController implements Serializable {
 
 	@Inject
 	private EquipeService equipeService;
+
+	@Inject
+	private TipoEquipeService tipoEquipeService;
 
 	@Inject
 	private EncontristaService encontristaService;
@@ -107,9 +113,29 @@ public class EncontroController implements Serializable {
 	public String salvar() {
 		try {
 			if (encontro.getId() == null) {
-				encontroService.salvar(encontro);
+				// Salva e obtém a instância persistida
+				Encontro encontroSalvo = encontroService.salvar(encontro);
 				FacesContext.getCurrentInstance().addMessage(null,
 						new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Encontro cadastrado com sucesso!"));
+
+				// Cria automaticamente as equipes para este encontro
+				try {
+					java.util.List<TipoEquipe> tipos = tipoEquipeService.buscarTodos();
+					for (TipoEquipe tipo : tipos) {
+						Equipe equipe = new Equipe();
+						equipe.setNome(tipo.getNome());
+						equipe.setTipoEquipe(tipo);
+						equipe.setEncontro(encontroSalvo);
+						equipe.setAtivo(true);
+						try {
+							equipeService.salvar(equipe);
+						} catch (Exception ex) {
+							System.err.println("Falha ao criar equipe automática ('" + tipo.getNome() + "'): " + ex.getMessage());
+						}
+					}
+				} catch (Exception ex) {
+					System.err.println("Erro ao recuperar tipos de equipe: " + ex.getMessage());
+				}
 			} else {
 				encontroService.atualizar(encontro);
 				FacesContext.getCurrentInstance().addMessage(null,

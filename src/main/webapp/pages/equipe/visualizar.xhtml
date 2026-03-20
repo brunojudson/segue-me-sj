@@ -34,9 +34,8 @@
 						<span class="sm-tag #{equipeController.equipe.ativo ? 'sm-tag-green' : 'sm-tag-red'}">
 							#{equipeController.equipe.ativo ? 'Ativa' : 'Inativa'}
 						</span>
-						<p:button value="Editar" outcome="/pages/equipe/cadastro.xhtml" icon="pi pi-pencil" styleClass="action-button-primary">
-							<f:param name="id" value="#{equipeController.equipe.id}" />
-						</p:button>
+						<!-- Edição manual de equipes desativada (geradas automaticamente) -->
+						<p:button value="Editar" icon="pi pi-pencil" styleClass="action-button-primary" disabled="true" />
 					</div>
 				</div>
 

@@ -68,6 +68,22 @@ public class EquipeController implements Serializable {
         encontros = encontroService.buscarAtivos();
     }
 
+    /**
+     * Atualiza o campo nome da equipe a partir do TipoEquipe selecionado.
+     * Chamado por AJAX para garantir que o model seja preenchido antes
+     * da validação/submissão do formulário.
+     */
+    public void atualizarNomePorTipo() {
+        if (this.equipe == null) {
+            this.equipe = new Equipe();
+        }
+        if (this.equipe.getTipoEquipe() != null) {
+            this.equipe.setNome(this.equipe.getTipoEquipe().getNome());
+        } else {
+            this.equipe.setNome(null);
+        }
+    }
+
     public void limpar() {
         equipe = new Equipe();
         equipe.setAtivo(true);
@@ -83,6 +99,11 @@ public class EquipeController implements Serializable {
 
     private String salvarInterno(boolean redirecionarParaLista) {
         try {
+            // Derivar o nome da equipe a partir do TipoEquipe selecionado
+            if (equipe.getTipoEquipe() != null) {
+                equipe.setNome(equipe.getTipoEquipe().getNome());
+            }
+
             if (equipe.getId() == null) {
                 equipeService.salvar(equipe);
                 FacesContext.getCurrentInstance().addMessage(null,
@@ -136,6 +157,10 @@ public class EquipeController implements Serializable {
             Long id = Long.valueOf(idParam);
             equipeService.buscarPorId(id).ifPresent(e -> {
                 this.equipe = e;
+                // Se o nome não estiver preenchido (ou por segurança), derive do TipoEquipe
+                if ((this.equipe.getNome() == null || this.equipe.getNome().trim().isEmpty()) && this.equipe.getTipoEquipe() != null) {
+                    this.equipe.setNome(this.equipe.getTipoEquipe().getNome());
+                }
                 identificarCasais(); // Atualiza a informação de casais
 
                 // Converte o Set para uma List, ordena e reconverte para LinkedHashSet para manter a ordem

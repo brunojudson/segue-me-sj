@@ -71,6 +71,16 @@ public class EquipeService implements Serializable {
             if (!encontroExistente.isPresent()) {
                 throw new IllegalArgumentException("Encontro não encontrado com o ID: " + equipe.getEncontro().getId());
             }
+            // Verificar duplicidade: não permitir mesma equipe (mesmo tipo) no mesmo encontro
+            if (equipe.getTipoEquipe() != null && equipe.getTipoEquipe().getId() != null) {
+                List<Equipe> equipesNoEncontro = equipeRepository.findByEncontro(equipe.getEncontro().getId());
+                for (Equipe e : equipesNoEncontro) {
+                    if (e.getTipoEquipe() != null && e.getTipoEquipe().getId() != null
+                            && e.getTipoEquipe().getId().equals(equipe.getTipoEquipe().getId())) {
+                        throw new IllegalArgumentException("Já existe uma equipe deste tipo para o encontro selecionado.");
+                    }
+                }
+            }
         }
         
         // Salvar equipe
@@ -99,6 +109,19 @@ public class EquipeService implements Serializable {
         }
         
         // Atualizar equipe
+        // Antes de atualizar, garantir que não haverá duplicidade no encontro (outro registro com mesmo tipo)
+        if (equipe.getEncontro() != null && equipe.getEncontro().getId() != null
+                && equipe.getTipoEquipe() != null && equipe.getTipoEquipe().getId() != null) {
+            List<Equipe> equipesNoEncontro = equipeRepository.findByEncontro(equipe.getEncontro().getId());
+            for (Equipe e : equipesNoEncontro) {
+                if (e.getId() != null && !e.getId().equals(equipe.getId())
+                        && e.getTipoEquipe() != null && e.getTipoEquipe().getId() != null
+                        && e.getTipoEquipe().getId().equals(equipe.getTipoEquipe().getId())) {
+                    throw new IllegalArgumentException("Já existe outra equipe deste tipo neste encontro.");
+                }
+            }
+        }
+
         return equipeRepository.update(equipe);
     }
     

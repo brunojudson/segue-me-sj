@@ -25,11 +25,8 @@
 						</p>
 					</div>
 					<div class="header-actions">
-						<p:button value="Nova Equipe" 
-								  outcome="/pages/equipe/cadastro.xhtml" 
-								  icon="pi pi-plus"
-								  styleClass="action-button-primary"
-								  title="Cadastrar nova equipe" />
+						<!-- Cadastro manual de equipes desativado: equipes são criadas automaticamente ao criar um encontro -->
+						<p:button value="Gerenciamento Automático" icon="pi pi-info-circle" styleClass="action-button-secondary" disabled="true" />
 					</div>
 				</div>
 			</div>
@@ -114,9 +111,7 @@
 							
 							<p:button icon="pi pi-pencil" title="Editar" 
 								ariaLabel="Editar equipe"
-								outcome="/pages/equipe/cadastro.xhtml"
-								styleClass="action-button-warn-table action-btn">
-								<f:param name="id" value="#{equipe.id}" />
+								styleClass="action-button-warn-table action-btn" disabled="true">
 							</p:button>
 							
 							<p:commandButton icon="pi pi-trash" title="Excluir" 
@@ -183,11 +178,7 @@
 							</div>
 						</div>
 						<div class="modal-pessoa-actions">
-							<p:button icon="pi pi-pencil" title="Editar"
-								outcome="/pages/equipe/cadastro.xhtml"
-								styleClass="action-button-primary">
-								<f:param name="id" value="#{equipeController.equipeDetalhes.id}" />
-							</p:button>
+							<p:button icon="pi pi-pencil" title="Editar" styleClass="action-button-primary" disabled="true" />
 						</div>
 					</div>
 
