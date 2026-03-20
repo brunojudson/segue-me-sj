@@ -74,3 +74,27 @@ INSERT INTO public.permissao (nome) VALUES
 ,('ADMIN')
 ,('PROVER')
 ;
+
+
+INSERT INTO public.tipo_equipe (ativo,descricao,eh_dirigente,nome) VALUES 
+(true,'Equipe de direção do encontro - Dirigência',true,'Direção')
+,(true,'Equipe responsável pela animação, canto e gráfica',false,'Animação')
+,(true,'Equipe responsável pela animação, canto e gráfica',false,'Canto')
+,(true,'Equipe de Interação e Acolhimento - Círculo e Visistação',false,'Círculo')
+,(true,'Equipe de gerencia todo o encontro',false,'Comando')
+,(true,'Equipe responsável pela alimentação -  Cozinha, lanche, mini mercado e prover',false,'Cozinha')
+,(false,'Equipe responsável pelas celebrações',false,'Espiritualização')
+,(false,'Equipe de apoio Infraestrutura e Organização',false,'Estacionamento')
+,(false,'Equipe de apoio Infraestrutura e Organização',false,'Faxina')
+,(false,'Equipe responsável pela animação, canto e gráfica',false,'Gráfica')
+;
+INSERT INTO public.tipo_equipe (ativo,descricao,eh_dirigente,nome) VALUES 
+(false,'Equipe responsável pela alimentação',false,'Lanche')
+,(false,'Equipe responsável pelas celebrações',false,'Liturgia')
+,(false,'Equipe responsável pela alimentação',false,'Mini Mercado')
+,(false,'Equipe responsável pela alimentação',false,'Prover')
+,(false,'Equipe de apoio Infraestrutura e Organização',false,'Sala')
+,(false,'Equipe responsável pelas celebrações',false,'Vigília e Liturgia')
+,(false,'Equipe responsável pelas celebrações',false,'Vigília Paroquial')
+,(false,'Equipe de Interação e Acolhimento',false,'Visitação')
+;
