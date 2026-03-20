@@ -115,6 +115,7 @@ public class VendaPedidoController implements Serializable {
                 // Se houver apenas um encontro ativo, seleciona automaticamente
                 encontroSelecionadoId = encontrosAtivos.get(0).getId();
                 carregarPedidosAbertosPorEncontro();
+                carregarTrabalhadoresPorEncontro();
             }
         } catch (Exception e) {
             addErrorMessage("Erro ao verificar encontros ativos: " + e.getMessage());
@@ -125,7 +126,7 @@ public class VendaPedidoController implements Serializable {
         try {
             pedidos = pedidoService.buscarTodos();
             encontros = encontroService.buscarTodos();
-            trabalhadores = trabalhadorService.buscarTodosAtivos();
+            trabalhadores = new ArrayList<>(); // não carregar todos os trabalhadores por padrão
             artigos = artigoService.buscarAtivos();
             pessoas = pessoaService.buscarTodos();
         } catch (Exception e) {
@@ -149,6 +150,8 @@ public class VendaPedidoController implements Serializable {
 
     public void onEncontroChanged() {
         carregarPedidosAbertosPorEncontro();
+        carregarTrabalhadoresPorEncontro();
+        addInfoMessage("Encontro selecionado: " + this.encontroSelecionadoId);
     }
     
     public void limpar() {
@@ -650,6 +653,27 @@ public class VendaPedidoController implements Serializable {
     public void setEncontroSelecionadoId(Long encontroSelecionadoId) { 
         this.encontroSelecionadoId = encontroSelecionadoId;
         carregarPedidosAbertosPorEncontro();
+        carregarTrabalhadoresPorEncontro();
+    }
+
+    /**
+     * Carrega trabalhadores vinculados ao encontro selecionado.
+     * Se não houver trabalhadores, adiciona aviso para o usuário.
+     */
+    public void carregarTrabalhadoresPorEncontro() {
+        try {
+            if (this.encontroSelecionadoId == null) {
+                // Quando nenhum encontro estiver selecionado, não exibir trabalhadores
+                this.trabalhadores = new ArrayList<>();
+                return;
+            }
+            this.trabalhadores = trabalhadorService.buscarPorEncontro(this.encontroSelecionadoId);
+            if (this.trabalhadores == null || this.trabalhadores.isEmpty()) {
+                addWarnMessage("Nenhum trabalhador cadastrado para o encontro selecionado.");
+            }
+        } catch (Exception e) {
+            addErrorMessage("Erro ao carregar trabalhadores para o encontro: " + e.getMessage());
+        }
     }
     
     public Long getTrabalhadorSelecionadoId() { return trabalhadorSelecionadoId; }

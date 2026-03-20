@@ -31,7 +31,7 @@
                 <!-- Encontro exibido no formulário; cards superiores removidos -->
                 
                 <!-- Painel: Nova Venda / Adicionar Itens -->
-                <h:panelGroup id="pnlNovaVenda" rendered="#{vendaPedidoController.encontroSelecionadoId != null}">
+                    <h:panelGroup id="pnlNovaVenda">
                     <p:fieldset legend="#{vendaPedidoController.pedidoAtual == null ? '🛒 Nova Venda' : '➕ Adicionar Itens ao Pedido'}" 
                                 toggleable="false" styleClass="modern-fieldset">
                         
@@ -47,7 +47,8 @@
                                         <f:selectItems value="#{vendaPedidoController.encontrosAtivos}" 
                                                        var="enc" itemLabel="#{enc.nome}" itemValue="#{enc.id}"/>
                                         <p:ajax listener="#{vendaPedidoController.onEncontroChanged}" 
-                                                update="pnlNovaVenda pnlContasAbertas pnlItens pnlAguardandoPagamento" />
+                                            process="@this" 
+                                            update="pnlNovaVenda pnlContasAbertas pnlItens pnlAguardandoPagamento trabalhador mensagensEncontro" />
                                     </p:selectOneMenu>
                                     <p:messages id="mensagensEncontro" for="encontro" showDetail="true" closable="true" />
                                     <div style="margin-top:0.4rem; font-size:0.95rem; color:var(--text-muted);">Status: <strong>#{vendaPedidoController.encontroAtivo ? 'ATIVO' : 'Inativo'}</strong></div>
@@ -68,6 +69,15 @@
                                                     <small style="display:block; margin-top:0.35rem; color:var(--text-muted);">Equipe: <strong>#{vendaPedidoController.equipeNomeSelecionada}</strong></small>
                                                 </h:panelGroup>
                                     <p:messages id="mensagensTrabalhador" for="trabalhador" showDetail="true" closable="true" />
+
+                                    <h:panelGroup rendered="#{empty vendaPedidoController.trabalhadores and not empty vendaPedidoController.encontroSelecionadoId}">
+                                        <small style="display:block; margin-top:0.35rem; color:var(--warn);">Nenhum trabalhador cadastrado para este encontro.</small>
+                                        <div style="margin-top:0.25rem;">
+                                            <h:link outcome="/pages/trabalhador/cadastro.xhtml">Cadastrar Trabalhador</h:link>
+                                                &#160;|&#160;
+                                                <h:link outcome="/pages/encontro/cadastro.xhtml">Cadastrar Encontro</h:link>
+                                        </div>
+                                    </h:panelGroup>
 
                                     <h:outputScript target="body">
                                         $(function(){

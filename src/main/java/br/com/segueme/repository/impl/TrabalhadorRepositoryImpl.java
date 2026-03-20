@@ -122,8 +122,15 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 	@Override
 	public List<Trabalhador> findByEncontro(Long encontroId) {
 		return entityManager
-				.createQuery("SELECT t FROM Trabalhador t WHERE t.equipe.encontro.id = :encontroId", Trabalhador.class)
-				.setParameter("encontroId", encontroId).getResultList();
+			.createQuery(
+				"SELECT DISTINCT t FROM Trabalhador t " +
+				"LEFT JOIN FETCH t.pessoa p " +
+				"LEFT JOIN FETCH t.equipe e " +
+				"LEFT JOIN FETCH e.tipoEquipe " +
+				"LEFT JOIN FETCH t.encontro en " +
+				"WHERE e.encontro.id = :encontroId",
+				Trabalhador.class)
+			.setParameter("encontroId", encontroId).getResultList();
 	}
 
 	@Override

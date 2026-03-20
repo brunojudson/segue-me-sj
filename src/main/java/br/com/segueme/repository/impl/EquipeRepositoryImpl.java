@@ -135,12 +135,17 @@ public class EquipeRepositoryImpl implements EquipeRepository {
 
     @Override
     public boolean hasAssociations(Long id) {
-        Long count = entityManager.createQuery(
-                "SELECT COUNT(a) FROM Associacao a WHERE a.equipe.id = :equipeId", Long.class)
-                .setParameter("equipeId", id)
-                .getSingleResult();
+        Long trabalhadoresCount = entityManager.createQuery(
+            "SELECT COUNT(t) FROM Trabalhador t WHERE t.equipe.id = :equipeId", Long.class)
+            .setParameter("equipeId", id)
+            .getSingleResult();
 
-        return count > 0;
+        Long pastasCount = entityManager.createQuery(
+            "SELECT COUNT(p) FROM Pasta p WHERE p.equipe.id = :equipeId", Long.class)
+            .setParameter("equipeId", id)
+            .getSingleResult();
+
+        return (trabalhadoresCount != null && trabalhadoresCount > 0) || (pastasCount != null && pastasCount > 0);
     }
 
     @Override

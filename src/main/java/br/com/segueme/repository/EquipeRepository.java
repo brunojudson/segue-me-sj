@@ -89,6 +89,13 @@ public interface EquipeRepository {
     boolean hasAssociations(Long id);
 
     /**
+     * Verifica se uma equipe possui trabalhadores vinculados
+     * @param id ID da equipe
+     * @return true se possui trabalhadores, false caso contrário
+     */
+    boolean hasTrabalhadores(Long id);
+
+    /**
      * Conta o total de equipes cadastradas
      * @return total de equipes
      */

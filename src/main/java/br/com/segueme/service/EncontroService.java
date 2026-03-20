@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import br.com.segueme.entity.Encontro;
 import br.com.segueme.repository.EncontroRepository;
+import br.com.segueme.repository.EquipeRepository;
 
 @ApplicationScoped
 public class EncontroService implements Serializable {
@@ -17,6 +18,9 @@ public class EncontroService implements Serializable {
     
     @Inject
     private EncontroRepository encontroRepository;
+
+    @Inject
+    private EquipeRepository equipeRepository;
     
     /**
      * Salva um novo encontro
@@ -168,11 +172,26 @@ public class EncontroService implements Serializable {
             throw new IllegalArgumentException("Encontro não encontrado com o ID: " + id);
         }
         
-        // Verificar se encontro possui associações
+        // Verificar se encontro possui associações relevantes (encontristas ou equipes com associações)
+        // Caso existam equipes, permitimos a remoção apenas se todas as equipes estiverem sem associações
         if (encontroRepository.hasAssociations(id)) {
-            throw new IllegalArgumentException("Não é possível remover o encontro pois ele possui associações");
+            // Obter equipes do encontro e checar associacoes por equipe
+            java.util.List<br.com.segueme.entity.Equipe> equipes = equipeRepository.findByEncontro(id);
+            for (br.com.segueme.entity.Equipe eq : equipes) {
+                Long eqId = eq.getId();
+                boolean temTrabalhadores = equipeRepository.hasTrabalhadores(eqId);
+                boolean temOutrasAssoc = equipeRepository.hasAssociations(eqId);
+                if (temTrabalhadores || temOutrasAssoc) {
+                    throw new IllegalArgumentException("Não é possível remover o encontro pois existem equipes com associações");
+                }
+            }
+
+            // Se chegamos aqui, as equipes existem mas nenhuma possui associações: removê-las antes de remover o encontro
+            for (br.com.segueme.entity.Equipe eq : equipes) {
+                equipeRepository.delete(eq.getId());
+            }
         }
-        
+
         return encontroRepository.delete(id);
     }
     
