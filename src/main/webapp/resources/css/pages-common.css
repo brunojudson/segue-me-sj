@@ -735,6 +735,15 @@ body.dark-mode {
     line-height: 1.5;
 }
 
+/* Corrige casos onde um seletor global `.card-info` aplica tema (verde) em componentes internos
+   como as listas/abas do modal. Especificidade local para sobrescrever tema de dashboard. */
+.lista-cards .card-item .card-info,
+.detalhes-pessoa-dialog .card-info {
+    background: transparent !important;
+    color: var(--sm-text) !important;
+    padding: 0;
+}
+
 .card-item .card-info strong {
     color: var(--sm-text);
     font-weight: 600;
@@ -1853,12 +1862,13 @@ body.dark-mode .circle-indicator .pi-circle-fill { filter: brightness(1.2); }
    LIST PAGE — CASAL SPECIFIC
    ══════════════════════════════════════════════════════════════════════ */
 
-.person-info { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; }
+.person-info { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; min-width: 0; }
 
 .person-avatar {
     position: relative;
     width: 40px;
     height: 40px;
+    flex: 0 0 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1884,7 +1894,8 @@ body.dark-mode .circle-indicator .pi-circle-fill { filter: brightness(1.2); }
 }
 .avatar-initial { font-size: 1rem; font-weight: 700; }
 
-.person-details { display: flex; flex-direction: column; gap: 0.125rem; }
+.person-details { display: flex; flex-direction: column; gap: 0.125rem; min-width: 0; overflow: hidden; }
+.person-name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
 .person-role { font-size: 0.75rem; color: var(--sm-muted); font-weight: 500; }
 
 .date-info-container {

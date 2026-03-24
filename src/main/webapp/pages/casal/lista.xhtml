@@ -82,7 +82,7 @@
 								<h:panelGroup >
 									<div class="person-avatar husband-avatar">
 										<i class="pi pi-user"></i> <span class="avatar-initial">#{fn:substring(casal.pessoa1.nome,
-											0, 1)}</span>
+										0, 1)}</span>
 									</div>
 								</h:panelGroup>
 								<div class="person-details">
@@ -109,12 +109,18 @@
 								<h:panelGroup>
 									<div class="person-avatar wife-avatar">
 										<i class="pi pi-user"></i> <span class="avatar-initial">#{fn:substring(casal.pessoa2.nome,
-											0, 1)}</span>
+										0, 1)}</span>
 									</div>
 								</h:panelGroup>
 								<div class="person-details">
-									<span class="person-name">#{casal.pessoa2.nome}</span> <span
-										class="person-role">Esposa</span>
+									<p:commandLink styleClass="person-name nome-link"
+											action="#{casalController.abrirDetalhes(casal)}"
+											update=":detalhesForm:detalhesModal"
+											oncomplete="PF('detalhesDialog').show()"
+											process="@this">
+										<h:outputText value="#{casal.pessoa2.nome}" />
+									</p:commandLink>
+									<span class="person-role">Esposa</span>
 								</div>
 							</div>
 						</p:column>
@@ -122,7 +128,7 @@
 						<!-- Coluna Data de Casamento -->
 						<p:column headerText="Data de Casamento" styleClass="text-center"
 							responsivePriority="3" sortBy="#{casal.dataCasamento}"
-							width="180">
+							width="200">
 							<div class="date-info-container">
 								<div class="date-badge modern" title="Data do casamento">
 									<i class="pi pi-calendar"></i>
@@ -141,7 +147,7 @@
 						</p:column>
 
 						<!-- Coluna Ações -->
-						<p:column headerText="Ações" styleClass="text-center" width="140"
+						<p:column headerText="Ações" styleClass="text-center" width="60"
 							responsivePriority="1">
 							<div class="table-action-buttons">
 								<!-- Visualizar -->
@@ -199,34 +205,49 @@
 			<!-- Modal de Detalhes do Casal -->
 			<h:form id="detalhesForm">
 			<p:dialog id="detalhesModal" widgetVar="detalhesDialog"
-				header="Detalhes do Casal" 
+				header="Detalhes do Casal"
 				styleClass="detalhes-pessoa-dialog"
 				modal="true" responsive="true"
 				closable="true" closeOnEscape="true"
-				showEffect="fade" hideEffect="fade"
-				style="max-width:850px; width: calc(100% - 32px);">
+				showEffect="fade" hideEffect="fade">
 
 				<p:ajax event="close" listener="#{casalController.fecharDetalhes()}" />
 
 				<h:panelGroup id="detalhesContent" rendered="#{casalController.casalDetalhes != null}">
 					<div class="modal-pessoa-header">
 						<div class="modal-pessoa-avatar-section">
-							<h:panelGroup rendered="#{not empty casalController.casalDetalhes.foto}">
-								<h:graphicImage value="/fotos/#{casalController.casalDetalhes.foto}" alt="Foto"
-									styleClass="modal-pessoa-foto" />
-							</h:panelGroup>
-							<h:panelGroup rendered="#{empty casalController.casalDetalhes.foto}">
-								<h:graphicImage name="images/default_casal.png" alt="Foto padrão"
-									styleClass="modal-pessoa-foto" />
-							</h:panelGroup>
+							<!-- Info principal: título e meta (colocado acima das fotos para melhor hierarquia visual) -->
 							<div class="modal-pessoa-info-principal">
-								<h2 class="modal-pessoa-nome">#{casalController.casalDetalhes.pessoa1.nome} &amp; #{casalController.casalDetalhes.pessoa2.nome}</h2>
 								<div class="modal-pessoa-meta">
 									<span class="sm-tag sm-tag-green">
 										<i class="pi pi-heart-fill"></i> Casal
 									</span>
 									<span class="modal-pessoa-id">ID: #{casalController.casalDetalhes.id}</span>
 								</div>
+							</div>
+
+							<div class="modal-pessoa-photos">
+								<!-- Esposo -->
+									<h:panelGroup styleClass="photo-wrapper">
+										<h:panelGroup rendered="#{not empty casalController.casalDetalhes.pessoa1.foto}">
+											<h:graphicImage value="#{casalController.getFotoPessoa1(casalController.casalDetalhes)}" alt="Foto esposo" styleClass="modal-pessoa-foto" />
+										</h:panelGroup>
+										<h:panelGroup rendered="#{empty casalController.casalDetalhes.pessoa1.foto}">
+											<h:graphicImage name="images/default_casal.png" alt="Foto padrão" styleClass="modal-pessoa-foto" />
+										</h:panelGroup>
+										<div class="photo-caption">#{casalController.casalDetalhes.pessoa1.nome}</div>
+									</h:panelGroup>
+
+								<!-- Esposa -->
+									<h:panelGroup styleClass="photo-wrapper">
+										<h:panelGroup rendered="#{not empty casalController.casalDetalhes.pessoa2.foto}">
+											<h:graphicImage value="#{casalController.getFotoPessoa2(casalController.casalDetalhes)}" alt="Foto esposa" styleClass="modal-pessoa-foto" />
+										</h:panelGroup>
+										<h:panelGroup rendered="#{empty casalController.casalDetalhes.pessoa2.foto}">
+											<h:graphicImage name="images/default_casal.png" alt="Foto padrão" styleClass="modal-pessoa-foto" />
+										</h:panelGroup>
+										<div class="photo-caption">#{casalController.casalDetalhes.pessoa2.nome}</div>
+									</h:panelGroup>
 							</div>
 						</div>
 						<div class="modal-pessoa-actions">
@@ -238,7 +259,7 @@
 						</div>
 					</div>
 
-					<div class="info-grid" style="padding: 0 1.5rem 1.5rem;">
+					<div class="info-grid">
 						<div class="info-item">
 							<label>Esposo</label>
 							<span>#{casalController.casalDetalhes.pessoa1.nome}</span>

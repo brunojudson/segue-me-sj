@@ -250,3 +250,151 @@ body.dark-mode .menu-search input::placeholder {
 body.dark-mode .menu-no-results {
     color: #777;
 }
+
+/* ========================================
+   Modal Detalhes do Casal (Fotos e Layout)
+======================================== */
+.detalhes-pessoa-dialog .ui-dialog-titlebar {
+    background: transparent;
+    border: none;
+}
+.detalhes-pessoa-dialog .ui-dialog-content {
+    padding: 0;
+}
+.modal-pessoa-header {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0.75rem 1.5rem 0.75rem 1.5rem;
+    border-bottom: 1px solid var(--sm-border, #e6e6e6);
+}
+.modal-pessoa-avatar-section {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    flex: 0 0 auto;
+}
+.modal-pessoa-photos {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.photo-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.modal-pessoa-foto {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    border: 1px solid rgba(0,0,0,0.06);
+    background: var(--sm-surface, #fff);
+}
+.modal-pessoa-foto {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.modal-pessoa-foto:hover {
+    transform: scale(1.04);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+    cursor: pointer;
+}
+.modal-pessoa-actions {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+.detalhes-pessoa-dialog .ui-dialog-content {
+    background: var(--sm-surface, #fff);
+}
+.photo-caption {
+    margin-top: 0.5rem;
+    text-align: center;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+.modal-pessoa-info-principal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.4rem;
+}
+.modal-pessoa-nome {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+.modal-pessoa-meta {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    color: var(--sm-muted, #6c757d);
+}
+.detalhes-pessoa-dialog .info-grid {
+    padding: 1.25rem 1.5rem 1.5rem 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.75rem 1.25rem;
+}
+.info-item label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--sm-muted, #6c757d);
+    margin-bottom: 0.25rem;
+}
+.info-item span {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--sm-text, #222);
+}
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 520px) {
+    .modal-pessoa-foto {
+        width: 120px;
+        height: 120px;
+    }
+    .photo-caption { max-width: 120px; }
+    .detalhes-pessoa-dialog .info-grid { grid-template-columns: 1fr; }
+}
+
+/* Melhor alinhamento do botão de ação no topo direito em telas pequenas */
+@media (max-width: 640px) {
+    .modal-pessoa-header { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+    .modal-pessoa-actions { justify-content: flex-end; }
+}
+
+/* Modal behavior fixes: prevent dialog width from growing with content
+   and make large tables/contents scroll inside the dialog. */
+.detalhes-pessoa-dialog .ui-dialog {
+    width: auto !important;
+    max-width: 900px !important;
+    box-sizing: border-box;
+}
+.detalhes-pessoa-dialog .ui-dialog .ui-dialog-content {
+    max-height: calc(80vh);
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+/* Make any PrimeFaces datatable inside the modal scroll horizontally
+   instead of forcing the dialog to expand. */
+.detalhes-pessoa-dialog .ui-datatable,
+.detalhes-pessoa-dialog .ui-datatable .ui-datatable-tablewrapper {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+}
+.detalhes-pessoa-dialog .ui-datatable table {
+    width: 100%;
+    table-layout: auto;
+}

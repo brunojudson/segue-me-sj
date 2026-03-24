@@ -70,6 +70,28 @@ public class CasalController implements Serializable {
 		return "/resources/images/default_casal.png?t=" + System.currentTimeMillis();
 	}
 
+	/**
+	 * Retorna a URL da foto da primeira pessoa (esposo) do casal.
+	 */
+	public String getFotoPessoa1(Casal c) {
+		if (c != null && c.getPessoa1() != null && c.getPessoa1().getFoto() != null
+				&& !c.getPessoa1().getFoto().isEmpty()) {
+			return "/fotos/" + c.getPessoa1().getFoto() + "?t=" + System.currentTimeMillis();
+		}
+		return "/resources/images/default_casal.png?t=" + System.currentTimeMillis();
+	}
+
+	/**
+	 * Retorna a URL da foto da segunda pessoa (esposa) do casal.
+	 */
+	public String getFotoPessoa2(Casal c) {
+		if (c != null && c.getPessoa2() != null && c.getPessoa2().getFoto() != null
+				&& !c.getPessoa2().getFoto().isEmpty()) {
+			return "/fotos/" + c.getPessoa2().getFoto() + "?t=" + System.currentTimeMillis();
+		}
+		return "/resources/images/default_casal.png?t=" + System.currentTimeMillis();
+	}
+
 	public void carregarPessoas() {
 		// Buscar todas as pessoas
 		List<Pessoa> todasPessoas = pessoaService.buscarTodos();
