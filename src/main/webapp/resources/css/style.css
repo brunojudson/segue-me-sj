@@ -286,6 +286,15 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Previne flash de cores na troca de página.
+   O <html> recebe dark-mode pelo script bloqueante no <head>,
+   e o <body> recebe a classe imediatamente no script inline.
+   Esta regra garante que o fundo nunca pisque branco. */
+html.dark-mode body {
+    background-color: #0b0c10;
+    color: #e4e4f0;
+}
+
 /* Loader global — spinner flutuante sem escurecer a tela */
 .global-loader {
     position: fixed;
@@ -330,17 +339,18 @@ body .ui-panelgrid .ui-panelgrid-cell {
             .text-center { text-align: center !important; }
             .text-left { text-align: left !important; }
             .text-right { text-align: right !important; }
-/* Estilos do cabeçalho — Angular topbar pattern */
+/* Estilos do cabeçalho — Professional topbar */
 .header-container {
     background: var(--sm-surface);
     color: var(--sm-text);
-    padding: 0 1rem;
+    padding: 0 1.25rem;
     height: 56px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--sm-border);
     position: relative;
+    backdrop-filter: blur(8px);
 }
 
 /* Logo — Angular topbar-logo pattern */
@@ -1059,9 +1069,13 @@ body .ui-panelgrid .ui-panelgrid-cell {
 }
 
 
-/* Estilos do menu — Angular sidebar pattern */
+/* ═══════════════════════════════════════════════════════════════════
+   SIDEBAR / MENU — Professional sidebar pattern
+   ═══════════════════════════════════════════════════════════════════ */
+
 .menu-wrapper {
     position: relative;
+    height: 100%;
 }
 
 .menu-toggle {
@@ -1076,7 +1090,7 @@ body .ui-panelgrid .ui-panelgrid-cell {
     font-size: 1.4rem;
     cursor: pointer;
     padding: 7px;
-    border-radius: 6px;
+    border-radius: 8px;
     transition: color 0.2s, background 0.2s;
 }
 
@@ -1088,23 +1102,19 @@ body .ui-panelgrid .ui-panelgrid-cell {
 .menu-container {
     background: var(--sm-surface);
     width: 240px;
-    padding: 0.75rem 0;
+    padding: 0.5rem 0;
     border-right: 1px solid var(--sm-border);
     overflow-y: auto;
     min-height: 100vh;
     transition: width 0.22s ease;
 }
 
-/* Scrollbar customizado — Angular sidebar pattern */
-.menu-container::-webkit-scrollbar {
-    width: 4px;
-}
-.menu-container::-webkit-scrollbar-track {
-    background: transparent;
-}
+/* Scrollbar refinado */
+.menu-container::-webkit-scrollbar { width: 3px; }
+.menu-container::-webkit-scrollbar-track { background: transparent; }
 .menu-container::-webkit-scrollbar-thumb {
     background: var(--sm-border);
-    border-radius: 4px;
+    border-radius: 3px;
 }
 .menu-container::-webkit-scrollbar-thumb:hover {
     background: var(--sm-muted);
@@ -1120,52 +1130,94 @@ body .ui-panelgrid .ui-panelgrid-cell {
     margin-bottom: 0;
 }
 
-.menu-section {
-    padding: 0.75rem 0.75rem 0.25rem;
+/* Separadores sutis entre seções */
+.main-menu > li + li {
+    border-top: 1px solid var(--sm-border);
 }
 
+/* Seção do menu */
+.menu-section {
+    padding: 0.65rem 0.65rem 0.35rem;
+}
+
+/* Cabeçalho da seção — clicável para colapsar/expandir */
 .submenu-label {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     font-weight: 700;
     display: flex;
     align-items: center;
-    padding: 0 0.5rem;
-    margin-bottom: 0.35rem;
+    padding: 0.35rem 0.5rem;
+    margin-bottom: 0.25rem;
     color: var(--sm-muted);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     border-bottom: none;
     white-space: nowrap;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.18s ease, color 0.18s ease;
+    user-select: none;
+    position: relative;
+}
+
+.submenu-label:hover {
+    background: var(--sm-surface2);
+    color: var(--sm-text);
+}
+
+/* Ícone de chevron para colapsar — inserido via CSS */
+.submenu-label::after {
+    content: '\e931'; /* pi pi-chevron-down */
+    font-family: 'primeicons';
+    font-size: 0.6rem;
+    margin-left: auto;
+    transition: transform 0.25s ease;
+    opacity: 0.5;
+}
+
+.submenu-label.collapsed::after {
+    transform: rotate(-90deg);
 }
 
 .section-icon {
     margin-right: 8px;
-    font-size: 0.85em;
-    color: var(--sm-muted);
+    font-size: 0.82em;
+    color: var(--sm-accent);
+    opacity: 0.8;
 }
 
+/* Submenu — com transição suave de colapso */
 .submenu {
     list-style: none;
     padding: 0;
     margin: 0;
+    overflow: hidden;
+    max-height: 500px;
+    transition: max-height 0.3s ease, opacity 0.25s ease;
+    opacity: 1;
+}
+
+.submenu.collapsed {
+    max-height: 0;
+    opacity: 0;
 }
 
 .submenu li {
     margin-bottom: 1px;
 }
 
-/* Menu link — Angular nav-item pattern */
+/* Menu link — profissional com micro-interações */
 .menu-link {
     display: flex;
     align-items: center;
     gap: 10px;
     text-decoration: none !important;
     color: var(--sm-muted) !important;
-    padding: 8px 10px;
+    padding: 7px 10px;
     margin: 1px 0;
-    border-radius: 8px;
-    transition: all 0.22s ease;
-    font-size: 0.86rem;
+    border-radius: 7px;
+    transition: all 0.18s ease;
+    font-size: 0.84rem;
     font-weight: 500;
     position: relative;
     white-space: nowrap;
@@ -1175,29 +1227,36 @@ body .ui-panelgrid .ui-panelgrid-cell {
 .menu-link:hover {
     background: var(--sm-surface2);
     color: var(--sm-text) !important;
-    transform: none;
+    padding-left: 14px;
 }
 
 .menu-link:active {
     background: var(--sm-surface3);
+    transform: scale(0.98);
 }
 
 .menu-link i {
     margin-right: 0;
-    font-size: 1em;
+    font-size: 0.95em;
     width: 20px;
     text-align: center;
     flex-shrink: 0;
+    transition: color 0.18s ease;
+}
+
+.menu-link:hover i {
+    color: var(--sm-accent);
 }
 
 .menu-link span {
     flex: 1;
 }
 
-/* Indicador visual para link ativo — Angular active nav-item */
+/* Link ativo — indicador lateral verde */
 .menu-link.active {
     color: var(--sm-accent) !important;
-    background: rgba(109, 240, 200, 0.09);
+    background: rgba(109, 240, 200, 0.08);
+    font-weight: 600;
     border-left: none;
 }
 
@@ -1205,23 +1264,34 @@ body .ui-panelgrid .ui-panelgrid-cell {
     content: '';
     position: absolute;
     left: 0;
-    top: 20%;
-    bottom: 20%;
+    top: 18%;
+    bottom: 18%;
     width: 3px;
     border-radius: 0 3px 3px 0;
     background: var(--sm-accent);
+    animation: activeIndicator 0.3s ease;
+}
+
+@keyframes activeIndicator {
+    from { opacity: 0; height: 0; }
+    to   { opacity: 1; height: auto; }
+}
+
+.menu-link.active i {
+    color: var(--sm-accent);
 }
 
 .mobile-only {
     display: none !important;
 }
 
-/* Overlay para mobile: escondido por padrão, visível apenas quando `body.menu-open` */
+/* Overlay para mobile */
 .menu-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
     z-index: 1000;
     border: none;
     cursor: pointer;
@@ -1229,7 +1299,7 @@ body .ui-panelgrid .ui-panelgrid-cell {
     margin: 0;
     opacity: 0;
     pointer-events: none;
-    transition: opacity .22s ease;
+    transition: opacity .25s ease;
 }
 
 body.menu-open .menu-overlay {
@@ -1238,12 +1308,26 @@ body.menu-open .menu-overlay {
     pointer-events: auto;
 }
 
-/* Garante que o toggle, overlay e o container do menu fiquem acima do resto */
+/* Z-index hierarchy */
 .menu-overlay { z-index: 12000 !important; }
 .menu-container { z-index: 12001 !important; }
 .menu-toggle { z-index: 12002 !important; }
 
-/* Responsividade do menu */
+/* No-results da busca */
+.menu-no-results {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.75rem 1rem;
+    color: var(--sm-muted);
+    font-size: 0.78rem;
+    font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SIDEBAR RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════ */
+
 @media (max-width: 768px) {
     .menu-toggle {
         display: block;
@@ -1264,13 +1348,13 @@ body.menu-open .menu-overlay {
         position: fixed;
         top: 0;
         left: 0;
-        width: 260px;
+        width: 270px;
         height: 100vh;
         z-index: 1102;
         transform: translateX(-100%);
-        transition: transform 0.28s cubic-bezier(.2,.9,.2,1);
+        transition: transform 0.3s cubic-bezier(.22, .61, .36, 1);
         min-height: auto;
-        box-shadow: var(--sm-shadow-md);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
         background: var(--sm-surface) !important;
         opacity: 1 !important;
         overflow-y: auto;
@@ -1287,7 +1371,6 @@ body.menu-open .menu-overlay {
     }
 
     .menu-overlay {
-        /* por padrão o overlay não deve bloquear a página; visibilidade controlada por `.menu-container.active` ou `body.menu-open` */
         display: none;
     }
 
@@ -1300,7 +1383,6 @@ body.menu-open .menu-overlay {
         overflow: hidden;
     }
 
-    /* Exibir overlay apenas quando o menu estiver aberto */
     body.menu-open .menu-overlay {
         display: block;
     }
@@ -1309,7 +1391,7 @@ body.menu-open .menu-overlay {
 @media (max-width: 480px) {
     .menu-container {
         width: 100%;
-        max-width: 260px;
+        max-width: 280px;
     }
 
     #content {
@@ -1318,7 +1400,7 @@ body.menu-open .menu-overlay {
     }
 }
 
-/* Esconder colunas em telas pequenas, mantendo-as no DOM */
+/* Esconder colunas em telas pequenas */
 @media (max-width: 768px) {
     #pessoasTable .hide-mobile,
     #pessoasTable th.hide-mobile {
@@ -1326,9 +1408,7 @@ body.menu-open .menu-overlay {
     }
 }
 
-/* Quando o menu estiver aberto no mobile, bloquear interações do conteúdo por baixo
-   para evitar botões/cards recebendo clique sobre o menu. Menu e overlay mantêm
-   pointer-events auto para permanecerem interativos. */
+/* Bloquear interação do conteúdo quando menu mobile está aberto */
 body.menu-open .content-container,
 body.menu-open .page-header,
 body.menu-open .actions-bar,
@@ -1378,11 +1458,11 @@ body.menu-open .menu-overlay {
     margin-bottom: 15px;
 }
 
-/* Estilos do rodapé — Angular minimal footer */
+/* Estilos do rodapé — Professional minimal footer */
 .footer-container {
     background: var(--sm-surface);
     color: var(--sm-muted);
-    padding: 12px 20px 8px;
+    padding: 10px 20px 6px;
     margin-top: auto;
     border-top: 1px solid var(--sm-border);
 }

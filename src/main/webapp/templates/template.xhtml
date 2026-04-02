@@ -12,6 +12,18 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta name="theme-color" content="#0b0c10" />
 	<meta name="description" content="Sistema de gerenciamento de encontros de jovens" />
+	
+	<!-- Dark mode: script bloqueante ANTES dos estilos para evitar flash -->
+	<script>
+		(function() {
+			var dm = localStorage.getItem('darkMode');
+			var prefersDark = window.matchMedia &amp;&amp; window.matchMedia('(prefers-color-scheme: dark)').matches;
+			if (dm === 'true' || (dm === null &amp;&amp; prefersDark)) {
+				document.documentElement.classList.add('dark-mode');
+			}
+		})();
+	</script>
+	
 	<title>
 		<ui:insert name="title">Sistema Segue-me</ui:insert>
 	</title>
@@ -28,7 +40,13 @@
 	
 </h:head>
 
-<h:body>
+<h:body styleClass="#{empty param['javax.faces.partial.ajax'] ? '' : ''}">
+	<!-- Transição suave: esconde conteúdo até dark mode estar aplicado -->
+	<script>
+		if (document.documentElement.classList.contains('dark-mode')) {
+			document.body.classList.add('dark-mode');
+		}
+	</script>
 	<!-- Loading indicator para melhorar feedback ao usuário -->
 	<div id="loader" class="global-loader" style="display: none;">
 		<div class="loader-content">

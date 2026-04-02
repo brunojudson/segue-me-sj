@@ -275,12 +275,19 @@
 			try {
 				var currentPath = window.location.pathname;
 				var links = document.querySelectorAll('.menu-link');
+				var found = false;
 				for (var i = 0; i &lt; links.length; i++) {
 					var href = links[i].getAttribute('href');
 					if (href &amp;&amp; currentPath.indexOf(href.replace(/^.*\/pages/, '/pages')) !== -1) {
 						links[i].classList.add('active');
+						// Garante que a seção pai do link ativo está expandida
+						var parentSubmenu = links[i].closest('.submenu');
+						var parentLabel = parentSubmenu ? parentSubmenu.previousElementSibling : null;
+						if (parentSubmenu) parentSubmenu.classList.remove('collapsed');
+						if (parentLabel &amp;&amp; parentLabel.classList.contains('submenu-label')) parentLabel.classList.remove('collapsed');
 						// Scroll o item ativo para a área visível do menu sem animação
 						links[i].scrollIntoView({ block: 'center', behavior: 'instant' });
+						found = true;
 						break;
 					}
 				}

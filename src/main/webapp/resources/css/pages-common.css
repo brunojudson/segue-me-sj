@@ -31,6 +31,13 @@
     --sidebar-w:    240px;
 }
 
+/* Evita flash de tema claro ao carregar com dark mode ativo */
+html.dark-mode {
+    background: #0b0c10;
+    color-scheme: dark;
+}
+
+html.dark-mode,
 body.dark-mode {
     --sm-bg:        #0b0c10;
     --sm-surface:   #12131a;

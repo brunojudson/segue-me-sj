@@ -126,6 +126,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initHeaderAnimations();
     // Inicializa comportamento do menu (toggle, overlay, links)
     try { initMenu(); } catch (e) { /* ignore */ }
+    // Inicializa seções colapsáveis do menu
+    try { initMenuSections(); } catch (e) { /* ignore */ }
 
     // Garante que ao carregar uma nova página o conteúdo comece no topo
     try { scrollToTop(); } catch (e) { /* ignore */ }
@@ -245,45 +247,56 @@ document.addEventListener('DOMContentLoaded', function() {
  * Função para alternar modo escuro
  */
 function toggleDarkMode() {
-    const body = document.body;
-    const isDarkMode = body.classList.contains('dark-mode');
+    var body = document.body;
+    var html = document.documentElement;
+    var isDarkMode = body.classList.contains('dark-mode');
     
     if (isDarkMode) {
         body.classList.remove('dark-mode');
+        html.classList.remove('dark-mode');
         localStorage.setItem('darkMode', 'false');
-        
-        // Atualiza ícone do botão
-        const button = document.querySelector('.dark-mode-btn i');
-        if (button) {
-            button.className = 'pi pi-moon';
-        }
     } else {
         body.classList.add('dark-mode');
+        html.classList.add('dark-mode');
         localStorage.setItem('darkMode', 'true');
-        
-        // Atualiza ícone do botão
-        const button = document.querySelector('.dark-mode-btn i');
-        if (button) {
-            button.className = 'pi pi-sun';
-        }
+    }
+    
+    // Atualiza ícone do botão
+    var button = document.querySelector('.dark-mode-btn i');
+    if (button) {
+        button.className = isDarkMode ? 'pi pi-moon' : 'pi pi-sun';
+    }
+    
+    // Atualiza meta theme-color
+    var metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+        metaTheme.setAttribute('content', isDarkMode ? '#ffffff' : '#0b0c10');
     }
 }
 
 /**
- * Inicializa o modo escuro baseado na preferência salva
+ * Inicializa o modo escuro baseado na preferência salva.
+ * O script bloqueante no <head> já aplicou a classe no <html>.
+ * Aqui propagamos para o <body> e atualizamos o ícone.
  */
 function initDarkMode() {
-    const darkMode = localStorage.getItem('darkMode');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (darkMode === 'true' || (darkMode === null && prefersDark)) {
+    // Propaga classe do html (definida pelo script bloqueante no head) para o body
+    if (document.documentElement.classList.contains('dark-mode')) {
         document.body.classList.add('dark-mode');
-        
-        // Atualiza ícone do botão
-        const button = document.querySelector('.dark-mode-btn i');
-        if (button) {
-            button.className = 'pi pi-sun';
-        }
+    }
+    
+    var isDark = document.body.classList.contains('dark-mode');
+    
+    // Atualiza ícone do botão
+    var button = document.querySelector('.dark-mode-btn i');
+    if (button) {
+        button.className = isDark ? 'pi pi-sun' : 'pi pi-moon';
+    }
+    
+    // Atualiza meta theme-color
+    var metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+        metaTheme.setAttribute('content', isDark ? '#0b0c10' : '#ffffff');
     }
 }
 
@@ -547,6 +560,7 @@ function initMenu() {
 window.toggleMenu = toggleMenu;
 window.closeMenu = closeMenu;
 window.initMenu = initMenu;
+window.initMenuSections = initMenuSections;
 
 // Busca rápida no menu (usada no onkeyup do input de busca)
 function filterMenu(query) {
@@ -568,10 +582,54 @@ function filterMenu(query) {
         });
         section.style.display = sectionHasMatch ? '' : 'none';
         if (sectionHasMatch) hasVisible = true;
+        
+        // Ao pesquisar, expande as seções que têm resultados
+        if (normalizedQuery && sectionHasMatch) {
+            var submenu = section.querySelector('.submenu');
+            var label = section.querySelector('.submenu-label');
+            if (submenu) submenu.classList.remove('collapsed');
+            if (label) label.classList.remove('collapsed');
+        }
     });
     if (noResults) {
         noResults.style.display = (normalizedQuery && !hasVisible) ? 'flex' : 'none';
     }
+}
+
+/**
+ * Inicializa seções colapsáveis do menu.
+ * Persiste estado via sessionStorage para manter aberto/fechado entre navegações.
+ */
+function initMenuSections() {
+    var labels = document.querySelectorAll('.submenu-label');
+    labels.forEach(function(label, index) {
+        var submenu = label.parentElement.querySelector('.submenu');
+        if (!submenu) return;
+        
+        var storageKey = 'menuSection_' + index;
+        var savedState = sessionStorage.getItem(storageKey);
+        
+        // Restaura estado salvo (default: expandido)
+        if (savedState === 'collapsed') {
+            submenu.classList.add('collapsed');
+            label.classList.add('collapsed');
+        }
+        
+        // Clique para alternar
+        label.addEventListener('click', function(e) {
+            e.preventDefault();
+            var isCollapsed = submenu.classList.contains('collapsed');
+            if (isCollapsed) {
+                submenu.classList.remove('collapsed');
+                label.classList.remove('collapsed');
+                sessionStorage.setItem(storageKey, 'expanded');
+            } else {
+                submenu.classList.add('collapsed');
+                label.classList.add('collapsed');
+                sessionStorage.setItem(storageKey, 'collapsed');
+            }
+        });
+    });
 }
 
 // Fecha menu ao redimensionar para desktop
