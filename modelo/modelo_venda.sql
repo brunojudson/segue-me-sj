@@ -58,6 +58,7 @@ CREATE TABLE public.venda_pedido (
     valor_pago NUMERIC(10, 2) NULL,
     forma_pagamento VARCHAR(50) NULL,
     fechado_por_trabalhador_id BIGINT NULL,
+    usuario_registro_id BIGINT NULL,
     observacoes VARCHAR(1000) NULL,
     
     CONSTRAINT venda_pedido_pkey PRIMARY KEY (id),
@@ -68,6 +69,8 @@ CREATE TABLE public.venda_pedido (
         REFERENCES public.trabalhador(id) ON DELETE RESTRICT,
     CONSTRAINT fk_venda_pedido_fechado_por FOREIGN KEY (fechado_por_trabalhador_id) 
         REFERENCES public.trabalhador(id) ON DELETE SET NULL,
+    CONSTRAINT fk_venda_pedido_usuario_registro FOREIGN KEY (usuario_registro_id) 
+        REFERENCES public.usuario(id) ON DELETE SET NULL,
     CONSTRAINT ck_venda_pedido_status CHECK (status IN ('ABERTO', 'AGUARDO_PAGAMENTO', 'PAGO', 'CANCELADO')),
     CONSTRAINT ck_venda_pedido_valor_total CHECK (valor_total >= 0),
     CONSTRAINT ck_venda_pedido_valor_pago CHECK (valor_pago IS NULL OR valor_pago >= 0),
@@ -85,6 +88,7 @@ COMMENT ON COLUMN public.venda_pedido.fechado_por_trabalhador_id IS 'Trabalhador
 COMMENT ON COLUMN public.venda_pedido.valor_total IS 'Valor total calculado pela soma dos itens';
 COMMENT ON COLUMN public.venda_pedido.valor_pago IS 'Valor efetivamente pago (quando status = PAGO)';
 COMMENT ON COLUMN public.venda_pedido.forma_pagamento IS 'Forma de pagamento (Dinheiro, PIX, Cartão, etc)';
+COMMENT ON COLUMN public.venda_pedido.usuario_registro_id IS 'Usuário do sistema que registrou/criou a venda';
 
 -- ============================================================================
 -- TABELA: venda_item_pedido

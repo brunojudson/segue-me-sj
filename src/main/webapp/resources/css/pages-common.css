@@ -4334,3 +4334,456 @@ body.dark-mode .categoria-tag {
         margin-left: 0;
     }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   VENDAS — Componentes profissionais (dark mode safe)
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Card de resumo dentro de dialogs — theme-aware */
+.venda-summary-card {
+    background: var(--sm-surface2);
+    border: 1px solid var(--sm-border);
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.venda-summary-card-success {
+    background: rgba(109, 240, 200, 0.06);
+    border: 1px solid rgba(109, 240, 200, 0.2);
+    border-left: 4px solid var(--sm-accent);
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+/* Grid interno do summary card */
+.venda-summary-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 0.5rem 1rem;
+    align-items: center;
+}
+
+.venda-summary-grid strong {
+    color: var(--sm-muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.venda-summary-grid .price-value {
+    font-size: 1.25rem;
+}
+
+/* Status hint sob combobox */
+.venda-status-hint {
+    margin-top: 0.35rem;
+    font-size: 0.82rem;
+    color: var(--sm-muted);
+}
+
+.venda-status-hint strong {
+    color: var(--sm-accent);
+}
+
+/* Warning helper text */
+.venda-warn-text {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--sm-warn);
+    font-size: 0.82rem;
+}
+
+/* Link helper section */
+.venda-link-helper {
+    margin-top: 0.3rem;
+    font-size: 0.82rem;
+}
+
+.venda-link-helper a {
+    color: var(--sm-accent) !important;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.venda-link-helper a:hover {
+    text-decoration: underline;
+}
+
+.venda-link-helper .sep {
+    color: var(--sm-muted);
+    margin: 0 0.35rem;
+}
+
+/* ============================================================
+   GRID DE FILTROS INLINE (consulta-vendas)
+   ============================================================ */
+.venda-filters-grid {
+    display: flex !important;
+    align-items: flex-end !important;
+    gap: 0.75rem !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    padding: 0.75rem 0.5rem !important;
+}
+
+/* --- Campo (info-item) dentro da grid de filtros --- */
+.venda-filters-grid > .info-item {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.3rem !important;
+    padding: 0 !important;
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+}
+.venda-filters-grid > .info-item:hover {
+    border-color: transparent !important;
+    background: none !important;
+    box-shadow: none !important;
+}
+
+/* Label e OutputLabel */
+.venda-filters-grid .info-item label,
+.venda-filters-grid .info-item .ui-outputlabel {
+    font-size: 0.74rem !important;
+    font-weight: 600 !important;
+    color: var(--sm-muted) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.2 !important;
+    display: block !important;
+}
+
+/* ---- Forçar TODOS os componentes PrimeFaces a preencher o container ---- */
+.venda-filters-grid .info-item .ui-selectonemenu,
+.venda-filters-grid .info-item .ui-inputfield,
+.venda-filters-grid .info-item .ui-calendar,
+.venda-filters-grid .info-item .ui-inputnumber,
+.venda-filters-grid .info-item .ui-inputtext,
+.venda-filters-grid .info-item .ui-spinner,
+.venda-filters-grid .info-item input.hasDatepicker {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    display: block !important;
+    flex-shrink: 1 !important;
+}
+
+/* Wrappers de calendário e inputNumber que podem ter display inline-block */
+.venda-filters-grid .info-item .ui-calendar,
+.venda-filters-grid .info-item .ui-inputnumber,
+.venda-filters-grid .info-item .ui-spinner {
+    display: block !important;
+    position: relative !important;
+}
+
+/* Inputs internos dentro de wrappers PF */
+.venda-filters-grid .info-item .ui-inputnumber input,
+.venda-filters-grid .info-item .ui-calendar input,
+.venda-filters-grid .info-item .ui-spinner input,
+.venda-filters-grid .info-item .ui-inputnumber .ui-inputfield,
+.venda-filters-grid .info-item .ui-calendar .ui-inputfield {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+}
+
+/* SelectOneMenu - forçar estrutura inline correta */
+.venda-filters-grid .info-item .ui-selectonemenu {
+    position: relative !important;
+}
+.venda-filters-grid .info-item .ui-selectonemenu .ui-selectonemenu-label {
+    width: 100% !important;
+    padding-right: 2.5em !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+}
+.venda-filters-grid .info-item .ui-selectonemenu .ui-selectonemenu-trigger {
+    position: absolute !important;
+    right: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+}
+
+/* --- Botões inline dos filtros --- */
+.venda-filters-grid > .venda-inline-actions {
+    display: flex !important;
+    gap: 0.5rem !important;
+    align-items: flex-end !important;
+    flex-shrink: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.venda-filters-grid .venda-inline-actions .ui-button {
+    white-space: nowrap !important;
+}
+
+/* --- Responsivo --- */
+@media (max-width: 900px) {
+    .venda-filters-grid {
+        flex-wrap: wrap !important;
+    }
+    .venda-filters-grid > .info-item {
+        flex: 1 1 45% !important;
+    }
+    .venda-filters-grid > .venda-inline-actions {
+        flex: 1 1 100% !important;
+        justify-content: flex-end !important;
+    }
+}
+
+@media (max-width: 500px) {
+    .venda-filters-grid {
+        flex-wrap: wrap !important;
+    }
+    .venda-filters-grid > .info-item {
+        flex: 1 1 100% !important;
+    }
+}
+
+/* Texto muted em tabela */
+.table-text-muted {
+    color: var(--sm-muted);
+    opacity: 0.6;
+}
+
+.table-text-secondary {
+    color: var(--sm-muted);
+}
+
+/* Artigo description na tabela */
+.artigo-desc {
+    font-size: 0.82rem;
+    color: var(--sm-muted);
+    margin-top: 0.2rem;
+    line-height: 1.3;
+}
+
+/* Checkbox row (dialog label inline) */
+.venda-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.venda-checkbox-row label {
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--sm-text);
+}
+
+/* Dialog content padding uniform */
+.venda-dialog-content {
+    padding: 1rem 1.25rem;
+}
+
+/* Pedido info bar separator dots */
+.pedido-info-bar .pedido-info-item + .pedido-info-item::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--sm-border);
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* Team name muted */
+.team-name-muted {
+    color: var(--sm-muted);
+}
+
+/* Equipe hint below select */
+.venda-equipe-hint {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.82rem;
+    color: var(--sm-muted);
+}
+
+.venda-equipe-hint strong {
+    color: var(--sm-text);
+}
+
+/* Badge do operador/usuário logado */
+.venda-operador-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 1rem;
+    background: var(--sm-card);
+    border: 1px solid var(--sm-border);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--sm-muted);
+}
+.venda-operador-badge i {
+    color: var(--sm-accent);
+    font-size: 1rem;
+}
+.venda-operador-badge strong {
+    color: var(--sm-text);
+}
+.venda-operador-name {
+    color: var(--sm-accent);
+    font-weight: 600;
+}
+
+/* ============================================================
+   FORMULÁRIO INLINE DE VENDAS
+   ============================================================ */
+.venda-inline-form {
+    display: flex !important;
+    align-items: flex-end !important;
+    gap: 0.75rem !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    padding: 0.75rem 0.5rem !important;
+}
+
+/* --- Campo (info-item) dentro do form inline --- */
+.venda-inline-form > .info-item {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.3rem !important;
+    padding: 0 !important;
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+}
+.venda-inline-form > .info-item:hover {
+    border-color: transparent !important;
+    background: none !important;
+    box-shadow: none !important;
+}
+
+/* Label HTML e OutputLabel PrimeFaces */
+.venda-inline-form .info-item label,
+.venda-inline-form .info-item .ui-outputlabel {
+    font-size: 0.74rem !important;
+    font-weight: 600 !important;
+    color: var(--sm-muted) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.2 !important;
+    display: block !important;
+}
+
+/* ---- Forçar TODOS os componentes PrimeFaces a preencher o container ---- */
+.venda-inline-form .info-item .ui-selectonemenu,
+.venda-inline-form .info-item .ui-inputfield,
+.venda-inline-form .info-item .ui-calendar,
+.venda-inline-form .info-item .ui-inputnumber,
+.venda-inline-form .info-item .ui-inputtext,
+.venda-inline-form .info-item .ui-spinner,
+.venda-inline-form .info-item input.hasDatepicker {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    display: block !important;
+    flex-shrink: 1 !important;
+}
+
+/* Wrappers de calendário e inputNumber */
+.venda-inline-form .info-item .ui-calendar,
+.venda-inline-form .info-item .ui-inputnumber,
+.venda-inline-form .info-item .ui-spinner {
+    display: block !important;
+    position: relative !important;
+}
+
+/* Inputs internos dentro de wrappers PF (calendar input, inputnumber input) */
+.venda-inline-form .info-item .ui-inputnumber input,
+.venda-inline-form .info-item .ui-calendar input,
+.venda-inline-form .info-item .ui-spinner input,
+.venda-inline-form .info-item .ui-inputnumber .ui-inputfield,
+.venda-inline-form .info-item .ui-calendar .ui-inputfield {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+}
+
+/* SelectOneMenu - estrutura inline correta */
+.venda-inline-form .info-item .ui-selectonemenu {
+    position: relative !important;
+}
+.venda-inline-form .info-item .ui-selectonemenu .ui-selectonemenu-label {
+    width: 100% !important;
+    padding-right: 2.5em !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+}
+.venda-inline-form .info-item .ui-selectonemenu .ui-selectonemenu-trigger {
+    position: absolute !important;
+    right: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+}
+
+/* --- Botões inline --- */
+.venda-inline-form > .venda-inline-actions {
+    display: flex !important;
+    gap: 0.5rem !important;
+    align-items: flex-end !important;
+    flex-shrink: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.venda-inline-form .venda-inline-actions .ui-button {
+    white-space: nowrap !important;
+}
+
+/* --- Proporções de campo --- */
+.venda-inline-form > .venda-field-lg { flex: 2.5 1 0 !important; min-width: 0 !important; }
+.venda-inline-form > .venda-field-md { flex: 1.2 1 0 !important; min-width: 0 !important; }
+.venda-inline-form > .venda-field-sm { flex: 0.7 1 0 !important; min-width: 70px !important; }
+
+/* --- Linha de dicas abaixo do form --- */
+.venda-inline-hint {
+    display: flex !important;
+    gap: 1rem !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    margin-top: 0.35rem !important;
+    padding: 0 0.5rem !important;
+    font-size: 0.82rem !important;
+}
+
+/* --- Responsivo --- */
+@media (max-width: 768px) {
+    .venda-inline-form {
+        flex-wrap: wrap !important;
+    }
+    .venda-inline-form > .info-item {
+        flex: 1 1 100% !important;
+        min-width: 0 !important;
+    }
+    .venda-inline-form > .venda-inline-actions {
+        flex: 1 1 100% !important;
+        justify-content: flex-end !important;
+    }
+}

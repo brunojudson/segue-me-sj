@@ -46,6 +46,13 @@ public class VendaPedidoService implements Serializable {
      * REGRA: Só pode iniciar venda se houver um encontro ativo
      */
     public VendaPedido iniciarNovaVenda(Long encontroId, Long trabalhadorId) {
+        return iniciarNovaVenda(encontroId, trabalhadorId, null);
+    }
+
+    /**
+     * Inicia uma nova venda/conta aberta com registro do usuário que realizou
+     */
+    public VendaPedido iniciarNovaVenda(Long encontroId, Long trabalhadorId, br.com.segueme.entity.Usuario usuarioRegistro) {
         // Validar parâmetros
         if (encontroId == null) {
             throw new IllegalArgumentException("Encontro é obrigatório para iniciar uma venda");
@@ -83,6 +90,9 @@ public class VendaPedidoService implements Serializable {
         // Caso não exista, criar novo pedido ABERTO
         VendaPedido pedido = new VendaPedido(encontro, optTrabalhador.get());
         pedido.setStatus(StatusPedido.ABERTO);
+        if (usuarioRegistro != null) {
+            pedido.setUsuarioRegistro(usuarioRegistro);
+        }
 
         return pedidoRepository.save(pedido);
     }

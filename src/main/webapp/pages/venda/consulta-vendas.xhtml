@@ -27,50 +27,51 @@
 
             <h:form id="formConsulta" prependId="false">
             <p:fieldset id="pnlFiltros" legend="🔎 Filtros" toggleable="false" styleClass="modern-fieldset" style="margin-top: 1rem;">
-                <div class="field-grid filters-panelgrid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:1rem; padding:24px;">
+                <div class="venda-filters-grid">
                      <div class="info-item">
                         <p:outputLabel for="filtroEncontro" value="Encontro:" />
-                        <p:selectOneMenu id="filtroEncontro" value="#{vendaPedidoController.filtroEncontroId}">
-                            <f:selectItem itemLabel="-- Todos os encontros --" itemValue="#{null}" />
+                        <p:selectOneMenu id="filtroEncontro" value="#{vendaPedidoController.filtroEncontroId}" 
+                                         style="width: 100% !important;">
+                            <f:selectItem itemLabel="-- Todos --" itemValue="#{null}" />
                             <f:selectItems value="#{vendaPedidoController.todosEncontros}" var="enc"
                                            itemLabel="#{enc.nome}" itemValue="#{enc.id}" />
                         </p:selectOneMenu>
-                        <p:messages id="mensagensFiltroEncontro" for="filtroEncontro" showDetail="true" rendered="#{facesContext.maximumSeverity != null}" />
                     </div>
 
                     <div class="info-item">
                         <p:outputLabel for="filtroStatus" value="Status:" />
-                        <p:selectOneMenu id="filtroStatus" value="#{vendaPedidoController.filtroStatus}">
-                            <f:selectItem itemLabel="-- Todos os status --" itemValue="#{null}" />
+                        <p:selectOneMenu id="filtroStatus" value="#{vendaPedidoController.filtroStatus}"
+                                         style="width: 100% !important;">
+                            <f:selectItem itemLabel="-- Todos --" itemValue="#{null}" />
                             <f:selectItems value="#{vendaPedidoController.todosStatus}" var="st"
                                            itemLabel="#{st.descricao}" itemValue="#{st}" />
                         </p:selectOneMenu>
-                        <p:messages id="mensagensFiltroStatus" for="filtroStatus" showDetail="true" rendered="#{facesContext.maximumSeverity != null}" />
                     </div>
                     <div class="info-item">
-                        <p:outputLabel for="dataInicio" value="Data Início:" />
+                        <p:outputLabel for="dataInicio" value="De:" />
                         <p:calendar id="dataInicio" value="#{vendaPedidoController.dataInicio}"
-                                    pattern="dd/MM/yyyy" showButtonBar="true" locale="pt_BR" />
+                                    pattern="dd/MM/yyyy" showButtonBar="true" locale="pt_BR"
+                                    style="width: 100% !important;" inputStyle="width: 100% !important;" />
                     </div>
 
                     <div class="info-item">
-                        <p:outputLabel for="dataFim" value="Data Fim:" />
+                        <p:outputLabel for="dataFim" value="Até:" />
                         <p:calendar id="dataFim" value="#{vendaPedidoController.dataFim}"
-                                    pattern="dd/MM/yyyy" showButtonBar="true" locale="pt_BR" />
+                                    pattern="dd/MM/yyyy" showButtonBar="true" locale="pt_BR"
+                                    style="width: 100% !important;" inputStyle="width: 100% !important;" />
                     </div>
-                </div>
 
-                <div class="form-buttons" style="margin-top:-1rem; display:flex; gap:0.5rem; justify-content:flex-end;">
-                    <p:commandButton value="Consultar (Alt+C)" icon="pi pi-search"
-                                     actionListener="#{vendaPedidoController.filtrarPedidos}"
-                                     update="tblPedidos pnlTotalizadores pnlGraficos"
-                                     styleClass="action-button-primary"
-                                     accesskey="C" />
-
-                    <p:commandButton value="Limpar Filtros" icon="pi pi-filter-slash"
-                                     actionListener="#{vendaPedidoController.limparFiltros}"
-                                     update="@form"
-                                     styleClass="action-button-secondary" />
+                    <div class="venda-inline-actions">
+                        <p:commandButton value="Consultar" icon="pi pi-search"
+                                         actionListener="#{vendaPedidoController.filtrarPedidos}"
+                                         update="tblPedidos pnlTotalizadores pnlGraficos"
+                                         styleClass="action-button-primary"
+                                         accesskey="C" />
+                        <p:commandButton icon="pi pi-filter-slash" title="Limpar Filtros"
+                                         actionListener="#{vendaPedidoController.limparFiltros}"
+                                         update="@form"
+                                         styleClass="action-button-secondary" />
+                    </div>
                 </div>
             </p:fieldset>
                 
@@ -178,12 +179,12 @@
                                  reflow="false" 
                                  sortBy="#{pedido.dataAbertura}" sortOrder="descending">
                         
-                        <p:column headerText="Código" width="18%" sortBy="#{pedido.numeroPedido}" 
+                        <p:column headerText="Código" width="10%" sortBy="#{pedido.numeroPedido}" 
                                   styleClass="text-center" responsivePriority="1">
                             <div class="id-badge">#{pedido.numeroPedido}</div>
                         </p:column>
                         
-                        <p:column headerText="Encontro" width="20%" sortBy="#{pedido.encontro.nome}"
+                        <p:column headerText="Encontro" width="18%" sortBy="#{pedido.encontro.nome}"
                                   filterBy="#{pedido.encontro.nome}" filterMatchMode="contains"
                                   responsivePriority="2">
                             <span class="team-badge">
@@ -212,8 +213,8 @@
                                   styleClass="text-center" responsivePriority="5">
                             <h:outputText value="#{pedido.dataFechamentoFormatada}" 
                                           rendered="#{pedido.dataFechamento != null}"
-                                          style="color: #666;" />
-                            <h:outputText value="-" rendered="#{pedido.dataFechamento == null}" style="color: #ccc;" />
+                                          styleClass="table-text-secondary" />
+                            <h:outputText value="-" rendered="#{pedido.dataFechamento == null}" styleClass="table-text-muted" />
                         </p:column>
                         
                         <p:column headerText="Itens" width="6%" styleClass="text-center" responsivePriority="6">
@@ -314,14 +315,24 @@
                                         <div class="info-item">
                                             <label>Equipe:</label>
                                             <div>
-                                                <span style="color:var(--text-muted);">#{vendaPedidoController.equipeNomePedidoSelecionado}</span>
+                                                <span class="team-name-muted">#{vendaPedidoController.equipeNomePedidoSelecionado}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="info-item">
+                                            <label>Registrado por:</label>
+                                            <div>
+                                                <i class="pi pi-id-card" style="margin-right: 0.5rem; color: var(--sm-accent);"></i>
+                                                <h:outputText value="#{vendaPedidoController.pedidoSelecionado.usuarioRegistro.nome}"
+                                                              rendered="#{vendaPedidoController.pedidoSelecionado.usuarioRegistro != null}" />
+                                                <h:outputText value="-" rendered="#{vendaPedidoController.pedidoSelecionado.usuarioRegistro == null}" styleClass="table-text-muted" />
                                             </div>
                                         </div>
                                         
                                         <div class="info-item">
                                             <label>Data Abertura:</label>
                                             <div>
-                                                <i class="pi pi-calendar-plus" style="margin-right: 0.5rem; color: #28a745;"></i>
+                                                <i class="pi pi-calendar-plus" style="margin-right: 0.5rem; color: var(--sm-accent);"></i>
                                                 <h:outputText value="#{vendaPedidoController.pedidoSelecionado.dataAberturaFormatada}" />
                                             </div>
                                         </div>
@@ -329,10 +340,10 @@
                                         <div class="info-item">
                                             <label>Data Fechamento:</label>
                                             <div>
-                                                <i class="pi pi-calendar-times" style="margin-right: 0.5rem; color: #dc3545;"></i>
+                                                <i class="pi pi-calendar-times" style="margin-right: 0.5rem; color: var(--sm-danger);"></i>
                                                 <h:outputText value="#{vendaPedidoController.pedidoSelecionado.dataFechamentoFormatada}" 
                                                               rendered="#{vendaPedidoController.pedidoSelecionado.dataFechamento != null}" />
-                                                <span style="color: #999;" rendered="#{vendaPedidoController.pedidoSelecionado.dataFechamento == null}">-</span>
+                                                <h:outputText value="-" rendered="#{vendaPedidoController.pedidoSelecionado.dataFechamento == null}" styleClass="table-text-muted" />
                                             </div>
                                         </div>
                                         
@@ -350,7 +361,7 @@
                                                 <i class="pi pi-credit-card" style="margin-right: 0.5rem; color: var(--sm-accent);"></i>
                                                 <h:outputText value="#{vendaPedidoController.pedidoSelecionado.formaPagamento}" 
                                                               rendered="#{vendaPedidoController.pedidoSelecionado.formaPagamento != null}" />
-                                                <span style="color: #999;" rendered="#{vendaPedidoController.pedidoSelecionado.formaPagamento == null}">-</span>
+                                                <h:outputText value="-" rendered="#{vendaPedidoController.pedidoSelecionado.formaPagamento == null}" styleClass="table-text-muted" />
                                             </div>
                                         </div>
                                         
@@ -361,7 +372,7 @@
                                                               rendered="#{vendaPedidoController.pedidoSelecionado.valorPago != null}">
                                                     <f:convertNumber type="currency" currencySymbol="R$ " />
                                                 </h:outputText>
-                                                <span style="color: #999;" rendered="#{vendaPedidoController.pedidoSelecionado.valorPago == null}">-</span>
+                                                <h:outputText value="-" rendered="#{vendaPedidoController.pedidoSelecionado.valorPago == null}" styleClass="table-text-muted" />
                                             </span>
                                         </div>
                                     </div>
@@ -437,10 +448,10 @@
                 <p:dialog id="dlgFecharPedidoConsulta" header="Fechar Pedido" widgetVar="dlgFecharPedidoConsulta" 
                           modal="true" responsive="true" width="520" closeOnEscape="true" dynamic="false">
                     <h:panelGroup id="dlgFecharPedidoConsultaContent" rendered="#{vendaPedidoController.pedidoAtual != null}">
-                        <div style="padding: 1rem;">
-                            <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
-                                <div style="display: grid; grid-template-columns: 140px 1fr; gap: 0.5rem;">
-                                    <strong>Número do Pedido:</strong>
+                        <div class="venda-dialog-content">
+                            <div class="venda-summary-card">
+                                <div class="venda-summary-grid">
+                                    <strong>Pedido:</strong>
                                     <span class="id-badge">#{vendaPedidoController.pedidoAtual.numeroPedido}</span>
                                     <strong>Trabalhador:</strong>
                                     <span>#{vendaPedidoController.pedidoAtual.trabalhadorResponsavel.pessoa.nome}</span>
@@ -453,13 +464,15 @@
                                 </div>
                             </div>
 
-                            <p:selectBooleanCheckbox id="pagarAgoraConsulta" value="#{vendaPedidoController.pagarAgora}">
-                                <p:ajax update="pnlPagamentoConsulta btnConfirmarFechar" />
-                            </p:selectBooleanCheckbox>
-                            <label for="pagarAgoraConsulta" style="margin-left: 0.5rem; font-weight: 600; cursor: pointer;">Receber pagamento agora</label>
+                            <div class="venda-checkbox-row">
+                                <p:selectBooleanCheckbox id="pagarAgoraConsulta" value="#{vendaPedidoController.pagarAgora}">
+                                    <p:ajax update="pnlPagamentoConsulta btnConfirmarFechar" />
+                                </p:selectBooleanCheckbox>
+                                <label for="pagarAgoraConsulta">Receber pagamento agora</label>
+                            </div>
 
                             <h:panelGroup id="pnlPagamentoConsulta" style="#{not vendaPedidoController.pagarAgora ? 'display:none;' : ''}">
-                                <div style="margin-top: 0.75rem;">
+                                <div class="info-item" style="margin-top: 0.75rem;">
                                     <label for="formaPagamentoConsulta">Forma de Pagamento: *</label>
                                     <p:selectOneMenu id="formaPagamentoConsulta" value="#{vendaPedidoController.formaPagamento}" required="#{vendaPedidoController.pagarAgora}">
                                         <p:ajax event="change" update="btnConfirmarFechar" />

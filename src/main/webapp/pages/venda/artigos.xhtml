@@ -82,7 +82,7 @@
                                     action="#{vendaArtigoController.prepararEdicao(artigo)}"
                                     update=":dlgArtigoForm:dlgArtigoContent"
                                     oncomplete="PF('dlgArtigo').show()" />
-                                <div style="font-size: 0.85rem; color: #666; margin-top: 0.25rem;">
+                                <div class="artigo-desc">
                                     <h:outputText value="#{artigo.descricao}"
                                         rendered="#{not empty artigo.descricao and fn:length(artigo.descricao) le 50}" />
                                     <h:outputText value="#{fn:substring(artigo.descricao, 0, 50)}..."
@@ -258,12 +258,12 @@
                             </p:tab>
                         </p:tabView>
 
-                        <div style="padding: 1rem; text-align: right; border-top: 1px solid #dee2e6; margin-top: 1rem;">
+                        <div class="dialog-footer-actions" style="padding: 1rem; border-top: 1px solid var(--sm-border);">
                             <p:commandButton value="Salvar" icon="pi pi-check"
                                 actionListener="#{vendaArtigoController.salvar}"
                                 update="dlgArtigoContent :artigosForm:artigosTable :artigosForm:messages"
                                 oncomplete="if (!args.validationFailed) PF('dlgArtigo').hide();"
-                                styleClass="action-button-primary" style="margin-right: 0.5rem;" />
+                                styleClass="action-button-primary" />
                             
                             <p:commandButton value="Cancelar" icon="pi pi-times"
                                 onclick="PF('dlgArtigo').hide(); return false;"

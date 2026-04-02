@@ -65,6 +65,9 @@ public class VendaPedidoController implements Serializable {
     @Inject
     private PessoaService pessoaService;
     
+    @Inject
+    private LoginController loginController;
+    
     // Listas
     private List<VendaPedido> pedidos;
     private List<VendaPedido> pedidosAbertos;
@@ -187,7 +190,8 @@ public class VendaPedidoController implements Serializable {
                 pedidoAtual = optExistente.get();
                 addInfoMessage("Pedido aberto encontrado e reutilizado. Número: " + pedidoAtual.getNumeroPedido());
             } else {
-                pedidoAtual = pedidoService.iniciarNovaVenda(encontroSelecionadoId, trabalhadorSelecionadoId);
+                pedidoAtual = pedidoService.iniciarNovaVenda(encontroSelecionadoId, trabalhadorSelecionadoId, 
+                        loginController != null ? loginController.getUsuarioLogado() : null);
                 addInfoMessage("Nova venda iniciada! Número: " + pedidoAtual.getNumeroPedido());
             }
             carregarPedidosAbertosPorEncontro();
@@ -735,7 +739,17 @@ public class VendaPedidoController implements Serializable {
             return "";
         }
     }
-    
+
+    /**
+     * Retorna o nome do usuário logado no sistema
+     */
+    public String getNomeUsuarioLogado() {
+        if (loginController != null && loginController.getUsuarioLogado() != null) {
+            return loginController.getUsuarioLogado().getNome();
+        }
+        return "";
+    }
+
     public Long getArtigoSelecionadoId() { return artigoSelecionadoId; }
     public void setArtigoSelecionadoId(Long artigoSelecionadoId) { this.artigoSelecionadoId = artigoSelecionadoId; }
     

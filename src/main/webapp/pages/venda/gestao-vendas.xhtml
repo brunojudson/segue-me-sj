@@ -22,6 +22,12 @@
                         </h1>
                         <p class="page-subtitle">Realize vendas, gerencie pedidos e controle pagamentos</p>
                     </div>
+                    <div class="page-header-actions">
+                        <div class="venda-operador-badge">
+                            <i class="pi pi-user"></i>
+                            <span>Operador: <strong>#{vendaPedidoController.nomeUsuarioLogado}</strong></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -37,7 +43,7 @@
                         
                         <!-- Modo: Iniciar Nova Venda -->
                         <h:panelGroup id="pnlIniciarVenda" rendered="#{vendaPedidoController.pedidoAtual == null}">
-                            <div class="info-grid">
+                            <div class="venda-inline-form">
                                 <div class="info-item">
                                     <label for="encontro">Encontro: *</label>
                                     <p:selectOneMenu id="encontro" value="#{vendaPedidoController.encontroSelecionadoId}" 
@@ -50,14 +56,10 @@
                                             process="@this" 
                                             update="pnlNovaVenda pnlContasAbertas pnlItens pnlAguardandoPagamento trabalhador mensagensEncontro" />
                                     </p:selectOneMenu>
-                                    <h:panelGroup rendered="#{not empty facesContext.maximumSeverity}">
-                                        <p:messages id="mensagensEncontro" for="encontro" showDetail="true" closable="true" />
-                                    </h:panelGroup>
-                                    <div style="margin-top:0.4rem; font-size:0.95rem; color:var(--text-muted);">Status: <strong>#{vendaPedidoController.encontroAtivo ? 'ATIVO' : 'Inativo'}</strong></div>
                                 </div>
 
                                 <div class="info-item">
-                                    <label for="trabalhador">Trabalhador Responsável: *</label>
+                                    <label for="trabalhador">Trabalhador: *</label>
                                     <p:selectOneMenu id="trabalhador" value="#{vendaPedidoController.trabalhadorSelecionadoId}" 
                                                      filter="true" filterMatchMode="contains">
                                         <f:selectItem itemLabel="-- Selecione o trabalhador --" itemValue="#{null}" noSelectionOption="true"/>
@@ -67,39 +69,43 @@
                                                        itemValue="#{trab.id}"/>
                                             <p:ajax update="pnlEquipeSelecionada mensagensTrabalhador" process="@this" />
                                     </p:selectOneMenu>
-                                                <h:panelGroup id="pnlEquipeSelecionada" rendered="#{not empty vendaPedidoController.equipeNomeSelecionada}">
-                                                    <small style="display:block; margin-top:0.35rem; color:var(--text-muted);">Equipe: <strong>#{vendaPedidoController.equipeNomeSelecionada}</strong></small>
-                                                </h:panelGroup>
-                                    <p:messages id="mensagensTrabalhador" for="trabalhador" showDetail="true" closable="true" />
+                                </div>
 
-                                    <h:panelGroup rendered="#{empty vendaPedidoController.trabalhadores and not empty vendaPedidoController.encontroSelecionadoId}">
-                                        <small style="display:block; margin-top:0.35rem; color:var(--warn);">Nenhum trabalhador cadastrado para este encontro.</small>
-                                        <div style="margin-top:0.25rem;">
-                                            <h:link outcome="/pages/trabalhador/cadastro.xhtml">Cadastrar Trabalhador</h:link>
-                                                &#160;|&#160;
-                                                <h:link outcome="/pages/encontro/cadastro.xhtml">Cadastrar Encontro</h:link>
-                                        </div>
-                                    </h:panelGroup>
-
-                                    <h:outputScript target="body">
-                                        $(function(){
-                                            var el = document.getElementById('trabalhador_input');
-                                            if (el) { try { el.focus(); } catch(e) { /* ignored */ } }
-                                        });
-                                    </h:outputScript>
+                                <div class="venda-inline-actions">
+                                    <p:commandButton value="Iniciar Venda (Alt+N)" icon="pi pi-plus" 
+                                                     actionListener="#{vendaPedidoController.iniciarNovaVenda}"
+                                                     process="@this trabalhador"
+                                                     update="growl mensagensTrabalhador pnlNovaVenda pnlContasAbertas pnlAdicionarItem"
+                                                     ajax="true"
+                                                     oncomplete="if (!args || !args.validationFailed) {setTimeout(function(){var el=document.getElementById('artigo_input'); if(el) el.focus();},50);}"
+                                                     styleClass="action-button-primary"
+                                                     accesskey="N" />
                                 </div>
                             </div>
-                            
-                            <div class="form-buttons" style="margin-top: 1rem;">
-                                <p:commandButton value="Iniciar Nova Venda (Alt+N)" icon="pi pi-plus" 
-                                                 actionListener="#{vendaPedidoController.iniciarNovaVenda}"
-                                                 process="@this trabalhador"
-                                                     update="growl mensagensTrabalhador pnlNovaVenda pnlContasAbertas pnlAdicionarItem"
-                                                 ajax="true"
-                                                 oncomplete="if (!args || !args.validationFailed) {setTimeout(function(){var el=document.getElementById('artigo_input'); if(el) el.focus();},50);}"
-                                                 styleClass="action-button-primary"
-                                                 accesskey="N" />
+                            <div class="venda-inline-hint">
+                                <h:panelGroup rendered="#{not empty facesContext.maximumSeverity}">
+                                    <p:messages id="mensagensEncontro" for="encontro" showDetail="true" closable="true" />
+                                </h:panelGroup>
+                                <span class="venda-status-hint">Status: <strong>#{vendaPedidoController.encontroAtivo ? 'ATIVO' : 'Inativo'}</strong></span>
+                                <h:panelGroup id="pnlEquipeSelecionada" rendered="#{not empty vendaPedidoController.equipeNomeSelecionada}">
+                                    <small class="venda-equipe-hint">Equipe: <strong>#{vendaPedidoController.equipeNomeSelecionada}</strong></small>
+                                </h:panelGroup>
+                                <p:messages id="mensagensTrabalhador" for="trabalhador" showDetail="true" closable="true" />
+                                <h:panelGroup rendered="#{empty vendaPedidoController.trabalhadores and not empty vendaPedidoController.encontroSelecionadoId}">
+                                    <small class="venda-warn-text">Nenhum trabalhador cadastrado para este encontro.</small>
+                                    <div class="venda-link-helper">
+                                        <h:link outcome="/pages/trabalhador/cadastro.xhtml">Cadastrar Trabalhador</h:link>
+                                        <span class="sep">|</span>
+                                        <h:link outcome="/pages/encontro/cadastro.xhtml">Cadastrar Encontro</h:link>
+                                    </div>
+                                </h:panelGroup>
                             </div>
+                            <h:outputScript target="body">
+                                $(function(){
+                                    var el = document.getElementById('trabalhador_input');
+                                    if (el) { try { el.focus(); } catch(e) { /* ignored */ } }
+                                });
+                            </h:outputScript>
                         </h:panelGroup>
                         
                         <!-- Modo: Adicionar Item -->
@@ -115,7 +121,15 @@
                                 </div>
                                 <div class="pedido-info-item">
                                     <strong>Equipe:</strong>
-                                    <span class="team-name" style="color:var(--text-muted);">#{vendaPedidoController.equipeNomePedidoAtual}</span>
+                                    <span class="team-name-muted">#{vendaPedidoController.equipeNomePedidoAtual}</span>
+                                </div>
+                                <div class="pedido-info-item">
+                                    <strong>Registrado por:</strong>
+                                    <h:outputText value="#{vendaPedidoController.pedidoAtual.usuarioRegistro.nome}"
+                                                  rendered="#{vendaPedidoController.pedidoAtual.usuarioRegistro != null}"
+                                                  styleClass="venda-operador-name" />
+                                    <h:outputText value="-" rendered="#{vendaPedidoController.pedidoAtual.usuarioRegistro == null}"
+                                                  styleClass="table-text-muted" />
                                 </div>
                                 <div class="pedido-info-total">
                                     <strong>Total:</strong> 
@@ -127,8 +141,8 @@
                                 </div>
                             </div>
 
-                            <div class="info-grid">
-                                <div class="info-item">
+                            <div class="venda-inline-form">
+                                <div class="info-item venda-field-lg">
                                     <label for="artigo">Artigo: *</label>
                                     <p:selectOneMenu id="artigo" value="#{vendaPedidoController.artigoSelecionadoId}" 
                                                      filter="true" filterMatchMode="contains" required="true">
@@ -140,30 +154,29 @@
                                     </p:selectOneMenu>
                                 </div>
                                 
-                                <div class="info-item">
-                                    <label for="quantidade">Quantidade: *</label>
+                                <div class="info-item venda-field-sm">
+                                    <label for="quantidade">Qtd: *</label>
                                     <p:inputNumber id="quantidade" value="#{vendaPedidoController.quantidadeItem}" 
                                                    decimalPlaces="0" minValue="1" required="true" />
                                 </div>
                                 
-                                <div class="info-item">
-                                    <label for="valorUnitario">Valor Unitário: *</label>
+                                <div class="info-item venda-field-md">
+                                    <label for="valorUnitario">Valor Unit.: *</label>
                                     <p:inputNumber id="valorUnitario" value="#{vendaPedidoController.valorUnitarioItem}" 
                                                    mode="currency" currencySymbol="R$ " required="true" />
                                 </div>
-                            </div>
-                            
-                            <div class="form-buttons">
-                                <p:commandButton value="Adicionar Item (Alt+I)" icon="pi pi-plus-circle" 
-                                                 actionListener="#{vendaPedidoController.adicionarItem}"
-                                                 process="@this artigo quantidade valorUnitario"
-                                                 update="@form" styleClass="action-button-success"
-                                                 accesskey="I" />
-                                
-                                <p:commandButton value="Cancelar / Nova Venda" icon="pi pi-times" 
-                                                 actionListener="#{vendaPedidoController.limpar}"
-                                                 process="@this"
-                                                 update="@form" styleClass="action-button-secondary" />
+
+                                <div class="venda-inline-actions">
+                                    <p:commandButton value="Adicionar (Alt+I)" icon="pi pi-plus-circle" 
+                                                     actionListener="#{vendaPedidoController.adicionarItem}"
+                                                     process="@this artigo quantidade valorUnitario"
+                                                     update="@form" styleClass="action-button-success"
+                                                     accesskey="I" />
+                                    <p:commandButton value="Cancelar" icon="pi pi-times" 
+                                                     actionListener="#{vendaPedidoController.limpar}"
+                                                     process="@this"
+                                                     update="@form" styleClass="action-button-secondary" />
+                                </div>
                             </div>
                         </h:panelGroup>
                     </p:fieldset>
@@ -380,19 +393,28 @@
                 <p:dialog id="dlgFecharPedido" header="Fechar Pedido" widgetVar="dlgFecharPedido" 
                           styleClass="modern-dialog" modal="true" responsive="true" width="550" closeOnEscape="true">
                     
-                    <div style="padding: 1rem 0;">
+                    <div class="venda-dialog-content">
                         <div class="info-grid" style="grid-template-columns: 1fr;">
-                            <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
-                                <div style="display: grid; grid-template-columns: 150px 1fr; gap: 0.75rem;">
-                                    <strong>Número do Pedido:</strong>
-                                    <span class="id-badge" style="justify-self: start;">#{vendaPedidoController.pedidoAtual.numeroPedido}</span>
+                            <div class="venda-summary-card">
+                                <div class="venda-summary-grid">
+                                    <strong>Pedido:</strong>
+                                    <span class="id-badge">#{vendaPedidoController.pedidoAtual.numeroPedido}</span>
                                     
                                     <strong>Trabalhador:</strong>
                                     <span>#{vendaPedidoController.pedidoAtual.trabalhadorResponsavel.pessoa.nome}</span>
-                                    <div style="grid-column: 2 / 3; margin-top: 0.25rem; color:var(--text-muted);">Equipe: <strong>#{vendaPedidoController.equipeNomePedidoAtual}</strong></div>
+                                    
+                                    <strong>Equipe:</strong>
+                                    <span class="team-name-muted">#{vendaPedidoController.equipeNomePedidoAtual}</span>
+                                    
+                                    <strong>Registrado por:</strong>
+                                    <span>
+                                        <h:outputText value="#{vendaPedidoController.pedidoAtual.usuarioRegistro.nome}"
+                                                      rendered="#{vendaPedidoController.pedidoAtual.usuarioRegistro != null}" />
+                                        <h:outputText value="-" rendered="#{vendaPedidoController.pedidoAtual.usuarioRegistro == null}" styleClass="table-text-muted" />
+                                    </span>
                                     
                                     <strong>Valor Total:</strong>
-                                    <span class="price-value" style="font-size: 1.3rem;">
+                                    <span class="price-value">
                                         <h:outputText value="#{vendaPedidoController.pedidoAtual.valorTotal}">
                                             <f:convertNumber type="currency" currencySymbol="R$ " />
                                         </h:outputText>
@@ -402,17 +424,15 @@
                             
                             <p:separator />
                             
-                            <div class="info-item" style="padding: 0.5rem 0;">
-                                        <div class="checkbox-container">
-                                            <p:selectBooleanCheckbox id="pagarAgora" value="#{vendaPedidoController.pagarAgora}">
-                                                <p:ajax update="pnlPagamento" />
-                                            </p:selectBooleanCheckbox>
-                                            <label for="pagarAgora" class="checkbox-label">Receber pagamento agora</label>
-                                        </div>
+                            <div class="venda-checkbox-row">
+                                <p:selectBooleanCheckbox id="pagarAgora" value="#{vendaPedidoController.pagarAgora}">
+                                    <p:ajax update="pnlPagamento" />
+                                </p:selectBooleanCheckbox>
+                                <label for="pagarAgora">Receber pagamento agora</label>
                             </div>
                             
                             <h:panelGroup id="pnlPagamento" style="#{not vendaPedidoController.pagarAgora ? 'display:none;' : ''}">
-                                <div class="info-item" style="margin-top: 1rem;">
+                                <div class="info-item" style="margin-top: 0.75rem;">
                                     <label for="formaPagamento">Forma de Pagamento: *</label>
                                     <p:selectOneMenu id="formaPagamento" value="#{vendaPedidoController.formaPagamento}" required="#{vendaPedidoController.pagarAgora}">
                                         <f:selectItem itemLabel="-- Selecione a forma de pagamento --" itemValue="#{null}" />
@@ -428,7 +448,7 @@
                     </div>
                     
                     <f:facet name="footer">
-                        <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                        <div class="dialog-footer-actions">
                             <p:commandButton value="Confirmar" icon="pi pi-check" 
                                              actionListener="#{vendaPedidoController.fecharPedido}"
                                              process="@this pagarAgora formaPagamento"
@@ -447,18 +467,18 @@
                 <p:dialog id="dlgMarcarPago" header="Confirmar Pagamento" widgetVar="dlgMarcarPago" 
                           styleClass="modern-dialog" modal="true" responsive="true" width="550" closeOnEscape="true">
                     
-                    <div style="padding: 1rem 0;">
+                    <div class="venda-dialog-content">
                         <div class="info-grid" style="grid-template-columns: 1fr;">
-                            <div style="background: #d4edda; border-left: 4px solid #28a745; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
-                                <div style="display: grid; grid-template-columns: 150px 1fr; gap: 0.75rem;">
+                            <div class="venda-summary-card-success">
+                                <div class="venda-summary-grid">
                                     <strong>Pedido:</strong>
-                                    <span class="id-badge" style="justify-self: start;">#{vendaPedidoController.pedidoParaPagamento.numeroPedido}</span>
+                                    <span class="id-badge">#{vendaPedidoController.pedidoParaPagamento.numeroPedido}</span>
                                     
                                     <strong>Trabalhador:</strong>
                                     <span>#{vendaPedidoController.pedidoParaPagamento.trabalhadorResponsavel.pessoa.nome}</span>
                                     
                                     <strong>Valor Total:</strong>
-                                    <span class="price-value" style="font-size: 1.3rem;">
+                                    <span class="price-value">
                                         <h:outputText value="#{vendaPedidoController.pedidoParaPagamento.valorTotal}">
                                             <f:convertNumber type="currency" currencySymbol="R$ " />
                                         </h:outputText>
@@ -490,7 +510,7 @@
                     </div>
                     
                     <f:facet name="footer">
-                        <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                        <div class="dialog-footer-actions">
                             <p:commandButton value="Confirmar Pagamento" icon="pi pi-check" 
                                              actionListener="#{vendaPedidoController.marcarComoPago}"
                                              process="@this formaPagamentoPago valorPagamento"

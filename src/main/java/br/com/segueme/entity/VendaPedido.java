@@ -85,6 +85,10 @@ public class VendaPedido implements Serializable {
     @JoinColumn(name = "fechado_por_trabalhador_id")
     private Trabalhador fechadoPorTrabalhador;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_registro_id")
+    private Usuario usuarioRegistro;
+
     @Size(max = 1000, message = "Observações devem ter no máximo 1000 caracteres")
     @Column(name = "observacoes", length = 1000)
     private String observacoes;
@@ -346,6 +350,14 @@ public class VendaPedido implements Serializable {
 
     public void setFechadoPorTrabalhador(Trabalhador fechadoPorTrabalhador) {
         this.fechadoPorTrabalhador = fechadoPorTrabalhador;
+    }
+
+    public Usuario getUsuarioRegistro() {
+        return usuarioRegistro;
+    }
+
+    public void setUsuarioRegistro(Usuario usuarioRegistro) {
+        this.usuarioRegistro = usuarioRegistro;
     }
 
     public String getObservacoes() {

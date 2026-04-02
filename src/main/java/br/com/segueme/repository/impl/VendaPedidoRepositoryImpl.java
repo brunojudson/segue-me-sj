@@ -43,6 +43,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                     "LEFT JOIN FETCH tr.pessoa " +
                     "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                     "LEFT JOIN FETCH ft.pessoa " +
+                    "LEFT JOIN FETCH p.usuarioRegistro " +
                     "LEFT JOIN FETCH p.itens i " +
                     "LEFT JOIN FETCH i.artigo " +
                     "WHERE p.id = :id", 
@@ -65,6 +66,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                     "LEFT JOIN FETCH tr.pessoa " +
                     "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                     "LEFT JOIN FETCH ft.pessoa " +
+                    "LEFT JOIN FETCH p.usuarioRegistro " +
                     "WHERE p.numeroPedido = :numeroPedido", 
                     VendaPedido.class)
                     .setParameter("numeroPedido", numeroPedido)
@@ -84,6 +86,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                 "LEFT JOIN FETCH tr.pessoa " +
                 "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                 "LEFT JOIN FETCH ft.pessoa " +
+                "LEFT JOIN FETCH p.usuarioRegistro " +
                 "LEFT JOIN FETCH p.itens i " +
                 "LEFT JOIN FETCH i.artigo " +
                 "ORDER BY p.dataAbertura DESC", 
@@ -100,6 +103,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                 "LEFT JOIN FETCH tr.pessoa " +
                 "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                 "LEFT JOIN FETCH ft.pessoa " +
+                "LEFT JOIN FETCH p.usuarioRegistro " +
                 "LEFT JOIN FETCH p.itens i " +
                 "LEFT JOIN FETCH i.artigo " +
                 "WHERE p.encontro.id = :encontroId " +
@@ -116,6 +120,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                 "LEFT JOIN FETCH p.encontro " +
                 "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
                 "LEFT JOIN FETCH tr.pessoa " +
+                "LEFT JOIN FETCH p.usuarioRegistro " +
                 "LEFT JOIN FETCH p.itens i " +
                 "LEFT JOIN FETCH i.artigo " +
                 "WHERE p.trabalhadorResponsavel.id = :trabalhadorId " +
@@ -134,6 +139,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                 "LEFT JOIN FETCH tr.pessoa " +
                 "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                 "LEFT JOIN FETCH ft.pessoa " +
+                "LEFT JOIN FETCH p.usuarioRegistro " +
                 "LEFT JOIN FETCH p.itens i " +
                 "LEFT JOIN FETCH i.artigo " +
                 "WHERE p.status = :status " +
@@ -151,6 +157,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
             "LEFT JOIN FETCH tr.pessoa " +
             "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
             "LEFT JOIN FETCH ft.pessoa " +
+            "LEFT JOIN FETCH p.usuarioRegistro " +
             "LEFT JOIN FETCH p.itens i " +
             "LEFT JOIN FETCH i.artigo " +
             "WHERE p.encontro.id = :encontroId " +
@@ -171,6 +178,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
             "LEFT JOIN FETCH tr.pessoa " +
             "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
             "LEFT JOIN FETCH ft.pessoa " +
+            "LEFT JOIN FETCH p.usuarioRegistro " +
             "LEFT JOIN FETCH p.itens i " +
             "LEFT JOIN FETCH i.artigo " +
             "WHERE p.encontro.id = :encontroId " +
@@ -191,6 +199,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                 "LEFT JOIN FETCH tr.pessoa " +
                 "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                 "LEFT JOIN FETCH ft.pessoa " +
+                "LEFT JOIN FETCH p.usuarioRegistro " +
                 "LEFT JOIN FETCH p.itens i " +
                 "LEFT JOIN FETCH i.artigo " +
                 "WHERE p.encontro.id = :encontroId " +
@@ -211,6 +220,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                 "LEFT JOIN FETCH tr.pessoa " +
                 "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                 "LEFT JOIN FETCH ft.pessoa " +
+                "LEFT JOIN FETCH p.usuarioRegistro " +
                 "LEFT JOIN FETCH p.itens i " +
                 "LEFT JOIN FETCH i.artigo " +
                 "WHERE p.dataAbertura BETWEEN :dataInicio AND :dataFim " +
@@ -230,6 +240,7 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                 "LEFT JOIN FETCH tr.pessoa " +
                 "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                 "LEFT JOIN FETCH ft.pessoa " +
+                "LEFT JOIN FETCH p.usuarioRegistro " +
                 "LEFT JOIN FETCH p.itens i " +
                 "LEFT JOIN FETCH i.artigo " +
                 "LEFT JOIN p.pessoasAssociadas pp " +
