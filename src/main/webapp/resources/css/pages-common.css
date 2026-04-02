@@ -3798,6 +3798,9 @@ body.dark-mode .categoria-tag {
 }
 
 .detalhes-pessoa-dialog .ui-dialog {
+    width: 700px !important;
+    min-width: 600px !important;
+    max-width: 90vw !important;
     border-radius: 12px !important;
     border: 1px solid var(--sm-border) !important;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
@@ -3814,24 +3817,105 @@ body.dark-mode .categoria-tag {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding: 1.5rem 1.5rem 1rem;
+    padding: 1.5rem 1.5rem 2rem;
     gap: 1rem;
     flex-wrap: wrap;
+    background: linear-gradient(180deg, var(--sm-surface1) 0%, transparent 100%);
+    border-bottom: 1px solid var(--sm-border);
 }
 
 .modal-pessoa-avatar-section {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
+    width: 100%;
 }
 
+/* Container das fotos do casal */
+.modal-pessoa-photos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    position: relative;
+    width: 100%;
+    padding: 1rem 0;
+}
+
+/* Ícone de união entre as fotos */
+.modal-pessoa-photos::before {
+    content: '\e933'; /* pi-heart-fill */
+    font-family: 'primeicons';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    color: var(--sm-accent);
+    background: var(--sm-bg);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 3px solid var(--sm-bg);
+    animation: heartbeat 2s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.1); }
+}
+
+/* Wrapper de cada foto */
+.photo-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+    z-index: 1;
+    min-width: 160px;
+}
+
+/* Fotos do casal */
 .modal-pessoa-foto {
-    width: 72px;
-    height: 72px;
+    width: 120px !important;
+    height: 120px !important;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid var(--sm-border);
+    border: 4px solid var(--sm-border);
     flex-shrink: 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s ease;
+}
+
+.photo-wrapper:hover .modal-pessoa-foto {
+    transform: scale(1.05);
+    border-color: var(--sm-accent);
+    box-shadow: 0 12px 32px rgba(13, 150, 104, 0.2);
+}
+
+/* Legenda das fotos */
+.photo-caption {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--sm-text);
+    text-align: center;
+    min-width: 140px;
+    max-width: 180px;
+    line-height: 1.3;
+    word-wrap: break-word;
+}
+
+/* Info principal do casal - centralizada */
+.modal-pessoa-avatar-section .modal-pessoa-info-principal {
+    text-align: center;
+    width: 100%;
 }
 
 .modal-pessoa-foto-placeholder {
@@ -3928,17 +4012,61 @@ body.dark-mode .categoria-tag {
 @media (max-width: 768px) {
     .detalhes-pessoa-dialog .ui-dialog {
         width: 95vw !important;
-        max-width: 95vw !important;
+        min-width: 420px !important;
     }
-
+    
     .modal-pessoa-header {
         flex-direction: column;
+        padding: 1rem;
     }
-
-    .modal-pessoa-actions {
+    
+    .modal-pessoa-photos {
+        flex-direction: column;
+        gap: 3rem;
+        padding: 2rem 0;
+    }
+    
+    .modal-pessoa-photos::before {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(90deg);
+    }
+    
+    .photo-wrapper {
         width: 100%;
-        justify-content: flex-end;
     }
+    
+    .modal-pessoa-foto {
+        width: 140px !important;
+        height: 140px !important;
+    }
+    
+    .photo-caption {
+        max-width: 100%;
+        font-size: 1rem;
+    }
+}
+
+/* ============================================================
+   DARK MODE - Modal de Casal
+   ============================================================ */
+body.dark-mode .modal-pessoa-photos::before,
+html.dark-mode body .modal-pessoa-photos::before {
+    background: var(--sm-surface2);
+    color: var(--sm-accent);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .modal-pessoa-foto,
+html.dark-mode body .modal-pessoa-foto {
+    border-color: var(--sm-border);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .photo-wrapper:hover .modal-pessoa-foto,
+html.dark-mode body .photo-wrapper:hover .modal-pessoa-foto {
+    border-color: var(--sm-accent);
+    box-shadow: 0 12px 32px rgba(109, 240, 200, 0.3);
 }
 
 /* ══════════════════════════════════════════════════════════════════════

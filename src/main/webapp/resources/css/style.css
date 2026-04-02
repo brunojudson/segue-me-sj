@@ -1587,6 +1587,7 @@ body.menu-open .menu-overlay {
     position: sticky;
     top: var(--header-h);
     height: calc(100vh - var(--header-h));
+    z-index: 100;
 }
 
 #content {
@@ -1599,6 +1600,7 @@ body.menu-open .menu-overlay {
 /* Conteúdo rola internamente; o body não precisa rolar ao navegar */
 #content {
     overflow-y: auto;
+    overflow-x: clip;
     height: calc(100vh - var(--header-h));
 }
 
