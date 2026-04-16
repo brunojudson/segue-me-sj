@@ -16,7 +16,7 @@
 						<i class="fas fa-heart"></i>
 					</div>
 					<div class="logo-text">
-						<span class="logo-main">Segue-me SJ</span>
+						<span class="logo-main">-</span>
 						<span class="logo-sub">Sistema de Encontros</span>
 					</div>
 				</div>
@@ -40,7 +40,10 @@
 					</div>
 					<div class="user-details">
 						<span class="user-name">#{loginController.usuarioLogado.nome}</span>
-						<span class="user-role">Usuário</span>
+						<span class="user-role">
+							<ui:repeat value="#{loginController.usuarioLogado.permissoes.toArray()}" var="p" varStatus="s">#{s.index > 0 ? ', ' : ''}#{p.nome}</ui:repeat>
+							<h:outputText value="Sem perfil" rendered="#{empty loginController.usuarioLogado.permissoes}" />
+						</span>
 					</div>
 				</div>
 				

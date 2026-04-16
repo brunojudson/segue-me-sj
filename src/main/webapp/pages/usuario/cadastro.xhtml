@@ -61,14 +61,12 @@
                                 </div>
 
                                 <div class="field-group">
-                                    <p:outputLabel for="email" value="E-mail/Login" styleClass="required-field" />
+                                    <p:outputLabel for="email" value="Usuário" styleClass="required-field" />
                                     <p:inputText id="email" value="#{usuarioController.usuario.email}"
-             s                                   required="true" 
-                                                type="email"
+                                                required="true" 
                                                 requiredMessage="O e-mail é obrigatório"
-                                                placeholder="exemplo@email.com"
                                                 maxlength="100" />
-                                    <small class="field-hint">E-mail que será usado para fazer login</small>
+                                    <small class="field-hint">Usuário que será usado para fazer login</small>
                                 </div>
                             </div>
                         </p:fieldset>
@@ -79,24 +77,24 @@
                         <p:fieldset legend="🔒 Dados de Segurança" styleClass="modern-fieldset" toggleable="true">
                             <div class="field-grid">
                                 <div class="field-group">
-                                    <p:outputLabel for="senha" value="Senha" styleClass="required-field" />
+                                    <p:outputLabel for="senha" value="Senha" styleClass="#{empty param.id ? 'required-field' : ''}" />
                                     <p:password id="senha" value="#{usuarioController.usuario.senha}"
-                                               required="true" 
+                                               required="#{empty param.id}" 
                                                requiredMessage="A senha é obrigatória"
                                                toggleMask="true" redisplay="true" match="confirma"
                                                label="Senha" 
-                                               placeholder="Digite uma senha segura"
+                                               placeholder="#{empty param.id ? 'Digite uma senha segura' : 'Deixe em branco para manter a atual'}"
                                                validatorMessage="As senhas não coincidem." />
-                                    <small class="field-hint">Mínimo 6 caracteres, combine letras e números</small>
+                                    <small class="field-hint">#{empty param.id ? 'Mínimo 6 caracteres, combine letras e números' : 'Deixe em branco para manter a senha atual'}</small>
                                 </div>
 
                                 <div class="field-group">
-                                    <p:outputLabel for="confirma" value="Confirmar Senha" styleClass="required-field" />
+                                    <p:outputLabel for="confirma" value="Confirmar Senha" styleClass="#{empty param.id ? 'required-field' : ''}" />
                                     <p:password id="confirma" value="#{usuarioController.usuario.senha}"
-                                               required="true" 
+                                               required="#{empty param.id}" 
                                                requiredMessage="A confirmação de senha é obrigatória"
                                                toggleMask="true" redisplay="true"
-                                               placeholder="Digite a senha novamente"
+                                               placeholder="#{empty param.id ? 'Digite a senha novamente' : 'Deixe em branco para manter a atual'}"
                                                label="Confirmação de Senha" />
                                     <small class="field-hint">Repita a senha digitada acima</small>
                                 </div>

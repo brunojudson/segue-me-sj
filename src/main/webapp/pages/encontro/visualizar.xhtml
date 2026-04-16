@@ -157,6 +157,56 @@
 					</f:facet>
 				</p:dialog>
 
+				<!-- Dialog dos Membros da Equipe -->
+				<p:dialog
+					header="#{encontroController.equipeSelecionada != null ? 'Membros da Equipe '.concat(encontroController.equipeSelecionada.nome) : 'Membros da Equipe'}"
+					closeOnEscape="true" widgetVar="dlgMembrosEquipe" modal="true"
+					id="dialogMembrosEquipe" resizable="false" width="600" height="500"
+					styleClass="modern-dialog">
+					<div>
+						<h:panelGroup rendered="#{not encontroController.encontro.ativo}">
+							<p style="margin-bottom:1rem; padding:0.75rem; background-color:#fff3cd; border-left:4px solid #ffc107; font-size:0.86rem;">
+								<i class="pi pi-info-circle" style="margin-right:0.5rem; color:#856404;"></i>
+								<strong style="color:#856404;">Encontro Finalizado:</strong> 
+								<span style="color:#856404;">Exibindo todos os membros que participaram desta equipe.</span>
+							</p>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{not empty encontroController.membrosDaEquipe}">
+							<p class="text-muted" style="margin-bottom:1rem; font-size:0.86rem;">
+								<i class="pi pi-info-circle" style="margin-right:0.5rem;"></i>
+								Total de #{encontroController.membrosDaEquipe.size()} membro(s)
+							</p>
+						</h:panelGroup>
+						<div class="member-list">
+							<ui:repeat value="#{encontroController.membrosDaEquipe}" var="trabalhador">
+								<div class="member-item">
+									<div class="member-avatar member-iniciais">
+										#{trabalhador.pessoa.nome.substring(0,1)}
+									</div>
+									<div class="member-info">
+										<span class="member-nome">#{trabalhador.pessoa.nome}</span>
+										<span class="member-role">
+											<h:outputText value="Coordenador da equipe" rendered="#{trabalhador.ehCoordenador}" style="color: var(--sm-accent); font-weight: 500;" />
+											<h:outputText value="Membro da equipe" rendered="#{not trabalhador.ehCoordenador}" styleClass="text-muted" />
+											<h:outputText value=" • Foi encontrista" rendered="#{trabalhador.foiEncontrista}" style="font-size: 0.85rem; margin-left: 0.25rem;" />
+										</span>
+									</div>
+								</div>
+							</ui:repeat>
+							<ui:fragment rendered="#{empty encontroController.membrosDaEquipe}">
+								<div class="empty-state">
+									<i class="pi pi-users" style="font-size:2rem; display:block; margin-bottom:0.5rem;"></i>
+									<p>Nenhum membro cadastrado nesta equipe.</p>
+								</div>
+							</ui:fragment>
+						</div>
+					</div>
+					<f:facet name="footer">
+						<p:commandButton value="Fechar" icon="pi pi-times" styleClass="ui-button-secondary"
+							onclick="PF('dlgMembrosEquipe').hide(); return false;" />
+					</f:facet>
+				</p:dialog>
+
 				<!-- Detalhes em Abas -->
 				<div class="detail-section anim-fade-in-d3">
 					<h3 class="detail-section-title"><i class="pi pi-list"></i> Detalhes do Encontro</h3>
@@ -192,7 +242,7 @@
 							<h:panelGroup rendered="#{not empty encontroController.encontro.equipes}">
 								<p class="text-muted" style="margin-bottom:1rem; font-size:0.86rem;">
 									<i class="pi pi-info-circle" style="margin-right:0.5rem;"></i>
-									Total de #{encontroController.encontro.equipes.size()} equipe(s)
+									Total de #{encontroController.encontro.equipes.size()} equipe(s) com #{encontroController.contarTotalMembrosDoEncontro()} membro(s)
 								</p>
 							</h:panelGroup>
 							<p:dataTable value="#{encontroController.encontro.equipes}" var="equipe"
@@ -202,13 +252,25 @@
 								<p:column headerText="Nome" sortBy="#{equipe.nome}">
 									<h:outputText value="#{equipe.nome}" style="font-weight:600;" />
 								</p:column>
-								<p:column headerText="Tipo" sortBy="#{equipe.tipoEquipe.nome}">
-									<h:outputText value="#{equipe.tipoEquipe.nome}" />
+								<p:column headerText="Membros" style="text-align:center; width: 100px;">
+									<span class="sm-tag sm-tag-muted" style="font-size: 0.95rem;">
+										<i class="pi pi-users" style="margin-right: 0.25rem;"></i>
+										#{encontroController.contarMembrosDaEquipe(equipe)}
+									</span>
 								</p:column>
 								<p:column headerText="Dirigente" style="text-align:center;">
 									<span class="sm-tag #{equipe.ehEquipeDirigente() ? 'sm-tag-green' : 'sm-tag-muted'}">
 										#{equipe.ehEquipeDirigente() ? 'Sim' : 'Não'}
 									</span>
+								</p:column>
+								<p:column headerText="Ações" style="text-align:center; width: 100px;">
+									<p:commandButton icon="pi pi-users" 
+										title="Ver membros"
+										styleClass="ui-button-rounded ui-button-info"
+										actionListener="#{encontroController.selecionarEquipe(equipe)}"
+										update=":visualizarForm:dialogMembrosEquipe"
+										oncomplete="PF('dlgMembrosEquipe').show()"
+										process="@this" />
 								</p:column>
 							</p:dataTable>
 						</p:tab>

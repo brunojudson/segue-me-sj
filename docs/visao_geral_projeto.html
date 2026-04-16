@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visão Geral do Projeto - Sistema Segue-me</title>
+    <style>
+        :root {
+            --primary-color: #0b5;
+            --secondary-color: #2c3e50;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 4px solid var(--primary-color);
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.8em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            font-size: 1.3em;
+            font-weight: 300;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            font-size: 2em;
+            margin-top: 50px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--border-color);
+        }
+
+        h3 {
+            color: var(--primary-color);
+            font-size: 1.5em;
+            margin-top: 35px;
+            margin-bottom: 20px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00bb55 0%, #00994a 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+            box-shadow: 0 4px 15px rgba(0,187,85,0.3);
+        }
+
+        .highlight-box h3 {
+            color: white;
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .info-card-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .info-card-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .info-card-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-item {
+            background: white;
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .feature-item h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .tech-badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+            margin: 30px 0;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 5px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--primary-color);
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 21px;
+            top: 25px;
+            width: 3px;
+            height: calc(100% + 5px);
+            background: var(--border-color);
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .timeline-title {
+            font-weight: bold;
+            color: var(--secondary-color);
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .benefit-box {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .benefit-box h4 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 50px 0;
+        }
+
+        .cta-section h2 {
+            color: white;
+            border: none;
+            margin-top: 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 35px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+
+        .cta-button:hover {
+            background: #009944;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid var(--border-color);
+            text-align: center;
+            color: #6c757d;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .cta-section {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">✝️⛪</div>
+            <h1>Sistema Segue-me</h1>
+            <p class="subtitle">Gestão Completa de Encontros de Jovens</p>
+            <p style="margin-top: 15px; color: #6c757d;">Versão 1.0.0 | Abril 2026</p>
+        </header>
+
+        <section>
+            <div class="highlight-box">
+                <h3>🎯 Missão do Sistema</h3>
+                <p style="font-size: 1.2em; line-height: 1.8;">
+                    Facilitar a organização e gestão de Encontros de Jovens através de uma plataforma 
+                    integrada, moderna e intuitiva, permitindo que coordenadores, secretários e tesoureiros 
+                    foquem no que realmente importa: a evangelização e o acolhimento dos jovens.
+                </p>
+            </div>
+        </section>
+
+        <section>
+            <h2>📊 Números do Projeto</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-card-icon">🗂️</div>
+                    <div class="info-card-title">Módulos</div>
+                    <div class="info-card-value">10+</div>
+                    <p style="margin-top: 10px; color: #6c757d;">Módulos funcionais completos</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-icon">💾</div>
+                    <div class="info-card-title">Entidades</div>
+                    <div class="info-card-value">18</div>
+                    <p style="margin-top: 10px; color: #6c757d;">Entidades de banco de dados</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-icon">📄</div>
+                    <div class="info-card-title">Telas</div>
+                    <div class="info-card-value">30+</div>
+                    <p style="margin-top: 10px; color: #6c757d;">Páginas de interface</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-icon">👥</div>
+                    <div class="info-card-title">Usuários</div>
+                    <div class="info-card-value">∞</div>
+                    <p style="margin-top: 10px; color: #6c757d;">Capacidade ilimitada</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>✨ Principais Funcionalidades</h2>
+            
+            <div class="feature-list">
+                <div class="feature-item">
+                    <h4>👤 Gestão de Pessoas</h4>
+                    <p>Cadastro completo de participantes com dados pessoais, fotos, contatos e histórico de participação.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>🎯 Gestão de Encontros</h4>
+                    <p>Criação e gerenciamento de encontros com datas, local, tema, capacidade e valores de inscrição.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>📝 Inscrições de Encontristas</h4>
+                    <p>Processamento de inscrições com controle de pagamentos, atribuição de círculos e emissão de fichas.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>👨‍👩‍👧‍👦 Organização de Equipes</h4>
+                    <p>Formação de equipes de trabalho com diferentes especialidades (cozinha, cânticos, decoração, etc.).</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>👔 Gestão de Dirigentes</h4>
+                    <p>Controle hierárquico de dirigentes com vinculação a pastas organizacionais.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>🎤 Programação de Palestras</h4>
+                    <p>Cadastro de palestras, temas e palestrantes com cronograma detalhado do encontro.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>💰 Controle Financeiro</h4>
+                    <p>Gestão completa de receitas e despesas com categorização, comprovantes e relatórios de fechamento.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>📊 Relatórios Gerenciais</h4>
+                    <p>Geração de relatórios em PDF com listas, estatísticas e informações consolidadas.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>🎫 Fichas Digitais</h4>
+                    <p>Emissão de fichas individualizadas com QR Code para identificação e acompanhamento pastoral.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>🛍️ Gestão de Vendas</h4>
+                    <p>Controle de vendas de artigos religiosos durante o encontro com pedidos e pagamentos.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>🔐 Segurança e Auditoria</h4>
+                    <p>Controle de acesso por perfis, criptografia de senhas e log de auditoria de ações críticas.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>🌐 API REST</h4>
+                    <p>Interface REST para integração com outros sistemas e aplicações mobile futuras.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>🎁 Benefícios do Sistema</h2>
+
+            <div class="benefit-box">
+                <h4>✅ Para Coordenadores</h4>
+                <ul>
+                    <li>Visão completa e em tempo real de todas as informações do encontro</li>
+                    <li>Relatórios gerenciais para tomada de decisão estratégica</li>
+                    <li>Controle de capacidade e ocupação do encontro</li>
+                    <li>História completa de todos os encontros realizados</li>
+                </ul>
+            </div>
+
+            <div class="benefit-box">
+                <h4>✅ Para Secretários</h4>
+                <ul>
+                    <li>Processo de inscrição ágil e padronizado</li>
+                    <li>Geração automática de fichas digitais com QR Code</li>
+                    <li>Organização eficiente de círculos e equipes</li>
+                    <li>Acesso rápido a informações dos encontristas</li>
+                </ul>
+            </div>
+
+            <div class="benefit-box">
+                <h4>✅ Para Tesoureiros</h4>
+                <ul>
+                    <li>Controle rigoroso de receitas e despesas</li>
+                    <li>Registro de comprovantes digitais</li>
+                    <li>Relatórios financeiros automáticos</li>
+                    <li>Transparência e prestação de contas facilitada</li>
+                </ul>
+            </div>
+
+            <div class="benefit-box">
+                <h4>✅ Para o Movimento</h4>
+                <ul>
+                    <li>Centralização de dados e padronização de processos</li>
+                    <li>Preservação do histórico e memória do movimento</li>
+                    <li>Redução de erros e retrabalho</li>
+                    <li>Facilita a passagem de gestão entre dirigentes</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>🛠️ Tecnologias Utilizadas</h2>
+            <p style="margin-bottom: 20px;">
+                O sistema foi desenvolvido com tecnologias modernas, robustas e amplamente utilizadas no mercado:
+            </p>
+            
+            <div class="tech-stack">
+                <span class="tech-badge">☕ Java 11</span>
+                <span class="tech-badge">🌐 Jakarta EE 8</span>
+                <span class="tech-badge">🎨 JSF 2.3</span>
+                <span class="tech-badge">💎 PrimeFaces 12</span>
+                <span class="tech-badge">💾 Hibernate 5.6</span>
+                <span class="tech-badge">🐘 PostgreSQL 12+</span>
+                <span class="tech-badge">🔒 BCrypt Security</span>
+                <span class="tech-badge">📊 JasperReports</span>
+                <span class="tech-badge">☁️ RESTful API</span>
+            </div>
+
+            <h3 style="margin-top: 40px;">Por que essas tecnologias?</h3>
+            <ul>
+                <li><strong>Java & Jakarta EE:</strong> Plataforma empresarial robusta, madura e com forte ecossistema</li>
+                <li><strong>JSF + PrimeFaces:</strong> Desenvolvimento rápido de interfaces ricas e responsivas</li>
+                <li><strong>Hibernate/JPA:</strong> Mapeamento objeto-relacional simplificado e produtivo</li>
+                <li><strong>PostgreSQL:</strong> Banco de dados open-source poderoso, confiável e escalável</li>
+                <li><strong>Arquitetura em Camadas:</strong> Facilita manutenção, testes e evolução do sistema</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📅 Fluxo de Uso do Sistema</h2>
+            <p style="margin-bottom: 25px;">
+                O sistema acompanha todo o ciclo de vida de um Encontro de Jovens:
+            </p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-title">1. Planejamento (60-90 dias antes)</div>
+                    <p>Criar encontro no sistema com datas, local, tema e valores. Formar equipes de trabalho e convidar trabalhadores.</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-title">2. Inscrições (30-60 dias antes)</div>
+                    <p>Receber e processar inscrições de encontristas. Registrar pagamentos e distribuir círculos.</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-title">3. Preparação (15-30 dias antes)</div>
+                    <p>Programar palestras, registrar contribuições de trabalhadores, lançar despesas preparatórias.</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-title">4. Pré-Encontro (1-2 dias antes)</div>
+                    <p>Gerar fichas digitais, imprimir materiais, conferir listas de círculos e equipes.</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-title">5. Durante o Encontro (3 dias)</div>
+                    <p>Consultar fichas, acompanhar programação, realizar vendas (se aplicável).</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-title">6. Pós-Encontro (1-2 semanas depois)</div>
+                    <p>Finalizar lançamentos financeiros, gerar relatório de fechamento, marcar encontro como concluído.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>📋 Módulos do Sistema</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Módulo</th>
+                        <th>Descrição</th>
+                        <th>Funcionalidades Principais</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Pessoas</strong></td>
+                        <td>Cadastro de pessoas físicas</td>
+                        <td>CRUD, upload de fotos, histórico</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Casais</strong></td>
+                        <td>Relacionamento entre pessoas casadas</td>
+                        <td>Vincular pessoas, foto do casal</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Encontros</strong></td>
+                        <td>Gestão de eventos/retiros</td>
+                        <td>Criar, editar, finalizar, consultar</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Encontristas</strong></td>
+                        <td>Participantes inscritos</td>
+                        <td>Inscrever, cancelar, ficha digital, círculos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Equipes</strong></td>
+                        <td>Organização de trabalhadores</td>
+                        <td>Criar equipes, adicionar trabalhadores</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dirigentes</strong></td>
+                        <td>Coordenação hierárquica</td>
+                        <td>Cadastrar dirigentes, pastas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Palestras</strong></td>
+                        <td>Programação de palestras</td>
+                        <td>Cadastrar, agendar, vincular palestrantes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contribuições</strong></td>
+                        <td>Contribuições financeiras</td>
+                        <td>Registrar pagamentos, comprovantes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Financeiro</strong></td>
+                        <td>Movimentação financeira</td>
+                        <td>Lançar receitas/despesas, categorizar</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vendas</strong></td>
+                        <td>Vendas de artigos</td>
+                        <td>Cadastrar artigos, pedidos, pagamentos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Relatórios</strong></td>
+                        <td>Consultas e relatórios</td>
+                        <td>Gerar PDF, Excel, visualizar dashboards</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Usuários</strong></td>
+                        <td>Controle de acesso</td>
+                        <td>Login, permissões, auditoria</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>🔒 Segurança e Privacidade</h2>
+            <ul>
+                <li><strong>Autenticação Segura:</strong> Senhas criptografadas com algoritmo BCrypt de alta segurança</li>
+                <li><strong>Controle de Acesso:</strong> Diferentes níveis de permissão (Administrador, Coordenador, Secretário, Tesoureiro)</li>
+                <li><strong>Auditoria Completa:</strong> Registro de todas as ações críticas com usuário, data/hora e detalhes</li>
+                <li><strong>Proteção de Dados:</strong> Dados pessoais protegidos segundo boas práticas (LGPD)</li>
+                <li><strong>Backup Automatizado:</strong> Rotinas de backup diário do banco de dados</li>
+                <li><strong>Validações Robustas:</strong> Validação client-side e server-side para prevenir erros e ataques</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📱 Interface do Usuário</h2>
+            <p style="margin-bottom: 20px;">
+                O sistema possui interface moderna, intuitiva e responsiva:
+            </p>
+            <ul>
+                <li><strong>Design Responsivo:</strong> Funciona em desktop, tablet e smartphone</li>
+                <li><strong>Componentes Ricos:</strong> Calendários, tabelas interativas, upload de arquivos, gráficos</li>
+                <li><strong>Navegação Intuitiva:</strong> Menu organizado por módulos funcionais</li>
+                <li><strong>Feedback Visual:</strong> Mensagens de sucesso/erro claras e contextualizadas</li>
+                <li><strong>Validações em Tempo Real:</strong> Campos validados durante o preenchimento</li>
+                <li><strong>Acessibilidade:</strong> Suporte a padrões de acessibilidade web</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📈 Diferenciais Competitivos</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <h4>🎯 Especializado</h4>
+                    <p>Desenvolvido especificamente para Encontros de Jovens, atendendo necessidades reais do movimento.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>💡 Completo</h4>
+                    <p>Todas as funcionalidades necessárias em um único sistema integrado.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>🔧 Personalizável</h4>
+                    <p>Arquitetura modular permite customizações e adições de funcionalidades futuras.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>📊 Transparente</h4>
+                    <p>Relatórios detalhados facilitam prestação de contas e transparência financeira.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>🚀 Performático</h4>
+                    <p>Otimizado para suportar centenas de usuários e milhares de registros.</p>
+                </div>
+
+                <div class="feature-item">
+                    <h4>🛡️ Confiável</h4>
+                    <p>Tecnologias enterprise com alta confiabilidade e suporte de longo prazo.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>🎓 Documentação Disponível</h2>
+            <p style="margin-bottom: 20px;">
+                O projeto conta com documentação técnica completa:
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Conteúdo</th>
+                        <th>Público</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>📋 Especificação de Requisitos</td>
+                        <td>Requisitos funcionais, não-funcionais, casos de uso, regras de negócio</td>
+                        <td>Gestores, Analistas, Desenvolvedores</td>
+                    </tr>
+                    <tr>
+                        <td>📊 Modelo de Dados</td>
+                        <td>Entidades, relacionamentos, constraints, índices</td>
+                        <td>DBAs, Desenvolvedores</td>
+                    </tr>
+                    <tr>
+                        <td>🏗️ Arquitetura do Sistema</td>
+                        <td>Camadas, padrões de projeto, tecnologias, fluxos</td>
+                        <td>Arquitetos, Desenvolvedores</td>
+                    </tr>
+                    <tr>
+                        <td>📖 Manual do Usuário</td>
+                        <td>Guia passo a passo para operação do sistema</td>
+                        <td>Usuários finais, Secretários</td>
+                    </tr>
+                    <tr>
+                        <td>📝 Visão Geral do Projeto</td>
+                        <td>Resumo executivo, benefícios, funcionalidades principais</td>
+                        <td>Coordenadores, Stakeholders</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>💰 Investimento e Sustentabilidade</h2>
+            <h3>Custos de Implantação:</h3>
+            <ul>
+                <li><strong>Software:</strong> Sistema desenvolvido (investimento já realizado)</li>
+                <li><strong>Infraestrutura:</strong> Servidor (cloud ou local) - a partir de R$ 50/mês</li>
+                <li><strong>Banco de Dados:</strong> PostgreSQL (gratuito, open-source)</li>
+                <li><strong>Treinamento:</strong> Capacitação de usuários (2-3 dias)</li>
+            </ul>
+
+            <h3 style="margin-top: 30px;">Custos de Manutenção:</h3>
+            <ul>
+                <li><strong>Hosting:</strong> Servidor cloud (R$ 50-200/mês dependendo do uso)</li>
+                <li><strong>Backup:</strong> Armazenamento de backups (R$ 20-50/mês)</li>
+                <li><strong>Suporte Técnico:</strong> Opcional, sob demanda</li>
+                <li><strong>Atualizações:</strong> Melhorias contínuas conforme necessidade</li>
+            </ul>
+
+            <h3 style="margin-top: 30px;">Retorno sobre Investimento:</h3>
+            <ul>
+                <li>✅ Redução de erros e retrabalho operacional</li>
+                <li>✅ Economia de tempo em processos manuais</li>
+                <li>✅ Melhoria na gestão financeira e redução de perdas</li>
+                <li>✅ Profissionalização do movimento e credibilidade institucional</li>
+                <li>✅ Escalabilidade: sistema suporta crescimento sem custos adicionais significativos</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🔮 Visão de Futuro</h2>
+            <p style="margin-bottom: 20px;">
+                O Sistema Segue-me foi projetado para evoluir junto com as necessidades do movimento:
+            </p>
+            <ul>
+                <li>📱 <strong>Aplicativo Mobile:</strong> App nativo para facilitar consultas e operações em campo</li>
+                <li>☁️ <strong>Cloud-First:</strong> Migração para plataforma cloud totalmente gerenciada</li>
+                <li>🤖 <strong>Inteligência Artificial:</strong> Sugestões automáticas de círculos, análise de dados</li>
+                <li>📊 <strong>Business Intelligence:</strong> Dashboards avançados com análise de tendências</li>
+                <li>🔗 <strong>Integrações:</strong> Conexão com plataformas de pagamento, e-mail marketing</li>
+                <li>🌐 <strong>Multi-Regional:</strong> Suporte a múltiplas comunidades e regiões</li>
+                <li>💬 <strong>Comunicação Integrada:</strong> Notificações push, WhatsApp, e-mail automático</li>
+            </ul>
+        </section>
+
+        <div class="cta-section">
+            <h2>📞 Entre em Contato</h2>
+            <p style="font-size: 1.2em; margin: 20px 0;">
+                Quer saber mais sobre o Sistema Segue-me ou agendar uma demonstração?
+            </p>
+            <p style="font-size: 1.1em; margin-bottom: 25px;">
+                Entre em contato com a equipe de desenvolvimento para discutir implantação,<br>
+                treinamento e customizações específicas para sua comunidade.
+            </p>
+            <a href="mailto:contato@segueme.com.br" class="cta-button">💌 Solicitar Demonstração</a>
+        </div>
+
+        <section style="margin-top: 50px;">
+            <h2>✝️ Compromisso com a Evangelização</h2>
+            <p style="font-size: 1.1em; line-height: 1.8; text-align: justify;">
+                O Sistema Segue-me não é apenas uma ferramenta tecnológica, mas um instrumento a serviço da 
+                evangelização. Nossa missão é facilitar o trabalho pastoral, permitindo que coordenadores, 
+                secretários e tesoureiros dediquem mais tempo ao acolhimento dos jovens e menos tempo a 
+                tarefas burocráticas. Que este sistema seja um meio para que mais jovens possam experimentar 
+                o amor de Cristo em um Encontro de Jovens transformador.
+            </p>
+            <p style="text-align: center; font-size: 1.5em; margin-top: 30px; color: var(--primary-color);">
+                <strong>"Vem e segue-me" (Mc 10,21)</strong>
+            </p>
+        </section>
+
+        <footer>
+            <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;">Sistema Segue-me - Gestão de Encontros de Jovens</p>
+            <p>Versão 1.0.0 | Abril 2026</p>
+            <p style="margin-top: 15px;">
+                Desenvolvido com ❤️ para servir ao Reino de Deus
+            </p>
+            <p style="margin-top: 10px; font-size: 0.9em; color: #999;">
+                © 2026 - Todos os direitos reservados
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

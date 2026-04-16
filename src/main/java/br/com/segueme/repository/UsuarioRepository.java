@@ -16,5 +16,7 @@ public interface UsuarioRepository {
     
     void delete(Long id);
     
+    void atualizarSenha(Long id, String senhaHash);
+    
     List<br.com.segueme.entity.Permissao> buscaPermissoes();
 }

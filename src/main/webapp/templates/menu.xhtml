@@ -23,8 +23,8 @@
 			</div>
 
 			<ul class="main-menu">
-				<!-- Home -->
-				<ui:fragment rendered="#{empty loginController or loginController.hasPermission('ADMIN') or not loginController.hasPermission('VENDA')}">
+				<!-- Home (todos exceto VENDA puro) -->
+				<ui:fragment rendered="#{empty loginController or loginController.hasPermission('ADMIN') or loginController.hasPermission('USER') or loginController.hasPermission('PROVER')}">
 				<li class="mobile-only">
 					<div class="menu-section">
 						<span class="submenu-label">
@@ -43,8 +43,8 @@
 				</li>
 				</ui:fragment>
 				
-				<!-- Pessoas -->
-				<ui:fragment rendered="#{empty loginController or loginController.hasPermission('ADMIN') or not loginController.hasPermission('VENDA')}">
+				<!-- Pessoas (ADMIN e USER) -->
+				<ui:fragment rendered="#{not empty loginController and (loginController.hasPermission('ADMIN') or loginController.hasPermission('USER'))}">
 				<li>
 					<div class="menu-section">
 						<span class="submenu-label">
@@ -75,8 +75,8 @@
 				</li>
 				</ui:fragment>
 				
-				<!-- Encontros -->
-				<ui:fragment rendered="#{empty loginController or loginController.hasPermission('ADMIN') or not loginController.hasPermission('VENDA')}">
+				<!-- Encontros (somente ADMIN) -->
+				<ui:fragment rendered="#{not empty loginController and loginController.hasPermission('ADMIN')}">
 				<li>
 					<div class="menu-section">
 						<span class="submenu-label">
@@ -102,12 +102,12 @@
 									<span>Palestras</span>
 								</h:link>
 							</li>
-							<!-- <li>
+							<li>
 								<h:link outcome="/pages/equipe/lista.xhtml" styleClass="menu-link">
 									<i class="pi pi-users"></i> 
 									<span>Equipes</span>
 								</h:link>
-							</li> -->
+							</li>
 							<li>
 								<h:link outcome="/pages/trabalhador/lista.xhtml" styleClass="menu-link">
 									<i class="pi pi-id-card"></i> 
@@ -124,9 +124,41 @@
 					</div>
 				</li>
 				</ui:fragment>
+				
+				<!-- Seguimistas e Trabalhadores (USER pode ver, mas não encontros) -->
+				<ui:fragment rendered="#{not empty loginController and loginController.hasPermission('USER') and not loginController.hasPermission('ADMIN')}">
+				<li>
+					<div class="menu-section">
+						<span class="submenu-label">
+							<i class="pi pi-calendar section-icon"></i>
+							Encontros
+						</span>
+						<ul class="submenu">
+							<li>
+								<h:link outcome="/pages/encontrista/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-user-plus"></i> 
+									<span>Seguimistas</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/palestra/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-book"></i> 
+									<span>Palestras</span>
+								</h:link>
+							</li>
+							<li>
+								<h:link outcome="/pages/trabalhador/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-id-card"></i> 
+									<span>Trabalhadores</span>
+								</h:link>
+							</li>
+						</ul>
+					</div>
+				</li>
+				</ui:fragment>
 								
-				<!-- Dirigência -->
-				<ui:fragment rendered="#{empty loginController or loginController.hasPermission('ADMIN') or not loginController.hasPermission('VENDA')}">
+				<!-- Dirigência (ADMIN e USER, mas financeiro só ADMIN) -->
+				<ui:fragment rendered="#{not empty loginController and (loginController.hasPermission('ADMIN') or loginController.hasPermission('USER'))}">
 				<li>
 					<div class="menu-section">
 						<span class="submenu-label">
@@ -152,10 +184,32 @@
 									<span>Contribuições</span>
 								</h:link>
 							</li>
+							<ui:fragment rendered="#{loginController.hasPermission('ADMIN')}">
 							<li>
 								<h:link outcome="/pages/financeiro/lista.xhtml" styleClass="menu-link">
 									<i class="pi pi-wallet"></i> 
 									<span>Gestão Financeira</span>
+								</h:link>
+							</li>
+							</ui:fragment>
+						</ul>
+					</div>
+				</li>
+				</ui:fragment>
+				
+				<!-- Contribuições (PROVER) -->
+				<ui:fragment rendered="#{not empty loginController and loginController.hasPermission('PROVER') and not loginController.hasPermission('ADMIN') and not loginController.hasPermission('USER')}">
+				<li>
+					<div class="menu-section">
+						<span class="submenu-label">
+							<i class="pi pi-star section-icon"></i>
+							Dirigência
+						</span>
+						<ul class="submenu">
+							<li>
+								<h:link outcome="/pages/contribuicao/lista.xhtml" styleClass="menu-link">
+									<i class="pi pi-money-bill"></i> 
+									<span>Contribuições</span>
 								</h:link>
 							</li>
 						</ul>
@@ -163,8 +217,8 @@
 				</li>
 				</ui:fragment>
 				
-				<!-- Vendas -->
-				<ui:fragment rendered="#{not empty loginController and (loginController.hasPermission('ADMIN') or loginController.hasPermission('VENDA'))}">
+				<!-- Vendas (ADMIN, VENDA e PROVER) -->
+				<ui:fragment rendered="#{not empty loginController and (loginController.hasPermission('ADMIN') or loginController.hasPermission('VENDA') or loginController.hasPermission('PROVER'))}">
 				<li>
 					<div class="menu-section">
 						<span class="submenu-label">
@@ -195,8 +249,8 @@
 				</li>
 				</ui:fragment>
 				
-				<!-- Relatórios -->
-				<ui:fragment rendered="#{empty loginController or loginController.hasPermission('ADMIN') or not loginController.hasPermission('VENDA')}">
+				<!-- Relatórios (ADMIN e USER) -->
+				<ui:fragment rendered="#{not empty loginController and (loginController.hasPermission('ADMIN') or loginController.hasPermission('USER'))}">
 				<li>
 					<div class="menu-section">
 						<span class="submenu-label">
@@ -258,6 +312,26 @@
 								<h:link outcome="/pages/usuario/lista.xhtml" styleClass="menu-link">
 									<i class="pi pi-lock"></i> 
 									<span>Usuários</span>
+								</h:link>
+							</li>
+						</ul>
+					</div>
+				</li>
+				</ui:fragment>
+				
+				<!-- Usuário (para não-admin) -->
+				<ui:fragment rendered="#{not empty loginController and not loginController.hasPermission('ADMIN')}">
+				<li>
+					<div class="menu-section">
+						<span class="submenu-label">
+							<i class="pi pi-user section-icon"></i>
+							Meu Perfil
+						</span>
+						<ul class="submenu">
+							<li>
+								<h:link outcome="/pages/usuario/alterar-senha.xhtml" styleClass="menu-link">
+									<i class="pi pi-lock"></i> 
+									<span>Alterar Senha</span>
 								</h:link>
 							</li>
 						</ul>

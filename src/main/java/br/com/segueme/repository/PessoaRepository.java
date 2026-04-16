@@ -31,6 +31,21 @@ public interface PessoaRepository {
     Optional<Pessoa> findById(Long id);
     
     /**
+     * Busca uma pessoa pelo ID com relacionamentos pai e mãe carregados (eager fetch).
+     * Usa LEFT JOIN FETCH para evitar LazyInitializationException.
+     * @param id ID da pessoa
+     * @return Optional contendo a pessoa com relacionamentos, se encontrada
+     */
+    Optional<Pessoa> findByIdWithParents(Long id);
+    
+    /**
+     * Busca todos os filhos de uma pessoa (pessoas que têm essa pessoa como pai ou mãe).
+     * @param pessoaId ID da pessoa para buscar filhos
+     * @return Lista de filhos (pessoas onde pai_id ou mae_id = pessoaId)
+     */
+    List<Pessoa> findFilhosByPessoaId(Long pessoaId);
+    
+    /**
      * Busca todas as pessoas cadastradas
      * @return Lista de pessoas
      */

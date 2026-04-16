@@ -12,17 +12,19 @@
 <ui:composition template="/templates/template.xhtml">
 	<ui:define name="content">
 		<div class="content-container">
-			<ui:fragment rendered="#{loginController.hasPermission('ADMIN')}">
+			<ui:fragment rendered="#{not empty loginController and loginController.usuarioLogado != null}">
 				<!-- Cabeçalho moderno da página -->
 				<div class="page-header">
 					<div class="page-header-content">
 						<div class="page-title-section">
 							<h1 class="page-title">
 								<i class="pi pi-shield page-icon"></i>
-								<span class="title-text">Administração de Usuários</span>
+								<span class="title-text">
+									#{loginController.hasPermission('ADMIN') ? 'Administração de Usuários' : 'Meu Perfil'}
+								</span>
 							</h1>
 							<p class="page-subtitle">
-								Gerencie usuários e permissões do sistema
+								#{loginController.hasPermission('ADMIN') ? 'Gerencie usuários e permissões do sistema' : 'Visualize suas informações de usuário'}
 							</p>
 						</div>
 						<div class="header-actions">
@@ -30,7 +32,14 @@
 									  outcome="/pages/usuario/cadastro.xhtml" 
 									  icon="pi pi-plus"
 									  styleClass="action-button-primary"
-									  title="Cadastrar novo usuário" />
+									  title="Cadastrar novo usuário"
+									  rendered="#{loginController.hasPermission('ADMIN')}" />
+							<p:button value="Alterar Senha"
+									  outcome="/pages/usuario/alterar-senha.xhtml" 
+									  icon="pi pi-lock"
+									  styleClass="action-button-primary"
+									  title="Alterar minha senha"
+									  rendered="#{not loginController.hasPermission('ADMIN')}" />
 						</div>
 					</div>
 				</div>
@@ -105,14 +114,16 @@
 						<p:button icon="pi pi-pencil" title="Editar"
 							ariaLabel="Editar usuário"
 							outcome="/pages/usuario/cadastro.xhtml"
-							styleClass="action-button-warn-table action-btn">
+							styleClass="action-button-warn-table action-btn"
+							rendered="#{loginController.hasPermission('ADMIN')}">
 							<f:param name="id" value="#{u.id}" />
 						</p:button>
-							<p:commandButton icon="pi pi-trash" title="Excluir"
-								ariaLabel="Excluir usuário"
-								styleClass="action-button-danger-table action-btn"
-								update="usuariosTable usuarioForm:msgs" process="@this"
-								oncomplete="PF('confirmDialog').show()" />
+						<p:commandButton icon="pi pi-trash" title="Excluir"
+							ariaLabel="Excluir usuário"
+							styleClass="action-button-danger-table action-btn"
+							update="usuariosTable usuarioForm:msgs" process="@this"
+							oncomplete="PF('confirmDialog').show()"
+							rendered="#{loginController.hasPermission('ADMIN')}" />
 						</div>
 					</p:column>
 					</p:dataTable>
@@ -135,14 +146,18 @@
 				</h:form>
 			</ui:fragment>
 
-			<ui:fragment rendered="#{not loginController.hasPermission('ADMIN')}">
+			<ui:fragment rendered="#{empty loginController or loginController.usuarioLogado == null}">
 				<div class="access-denied">
 					<div class="access-denied-content">
 						<i class="pi pi-lock access-denied-icon"></i>
 						<h2 class="access-denied-title">Acesso Negado</h2>
 						<p class="access-denied-message">
-							Você não possui permissão para acessar esta funcionalidade.
+							Você precisa estar logado para acessar esta funcionalidade.
 						</p>
+						<p:button value="Ir para Login" 
+								  outcome="/pages/login.xhtml"
+								  icon="pi pi-sign-in" 
+								  styleClass="ui-button-outlined" />
 					</div>
 				</div>
 			</ui:fragment>

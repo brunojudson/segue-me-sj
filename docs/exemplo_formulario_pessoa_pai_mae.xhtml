@@ -1,0 +1,121 @@
+<!-- 
+    Exemplo de campos a serem adicionados no formulário de cadastro de Pessoa
+    Arquivo: src/main/webapp/pages/pessoa/cadastro.xhtml
+    
+    Adicione estes campos na seção de dados familiares/filiação
+-->
+
+<!-- Seção de Relacionamento Familiar -->
+<h:panelGroup styleClass="p-col-12 p-md-12">
+    <p:fieldset legend="Relacionamento Familiar">
+        <div class="p-fluid p-formgrid p-grid">
+            
+            <!-- Seleção de Pai (se cadastrado) -->
+            <div class="p-field p-col-12 p-md-6">
+                <p:outputLabel for="pai" value="Pai (se cadastrado):" />
+                <p:selectOneMenu id="pai" 
+                                 value="#{pessoaController.pessoa.pai}"
+                                 converter="omnifaces.SelectItemsConverter"
+                                 filter="true" 
+                                 filterMatchMode="contains">
+                    <f:selectItem itemLabel="-- Selecione --" itemValue="#{null}" noSelectionOption="true"/>
+                    <f:selectItems value="#{pessoaController.pessoasDisponiveisParaPai}" 
+                                   var="p" 
+                                   itemValue="#{p}" 
+                                   itemLabel="#{p.nome}"/>
+                </p:selectOneMenu>
+                <p:message for="pai"/>
+            </div>
+
+            <!-- Campo de texto para nome do pai (caso não esteja cadastrado) -->
+            <div class="p-field p-col-12 p-md-6">
+                <p:outputLabel for="filiacaoPai" value="Nome do Pai (texto):" />
+                <p:inputText id="filiacaoPai" 
+                             value="#{pessoaController.pessoa.filiacaoPai}" 
+                             maxlength="100"/>
+                <small>Use apenas se o pai não estiver cadastrado no sistema</small>
+            </div>
+
+            <!-- Seleção de Mãe (se cadastrada) -->
+            <div class="p-field p-col-12 p-md-6">
+                <p:outputLabel for="mae" value="Mãe (se cadastrada):" />
+                <p:selectOneMenu id="mae" 
+                                 value="#{pessoaController.pessoa.mae}"
+                                 converter="omnifaces.SelectItemsConverter"
+                                 filter="true" 
+                                 filterMatchMode="contains">
+                    <f:selectItem itemLabel="-- Selecione --" itemValue="#{null}" noSelectionOption="true"/>
+                    <f:selectItems value="#{pessoaController.pessoasDisponiveisParaMae}" 
+                                   var="p" 
+                                   itemValue="#{p}" 
+                                   itemLabel="#{p.nome}"/>
+                </p:selectOneMenu>
+                <p:message for="mae"/>
+            </div>
+
+            <!-- Campo de texto para nome da mãe (caso não esteja cadastrada) -->
+            <div class="p-field p-col-12 p-md-6">
+                <p:outputLabel for="filiacaoMae" value="Nome da Mãe (texto):" />
+                <p:inputText id="filiacaoMae" 
+                             value="#{pessoaController.pessoa.filiacaoMae}" 
+                             maxlength="100"/>
+                <small>Use apenas se a mãe não estiver cadastrada no sistema</small>
+            </div>
+
+            <!-- Painel para mostrar filhos (se existirem) - apenas visualização -->
+            <div class="p-field p-col-12" rendered="#{not empty pessoaController.filhosDaPessoaAtual}">
+                <p:outputLabel value="Filhos cadastrados:" />
+                <p:dataTable value="#{pessoaController.filhosDaPessoaAtual}" 
+                             var="filho"
+                             emptyMessage="Nenhum filho cadastrado">
+                    <p:column headerText="Nome">
+                        <h:outputText value="#{filho.nome}"/>
+                    </p:column>
+                    <p:column headerText="Data de Nascimento">
+                        <h:outputText value="#{filho.dataNascimento}">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Idade">
+                        <h:outputText value="#{filho.idade}"/>
+                    </p:column>
+                </p:dataTable>
+            </div>
+
+        </div>
+    </p:fieldset>
+</h:panelGroup>
+
+<!-- 
+    OBSERVAÇÕES:
+    
+    1. Converter: O exemplo usa "omnifaces.SelectItemsConverter" que converte automaticamente
+       objetos em selectOneMenu. Se não estiver usando OmniFaces, você precisará criar um 
+       converter customizado para Pessoa.
+       
+    2. Ordem dos campos: Você pode manter os campos de texto (filiacaoPai/filiacaoMae) para
+       compatibilidade com dados antigos e casos onde o pai/mãe não está cadastrado.
+       
+    3. Validação: O sistema automaticamente usará o relacionamento de entidade (pai/mae) 
+       para validar parentesco ao adicionar trabalhadores às equipes.
+       
+    4. Se preferir usar autocomplete em vez de selectOneMenu, pode usar:
+       
+       <p:autoComplete id="pai" 
+                       value="#{pessoaController.pessoa.pai}"
+                       completeMethod="#{pessoaController.autocompletePai}"
+                       var="p"
+                       itemLabel="#{p.nome}"
+                       itemValue="#{p}"
+                       converter="omnifaces.SelectItemsConverter"
+                       forceSelection="true">
+       </p:autoComplete>
+       
+       E adicionar o método no controller:
+       
+       public List<Pessoa> autocompletePai(String query) {
+           return getPessoasDisponiveisParaPai().stream()
+               .filter(p -> p.getNome().toLowerCase().contains(query.toLowerCase()))
+               .collect(Collectors.toList());
+       }
+-->

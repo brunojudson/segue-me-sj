@@ -129,19 +129,62 @@
 						<!-- Tab: Família -->
 						<p:tab title="Família">
 							<div class="info-grid">
-								<div class="info-item">
+								<!-- Pai cadastrado (relacionamento) -->
+								<div class="info-item" rendered="#{not empty pessoaController.pessoa.pai}">
+									<label>Pai (cadastrado)</label>
+									<span style="color: #28a745; font-weight: 500;">
+										<i class="pi pi-check-circle" style="margin-right: 0.5rem;"></i>
+										<h:outputText value="#{pessoaController.pessoa.pai.nome}" />
+									</span>
+								</div>
+								
+								<!-- Pai (texto livre) - se não houver relacionamento -->
+								<div class="info-item" rendered="#{empty pessoaController.pessoa.pai}">
 									<label>Pai</label>
 									<span>
 										<h:outputText value="#{pessoaController.pessoa.filiacaoPai}" rendered="#{not empty pessoaController.pessoa.filiacaoPai}" />
 										<h:outputText value="Não informado" rendered="#{empty pessoaController.pessoa.filiacaoPai}" styleClass="empty-value" />
 									</span>
 								</div>
-								<div class="info-item">
+								
+								<!-- Mãe cadastrada (relacionamento) -->
+								<div class="info-item" rendered="#{not empty pessoaController.pessoa.mae}">
+									<label>Mãe (cadastrada)</label>
+									<span style="color: #28a745; font-weight: 500;">
+										<i class="pi pi-check-circle" style="margin-right: 0.5rem;"></i>
+										<h:outputText value="#{pessoaController.pessoa.mae.nome}" />
+									</span>
+								</div>
+								
+								<!-- Mãe (texto livre) - se não houver relacionamento -->
+								<div class="info-item" rendered="#{empty pessoaController.pessoa.mae}">
 									<label>Mãe</label>
 									<span>
 										<h:outputText value="#{pessoaController.pessoa.filiacaoMae}" rendered="#{not empty pessoaController.pessoa.filiacaoMae}" />
 										<h:outputText value="Não informado" rendered="#{empty pessoaController.pessoa.filiacaoMae}" styleClass="empty-value" />
 									</span>
+								</div>
+								
+								<!-- Exibir filhos cadastrados (se houver) -->
+								<div class="info-item" style="grid-column: 1 / -1;" rendered="#{not empty pessoaController.filhosDaPessoaAtual}">
+									<label>Filhos cadastrados no sistema</label>
+									<p:dataTable value="#{pessoaController.filhosDaPessoaAtual}" 
+									             var="filho"
+									             emptyMessage="Nenhum filho cadastrado"
+									             styleClass="modern-table"
+									             style="margin-top: 0.5rem;">
+										<p:column headerText="Nome">
+											<h:outputText value="#{filho.nome}"/>
+										</p:column>
+										<p:column headerText="Idade">
+											<h:outputText value="#{filho.idade} anos"/>
+										</p:column>
+										<p:column headerText="Data de Nascimento">
+											<h:outputText value="#{filho.dataNascimento}">
+												<f:converter converterId="localDateConverter" />
+											</h:outputText>
+										</p:column>
+									</p:dataTable>
 								</div>
 							</div>
 						</p:tab>

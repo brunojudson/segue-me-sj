@@ -15,7 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -34,9 +33,8 @@ public class Usuario implements Serializable {
     @Column(nullable = false, length = 100)
     private String nome;
 
-    @NotBlank(message = "Email é obrigatório")
-    @Email(message = "Email deve ser válido")
-    @Size(max = 100, message = "Email deve ter no máximo 100 caracteres")
+    @NotBlank(message = "Usuário é obrigatório")
+    @Size(max = 100, message = "Usuário deve ter no máximo 100 caracteres")
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 

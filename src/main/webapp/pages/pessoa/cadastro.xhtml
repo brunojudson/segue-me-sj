@@ -138,8 +138,28 @@
                 <div class="form-section">
                     <p:fieldset legend="👨‍👩‍👧‍👦 Filiação e Origem" styleClass="modern-fieldset" toggleable="true" collapsed="true">
                         <div class="field-grid">
+                            
+                            <!-- Vincular Pai (se cadastrado) -->
                             <div class="field-group">
-                                <p:outputLabel for="filiacaoPai" value="Nome do Pai" />
+                                <p:outputLabel for="pai" value="Pai (se cadastrado no sistema)" />
+                                <p:selectOneMenu id="pai" 
+                                                 value="#{pessoaController.pessoa.pai}"
+                                                 converter="omnifaces.SelectItemsConverter"
+                                                 filter="true" 
+                                                 filterMatchMode="contains"
+                                                 styleClass="modern-select">
+                                    <f:selectItem itemLabel="-- Não cadastrado ou não informado --" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItems value="#{pessoaController.pessoasDisponiveisParaPai}" 
+                                                   var="p" 
+                                                   itemValue="#{p}" 
+                                                   itemLabel="#{p.nome}"/>
+                                </p:selectOneMenu>
+                                <small class="field-hint">Selecione o pai se ele estiver cadastrado como pessoa</small>
+                            </div>
+
+                            <!-- Nome do Pai (texto livre) -->
+                            <div class="field-group">
+                                <p:outputLabel for="filiacaoPai" value="Nome do Pai (texto livre)" />
                                 <p:autoComplete id="filiacaoPai"
                                     value="#{pessoaController.pessoa.filiacaoPai}"
                                     completeMethod="#{pessoaController.autocompleteNomePessoa}"
@@ -152,10 +172,30 @@
                                     maxlength="100"
                                     minQueryLength="4"
                                     panelStyle="display:none;"/>
+                                <small class="field-hint">Use este campo se o pai não estiver cadastrado no sistema</small>
                             </div>
 
+                            <!-- Vincular Mãe (se cadastrada) -->
                             <div class="field-group">
-                                <p:outputLabel for="filiacaoMae" value="Nome da Mãe" />
+                                <p:outputLabel for="mae" value="Mãe (se cadastrada no sistema)" />
+                                <p:selectOneMenu id="mae" 
+                                                 value="#{pessoaController.pessoa.mae}"
+                                                 converter="omnifaces.SelectItemsConverter"
+                                                 filter="true" 
+                                                 filterMatchMode="contains"
+                                                 styleClass="modern-select">
+                                    <f:selectItem itemLabel="-- Não cadastrada ou não informado --" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItems value="#{pessoaController.pessoasDisponiveisParaMae}" 
+                                                   var="p" 
+                                                   itemValue="#{p}" 
+                                                   itemLabel="#{p.nome}"/>
+                                </p:selectOneMenu>
+                                <small class="field-hint">Selecione a mãe se ela estiver cadastrada como pessoa</small>
+                            </div>
+
+                            <!-- Nome da Mãe (texto livre) -->
+                            <div class="field-group">
+                                <p:outputLabel for="filiacaoMae" value="Nome da Mãe (texto livre)" />
                                 <p:autoComplete id="filiacaoMae"
                                     value="#{pessoaController.pessoa.filiacaoMae}"
                                     completeMethod="#{pessoaController.autocompleteNomePessoa}"
@@ -168,6 +208,7 @@
                                     maxlength="100"
                                     minQueryLength="4"
                                     panelStyle="display:none;"/>
+                                <small class="field-hint">Use este campo se a mãe não estiver cadastrada no sistema</small>
                             </div>
 
                             <div class="field-group">
@@ -286,6 +327,168 @@
                                 </small>
                             </div>
                         </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Seção: Transferência entre Paróquias -->
+                <div class="form-section">
+                    <p:fieldset legend="🔄 Transferência entre Paróquias" styleClass="modern-fieldset" toggleable="true" collapsed="true">
+
+                        <!-- Status atual -->
+                        <div class="field-grid" style="margin-bottom: 1.5rem;">
+                            <div class="field-group">
+                                <p:outputLabel value="Status Atual de Transferência" />
+                                <h:panelGroup rendered="#{not empty pessoaController.pessoa.id}">
+                                    <p:tag value="#{pessoaController.pessoa.statusTransferencia.descricao}"
+                                           severity="#{pessoaController.pessoa.statusTransferencia == 'TRANSFERIDO_SAIDA' ? 'danger' :
+                                                       pessoaController.pessoa.statusTransferencia == 'TRANSFERIDO_ENTRADA' ? 'warning' :
+                                                       pessoaController.pessoa.statusTransferencia == 'RETORNADO' ? 'success' : 'info'}"
+                                           styleClass="status-badge" />
+                                    <p:message for="msgTransferencia" />
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{empty pessoaController.pessoa.id}">
+                                    <small class="field-hint">Disponível após salvar o cadastro.</small>
+                                </h:panelGroup>
+                            </div>
+
+                            <div class="field-group" rendered="#{not empty pessoaController.pessoa.paroquiaOrigem}">
+                                <p:outputLabel value="Paróquia de Origem" />
+                                <p:inputText value="#{pessoaController.pessoa.paroquiaOrigem}"
+                                             readonly="true" styleClass="readonly-field" />
+                            </div>
+                        </div>
+
+                        <!-- Painel de ações — só exibido quando editando -->
+                        <h:panelGroup id="painelAcoesTransferencia"
+                                      rendered="#{not empty pessoaController.pessoa.id}">
+
+                            <p:tabView styleClass="modern-tabview">
+
+                                <!-- Aba: Registrar Saída -->
+                                <p:tab title="↗ Saída desta Paróquia"
+                                       disabled="#{!pessoaController.podeRegistrarSaida}">
+                                    <div class="field-grid" style="padding: 1rem 0;">
+                                        <div class="field-group full-width">
+                                            <p:outputLabel for="paroquiaDestino" value="Paróquia de Destino *" />
+                                            <p:inputText id="paroquiaDestino"
+                                                         value="#{pessoaController.transferenciaParoquiaDestino}"
+                                                         placeholder="Nome da paróquia para onde vai"
+                                                         maxlength="150" />
+                                        </div>
+                                        <div class="field-group full-width">
+                                            <p:outputLabel for="obsSaida" value="Observações" />
+                                            <p:inputTextarea id="obsSaida"
+                                                             value="#{pessoaController.transferenciaObservacoes}"
+                                                             rows="3" maxlength="500"
+                                                             placeholder="Motivo da transferência, informações adicionais..." />
+                                        </div>
+                                        <div class="field-group full-width">
+                                            <p:commandButton value="Registrar Saída"
+                                                             icon="pi pi-sign-out"
+                                                             styleClass="ui-button-danger"
+                                                             action="#{pessoaController.registrarSaida}"
+                                                             update="pessoaForm:painelAcoesTransferencia pessoaForm:historicoTransferenciasPanel pessoaForm:messages"
+                                                             process="pessoaForm:painelAcoesTransferencia" />
+                                        </div>
+                                    </div>
+                                </p:tab>
+
+                                <!-- Aba: Aceitar Entrada -->
+                                <p:tab title="↙ Aceitar de Outra Paróquia"
+                                       disabled="#{!pessoaController.podeRegistrarEntrada}">
+                                    <div class="field-grid" style="padding: 1rem 0;">
+                                        <div class="field-group full-width">
+                                            <p:outputLabel for="paroquiaOrigem" value="Paróquia de Origem *" />
+                                            <p:inputText id="paroquiaOrigem"
+                                                         value="#{pessoaController.transferenciaParoquiaOrigem}"
+                                                         placeholder="Nome da paróquia de onde vem"
+                                                         maxlength="150" />
+                                        </div>
+                                        <div class="field-group full-width">
+                                            <p:outputLabel for="obsEntrada" value="Observações" />
+                                            <p:inputTextarea id="obsEntrada"
+                                                             value="#{pessoaController.transferenciaObservacoes}"
+                                                             rows="3" maxlength="500"
+                                                             placeholder="Informações sobre a entrada..." />
+                                        </div>
+                                        <div class="field-group full-width">
+                                            <p:commandButton value="Registrar Entrada"
+                                                             icon="pi pi-sign-in"
+                                                             styleClass="ui-button-warning"
+                                                             action="#{pessoaController.registrarEntrada}"
+                                                             update="pessoaForm:painelAcoesTransferencia pessoaForm:historicoTransferenciasPanel pessoaForm:messages"
+                                                             process="pessoaForm:painelAcoesTransferencia" />
+                                        </div>
+                                    </div>
+                                </p:tab>
+
+                                <!-- Aba: Registrar Retorno -->
+                                <p:tab title="↩ Retorno à Origem"
+                                       disabled="#{!pessoaController.podeRegistrarRetorno}">
+                                    <div class="field-grid" style="padding: 1rem 0;">
+                                        <div class="field-group full-width">
+                                            <p:outputLabel for="obsRetorno" value="Observações" />
+                                            <p:inputTextarea id="obsRetorno"
+                                                             value="#{pessoaController.transferenciaObservacoes}"
+                                                             rows="3" maxlength="500"
+                                                             placeholder="Motivo do retorno..." />
+                                        </div>
+                                        <div class="field-group full-width">
+                                            <p:commandButton value="Registrar Retorno"
+                                                             icon="pi pi-undo"
+                                                             styleClass="ui-button-success"
+                                                             action="#{pessoaController.registrarRetorno}"
+                                                             update="pessoaForm:painelAcoesTransferencia pessoaForm:historicoTransferenciasPanel pessoaForm:messages"
+                                                             process="pessoaForm:painelAcoesTransferencia" />
+                                        </div>
+                                    </div>
+                                </p:tab>
+
+                            </p:tabView>
+
+                            <!-- Histórico de transferências -->
+                            <h:panelGroup id="historicoTransferenciasPanel" style="display:block; margin-top:1.5rem;">
+                                <h3 style="font-size:0.9rem; color:#495057; margin-bottom:0.75rem; font-weight:600;">
+                                    <i class="pi pi-history" style="margin-right:0.4rem;"></i>Histórico de Transferências
+                                </h3>
+                                <p:dataTable id="tabelaHistoricoTransferencias"
+                                             value="#{pessoaController.historicoTransferencias}"
+                                             var="trans"
+                                             styleClass="modern-datatable"
+                                             emptyMessage="Nenhuma transferência registrada"
+                                             rows="5" paginator="true"
+                                             paginatorPosition="bottom"
+                                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}">
+                                    <p:column headerText="Data" style="width:110px">
+                                        <h:outputText value="#{trans.dataSolicitacao}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column headerText="Tipo" style="width:180px">
+                                        <p:tag value="#{trans.tipoTransferencia.descricao}"
+                                               severity="#{trans.tipoTransferencia == 'TRANSFERIDO_SAIDA' ? 'danger' :
+                                                           trans.tipoTransferencia == 'TRANSFERIDO_ENTRADA' ? 'warning' :
+                                                           trans.tipoTransferencia == 'RETORNADO' ? 'success' : 'info'}" />
+                                    </p:column>
+                                    <p:column headerText="De">
+                                        <h:outputText value="#{trans.paroquiaOrigem}" />
+                                    </p:column>
+                                    <p:column headerText="Para">
+                                        <h:outputText value="#{trans.paroquiaDestino}" />
+                                    </p:column>
+                                    <p:column headerText="Observações">
+                                        <h:outputText value="#{trans.observacoes}" />
+                                    </p:column>
+                                    <p:column headerText="Registrado por" style="width:130px">
+                                        <h:outputText value="#{trans.registradoPor}" />
+                                    </p:column>
+                                </p:dataTable>
+                            </h:panelGroup>
+
+                        </h:panelGroup>
+
+                        <h:outputText id="msgTransferencia" style="display:none" />
                     </p:fieldset>
                 </div>
 

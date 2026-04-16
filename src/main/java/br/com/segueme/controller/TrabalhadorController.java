@@ -169,8 +169,8 @@ public class TrabalhadorController implements Serializable {
 	}
 
 	public void carregarEncontros() {
-		// Carrega todos encontros (ativos e inativos) conforme solicitado
-		encontros = encontroService.buscarTodos();
+		// Carrega apenas encontros ativos para evitar adicionar trabalhadores em encontros finalizados
+		encontros = encontroService.buscarAtivos();
 	}
 
 	/**
@@ -195,6 +195,125 @@ public class TrabalhadorController implements Serializable {
 		trabalhador.setDataInicio(LocalDate.now());
 	}
 
+	/**
+	 * Valida se há parentes próximos (pai, mãe, filhos ou irmãos) na equipe selecionada.
+	 * Usa os relacionamentos de entidade (pai_id, mae_id) para validação precisa.
+	 * 
+	 * @param pessoa A pessoa que será adicionada como trabalhador
+	 * @param equipeId O ID da equipe onde será adicionado
+	 * @return true se não houver conflito de parentesco, false caso contrário
+	 * @throws IllegalArgumentException se houver parente na mesma equipe
+	 */
+	private boolean validarParentescoNaEquipe(Pessoa pessoa, Long equipeId) {
+		if (pessoa == null || equipeId == null) {
+			return true;
+		}
+
+		try {
+			// Buscar o nome da equipe para usar nas mensagens
+			String nomeEquipe = equipeService.buscarPorId(equipeId)
+				.map(Equipe::getNome)
+				.orElse("equipe");
+			
+			// Recarregar a pessoa com relacionamentos pai/mãe para validação
+			Pessoa pessoaComPais = pessoaService.buscarPorIdComPais(pessoa.getId()).orElse(pessoa);
+			
+			logger.info(String.format("Validando parentesco - Pessoa ID: %d, Nome: %s, Pai ID: %s, Mãe ID: %s",
+				pessoaComPais.getId(),
+				pessoaComPais.getNome(),
+				pessoaComPais.getPai() != null ? pessoaComPais.getPai().getId() : "null",
+				pessoaComPais.getMae() != null ? pessoaComPais.getMae().getId() : "null"));
+			
+			// Buscar todos os trabalhadores ativos da equipe
+			List<Trabalhador> trabalhadoresDaEquipe = trabalhadorService.buscarPorEquipe(equipeId)
+				.stream()
+				.filter(Trabalhador::isAtivo)
+				.collect(Collectors.toList());
+
+			logger.info(String.format("Equipe ID: %d (%s) tem %d trabalhadores ativos", equipeId, nomeEquipe, trabalhadoresDaEquipe.size()));
+
+			// Verificar se há parentes próximos
+			for (Trabalhador trabalhadorExistente : trabalhadoresDaEquipe) {
+				Pessoa pessoaExistente = trabalhadorExistente.getPessoa();
+				
+				// Pular se for a mesma pessoa (caso de edição)
+				if (pessoaExistente != null && pessoaExistente.getId().equals(pessoaComPais.getId())) {
+					continue;
+				}
+
+				// Recarregar pessoa existente com relacionamentos para validação
+				Pessoa pessoaExistenteComPais = pessoaService.buscarPorIdComPais(pessoaExistente.getId()).orElse(pessoaExistente);
+
+				logger.info(String.format("  Verificando contra - Pessoa ID: %d, Nome: %s, Pai ID: %s, Mãe ID: %s",
+					pessoaExistenteComPais.getId(),
+					pessoaExistenteComPais.getNome(),
+					pessoaExistenteComPais.getPai() != null ? pessoaExistenteComPais.getPai().getId() : "null",
+					pessoaExistenteComPais.getMae() != null ? pessoaExistenteComPais.getMae().getId() : "null"));
+
+				// Usar o método da entidade Pessoa para verificar parentesco
+				if (pessoaComPais.ehParenteProximoDe(pessoaExistenteComPais)) {
+					String tipoParentesco = determinarTipoParentesco(pessoaComPais, pessoaExistenteComPais);
+					logger.warning(String.format("PARENTESCO DETECTADO! %s é %s de %s",
+						pessoaComPais.getNome(), tipoParentesco, pessoaExistenteComPais.getNome()));
+					throw new IllegalArgumentException(
+						String.format("Não é permitido adicionar %s na equipe '%s' pois %s '%s' já faz parte dela.",
+							pessoaComPais.getNome(),
+							nomeEquipe,
+							tipoParentesco,
+							pessoaExistenteComPais.getNome()));
+				}
+			}
+
+			logger.info("Validação de parentesco OK - Nenhum parente encontrado na equipe");
+			return true;
+
+		} catch (IllegalArgumentException e) {
+			throw e; // Repassa a exceção com a mensagem formatada
+		} catch (Exception e) {
+			logger.warning("Erro ao validar parentesco: " + e.getMessage());
+			e.printStackTrace();
+			// Em caso de erro na validação, permite continuar mas loga o problema
+			return true;
+		}
+	}
+
+	/**
+	 * Determina o tipo de parentesco entre duas pessoas para mensagem amigável.
+	 */
+	private String determinarTipoParentesco(Pessoa pessoa1, Pessoa pessoa2) {
+		// Pessoa2 é pai/mãe de Pessoa1
+		if (pessoa2.getId() != null && pessoa1.getPai() != null && pessoa1.getPai().getId() != null
+				&& pessoa2.getId().equals(pessoa1.getPai().getId())) {
+			return "o pai";
+		}
+		if (pessoa2.getId() != null && pessoa1.getMae() != null && pessoa1.getMae().getId() != null
+				&& pessoa2.getId().equals(pessoa1.getMae().getId())) {
+			return "a mãe";
+		}
+		
+		// Pessoa1 é pai/mãe de Pessoa2
+		if (pessoa1.getId() != null && pessoa2.getPai() != null && pessoa2.getPai().getId() != null
+				&& pessoa1.getId().equals(pessoa2.getPai().getId())) {
+			return pessoa1.getSexo() != null && pessoa1.getSexo() == 'F' ? "a filha" : "o filho";
+		}
+		if (pessoa1.getId() != null && pessoa2.getMae() != null && pessoa2.getMae().getId() != null
+				&& pessoa1.getId().equals(pessoa2.getMae().getId())) {
+			return pessoa1.getSexo() != null && pessoa1.getSexo() == 'F' ? "a filha" : "o filho";
+		}
+		
+		// São irmãos
+		if ((pessoa1.getPai() != null && pessoa1.getPai().getId() != null
+				&& pessoa2.getPai() != null && pessoa2.getPai().getId() != null
+				&& pessoa1.getPai().getId().equals(pessoa2.getPai().getId())) ||
+		    (pessoa1.getMae() != null && pessoa1.getMae().getId() != null
+				&& pessoa2.getMae() != null && pessoa2.getMae().getId() != null
+				&& pessoa1.getMae().getId().equals(pessoa2.getMae().getId()))) {
+			return pessoa2.getSexo() != null && pessoa2.getSexo() == 'F' ? "a irmã" : "o irmão";
+		}
+		
+		return "o(a) parente";
+	}
+
 	public String salvar() {
 		return salvarInterno(true);
 	}
@@ -205,6 +324,21 @@ public class TrabalhadorController implements Serializable {
 
 	private String salvarInterno(boolean redirecionarParaLista) {
 		try {
+			// Validar se o encontro está ativo (se informado)
+			if (trabalhador.getEncontro() != null && trabalhador.getEncontro().getId() != null) {
+				encontroService.buscarPorId(trabalhador.getEncontro().getId()).ifPresent(enc -> {
+					if (enc.getAtivo() != null && !enc.getAtivo()) {
+						throw new IllegalArgumentException(
+							"Não é permitido adicionar trabalhadores em encontros finalizados/inativos.");
+					}
+				});
+			}
+			
+			// Validar parentesco na equipe
+			if (trabalhador.getEquipe() != null && trabalhador.getPessoa() != null) {
+				validarParentescoNaEquipe(trabalhador.getPessoa(), trabalhador.getEquipe().getId());
+			}
+
 			// Verificar se a pessoa já foi encontrista
 			if (trabalhador.getPessoa() != null) {
 				List<Encontrista> encontristas = encontristaService.buscarPorPessoa(trabalhador.getPessoa().getId());

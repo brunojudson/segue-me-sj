@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Especificação de Requisitos - Sistema Segue-me</title>
+    <style>
+        :root {
+            --primary-color: #0b5;
+            --secondary-color: #2c3e50;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+            --border-color: #dee2e6;
+            --highlight-color: #fff3cd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        header {
+            border-bottom: 4px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .document-info {
+            background: var(--background-color);
+            padding: 15px;
+            border-left: 4px solid var(--primary-color);
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .document-info p {
+            margin: 5px 0;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h3 {
+            color: var(--primary-color);
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: var(--secondary-color);
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .toc {
+            background: var(--background-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            border: none;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc ul ul {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+
+        .toc li {
+            margin: 8px 0;
+        }
+
+        .toc a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+            color: var(--secondary-color);
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .requirement {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .requirement h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .use-case {
+            background: #f8f9fa;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .use-case h4 {
+            margin-top: 0;
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+        }
+
+        .business-rule {
+            background: var(--highlight-color);
+            border: 1px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .business-rule strong {
+            color: #856404;
+        }
+
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .entity-diagram {
+            background: white;
+            border: 2px solid var(--border-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .note {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .note strong {
+            color: #0c5460;
+        }
+
+        .priority-high {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .priority-medium {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .priority-low {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border-color);
+            text-align: center;
+            color: #6c757d;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+
+            .toc a {
+                color: black;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Especificação de Requisitos de Negócio</h1>
+            <h2 style="color: #6c757d; font-size: 1.5em; margin-top: 10px; border: none;">Sistema Segue-me para Gestão de Encontros de Jovens</h2>
+        </header>
+
+        <div class="document-info">
+            <p><strong>Versão:</strong> 1.1.0</p>
+            <p><strong>Data:</strong> 15 de Abril de 2026</p>
+            <p><strong>Status:</strong> Em Desenvolvimento</p>
+            <p><strong>Projeto:</strong> br.com.segueme:segue-me-sistema</p>
+            <p><strong>Tecnologia:</strong> Java 11, Jakarta EE 8, JSF, PrimeFaces 12, Hibernate, PostgreSQL</p>
+            <p><strong>Últimas Alterações:</strong> Adicionadas funcionalidades de transferência entre paróquias (RF007-RF009, RN005-RN010)</p>
+        </div>
+
+        <div class="toc">
+            <h2>📑 Índice</h2>
+            <ul>
+                <li><a href="#visao-geral">1. Visão Geral do Sistema</a></li>
+                <li><a href="#objetivos">2. Objetivos do Sistema</a></li>
+                <li><a href="#dominio">3. Descrição do Domínio de Negócio</a></li>
+                <li><a href="#atores">4. Atores do Sistema</a></li>
+                <li><a href="#requisitos-funcionais">5. Requisitos Funcionais</a>
+                    <ul>
+                        <li><a href="#rf-gestao-pessoas">5.1. Gestão de Pessoas e Casais</a></li>
+                        <li><a href="#rf-transferencias">5.2. Transferências entre Paróquias</a></li>
+                        <li><a href="#rf-gestao-encontros">5.3. Gestão de Encontros</a></li>
+                        <li><a href="#rf-gestao-encontristas">5.4. Gestão de Encontristas</a></li>
+                        <li><a href="#rf-gestao-equipes">5.5. Gestão de Equipes e Trabalhadores</a></li>
+                        <li><a href="#rf-gestao-dirigentes">5.6. Gestão de Dirigentes e Pastas</a></li>
+                        <li><a href="#rf-gestao-palestras">5.7. Gestão de Palestras</a></li>
+                        <li><a href="#rf-gestao-financeiro">5.8. Gestão Financeira</a></li>
+                        <li><a href="#rf-gestao-vendas">5.9. Gestão de Vendas</a></li>
+                        <li><a href="#rf-relatorios">5.10. Relatórios e Consultas</a></li>
+                        <li><a href="#rf-autenticacao">5.11. Autenticação e Autorização</a></li>
+                    </ul>
+                </li>
+                <li><a href="#requisitos-nao-funcionais">6. Requisitos Não-Funcionais</a></li>
+                <li><a href="#modelo-dados">7. Modelo de Dados</a></li>
+                <li><a href="#casos-uso">8. Casos de Uso Principais</a></li>
+                <li><a href="#regras-negocio">9. Regras de Negócio</a></li>
+                <li><a href="#fluxos-processo">10. Fluxos de Processo</a></li>
+                <li><a href="#glossario">11. Glossário</a></li>
+            </ul>
+        </div>
+
+        <section id="visao-geral">
+            <h2>1. Visão Geral do Sistema</h2>
+            <p>
+                O <strong>Sistema Segue-me</strong> é uma aplicação web desenvolvida para gerenciar de forma completa e integrada 
+                os Encontros de Jovens, movimento de evangelização católica que realiza retiros espirituais para jovens.
+            </p>
+            <p>
+                O sistema oferece funcionalidades abrangentes para registro de participantes (encontristas), organização de equipes, 
+                gestão de trabalhadores voluntários, controle financeiro de contribuições e despesas, programação de palestras, 
+                geração de relatórios gerenciais e emissão de fichas digitais para acompanhamento dos encontristas durante o evento.
+            </p>
+
+            <div class="note">
+                <strong>Nota:</strong> O termo "Segue-me" faz referência ao chamado de Jesus Cristo aos discípulos ("Segue-me e 
+                eu farei de vós pescadores de homens"), representando o convite ao jovem para seguir o caminho de Cristo através 
+                da participação no encontro de evangelização.
+            </div>
+        </section>
+
+        <section id="objetivos">
+            <h2>2. Objetivos do Sistema</h2>
+            
+            <h3>2.1. Objetivo Geral</h3>
+            <p>
+                Fornecer uma plataforma integrada e centralizada para gerenciar todos os aspectos relacionados à organização, 
+                execução e acompanhamento de Encontros de Jovens, desde o cadastro de participantes até a gestão financeira 
+                e geração de relatórios pós-evento.
+            </p>
+
+            <h3>2.2. Objetivos Específicos</h3>
+            <ul>
+                <li>Centralizar o cadastro de pessoas (encontristas, trabalhadores, palestrantes, dirigentes) em uma única base de dados;</li>
+                <li>Facilitar o processo de inscrição e acompanhamento de encontristas;</li>
+                <li>Organizar equipes de trabalho e distribuir responsabilidades entre trabalhadores;</li>
+                <li>Gerenciar a estrutura hierárquica de dirigentes através de pastas organizacionais;</li>
+                <li>Controlar contribuições financeiras dos trabalhadores e despesas do encontro;</li>
+                <li>Programar e acompanhar a execução de palestras durante o encontro;</li>
+                <li>Gerar relatórios gerenciais para tomada de decisão;</li>
+                <li>Emitir fichas digitais individualizadas para acompanhamento pastoral dos encontristas;</li>
+                <li>Permitir vendas de artigos religiosos durante o evento;</li>
+                <li>Manter histórico completo de todos os encontros realizados;</li>
+                <li>Garantir a segurança e integridade dos dados pessoais dos participantes.</li>
+            </ul>
+        </section>
+
+        <section id="dominio">
+            <h2>3. Descrição do Domínio de Negócio</h2>
+
+            <h3>3.1. Contexto do Encontro de Jovens</h3>
+            <p>
+                Os Encontros de Jovens são retiros espirituais católicos realizados periodicamente (geralmente anualmente) 
+                com duração de um final de semana (3 dias). Possuem estrutura organizada com:
+            </p>
+            <ul>
+                <li><strong>Encontristas (Seguimistas):</strong> Jovens que participam do encontro pela primeira vez ou como retornantes;</li>
+                <li><strong>Equipe de Trabalho:</strong> Voluntários que organizam e conduzem as atividades do encontro;</li>
+                <li><strong>Dirigentes:</strong> Membros responsáveis pela coordenação geral e tomada de decisões estratégicas;</li>
+                <li><strong>Palestrantes:</strong> Pessoas convidadas para ministrar palestras sobre temas de fé;</li>
+                <li><strong>Círculos:</strong> Pequenos grupos de partilha formados durante o encontro para discussão das palestras;</li>
+                <li><strong>Pastas:</strong> Divisões organizacionais que agrupam equipes com objetivos similares.</li>
+            </ul>
+
+            <h3>3.2. Ciclo de Vida do Encontro</h3>
+            <ol>
+                <li><strong>Planejamento:</strong> Definição de datas, local, tema, capacidade e valores;</li>
+                <li><strong>Formação de Equipe:</strong> Convite e organização de trabalhadores em equipes especializadas;</li>
+                <li><strong>Inscrições:</strong> Recebimento de inscrições de encontristas com pagamento;</li>
+                <li><strong>Preparação:</strong> Realização de reuniões preparatórias, ensaios e organização logística;</li>
+                <li><strong>Execução:</strong> Realização do encontro com palestras, dinâmicas, celebrações e partilhas;</li>
+                <li><strong>Encerramento:</strong> Celebração final, avaliações e fechamento financeiro;</li>
+                <li><strong>Pós-Encontro:</strong> Acompanhamento espiritual dos encontristas através de grupos de perseverança.</li>
+            </ol>
+
+            <h3>3.3. Estrutura Organizacional</h3>
+            <p>A organização típica de um Encontro de Jovens segue a seguinte hierarquia:</p>
+            <ul>
+                <li><strong>Coordenação Geral:</strong> Dirigentes responsáveis pela direção do movimento;</li>
+                <li><strong>Pastas:</strong> Divisões organizacionais (ex: Pasta de Formação, Pastoral, Logística, Financeira);</li>
+                <li><strong>Equipes:</strong> Grupos de trabalho específicos (ex: Equipe de Cozinha, Cânticos, Decoração, Secretaria);</li>
+                <li><strong>Trabalhadores:</strong> Voluntários que executam as atividades de cada equipe.</li>
+            </ul>
+        </section>
+
+        <section id="atores">
+            <h2>4. Atores do Sistema</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ator</th>
+                        <th>Descrição</th>
+                        <th>Responsabilidades</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Administrador</strong></td>
+                        <td>Usuário com permissões completas no sistema</td>
+                        <td>Gerenciar usuários, configurações, backup/restore, acesso total a todas as funcionalidades</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Coordenador</strong></td>
+                        <td>Dirigente responsável pela coordenação geral</td>
+                        <td>Criar encontros, gerenciar equipes, aprovar inscrições, visualizar relatórios gerenciais</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Secretário(a)</strong></td>
+                        <td>Responsável pela secretaria do encontro</td>
+                        <td>Cadastrar pessoas, processar inscrições, emitir fichas, gerenciar documentação</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tesoureiro(a)</strong></td>
+                        <td>Responsável pela gestão financeira</td>
+                        <td>Registrar contribuições, lançar despesas, gerar relatórios financeiros, controlar vendas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dirigente</strong></td>
+                        <td>Membro da direção do movimento</td>
+                        <td>Coordenar pastas, aprovar decisões, acompanhar execução do encontro</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Trabalhador</strong></td>
+                        <td>Voluntário que atua em equipes específicas</td>
+                        <td>Visualizar informações do encontro, consultar sua equipe, registrar contribuição</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Palestrante</strong></td>
+                        <td>Pessoa convidada para ministrar palestra</td>
+                        <td>Consultar informações sobre sua palestra (tema, horário, descrição)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="requisitos-funcionais">
+            <h2>5. Requisitos Funcionais</h2>
+
+            <section id="rf-gestao-pessoas">
+                <h3>5.1. Gestão de Pessoas e Casais</h3>
+
+                <div class="requirement">
+                    <h4>RF001 - Cadastrar Pessoa</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir o cadastro completo de pessoas físicas.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Nome completo (obrigatório, 3-100 caracteres)</li>
+                        <li>CPF (opcional, único, formato válido)</li>
+                        <li>Data de nascimento (obrigatório, data passada)</li>
+                        <li>Sexo (M/F)</li>
+                        <li>Endereço (opcional, até 200 caracteres)</li>
+                        <li>Telefone (único, formato: (00) 00000-0000)</li>
+                        <li>E-mail (opcional, formato válido)</li>
+                        <li>Escolaridade (enum: FUNDAMENTAL, MEDIO, SUPERIOR, POS_GRADUACAO)</li>
+                        <li>Sacramento (enum: BATISMO, CRISMA, EUCARISTIA)</li>
+                        <li>Observações (texto livre)</li>
+                        <li>Foto (upload de imagem)</li>
+                        <li>Status ativo/inativo</li>
+                    </ul>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF002 - Consultar Pessoa</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir consultar pessoas por diversos critérios.</p>
+                    <p><strong>Filtros:</strong> Nome, CPF, telefone, e-mail, status</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF003 - Editar Pessoa</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir editar dados de pessoas cadastradas.</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF004 - Inativar Pessoa</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir marcar pessoas como inativas (exclusão lógica).</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF005 - Cadastrar Casal</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir cadastrar casais relacionando duas pessoas.</p>
+                    <p><strong>Dados:</strong> Pessoa 1, Pessoa 2, Data de casamento, Observações, Foto do casal</p>
+                    <p><strong>Regra:</strong> A combinação (Pessoa1, Pessoa2) deve ser única</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF006 - Gestão de Fotos</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir upload, visualização e exclusão de fotos de pessoas.</p>
+                    <p><strong>Formatos:</strong> JPG, PNG, GIF (máx. 5MB)</p>
+                    <p><strong>Armazenamento:</strong> Diretório configurável via propriedade <code>caminho_fotos</code></p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+            </section>
+
+            <section id="rf-transferencias">
+                <h3>5.2. Transferências entre Paróquias</h3>
+
+                <div class="requirement">
+                    <h4>RF007 - Registrar Transferência de Saída</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir registrar a transferência de um seguidor desta paróquia para outra.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Pessoa (obrigatório, seleção de seguidor ativo)</li>
+                        <li>Paróquia de destino (obrigatório, até 150 caracteres)</li>
+                        <li>Observações (opcional, até 500 caracteres)</li>
+                        <li>Data de solicitação (auto-preenchida)</li>
+                    </ul>
+                    <p><strong>Efeitos:</strong></p>
+                    <ul>
+                        <li>Pessoa passa para status <code>TRANSFERIDO_SAIDA</code></li>
+                        <li>Pessoa é marcada como <strong>inativa</strong> automaticamente</li>
+                        <li>Registro histórico é criado na tabela <code>transferencia</code></li>
+                        <li>Seguidor transferido <strong>não pode trabalhar em encontros</strong> desta paróquia</li>
+                    </ul>
+                    <p><strong>Regra de Negócio:</strong> Apenas seguidores com status <code>ATIVO_ORIGEM</code> ou <code>RETORNADO</code> podem ser transferidos</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF008 - Registrar Aceitação de Entrada</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir aceitar um seguidor vindo de outra paróquia.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Pessoa (nova ou existente)</li>
+                        <li>Paróquia de origem (obrigatório, até 150 caracteres)</li>
+                        <li>Observações (opcional, até 500 caracteres)</li>
+                        <li>Data de solicitação (auto-preenchida)</li>
+                    </ul>
+                    <p><strong>Efeitos:</strong></p>
+                    <ul>
+                        <li>Pessoa passa para status <code>TRANSFERIDO_ENTRADA</code></li>
+                        <li>Pessoa é marcada como <strong>ativa</strong> automaticamente</li>
+                        <li>Campo <code>paroquiaOrigem</code> é preenchido com a paróquia de origem</li>
+                        <li>Registro histórico é criado na tabela <code>transferencia</code></li>
+                        <li>Seguidor aceito <strong>pode trabalhar em encontros</strong> desta paróquia</li>
+                    </ul>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF009 - Registrar Retorno à Origem</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir registrar o retorno de um seguidor que havia saído para outra paróquia.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Pessoa (obrigatório, apenas com status <code>TRANSFERIDO_SAIDA</code>)</li>
+                        <li>Observações (opcional, até 500 caracteres)</li>
+                        <li>Data de solicitação (auto-preenchida)</li>
+                    </ul>
+                    <p><strong>Efeitos:</strong></p>
+                    <ul>
+                        <li>Pessoa passa para status <code>RETORNADO</code></li>
+                        <li>Pessoa é marcada como <strong>ativa</strong> automaticamente</li>
+                        <li>Sistema identifica automaticamente a paróquia de onde está retornando (última transferência de saída)</li>
+                        <li>Registro histórico é criado na tabela <code>transferencia</code></li>
+                        <li>Seguidor que retornou <strong>pode trabalhar em encontros</strong> novamente</li>
+                    </ul>
+                    <p><strong>Regra de Negócio:</strong> Apenas seguidores com status <code>TRANSFERIDO_SAIDA</code> podem retornar</p>
+                    <p><strong>Algoritmo de Detecção:</strong> O sistema busca o último registro de <code>TRANSFERIDO_SAIDA</code> ordenado por data e ID, e usa o campo <code>paroquiaDestino</code> como origem do retorno</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+            </section>
+
+            <section id="rf-gestao-encontros">
+                <h3>5.3. Gestão de Encontros</h3>
+
+                <div class="requirement">
+                    <h4>RF010 - Criar Encontro</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir criar novos encontros.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Nome (obrigatório, 3-100 caracteres) - Padrão: "Segue-me YYYY"</li>
+                        <li>Tema (opcional, até 200 caracteres)</li>
+                        <li>Data de início (obrigatório)</li>
+                        <li>Data de fim (obrigatório)</li>
+                        <li>Local (obrigatório, 3-200 caracteres)</li>
+                        <li>Descrição (opcional, até 1000 caracteres)</li>
+                        <li>Capacidade máxima (número positivo)</li>
+                        <li>Valor de inscrição (decimal, ≥ 0)</li>
+                        <li>Valor de contribuição do trabalhador (decimal, ≥ 0)</li>
+                        <li>Status ativo/inativo</li>
+                    </ul>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF011 - Editar Encontro</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir editar dados de encontros cadastrados.</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF012 - Finalizar Encontro</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir marcar um encontro como finalizado.</p>
+                    <p><strong>Ação:</strong> Alterar status para inativo após conclusão do evento</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF013 - Consultar Encontros</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir listar e filtrar encontros.</p>
+                    <p><strong>Filtros:</strong> Nome, período (data início/fim), local, status</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+            </section>
+
+            <section id="rf-gestao-encontristas">
+                <h3>5.4. Gestão de Encontristas (Seguimistas)</h3>
+
+                <div class="requirement">
+                    <h4>RF020 - Inscrever Encontrista</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir inscrever encontristas em um encontro.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Pessoa (seleção de pessoa cadastrada)</li>
+                        <li>Encontro (seleção de encontro ativo)</li>
+                        <li>Data de inscrição (automática: data/hora atual)</li>
+                        <li>Forma de pagamento (enum: DINHEIRO, PIX, CARTAO, TRANSFERENCIA)</li>
+                        <li>Valor pago (decimal)</li>
+                        <li>Trabalhador responsável (opcional)</li>
+                        <li>Círculo (A, B, C, D, E, F, G, H)</li>
+                        <li>Observações</li>
+                        <li>Status ativo/inativo</li>
+                    </ul>
+                    <p><strong>Regra:</strong> Combinação (Pessoa, Encontro) deve ser única</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF021 - Editar Inscrição de Encontrista</h4>
+                    <p><strong>Descrição:</strong> Permitir editar dados da inscrição de encontristas.</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF022 - Cancelar Inscrição</h4>
+                    <p><strong>Descrição:</strong> Permitir cancelar inscrição de encontrista (inativação).</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF023 - Gerar Ficha Digital</h4>
+                    <p><strong>Descrição:</strong> Gerar ficha digital individualizada para cada encontrista.</p>
+                    <p><strong>Conteúdo:</strong> Dados pessoais, foto, QR Code com token único, círculo, observações</p>
+                    <p><strong>Formato:</strong> PDF para impressão</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF024 - Consultar Encontristas</h4>
+                    <p><strong>Descrição:</strong> Listar e filtrar encontristas.</p>
+                    <p><strong>Filtros:</strong> Encontro, nome, círculo, status, forma de pagamento</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+            </section>
+
+            <section id="rf-gestao-equipes">
+                <h3>5.5. Gestão de Equipes e Trabalhadores</h3>
+
+                <div class="requirement">
+                    <h4>RF030 - Cadastrar Tipo de Equipe</h4>
+                    <p><strong>Descrição:</strong> Cadastrar tipos/categorias de equipes.</p>
+                    <p><strong>Exemplos:</strong> Cozinha, Cânticos, Decoração, Secretaria, Apoio, Limpeza</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF031 - Criar Equipe</h4>
+                    <p><strong>Descrição:</strong> Criar equipe de trabalho para um encontro.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Nome (obrigatório)</li>
+                        <li>Tipo de equipe</li>
+                        <li>Encontro (opcional - equipes permanentes ou específicas)</li>
+                        <li>Descrição</li>
+                        <li>Data início / Data fim</li>
+                        <li>Status ativo/inativo</li>
+                    </ul>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF032 - Cadastrar Trabalhador</h4>
+                    <p><strong>Descrição:</strong> Vincular pessoa como trabalhador de uma equipe.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Pessoa</li>
+                        <li>Equipe</li>
+                        <li>É dirigente? (boolean)</li>
+                        <li>Observações</li>
+                    </ul>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF033 - Consultar Trabalhadores por Equipe</h4>
+                    <p><strong>Descrição:</strong> Listar trabalhadores de uma equipe específica.</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF034 - Remover Trabalhador de Equipe</h4>
+                    <p><strong>Descrição:</strong> Desvincular trabalhador de uma equipe.</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+            </section>
+
+            <section id="rf-gestao-dirigentes">
+                <h3>5.6. Gestão de Dirigentes e Pastas</h3>
+
+                <div class="requirement">
+                    <h4>RF040 - Criar Pasta</h4>
+                    <p><strong>Descrição:</strong> Criar divisão organizacional (pasta) para agrupar equipes.</p>
+                    <p><strong>Dados:</strong> Nome, descrição, status ativo/inativo</p>
+                    <p><strong>Exemplos:</strong> Pasta de Formação, Pastoral, Logística, Financeira</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF041 - Cadastrar Dirigente</h4>
+                    <p><strong>Descrição:</strong> Vincular trabalhador como dirigente de uma pasta.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Trabalhador</li>
+                        <li>Pasta</li>
+                        <li>Data início</li>
+                        <li>Data fim</li>
+                        <li>Status ativo/inativo</li>
+                        <li>Observações</li>
+                    </ul>
+                    <p><strong>Regra:</strong> Combinação (Trabalhador, Pasta) deve ser única</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF042 - Consultar Dirigentes</h4>
+                    <p><strong>Descrição:</strong> Listar dirigentes ativos e inativos.</p>
+                    <p><strong>Filtros:</strong> Pasta, status, período</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+            </section>
+
+            <section id="rf-gestao-palestras">
+                <h3>5.7. Gestão de Palestras</h3>
+
+                <div class="requirement">
+                    <h4>RF050 - Cadastrar Palestra</h4>
+                    <p><strong>Descrição:</strong> Cadastrar palestra do encontro.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Título (obrigatório, até 200 caracteres)</li>
+                        <li>Tema (enum: FE, VOCACAO, FAMILIA, SERVICO, COMUNIDADE, ORACAO, SACRAMENTOS, MARIA, ESPIRITO_SANTO, TESTEMUNHO, NAMORO_CASTIDADE, OUTRO)</li>
+                        <li>Descrição (até 500 caracteres)</li>
+                        <li>Encontro</li>
+                        <li>Data/hora</li>
+                        <li>Palestrantes (lista)</li>
+                    </ul>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF051 - Cadastrar Palestrante</h4>
+                    <p><strong>Descrição:</strong> Cadastrar palestrantes que podem ministrar palestras.</p>
+                    <p><strong>Tipos:</strong></p>
+                    <ul>
+                        <li>PESSOA: palestrante individual</li>
+                        <li>CASAL: casal de palestrantes</li>
+                        <li>GRUPO: grupo de pessoas</li>
+                    </ul>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF052 - Associar Palestrante à Palestra</h4>
+                    <p><strong>Descrição:</strong> Vincular um ou mais palestrantes a uma palestra.</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF053 - Consultar Programação de Palestras</h4>
+                    <p><strong>Descrição:</strong> Visualizar programação completa de palestras do encontro.</p>
+                    <p><strong>Ordenação:</strong> Por data/hora</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+            </section>
+
+            <section id="rf-gestao-financeiro">
+                <h3>5.8. Gestão Financeira</h3>
+
+                <div class="requirement">
+                    <h4>RF060 - Registrar Contribuição de Trabalhador</h4>
+                    <p><strong>Descrição:</strong> Registrar contribuição financeira de trabalhador para o encontro.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Trabalhador</li>
+                        <li>Valor (decimal, > 0)</li>
+                        <li>Forma de pagamento (DINHEIRO, PIX, CARTAO, TRANSFERENCIA)</li>
+                        <li>Data do pagamento</li>
+                        <li>Comprovante (URL do arquivo)</li>
+                        <li>Observações</li>
+                    </ul>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF061 - Lançar Movimento Financeiro</h4>
+                    <p><strong>Descrição:</strong> Registrar receitas e despesas do encontro.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Encontro</li>
+                        <li>Tipo (ENTRADA / SAIDA)</li>
+                        <li>Categoria (ALIMENTACAO, MATERIAL, TRANSPORTE, ALUGUEL, DECORACAO, PALESTRANTE, OUTRO)</li>
+                        <li>Data do movimento</li>
+                        <li>Descrição (obrigatório)</li>
+                        <li>Valor (decimal, > 0)</li>
+                        <li>Responsável pelo lançamento</li>
+                        <li>Comprovante (URL)</li>
+                        <li>Observações</li>
+                    </ul>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF062 - Consultar Movimentação Financeira</h4>
+                    <p><strong>Descrição:</strong> Visualizar movimentações financeiras do encontro.</p>
+                    <p><strong>Filtros:</strong> Encontro, tipo, categoria, período, responsável</p>
+                    <p><strong>Totalização:</strong> Total de entradas, saídas e saldo</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF063 - Gerar Relatório de Fechamento Financeiro</h4>
+                    <p><strong>Descrição:</strong> Gerar relatório consolidado do fechamento financeiro do encontro.</p>
+                    <p><strong>Conteúdo:</strong></p>
+                    <ul>
+                        <li>Total arrecadado (inscrições + contribuições)</li>
+                        <li>Total de despesas por categoria</li>
+                        <li>Saldo final</li>
+                        <li>Detalhamento de movimentações</li>
+                    </ul>
+                    <p><strong>Formato:</strong> PDF</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+            </section>
+
+            <section id="rf-gestao-vendas">
+                <h3>5.9. Gestão de Vendas</h3>
+
+                <div class="requirement">
+                    <h4>RF070 - Cadastrar Artigo para Venda</h4>
+                    <p><strong>Descrição:</strong> Cadastrar artigos religiosos disponíveis para venda.</p>
+                    <p><strong>Dados:</strong> Nome, descrição, categoria, preço, estoque, foto, status ativo/inativo</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-low">BAIXA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF071 - Criar Pedido de Venda</h4>
+                    <p><strong>Descrição:</strong> Registrar pedido de venda de artigos.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Encontro</li>
+                        <li>Pessoas compradoras (lista)</li>
+                        <li>Itens do pedido (artigo, quantidade, preço unitário)</li>
+                        <li>Data/hora do pedido</li>
+                        <li>Forma de pagamento</li>
+                        <li>Status (PENDENTE, PAGO, CANCELADO)</li>
+                    </ul>
+                    <p><strong>Prioridade:</strong> <span class="priority-low">BAIXA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF072 - Consultar Vendas</h4>
+                    <p><strong>Descrição:</strong> Listar pedidos de venda.</p>
+                    <p><strong>Filtros:</strong> Encontro, período, status, comprador</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-low">BAIXA</span></p>
+                </div>
+            </section>
+
+            <section id="rf-relatorios">
+                <h3>5.10. Relatórios e Consultas</h3>
+
+                <div class="requirement">
+                    <h4>RF080 - Relatório de Encontristas por Encontro</h4>
+                    <p><strong>Descrição:</strong> Listar todos os encontristas de um encontro específico.</p>
+                    <p><strong>Agrupamento:</strong> Por círculo (opcional)</p>
+                    <p><strong>Formato:</strong> PDF, Excel</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF081 - Relatório de Trabalhadores por Equipe</h4>
+                    <p><strong>Descrição:</strong> Listar trabalhadores agrupados por equipe.</p>
+                    <p><strong>Formato:</strong> PDF</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF082 - Relatório de Contribuições</h4>
+                    <p><strong>Descrição:</strong> Listar contribuições de trabalhadores.</p>
+                    <p><strong>Totalizações:</strong> Por forma de pagamento, por encontro</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF083 - Dashboard Gerencial</h4>
+                    <p><strong>Descrição:</strong> Painel com indicadores do encontro.</p>
+                    <p><strong>Indicadores:</strong></p>
+                    <ul>
+                        <li>Total de inscritos vs. capacidade</li>
+                        <li>Total arrecadado (inscrições + contribuições)</li>
+                        <li>Distribuição por círculo</li>
+                        <li>Total de trabalhadores por equipe</li>
+                        <li>Saldo financeiro atual</li>
+                        <li>Gráficos de evolução</li>
+                    </ul>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF084 - Relatório de Palestras</h4>
+                    <p><strong>Descrição:</strong> Listar programação completa de palestras.</p>
+                    <p><strong>Ordenação:</strong> Cronológica</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+            </section>
+
+            <section id="rf-autenticacao">
+                <h3>5.11. Autenticação e Autorização</h3>
+
+                <div class="requirement">
+                    <h4>RF090 - Autenticar Usuário</h4>
+                    <p><strong>Descrição:</strong> Realizar login no sistema com credenciais.</p>
+                    <p><strong>Dados:</strong> Nome de usuário, senha (criptografada com BCrypt)</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF091 - Gerenciar Usuários</h4>
+                    <p><strong>Descrição:</strong> Cadastrar, editar e inativar usuários do sistema.</p>
+                    <p><strong>Dados:</strong> Nome de usuário, senha, pessoa vinculada, permissões, status ativo/inativo</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF092 - Controlar Permissões</h4>
+                    <p><strong>Descrição:</strong> Definir permissões de acesso por funcionalidade.</p>
+                    <p><strong>Níveis:</strong> Administrador, Coordenador, Secretário, Tesoureiro, Consulta</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF093 - Registrar Auditoria</h4>
+                    <p><strong>Descrição:</strong> Registrar log de auditor ia para ações críticas.</p>
+                    <p><strong>Dados:</strong> Usuário, data/hora, ação realizada, entidade afetada, detalhes</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+            </section>
+        </section>
+
+        <section id="requisitos-nao-funcionais">
+            <h2>6. Requisitos Não-Funcionais</h2>
+
+            <h3>6.1. Desempenho</h3>
+            <ul>
+                <li><strong>RNF001:</strong> O sistema deve suportar até 500 usuários concorrentes sem degradação significativa de performance.</li>
+                <li><strong>RNF002:</strong> O tempo de resposta para consultas simples não deve exceder 2 segundos.</li>
+                <li><strong>RNF003:</strong> A geração de relatórios com até 1000 registros deve ocorrer em até 10 segundos.</li>
+                <li><strong>RNF004:</strong> O upload de fotos deve ter limite de 5MB por arquivo.</li>
+            </ul>
+
+            <h3>6.2. Segurança</h3>
+            <ul>
+                <li><strong>RNF010:</strong> Senhas devem ser armazenadas utilizando hash criptográfico BCrypt.</li>
+                <li><strong>RNF011:</strong> O sistema deve implementar proteção contra SQL Injection através de consultas parametrizadas (JPA).</li>
+                <li><strong>RNF012:</strong> O sistema deve implementar proteção contra Cross-Site Scripting (XSS).</li>
+                <li><strong>RNF013:</strong> Dados sensíveis (CPF, e-mail, telefone) devem ter acesso controlado por permissões.</li>
+                <li><strong>RNF014:</strong> O sistema deve registrar tentativas de acesso não autorizado.</li>
+                <li><strong>RNF015:</strong> A comunicação entre cliente e servidor deve usar HTTPS em produção.</li>
+            </ul>
+
+            <h3>6.3. Usabilidade</h3>
+            <ul>
+                <li><strong>RNF020:</strong> A interface deve ser intuitiva e responsiva (compatível com desktop, tablet e smartphone).</li>
+                <li><strong>RNF021:</strong> O sistema deve fornecer mensagens de erro claras e orientações para correção.</li>
+                <li><strong>RNF022:</strong> Campos obrigatórios devem ser claramente identificados com asterisco (*).</li>
+                <li><strong>RNF023:</strong> O sistema deve fornecer validações client-side (JavaScript) e server-side (Java).</li>
+                <li><strong>RNF024:</strong> O sistema deve utilizar padrões de acessibilidade WCAG 2.0 nível AA.</li>
+            </ul>
+
+            <h3>6.4. Confiabilidade</h3>
+            <ul>
+                <li><strong>RNF030:</strong> O sistema deve ter disponibilidade mínima de 99% durante período de encontro.</li>
+                <li><strong>RNF031:</strong> Deve existir rotina automatizada de backup diário do banco de dados.</li>
+                <li><strong>RNF032:</strong> O sistema deve permitir restauração de backup em até 1 hora.</li>
+                <li><strong>RNF033:</strong> Transações financeiras devem ser atômicas (ACID).</li>
+            </ul>
+
+            <h3>6.5. Manutenibilidade</h3>
+            <ul>
+                <li><strong>RNF040:</strong> O código deve seguir padrões de Clean Code e SOLID.</li>
+                <li><strong>RNF041:</strong> O sistema deve utilizar arquitetura em camadas (MVC/MVP).</li>
+                <li><strong>RNF042:</strong> Configurações sensíveis devem ser externalizadas (não hardcoded).</li>
+                <li><strong>RNF043:</strong> O código deve ter cobertura de testes unitários mínima de 60%.</li>
+            </ul>
+
+            <h3>6.6. Portabilidade</h3>
+            <ul>
+                <li><strong>RNF050:</strong> O sistema deve ser compatível com JDK 11+.</li>
+                <li><strong>RNF051:</strong> O sistema deve executar em servidores de aplicação Jakarta EE 8 (Wildfly, Payara, TomEE).</li>
+                <li><strong>RNF052:</strong> O banco de dados deve ser PostgreSQL 12+.</li>
+                <li><strong>RNF053:</strong> A interface deve ser compatível com navegadores modernos (Chrome, Firefox, Edge, Safari).</li>
+            </ul>
+
+            <h3>6.7. Escalabilidade</h3>
+            <ul>
+                <li><strong>RNF060:</strong> O sistema deve suportar crescimento de 20% no volume de dados anualmente.</li>
+                <li><strong>RNF061:</strong> A arquitetura deve permitir migração futura para cluster de servidores.</li>
+            </ul>
+        </section>
+
+        <section id="modelo-dados">
+            <h2>7. Modelo de Dados</h2>
+
+            <h3>7.1. Entidades Principais</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Entidade</th>
+                        <th>Descrição</th>
+                        <th>Atributos Principais</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Pessoa</strong></td>
+                        <td>Representa qualquer pessoa física no sistema</td>
+                        <td>id, nome, cpf, data_nascimento, sexo, telefone, email, endereco, foto, escolaridade, sacramento, ativo</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Casal</strong></td>
+                        <td>Relacionamento entre duas pessoas casadas</td>
+                        <td>id, pessoa1_id, pessoa2_id, data_casamento, foto, observacoes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Encontro</strong></td>
+                        <td>Representa um evento/retiro espiritual</td>
+                        <td>id, nome, tema, data_inicio, data_fim, local, descricao, capacidade_maxima, valor_inscricao, valor_contribuicao_trabalhador, ativo</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Encontrista</strong></td>
+                        <td>Participante inscrito em um encontro</td>
+                        <td>id, pessoa_id, encontro_id, data_inscricao, forma_pagamento, valor_pago, trabalhador_id, circulo, token_ficha, ativo, idade</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TipoEquipe</strong></td>
+                        <td>Categoria/tipo de equipe de trabalho</td>
+                        <td>id, nome, descricao</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Equipe</strong></td>
+                        <td>Equipe de trabalho do encontro</td>
+                        <td>id, nome, tipo_equipe_id, encontro_id, descricao, data_inicio, data_fim, ativo</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Trabalhador</strong></td>
+                        <td>Voluntário membro de uma equipe</td>
+                        <td>id, pessoa_id, equipe_id, observacoes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pasta</strong></td>
+                        <td>Divisão organizacional que agrupa equipes</td>
+                        <td>id, nome, descricao, ativo</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dirigente</strong></td>
+                        <td>Coordenador responsável por uma pasta</td>
+                        <td>id, trabalhador_id, pasta_id, data_inicio, data_fim, ativo, observacoes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Palestra</strong></td>
+                        <td>Palestra ministrada no encontro</td>
+                        <td>id, titulo, tema, descricao, encontro_id, data_hora</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Palestrante</strong></td>
+                        <td>Pessoa/casal/grupo que ministra palestra</td>
+                        <td>id, tipo_palestrante, pessoa_id, casal_id</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contribuicao</strong></td>
+                        <td>Contribuição financeira de trabalhador</td>
+                        <td>id, trabalhador_id, valor, forma_pagamento, data_pagamento, comprovante_url, observacoes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MovimentoFinanceiro</strong></td>
+                        <td>Receita ou despesa do encontro</td>
+                        <td>id, encontro_id, tipo, categoria, data_movimento, descricao, valor, responsavel, comprovante_url, observacoes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>VendaArtigo</strong></td>
+                        <td>Artigo disponível para venda</td>
+                        <td>id, nome, descricao, categoria_id, preco, estoque, foto, ativo</td>
+                    </tr>
+                    <tr>
+                        <td><strong>VendaPedido</strong></td>
+                        <td>Pedido de venda realizado</td>
+                        <td>id, encontro_id, data_pedido, forma_pagamento, valor_total, status</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Usuario</strong></td>
+                        <td>Usuário com acesso ao sistema</td>
+                        <td>id, username, senha_hash, pessoa_id, ativo</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Auditoria</strong></td>
+                        <td>Registro de auditoria de ações</td>
+                        <td>id, usuario, data_hora, acao, entidade, entidade_id, detalhes</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>7.2. Relacionamentos Principais</h3>
+            <ul>
+                <li><strong>Pessoa → Encontrista:</strong> Uma pessoa pode participar como encontrista em vários encontros (1:N)</li>
+                <li><strong>Encontro → Encontrista:</strong> Um encontro possui vários encontristas (1:N)</li>
+                <li><strong>Pessoa → Trabalhador:</strong> Uma pessoa pode ser trabalhador em várias equipes (1:N)</li>
+                <li><strong>Equipe → Trabalhador:</strong> Uma equipe possui vários trabalhadores (1:N)</li>
+                <li><strong>Trabalhador → Dirigente:</strong> Um trabalhador pode ser dirigente de várias pastas (1:N)</li>
+                <li><strong>Pasta → Dirigente:</strong> Uma pasta pode ter vários dirigentes (1:N)</li>
+                <li><strong>Encontro → Palestra:</strong> Um encontro possui várias palestras (1:N)</li>
+                <li><strong>Palestra → Palestrante:</strong> Uma palestra pode ter vários palestrantes (N:M)</li>
+                <li><strong>Trabalhador → Contribuicao:</strong> Um trabalhador pode fazer várias contribuições (1:N)</li>
+                <li><strong>Encontro → MovimentoFinanceiro:</strong> Um encontro possui vários movimentos financeiros (1:N)</li>
+                <li><strong>Pessoa1 + Pessoa2 → Casal:</strong> Duas pessoas formam um casal (2:1)</li>
+            </ul>
+
+            <h3>7.3. Constraints e Índices</h3>
+            <div class="business-rule">
+                <strong>Unicidades:</strong>
+                <ul>
+                    <li>Pessoa: CPF único, Telefone único</li>
+                    <li>Casal: Combinação (Pessoa1, Pessoa2) única</li>
+                    <li>Encontrista: Combinação (Pessoa, Encontro) única</li>
+                    <li>Dirigente: Combinação (Trabalhador, Pasta) única</li>
+                    <li>Encontrista: Token de ficha único</li>
+                    <li>Usuario: Username único</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="casos-uso">
+            <h2>8. Casos de Uso Principais</h2>
+
+            <div class="use-case">
+                <h4>UC001 - Realizar Inscrição de Encontrista</h4>
+                <p><strong>Ator Principal:</strong> Secretário</p>
+                <p><strong>Pré-condições:</strong></p>
+                <ul>
+                    <li>Usuário autenticado com permissão de secretário</li>
+                    <li>Encontro ativo cadastrado</li>
+                    <li>Pessoa cadastrada no sistema</li>
+                </ul>
+                <p><strong>Fluxo Principal:</strong></p>
+                <ol>
+                    <li>Secretário acessa página de inscrição de encontristas</li>
+                    <li>Sistema exibe formulário de inscrição</li>
+                    <li>Secretário seleciona ou cadastra pessoa</li>
+                    <li>Secretário seleciona encontro ativo</li>
+                    <li>Sistema calcula idade automaticamente baseado na data de nascimento</li>
+                    <li>Secretário informa forma de pagamento e valor pago</li>
+                    <li>Secretário seleciona círculo (A-H)</li>
+                    <li>Secretário adiciona observações (opcional)</li>
+                    <li>Sistema valida unicidade (pessoa + encontro)</li>
+                    <li>Sistema gera token único para ficha digital</li>
+                    <li>Sistema registra inscrição com data/hora atual</li>
+                    <li>Sistema exibe mensagem de sucesso</li>
+                </ol>
+                <p><strong>Fluxos Alternativos:</strong></p>
+                <ul>
+                    <li><strong>FA1:</strong> Pessoa já inscrita no encontro → Sistema exibe erro e impede duplicação</li>
+                    <li><strong>FA2:</strong> Capacidade máxima atingida → Sistema alerta mas permite inscrição (lista de espera)</li>
+                </ul>
+                <p><strong>Pós-condições:</strong></p>
+                <ul>
+                    <li>Encontrista cadastrado e associado ao encontro</li>
+                    <li>Token de ficha gerado e disponível para impressão</li>
+                </ul>
+            </div>
+
+            <div class="use-case">
+                <h4>UC002 - Criar Encontro</h4>
+                <p><strong>Ator Principal:</strong> Coordenador</p>
+                <p><strong>Pré-condições:</strong> Usuário autenticado com permissão de coordenador</p>
+                <p><strong>Fluxo Principal:</strong></p>
+                <ol>
+                    <li>Coordenador acessa página de cadastro de encontros</li>
+                    <li>Sistema exibe formulário vazio</li>
+                    <li>Coordenador preenche:
+                        <ul>
+                            <li>Nome (ex: "Segue-me 2025")</li>
+                            <li>Tema</li>
+                            <li>Data de início e fim</li>
+                            <li>Local</li>
+                            <li>Capacidade máxima</li>
+                            <li>Valor de inscrição</li>
+                            <li>Valor de contribuição de trabalhador</li>
+                        </ul>
+                    </li>
+                    <li>Sistema valida campos obrigatórios</li>
+                    <li>Sistema valida datas (fim ≥ início)</li>
+                    <li>Sistema registra encontro com status ativo</li>
+                    <li>Sistema exibe mensagem de sucesso</li>
+                </ol>
+                <p><strong>Pós-condições:</strong> Encontro criado e disponível para inscrições</p>
+            </div>
+
+            <div class="use-case">
+                <h4>UC003 - Organizar Equipe de Trabalho</h4>
+                <p><strong>Ator Principal:</strong> Coordenador / Dirigente</p>
+                <p><strong>Fluxo Principal:</strong></p>
+                <ol>
+                    <li>Ator acessa página de gestão de equipes</li>
+                    <li>Ator cria nova equipe informando:
+                        <ul>
+                            <li>Nome da equipe</li>
+                            <li>Tipo de equipe</li>
+                            <li>Encontro (se específica) ou permanente</li>
+                            <li>Datas de início e fim</li>
+                        </ul>
+                    </li>
+                    <li>Sistema registra equipe</li>
+                    <li>Ator acessa lista de pessoas</li>
+                    <li>Ator seleciona pessoas para adicionar como trabalhadores</li>
+                    <li>Para cada pessoa, ator indica se é dirigente da equipe</li>
+                    <li>Sistema vincula trabalhadores à equipe</li>
+                    <li>Sistema exibe lista de trabalhadores da equipe</li>
+                </ol>
+                <p><strong>Pós-condições:</strong> Equipe formada com trabalhadores vinculados</p>
+            </div>
+
+            <div class="use-case">
+                <h4>UC004 - Gerar Ficha Digital do Encontrista</h4>
+                <p><strong>Ator Principal:</strong> Secretário</p>
+                <p><strong>Pré-condições:</strong> Encontrista inscrito no encontro</p>
+                <p><strong>Fluxo Principal:</strong></p>
+                <ol>
+                    <li>Secretário acessa lista de encontristas</li>
+                    <li>Secretário seleciona encontrista</li>
+                    <li>Secretário clica em "Gerar Ficha"</li>
+                    <li>Sistema monta ficha com:
+                        <ul>
+                            <li>Foto do encontrista</li>
+                            <li>Dados pessoais (nome, idade)</li>
+                            <li>Círculo atribuído</li>
+                            <li>QR Code com token único</li>
+                            <li>Observações pastorais</li>
+                        </ul>
+                    </li>
+                    <li>Sistema gera PDF da ficha</li>
+                    <li>Sistema disponibiliza download</li>
+                    <li>Secretário imprime ficha</li>
+                </ol>
+                <p><strong>Pós-condições:</strong> Ficha digital gerada e disponível para impressão</p>
+            </div>
+
+            <div class="use-case">
+                <h4>UC005 - Registrar Movimento Financeiro</h4>
+                <p><strong>Ator Principal:</strong> Tesoureiro</p>
+                <p><strong>Fluxo Principal:</strong></p>
+                <ol>
+                    <li>Tesoureiro acessa página de movimentação financeira</li>
+                    <li>Tesoureiro seleciona encontro</li>
+                    <li>Tesoureiro informa:
+                        <ul>
+                            <li>Tipo (Entrada / Saída)</li>
+                            <li>Categoria (Alimentação, Material, Transporte, etc.)</li>
+                            <li>Data do movimento</li>
+                            <li>Descrição</li>
+                            <li>Valor</li>
+                            <li>Responsável</li>
+                            <li>Upload de comprovante (opcional)</li>
+                        </ul>
+                    </li>
+                    <li>Sistema valida valor > 0</li>
+                    <li>Sistema registra movimento com data/hora de criação</li>
+                    <li>Sistema atualiza saldo do encontro</li>
+                    <li>Sistema exibe mensagem de sucesso</li>
+                </ol>
+                <p><strong>Pós-condições:</strong> Movimento registrado e saldo atualizado</p>
+            </div>
+
+            <div class="use-case">
+                <h4>UC006 - Gerar Relatório de Fechamento Financeiro</h4>
+                <p><strong>Ator Principal:</strong> Tesoureiro / Coordenador</p>
+                <p><strong>Pré-condições:</strong> Encontro finalizado</p>
+                <p><strong>Fluxo Principal:</strong></p>
+                <ol>
+                    <li>Ator acessa página de relatórios</li>
+                    <li>Ator seleciona "Fechamento Financeiro"</li>
+                    <li>Ator seleciona encontro</li>
+                    <li>Sistema consolida:
+                        <ul>
+                            <li>Total de receitas (inscrições + contribuições + entradas)</li>
+                            <li>Total de despesas por categoria</li>
+                            <li>Saldo final</li>
+                            <li>Lista detalhada de movimentações</li>
+                        </ul>
+                    </li>
+                    <li>Sistema gera PDF formatado</li>
+                    <li>Ator visualiza e salva relatório</li>
+                </ol>
+                <p><strong>Pós-condições:</strong> Relatório financeiro gerado</p>
+            </div>
+        </section>
+
+        <section id="regras-negocio">
+            <h2>9. Regras de Negócio</h2>
+
+            <h3>9.1. Regras de Cadastro</h3>
+            <div class="business-rule">
+                <strong>RN001:</strong> Uma pessoa só pode possuir um CPF único no sistema. Se informado, deve ser validado segundo algoritmo oficial.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN002:</strong> O telefone de uma pessoa deve ser único no sistema, seguindo o formato (00) 00000-0000 ou (00) 0000-0000.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN003:</strong> A data de nascimento deve ser anterior à data atual e a pessoa deve ter no mínimo 12 anos para participar como encontrista.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN004:</strong> Um casal é formado por exatamente duas pessoas. A combinação (Pessoa1, Pessoa2) deve ser única no sistema.
+            </div>
+
+            <h3>9.2. Regras de Transferência entre Paróquias</h3>
+            <div class="business-rule">
+                <strong>RN005:</strong> Quando um seguidor é transferido para outra paróquia, seu status muda para <code>TRANSFERIDO_SAIDA</code> e é automaticamente <strong>inativado</strong>.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN006:</strong> Seguidores com status <code>TRANSFERIDO_SAIDA</code> <strong>não podem ser cadastrados como trabalhadores</strong> em encontros desta paróquia.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN007:</strong> Quando um seguidor é aceito vindo de outra paróquia, seu status muda para <code>TRANSFERIDO_ENTRADA</code> e é automaticamente <strong>ativado</strong>.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN008:</strong> Quando um seguidor retorna à paróquia de origem, seu status muda para <code>RETORNADO</code> e é automaticamente <strong>ativado</strong>, podendo trabalhar em encontros novamente.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN009:</strong> Todo registro de transferência (saída, entrada ou retorno) gera um registro histórico imutável na tabela <code>transferencia</code> com data, paróquias envolvidas e usuário que registrou.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN010:</strong> Ao registrar um retorno, o sistema identifica automaticamente a paróquia de onde o seguidor está retornando através do último registro de <code>TRANSFERIDO_SAIDA</code>, ordenado por data de solicitação e ID (desempate).
+            </div>
+
+            <h3>9.3. Regras de Encontro</h3>
+            <div class="business-rule">
+                <strong>RN015:</strong> A data de fim do encontro deve ser igual ou posterior à data de início.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN016:</strong> O nome padrão do encontro deve seguir formato "Segue-me YYYY" onde YYYY é o ano de realização.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN017:</strong> Apenas um encontro pode estar ativo para inscrições em um determinado período (evitar conflitos de dados).
+            </div>
+
+            <div class="business-rule">
+                <strong>RN018:</strong> O encontro só pode ser finalizado (inativado) após a data de término prevista.
+            </div>
+
+            <h3>9.4. Regras de Inscrição</h3>
+            <div class="business-rule">
+                <strong>RN020:</strong> Uma pessoa pode participar apenas uma vez como encontrista em um mesmo encontro (unicidade pessoa + encontro).
+            </div>
+
+            <div class="business-rule">
+                <strong>RN021:</strong> A idade do encontrista é calculada automaticamente com base na data de nascimento e data do encontro.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN022:</strong> O círculo deve ser uma letra entre A e H. Cada círculo comporta idealmente 8-12 encontristas.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN023:</strong> O valor pago na inscrição não pode ser negativo. Pode ser zero em casos de bolsa/isenção.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN024:</strong> Cada encontrista recebe um token único (UUID) para identificação em ficha digital e futuras consultas.
+            </div>
+
+            <h3>9.5. Regras de Equipe</h3>
+            <div class="business-rule">
+                <strong>RN030:</strong> Uma pessoa pode ser trabalhador em múltiplas equipes simultaneamente.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN031:</strong> Uma equipe deve ter no mínimo 1 trabalhador.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN032:</strong> Trabalhadores marcados como dirigentes em equipes específicas devem ser também cadastrados na tabela Dirigente vinculados a uma Pasta.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN033:</strong> Equipes podem ser permanentes (sem vínculo com encontro específico) ou temporárias (vinculadas a um encontro).
+            </div>
+
+            <h3>9.6. Regras Financeiras</h3>
+            <div class="business-rule">
+                <strong>RN040:</strong> Contribuições de trabalhadores devem ter valor maior que zero.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN041:</strong> Movimentos financeiros do tipo ENTRADA aumentam o saldo; tipo SAIDA diminui o saldo do encontro.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN042:</strong> O saldo do encontro é calculado como: (Inscrições + Contribuições + Entradas) - Saídas.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN043:</strong> Comprovantes financeiros devem ser armazenados e associados ao movimento/contribuição correspondente.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN044:</strong> Movimentos financeiros não podem ser excluídos após 30 dias de lançamento, apenas marcados como estornados.
+            </div>
+
+            <h3>9.7. Regras de Palestra</h3>
+            <div class="business-rule">
+                <strong>RN050:</strong> Uma palestra deve ter pelo menos um palestrante associado.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN051:</strong> Palestrantes podem ser do tipo: PESSOA (individual), CASAL ou GRUPO (múltiplas pessoas).
+            </div>
+
+            <div class="business-rule">
+                <strong>RN052:</strong> O horário de palestras não deve conflitar (duas palestras no mesmo horário).
+            </div>
+
+            <h3>9.8. Regras de Segurança</h3>
+            <div class="business-rule">
+                <strong>RN060:</strong> Senhas de usuários devem ter no mínimo 6 caracteres.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN061:</strong> Senhas devem ser armazenadas com hash BCrypt (nunca em texto plano).
+            </div>
+
+            <div class="business-rule">
+                <strong>RN062:</strong> Após 5 tentativas de login incorretas, a conta deve ser temporariamente bloqueada por 15 minutos.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN063:</strong> Ações críticas (exclusão, alteração financeira, alteração de permissões) devem ser registradas em auditoria.
+            </div>
+        </section>
+
+        <section id="fluxos-processo">
+            <h2>10. Fluxos de Processo</h2>
+
+            <h3>10.1. Fluxo de Implantação Inicial</h3>
+            <p>Sequência recomendada para primeira implantação do sistema:</p>
+            <ol>
+                <li><strong>Configurar Sistema:</strong> Definir propriedades (caminho de fotos, banco de dados, servidor)</li>
+                <li><strong>Criar Usuário Administrador:</strong> Primeiro acesso ao sistema</li>
+                <li><strong>Cadastrar Tipos de Equipe:</strong> Definir categorias de equipes (Cozinha, Cânticos, etc.)</li>
+                <li><strong>Cadastrar Pastas Organizacionais:</strong> Criar estrutura de pastas (Formação, Pastoral, Logística, etc.)</li>
+                <li><strong>Cadastrar Pessoas:</strong> Importar/cadastrar base de pessoas (recomendado: ordem cronológica inversa)</li>
+                <li><strong>Cadastrar Casais:</strong> Relacionar pessoas casadas</li>
+                <li><strong>Criar Encontro:</strong> Cadastrar encontro com datas, local e valores</li>
+                <li><strong>Criar Equipes:</strong> Formar equipes de trabalho do encontro</li>
+                <li><strong>Cadastrar Trabalhadores:</strong> Vincular pessoas às equipes</li>
+                <li><strong>Cadastrar Dirigentes:</strong> Atribuir dirigentes às pastas</li>
+                <li><strong>Iniciar Inscrições:</strong> Processar inscrições de encontristas</li>
+            </ol>
+
+            <h3>10.2. Fluxo de Execução do Encontro</h3>
+            <ol>
+                <li><strong>Pré-Encontro (30-60 dias antes):</strong>
+                    <ul>
+                        <li>Criar encontro no sistema</li>
+                        <li>Formar equipes de trabalho</li>
+                        <li>Cadastrar trabalhadores</li>
+                        <li>Programar palestras</li>
+                        <li>Iniciar recebimento de inscrições</li>
+                        <li>Registrar contribuições de trabalhadores</li>
+                    </ul>
+                </li>
+                <li><strong>Preparação (15 dias antes):</strong>
+                    <ul>
+                        <li>Distribuir encontristas em círculos</li>
+                        <li>Gerar fichas digitais</li>
+                        <li>Emitir relatórios de equipes</li>
+                        <li>Lançar despesas de preparação</li>
+                    </ul>
+                </li>
+                <li><strong>Durante o Encontro:</strong>
+                    <ul>
+                        <li>Consultar fichas de encontristas</li>
+                        <li>Acompanhar programação de palestras</li>
+                        <li>Registrar vendas (se aplicável)</li>
+                        <li>Lançar despesas em tempo real</li>
+                    </ul>
+                </li>
+                <li><strong>Pós-Encontro:</strong>
+                    <ul>
+                        <li>Finalizar lançamentos financeiros</li>
+                        <li>Gerar relatório de fechamento</li>
+                        <li>Marcar encontro como finalizado</li>
+                        <li>Gerar relatórios para prestação de contas</li>
+                        <li>Realizar backup dos dados</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>10.3. Fluxo de Inscrição de Encontrista</h3>
+            <ol>
+                <li>Candidato manifestatempo interesse em participar</li>
+                <li>Secretário verifica se candidato já está cadastrado como Pessoa</li>
+                <li>Se não cadastrado: criar nova Pessoa com dados completos</li>
+                <li>Se já cadastrado: atualizar dados se necessário</li>
+                <li>Secretário cria registro de Encontrista vinculando Pessoa + Encontro</li>
+                <li>Sistema valida unicidade (pessoa não pode estar inscrita 2x no mesmo encontro)</li>
+                <li>Secretário informa forma de pagamento e valor</li>
+                <li>Sistema atribui círculo (manual ou automático balanceado)</li>
+                <li>Sistema gera token único para ficha</li>
+                <li>Secretário pode imprimir ficha digital imediatamente ou posteriormente</li>
+                <li>Inscrição confirmada</li>
+            </ol>
+
+            <h3>10.4. Fluxo de Movimentação Financeira</h3>
+            <ol>
+                <li><strong>Receitas:</strong>
+                    <ul>
+                        <li>Inscrições de encontristas → Registradas automaticamente ao criar Encontrista</li>
+                        <li>Contribuições de trabalhadores → Registrar em Contribuição</li>
+                        <li>Doações/Outras receitas → Registrar como Movimento Financeiro tipo ENTRADA</li>
+                    </ul>
+                </li>
+                <li><strong>Despesas:</strong>
+                    <ul>
+                        <li>Todas as despesas → Registrar como Movimento Financeiro tipo SAIDA</li>
+                        <li>Classificar por categoria (Alimentação, Material, Transporte, etc.)</li>
+                        <li>Anexar comprovantes quando disponíveis</li>
+                    </ul>
+                </li>
+                <li><strong>Fechamento:</strong>
+                    <ul>
+                        <li>Consolidar todas as receitas</li>
+                        <li>Consolidar todas as despesas</li>
+                        <li>Calcular saldo final</li>
+                        <li>Gerar relatório de fechamento</li>
+                        <li>Aprovar fechamento</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section id="glossario">
+            <h2>11. Glossário</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Termo</th>
+                        <th>Definição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Segue-me</strong></td>
+                        <td>Movimento de Encontros de Jovens com Cristo, baseado no chamado de Jesus aos discípulos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Encontro</strong></td>
+                        <td>Retiro espiritual católico de fim de semana (3 dias) para jovens</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Encontrista / Seguimista</strong></td>
+                        <td>Jovem participante do encontro</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Trabalhador</strong></td>
+                        <td>Voluntário que atua na organização e execução do encontro, membro de uma equipe</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dirigente</strong></td>
+                        <td>Coordenador responsável por uma pasta organizacional, nível hierárquico superior aos trabalhadores</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Equipe</strong></td>
+                        <td>Grupo de trabalhadores com responsabilidade específica (ex: Equipe de Cozinha, Cânticos, Decoração)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pasta</strong></td>
+                        <td>Divisão organizacional que agrupa equipes com objetivos similares (ex: Pasta de Formação, Pastoral, Logística)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Círculo</strong></td>
+                        <td>Pequeno grupo de encontristas (8-12 pessoas) formado para partilha e discussão durante o encontro. Identificados por letras: A, B, C, D, E, F, G, H</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Palestra</strong></td>
+                        <td>Exposição sobre temas de fé ministrada durante o encontro (ex: Fé, Vocação, Família, Oração)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Palestrante</strong></td>
+                        <td>Pessoa, casal ou grupo convidado para ministrar palestra</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ficha Digital</strong></td>
+                        <td>Documento PDF individualizado contendo dados do encontrista, foto, círculo e QR Code para acompanhamento</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contribuição</strong></td>
+                        <td>Valor financeiro contribuído por trabalhador para custear despesas do encontro</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Movimento Financeiro</strong></td>
+                        <td>Registro contábil de entrada (receita) ou saída (despesa) relacionada ao encontro</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Token de Ficha</strong></td>
+                        <td>Identificador único (UUID) gerado para cada encontrista, utilizado em QR Code e consultas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sacramento</strong></td>
+                        <td>Ritos sagrados da Igreja Católica (Batismo, Crisma, Eucaristia) recebidos pela pessoa</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Escolaridade</strong></td>
+                        <td>Nível de formação escolar: Fundamental, Médio, Superior, Pós-graduação</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Perseverança</strong></td>
+                        <td>Acompanhamento espiritual contínuo dos encontristas após o encontro, através de grupos de partilha</td>
+                    </tr>
+                    <tr>
+                        <td><strong>BCrypt</strong></td>
+                        <td>Algoritmo de hash criptográfico utilizado para proteger senhas no banco de dados</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Auditoria</strong></td>
+                        <td>Registro de log de ações críticas realizadas no sistema para rastreabilidade e segurança</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <footer>
+            <p><strong>Sistema Segue-me - Gestão de Encontros de Jovens</strong></p>
+            <p>Documento de Especificação de Requisitos - Versão 1.0.0</p>
+            <p>© 2026 - Todos os direitos reservados</p>
+            <p style="margin-top: 15px; font-size: 0.9em;">
+                Este documento foi gerado automaticamente baseado na análise do código-fonte e estrutura do projeto.<br>
+                Para atualizações ou correções, consulte a equipe de desenvolvimento.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

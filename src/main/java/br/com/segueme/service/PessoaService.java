@@ -144,6 +144,34 @@ public class PessoaService implements Serializable {
 	}
 
 	/**
+	 * Busca uma pessoa pelo ID com relacionamentos pai e mãe carregados.
+	 * Use este método quando precisar acessar pai/mãe fora da transação.
+	 * 
+	 * @param id ID da pessoa
+	 * @return Optional contendo a pessoa com relacionamentos, se encontrada
+	 */
+	public Optional<Pessoa> buscarPorIdComPais(Long id) {
+		if (id == null) {
+			throw new IllegalArgumentException("ID da pessoa não pode ser nulo");
+		}
+
+		return pessoaRepository.findByIdWithParents(id);
+	}
+
+	/**
+	 * Busca todos os filhos de uma pessoa (pessoas que têm essa pessoa como pai ou mãe).
+	 * @param pessoaId ID da pessoa para buscar filhos
+	 * @return Lista de filhos
+	 */
+	public List<Pessoa> buscarFilhos(Long pessoaId) {
+		if (pessoaId == null) {
+			return java.util.Collections.emptyList();
+		}
+		
+		return pessoaRepository.findFilhosByPessoaId(pessoaId);
+	}
+
+	/**
 	 * Busca todas as pessoas cadastradas
 	 * 
 	 * @return Lista de pessoas

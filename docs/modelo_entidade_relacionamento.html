@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelo de Dados - Sistema Segue-me</title>
+    <style>
+        :root {
+            --primary-color: #0b5;
+            --secondary-color: #2c3e50;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        header {
+            border-bottom: 4px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h3 {
+            color: var(--primary-color);
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .entity-box {
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .entity-title {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            margin: -20px -20px 15px -20px;
+            border-radius: 6px 6px 0 0;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .attribute-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .attribute-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .attribute-list li:last-child {
+            border-bottom: none;
+        }
+
+        .pk {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .fk {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .required {
+            color: #ff6b6b;
+        }
+
+        .unique {
+            color: #9b59b6;
+            font-style: italic;
+        }
+
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .relationship {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .note {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .diagram {
+            background: #f8f9fa;
+            border: 2px solid var(--border-color);
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border-color);
+            text-align: center;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Modelo de Dados - Sistema Segue-me</h1>
+            <h2 style="color: #6c757d; font-size: 1.5em; margin-top: 10px; border: none;">Modelo Entidade-Relacionamento Completo</h2>
+        </header>
+
+        <div class="note">
+            <strong>Versão:</strong> 1.0.0 | <strong>Data:</strong> 14 de Abril de 2026<br>
+            <strong>SGBD:</strong> PostgreSQL 12+ | <strong>Schema:</strong> public
+        </div>
+
+        <section>
+            <h2>1. Visão Geral do Modelo</h2>
+            <p>
+                O modelo de dados do Sistema Segue-me foi projetado para suportar o gerenciamento completo de Encontros de Jovens,
+                abrangendo desde o cadastro de pessoas até o controle financeiro e logístico dos eventos.
+            </p>
+            <p>
+                A estrutura é composta por <strong>18 entidades principais</strong> com relacionamentos que garantem integridade
+                referencial e evitam duplicações de dados.
+            </p>
+        </section>
+
+        <section>
+            <h2>2. Entidades Principais</h2>
+
+            <div class="entity-box">
+                <div class="entity-title">🧑 PESSOA</div>
+                <p><strong>Descrição:</strong> Representa qualquer pessoa física no sistema (encontristas, trabalhadores, palestrantes)</p>
+                <p><strong>Tabela:</strong> <code>pessoa</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY - Identificador único</li>
+                    <li><span class="required">nome</span> VARCHAR(100) NOT NULL - Nome completo</li>
+                    <li>cpf VARCHAR(14) UNIQUE - CPF formatado</li>
+                    <li><span class="required">data_nascimento</span> DATE NOT NULL - Data de nascimento</li>
+                    <li>sexo CHAR(1) - Sexo (M/F)</li>
+                    <li>endereco VARCHAR(200) - Endereço completo</li>
+                    <li><span class="unique">telefone</span> VARCHAR(15) UNIQUE - Telefone único no formato (00) 00000-0000</li>
+                    <li>email VARCHAR(100) - E-mail</li>
+                    <li>escolaridade VARCHAR(50) - Enum: FUNDAMENTAL, MEDIO, SUPERIOR, POS_GRADUACAO</li>
+                    <li>sacramento TEXT - Enum: BATISMO, CRISMA, EUCARISTIA (ElementCollection)</li>
+                    <li>observacoes TEXT - Observações gerais</li>
+                    <li>foto VARCHAR(255) - Caminho da foto</li>
+                    <li>data_cadastro TIMESTAMP - Data/hora do cadastro</li>
+                    <li>ativo BOOLEAN DEFAULT TRUE - Status ativo/inativo</li>
+                </ul>
+                <div class="note">
+                    <strong>Regras:</strong>
+                    <ul>
+                        <li>CPF e Telefone devem ser únicos quando informados</li>
+                        <li>Data de nascimento deve ser anterior à data atual</li>
+                        <li>Exclusão lógica via campo "ativo"</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">💑 CASAL</div>
+                <p><strong>Descrição:</strong> Relacionamento entre duas pessoas casadas</p>
+                <p><strong>Tabela:</strong> <code>casal</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="fk required">pessoa1_id</span> BIGINT NOT NULL REFERENCES pessoa(id)</li>
+                    <li><span class="fk required">pessoa2_id</span> BIGINT NOT NULL REFERENCES pessoa(id)</li>
+                    <li>data_casamento DATE - Data do casamento</li>
+                    <li>foto VARCHAR(255) - Foto do casal</li>
+                    <li>observacoes VARCHAR(255)</li>
+                </ul>
+                <div class="note">
+                    <strong>Constraint Única:</strong> UNIQUE(pessoa1_id, pessoa2_id) - Evita duplicação de casais
+                </div>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">🎯 ENCONTRO</div>
+                <p><strong>Descrição:</strong> Representa um evento/retiro de Encontro de Jovens</p>
+                <p><strong>Tabela:</strong> <code>encontro</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="required">nome</span> VARCHAR(100) NOT NULL - Nome do encontro (ex: "Segue-me 2025")</li>
+                    <li>tema VARCHAR(200) - Tema do encontro</li>
+                    <li><span class="required">data_inicio</span> DATE NOT NULL - Data de início</li>
+                    <li><span class="required">data_fim</span> DATE NOT NULL - Data de término</li>
+                    <li><span class="required">local</span> VARCHAR(200) NOT NULL - Local de realização</li>
+                    <li>descricao VARCHAR(1000) - Descrição detalhada</li>
+                    <li>capacidade_maxima INTEGER - Número máximo de participantes</li>
+                    <li>valor_inscricao NUMERIC(10,2) - Valor da inscrição</li>
+                    <li>valor_contribuicao_trabalhador NUMERIC(10,2) - Valor da contribuição sugerida</li>
+                    <li>ativo BOOLEAN DEFAULT TRUE - Status ativo/finalizado</li>
+                </ul>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">👥 ENCONTRISTA</div>
+                <p><strong>Descrição:</strong> Participante inscrito em um encontro (Seguimista)</p>
+                <p><strong>Tabela:</strong> <code>encontrista</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="fk required">pessoa_id</span> BIGINT NOT NULL REFERENCES pessoa(id)</li>
+                    <li><span class="fk required">encontro_id</span> BIGINT NOT NULL REFERENCES encontro(id)</li>
+                    <li>data_inscricao TIMESTAMP - Data/hora da inscrição</li>
+                    <li>forma_pagamento VARCHAR(50) - DINHEIRO, PIX, CARTAO, TRANSFERENCIA</li>
+                    <li>valor_pago NUMERIC(10,2) - Valor pago na inscrição</li>
+                    <li><span class="fk">trabalhador_id</span> BIGINT REFERENCES trabalhador(id) - Padrinho/madrinha</li>
+                    <li>circulo VARCHAR(10) - Círculo atribuído (A-H)</li>
+                    <li>idade INTEGER - Idade calculada automaticamente</li>
+                    <li><span class="unique">token_ficha</span> VARCHAR(36) UNIQUE - Token UUID para ficha digital</li>
+                    <li>observacoes TEXT - Observações pastorais</li>
+                    <li>ativo BOOLEAN DEFAULT TRUE</li>
+                </ul>
+                <div class="note">
+                    <strong>Constraint Única:</strong> UNIQUE(pessoa_id, encontro_id) - Pessoa não pode participar 2x do mesmo encontro
+                </div>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">🏷️ TIPO_EQUIPE</div>
+                <p><strong>Descrição:</strong> Categoria/tipo de equipe de trabalho</p>
+                <p><strong>Tabela:</strong> <code>tipo_equipe</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="required">nome</span> VARCHAR(100) NOT NULL - Nome do tipo (ex: Cozinha, Cânticos, Decoração)</li>
+                    <li>descricao VARCHAR(255)</li>
+                </ul>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">👨‍👩‍👧‍👦 EQUIPE</div>
+                <p><strong>Descrição:</strong> Equipe de trabalho do encontro</p>
+                <p><strong>Tabela:</strong> <code>equipe</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="required">nome</span> VARCHAR(100) NOT NULL - Nome da equipe</li>
+                    <li><span class="fk required">tipo_equipe_id</span> BIGINT NOT NULL REFERENCES tipo_equipe(id)</li>
+                    <li><span class="fk">encontro_id</span> BIGINT REFERENCES encontro(id) - NULL para equipes permanentes</li>
+                    <li>descricao VARCHAR(255)</li>
+                    <li>data_inicio DATE - Data de formação</li>
+                    <li>data_fim DATE - Data de encerramento</li>
+                    <li>ativo BOOLEAN DEFAULT TRUE</li>
+                </ul>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">🔨 TRABALHADOR</div>
+                <p><strong>Descrição:</strong> Voluntário membro de uma equipe</p>
+                <p><strong>Tabela:</strong> <code>trabalhador</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="fk required">pessoa_id</span> BIGINT NOT NULL REFERENCES pessoa(id)</li>
+                    <li><span class="fk required">equipe_id</span> BIGINT NOT NULL REFERENCES equipe(id)</li>
+                    <li>observacoes TEXT</li>
+                </ul>
+                <div class="note">
+                    <strong>Nota:</strong> Uma pessoa pode ser trabalhador em múltiplas equipes simultaneamente
+                </div>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">📁 PASTA</div>
+                <p><strong>Descrição:</strong> Divisão organizacional que agrupa equipes</p>
+                <p><strong>Tabela:</strong> <code>pasta</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="required">nome</span> VARCHAR(100) NOT NULL - Nome da pasta (ex: Formação, Pastoral)</li>
+                    <li>descricao TEXT</li>
+                    <li>ativo BOOLEAN DEFAULT TRUE</li>
+                </ul>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">👔 DIRIGENTE</div>
+                <p><strong>Descrição:</strong> Coordenador responsável por uma pasta</p>
+                <p><strong>Tabela:</strong> <code>dirigente</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="fk required">trabalhador_id</span> BIGINT NOT NULL REFERENCES trabalhador(id)</li>
+                    <li><span class="fk required">pasta_id</span> BIGINT NOT NULL REFERENCES pasta(id)</li>
+                    <li><span class="required">data_inicio</span> DATE NOT NULL - Início do mandato</li>
+                    <li><span class="required">data_fim</span> DATE NOT NULL - Fim do mandato</li>
+                    <li>data_cadastro TIMESTAMP</li>
+                    <li>ativo BOOLEAN NOT NULL DEFAULT TRUE</li>
+                    <li>observacoes VARCHAR(255)</li>
+                </ul>
+                <div class="note">
+                    <strong>Constraint Única:</strong> UNIQUE(trabalhador_id, pasta_id) - Trabalhador não pode ser dirigente 2x da mesma pasta
+                </div>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">🎤 PALESTRA</div>
+                <p><strong>Descrição:</strong> Palestra ministrada durante o encontro</p>
+                <p><strong>Tabela:</strong> <code>palestra</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="required">titulo</span> VARCHAR(200) NOT NULL - Título da palestra</li>
+                    <li><span class="required">tema</span> VARCHAR(255) NOT NULL - Enum: FE, VOCACAO, FAMILIA, SERVICO, etc.</li>
+                    <li>descricao VARCHAR(500)</li>
+                    <li><span class="fk required">encontro_id</span> BIGINT NOT NULL REFERENCES encontro(id)</li>
+                    <li>data_hora TIMESTAMP - Data/hora programada</li>
+                </ul>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">🗣️ PALESTRANTE</div>
+                <p><strong>Descrição:</strong> Pessoa, casal ou grupo que ministra palestra</p>
+                <p><strong>Tabela:</strong> <code>palestrante</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="required">tipo_palestrante</span> VARCHAR(255) NOT NULL - PESSOA, CASAL, GRUPO</li>
+                    <li><span class="fk">pessoa_id</span> BIGINT REFERENCES pessoa(id) - Para tipo PESSOA</li>
+                    <li><span class="fk">casal_id</span> BIGINT REFERENCES casal(id) - Para tipo CASAL</li>
+                </ul>
+                <div class="note">
+                    <strong>Relacionamento N:M com Palestra:</strong> Tabela associativa <code>palestra_palestrante</code><br>
+                    <strong>Para tipo GRUPO:</strong> Tabela associativa <code>palestrante_grupo_pessoa</code> relaciona palestrante com múltiplas pessoas
+                </div>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">💰 CONTRIBUICAO</div>
+                <p><strong>Descrição:</strong> Contribuição financeira de trabalhador para o encontro</p>
+                <p><strong>Tabela:</strong> <code>contribuicao</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="fk required">trabalhador_id</span> BIGINT NOT NULL REFERENCES trabalhador(id)</li>
+                    <li><span class="required">valor</span> NUMERIC(10,2) NOT NULL - Valor contribuído</li>
+                    <li><span class="required">forma_pagamento</span> VARCHAR(50) NOT NULL - DINHEIRO, PIX, CARTAO, TRANSFERENCIA</li>
+                    <li>data_pagamento TIMESTAMP</li>
+                    <li>comprovante_url VARCHAR(255) - Caminho do arquivo de comprovante</li>
+                    <li>observacoes VARCHAR(255)</li>
+                </ul>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">📊 MOVIMENTO_FINANCEIRO</div>
+                <p><strong>Descrição:</strong> Receita ou despesa do encontro</p>
+                <p><strong>Tabela:</strong> <code>movimento_financeiro</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="fk required">encontro_id</span> BIGINT NOT NULL REFERENCES encontro(id)</li>
+                    <li><span class="required">tipo</span> VARCHAR(10) NOT NULL - ENTRADA ou SAIDA</li>
+                    <li><span class="required">categoria</span> VARCHAR(20) NOT NULL - ALIMENTACAO, MATERIAL, TRANSPORTE, etc.</li>
+                    <li><span class="required">data_movimento</span> DATE NOT NULL - Data da movimentação</li>
+                    <li>data_criacao TIMESTAMP - Data/hora do registro</li>
+                    <li><span class="required">descricao</span> VARCHAR(255) NOT NULL - Descrição do movimento</li>
+                    <li><span class="required">valor</span> NUMERIC(10,2) NOT NULL - Valor da movimentação</li>
+                    <li>responsavel VARCHAR(100) - Responsável pelo lançamento</li>
+                    <li>comprovante_url VARCHAR(255)</li>
+                    <li>observacoes VARCHAR(500)</li>
+                </ul>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">🛍️ VENDA_ARTIGO</div>
+                <p><strong>Descrição:</strong> Artigo disponível para venda</p>
+                <p><strong>Tabela:</strong> <code>venda_artigo</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="required">nome</span> VARCHAR(100) NOT NULL</li>
+                    <li>descricao TEXT</li>
+                    <li><span class="fk">categoria_id</span> BIGINT REFERENCES categoria_artigo(id)</li>
+                    <li><span class="required">preco</span> NUMERIC(10,2) NOT NULL</li>
+                    <li>estoque INTEGER DEFAULT 0</li>
+                    <li>foto VARCHAR(255)</li>
+                    <li>ativo BOOLEAN DEFAULT TRUE</li>
+                </ul>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">🧾 VENDA_PEDIDO</div>
+                <p><strong>Descrição:</strong> Pedido de venda realizado</p>
+                <p><strong>Tabela:</strong> <code>venda_pedido</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="fk required">encontro_id</span> BIGINT NOT NULL REFERENCES encontro(id)</li>
+                    <li>data_pedido TIMESTAMP</li>
+                    <li>forma_pagamento VARCHAR(50)</li>
+                    <li>valor_total NUMERIC(10,2)</li>
+                    <li>status VARCHAR(20) - PENDENTE, PAGO, CANCELADO</li>
+                    <li>observacoes TEXT</li>
+                </ul>
+                <div class="note">
+                    <strong>Relacionamentos:</strong><br>
+                    - <code>venda_item_pedido</code>: Itens do pedido (N:1 com artigo)<br>
+                    - <code>venda_pedido_pessoa</code>: Associação N:M com pessoas compradoras
+                </div>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">👤 USUARIO</div>
+                <p><strong>Descrição:</strong> Usuário com acesso ao sistema</p>
+                <p><strong>Tabela:</strong> <code>usuario</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li><span class="unique required">username</span> VARCHAR(50) UNIQUE NOT NULL - Nome de usuário</li>
+                    <li><span class="required">senha_hash</span> VARCHAR(255) NOT NULL - Hash BCrypt da senha</li>
+                    <li><span class="fk">pessoa_id</span> BIGINT REFERENCES pessoa(id) - Pessoa vinculada</li>
+                    <li>ativo BOOLEAN DEFAULT TRUE</li>
+                    <li>data_criacao TIMESTAMP</li>
+                </ul>
+            </div>
+
+            <div class="entity-box">
+                <div class="entity-title">📝 AUDITORIA</div>
+                <p><strong>Descrição:</strong> Registro de log de auditoria de ações</p>
+                <p><strong>Tabela:</strong> <code>auditoria</code></p>
+                <ul class="attribute-list">
+                    <li><span class="pk">id</span> BIGSERIAL PRIMARY KEY</li>
+                    <li>usuario VARCHAR(255) - Nome do usuário que executou a ação</li>
+                    <li>data_hora TIMESTAMP - Data/hora da ação</li>
+                    <li>acao VARCHAR(255) - Tipo de ação (INSERT, UPDATE, DELETE)</li>
+                    <li>entidade VARCHAR(255) - Nome da entidade afetada</li>
+                    <li>entidade_id BIGINT - ID do registro afetado</li>
+                    <li>detalhes TEXT - Detalhes adicionais em JSON</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>3. Relacionamentos entre Entidades</h2>
+
+            <div class="relationship">
+                <strong>PESSOA ←→ CASAL (1:N e 1:N)</strong><br>
+                - Uma pessoa pode estar em vários casais (como pessoa1 ou pessoa2)<br>
+                - Um casal possui exatamente 2 pessoas<br>
+                - Constraint: UNIQUE(pessoa1_id, pessoa2_id)
+            </div>
+
+            <div class="relationship">
+                <strong>PESSOA → ENCONTRISTA (1:N)</strong><br>
+                - Uma pessoa pode participar como encontrista em vários encontros<br>
+                - Constraint: UNIQUE(pessoa_id, encontro_id) - pessoa só participa 1x por encontro
+            </div>
+
+            <div class="relationship">
+                <strong>ENCONTRO → ENCONTRISTA (1:N)</strong><br>
+                - Um encontro possui vários encontristas inscritos<br>
+                - Cascata: ao excluir encontro, exclui encontristas
+            </div>
+
+            <div class="relationship">
+                <strong>PESSOA → TRABALHADOR (1:N)</strong><br>
+                - Uma pessoa pode ser trabalhador em várias equipes<br>
+                - O mesmo trabalhador pode estar em equipes diferentes
+            </div>
+
+            <div class="relationship">
+                <strong>EQUIPE → TRABALHADOR (1:N)</strong><br>
+                - Uma equipe possui vários trabalhadores<br>
+                - Cada registro de trabalhador pertence a uma equipe específica
+            </div>
+
+            <div class="relationship">
+                <strong>TIPO_EQUIPE → EQUIPE (1:N)</strong><br>
+                - Um tipo de equipe pode ter várias equipes<br>
+                - Cada equipe possui um tipo
+            </div>
+
+            <div class="relationship">
+                <strong>ENCONTRO → EQUIPE (1:N, opcional)</strong><br>
+                - Um encontro pode ter várias equipes<br>
+                - Equipes podem ser permanentes (encontro_id NULL) ou específicas de um encontro
+            </div>
+
+            <div class="relationship">
+                <strong>TRABALHADOR → DIRIGENTE (1:N)</strong><br>
+                - Um trabalhador pode ser dirigente de várias pastas<br>
+                - Constraint: UNIQUE(trabalhador_id, pasta_id)
+            </div>
+
+            <div class="relationship">
+                <strong>PASTA → DIRIGENTE (1:N)</strong><br>
+                - Uma pasta pode ter vários dirigentes ao longo do tempo<br>
+                - Uso do campo "ativo" para identificar dirigentes atuais
+            </div>
+
+            <div class="relationship">
+                <strong>ENCONTRO → PALESTRA (1:N)</strong><br>
+                - Um encontro possui várias palestras<br>
+                - Cada palestra pertence a um encontro específico
+            </div>
+
+            <div class="relationship">
+                <strong>PALESTRA ←→ PALESTRANTE (N:M)</strong><br>
+                - Uma palestra pode ter vários palestrantes<br>
+                - Um palestrante pode ministrar várias palestras<br>
+                - Tabela associativa: <code>palestra_palestrante(palestra_id, palestrante_id)</code>
+            </div>
+
+            <div class="relationship">
+                <strong>PALESTRANTE ← PESSOA | CASAL (1:1 condicional)</strong><br>
+                - Tipo PESSOA: referencia pessoa_id<br>
+                - Tipo CASAL: referencia casal_id<br>
+                - Tipo GRUPO: usa tabela <code>palestrante_grupo_pessoa</code> (N:M com pessoa)
+            </div>
+
+            <div class="relationship">
+                <strong>TRABALHADOR → CONTRIBUICAO (1:N)</strong><br>
+                - Um trabalhador pode fazer várias contribuições<br>
+                - Cada contribuição é de um trabalhador específico
+            </div>
+
+            <div class="relationship">
+                <strong>ENCONTRO → MOVIMENTO_FINANCEIRO (1:N)</strong><br>
+                - Um encontro possui vários movimentos financeiros<br>
+                - Cada movimento pertence a um encontro
+            </div>
+
+            <div class="relationship">
+                <strong>ENCONTRO → VENDA_PEDIDO (1:N)</strong><br>
+                - Um encontro pode ter vários pedidos de venda<br>
+                - Cada pedido pertence a um encontro
+            </div>
+
+            <div class="relationship">
+                <strong>VENDA_PEDIDO ←→ PESSOA (N:M)</strong><br>
+                - Um pedido pode ter váriasço pessoas compradoras<br>
+                - Uma pessoa pode fazer vários pedidos<br>
+                - Tabela associativa: <code>venda_pedido_pessoa</code>
+            </div>
+
+            <div class="relationship">
+                <strong>VENDA_PEDIDO → VENDA_ITEM_PEDIDO (1:N)</strong><br>
+                - Um pedido possui vários itens<br>
+                - Cada item referencia um artigo
+            </div>
+
+            <div class="relationship">
+                <strong>USUARIO ← PESSOA (1:1 opcional)</strong><br>
+                - Um usuário pode estar vinculado a uma pessoa<br>
+                - Uma pessoa pode ter um ou nenhum usuário
+            </div>
+        </section>
+
+        <section>
+            <h2>4. Índices e Constraints</h2>
+
+            <h3>4.1. Chaves Primárias</h3>
+            <p>Todas as entidades possuem chave primária do tipo <code>BIGSERIAL</code> (auto-incremento).</p>
+
+            <h3>4.2. Constraints de Unicidade</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tabela</th>
+                        <th>Constraint Única</th>
+                        <th>Propósito</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>pessoa</td>
+                        <td>UNIQUE(cpf)</td>
+                        <td>CPF único quando informado</td>
+                    </tr>
+                    <tr>
+                        <td>pessoa</td>
+                        <td>UNIQUE(telefone)</td>
+                        <td>Telefone único (obrigatório)</td>
+                    </tr>
+                    <tr>
+                        <td>casal</td>
+                        <td>UNIQUE(pessoa1_id, pessoa2_id)</td>
+                        <td>Evitar duplicação de casais</td>
+                    </tr>
+                    <tr>
+                        <td>encontrista</td>
+                        <td>UNIQUE(pessoa_id, encontro_id)</td>
+                        <td>Pessoa participa 1x por encontro</td>
+                    </tr>
+                    <tr>
+                        <td>encontrista</td>
+                        <td>UNIQUE(token_ficha)</td>
+                        <td>Token único para ficha digital</td>
+                    </tr>
+                    <tr>
+                        <td>dirigente</td>
+                        <td>UNIQUE(trabalhador_id, pasta_id)</td>
+                        <td>Trabalhador dirigente 1x por pasta</td>
+                    </tr>
+                    <tr>
+                        <td>usuario</td>
+                        <td>UNIQUE(username)</td>
+                        <td>Nome de usuário único</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>4.3. Chaves Estrangeiras</h3>
+            <p>Todas as relações entre tabelas são garantidas por chaves estrangeiras com integridade referencial.</p>
+
+            <h3>4.4. Índices Recomendados</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tabela</th>
+                        <th>Coluna(s)</th>
+                        <th>Tipo</th>
+                        <th>Justificativa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>pessoa</td>
+                        <td>nome</td>
+                        <td>BTREE</td>
+                        <td>Consultas por nome (filtros, autocomplete)</td>
+                    </tr>
+                    <tr>
+                        <td>pessoa</td>
+                        <td>telefone</td>
+                        <td>UNIQUE</td>
+                        <td>Buscas por telefone (já cria índice)</td>
+                    </tr>
+                    <tr>
+                        <td>encontrista</td>
+                        <td>encontro_id</td>
+                        <td>BTREE</td>
+                        <td>Listagem de encontristas por encontro</td>
+                    </tr>
+                    <tr>
+                        <td>encontrista</td>
+                        <td>circulo</td>
+                        <td>BTREE</td>
+                        <td>Filtros por círculo</td>
+                    </tr>
+                    <tr>
+                        <td>movimento_financeiro</td>
+                        <td>encontro_id, data_movimento</td>
+                        <td>BTREE</td>
+                        <td>Relatórios financeiros por período</td>
+                    </tr>
+                    <tr>
+                        <td>auditoria</td>
+                        <td>data_hora</td>
+                        <td>BTREE DESC</td>
+                        <td>Consultas de logs mais recentes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>5. Enumerações (Enums)</h2>
+
+            <h3>5.1. Escolaridade</h3>
+            <code>FUNDAMENTAL | MEDIO | SUPERIOR | POS_GRADUACAO</code>
+
+            <h3>5.2. Sacramento</h3>
+            <code>BATISMO | CRISMA | EUCARISTIA | MATRIMONIO | CONFISSAO</code>
+            <p><em>Armazenado como ElementCollection (tabela separada pessoa_sacramento)</em></p>
+
+            <h3>5.3. Forma de Pagamento</h3>
+            <code>DINHEIRO | PIX | CARTAO | TRANSFERENCIA</code>
+
+            <h3>5.4. Círculo</h3>
+            <code>A | B | C | D | E | F | G | H</code>
+
+            <h3>5.5. Tema de Palestra</h3>
+            <code>FE | VOCACAO | FAMILIA | SERVICO | COMUNIDADE | ORACAO | SACRAMENTOS | MARIA | ESPIRITO_SANTO | TESTEMUNHO | NAMORO_CASTIDADE | OUTRO</code>
+
+            <h3>5.6. Tipo de Palestrante</h3>
+            <code>PESSOA | CASAL | GRUPO</code>
+
+            <h3>5.7. Tipo de Movimento Financeiro</h3>
+            <code>ENTRADA | SAIDA</code>
+
+            <h3>5.8. Categoria Financeira</h3>
+            <code>ALIMENTACAO | MATERIAL | TRANSPORTE | ALUGUEL | DECORACAO | PALESTRANTE | INSCRICAO | CONTRIBUICAO | OUTRO</code>
+
+            <h3>5.9. Status de Pedido</h3>
+            <code>PENDENTE | PAGO | CANCELADO</code>
+        </section>
+
+        <section>
+            <h2>6. Considerações de Performance</h2>
+
+            <h3>6.1. Otimizações Implementadas</h3>
+            <ul>
+                <li><strong>Lazy Loading:</strong> Relacionamentos OneToMany e ManyToMany com FetchType.LAZY</li>
+                <li><strong>Índices em FK:</strong> PostgreSQL cria automáticamente índices em chaves primárias e únicas</li>
+                <li><strong>Paginação:</strong> Uso de paginação em consultas com grandes volumes (ex: listagem de pessoas)</li>
+                <li><strong>Exclusão Lógica:</strong> Campo "ativo" evita exclusões físicas e mantém histórico</li>
+            </ul>
+
+            <h3>6.2. Recomendações para Produção</h3>
+            <ul>
+                <li>Configurar <code>connection pooling</code> adequado (mínimo 10, máximo 50 conexões)</li>
+                <li>Habilitar <code>query logging</code> em desenvolvimento, desabilitar em produção</li>
+                <li>Executar <code>VACUUM ANALYZE</code> periodicamente para otimizar estatísticas do PostgreSQL</li>
+                <li>Monitorar queries lentas (> 1 segundo) e criar índices adicionais conforme necessário</li>
+                <li>Implementar estratégia de backup diário automático</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Script de Criação do Banco</h2>
+            <p>O script SQL completo de criação do banco de dados está disponível em:</p>
+            <p><code>modelo/modelo_relacional.sql</code></p>
+            
+            <div class="note">
+                <strong>Inicialização Automática:</strong><br>
+                O projeto utiliza JPA/Hibernate com <code>hibernate.hbm2ddl.auto=update</code> 
+                que cria/atualiza automaticamente o schema do banco baseado nas entidades JPA.<br><br>
+                <strong>Para ambientes de produção:</strong> recomenda-se usar migrations (Flyway/Liquibase) 
+                ao invés de auto-update.
+            </div>
+        </section>
+
+        <footer>
+            <p><strong>Sistema Segue-me - Modelo de Dados</strong></p>
+            <p>Versão 1.0.0 - PostgreSQL 12+</p>
+            <p>© 2026</p>
+        </footer>
+    </div>
+</body>
+</html>

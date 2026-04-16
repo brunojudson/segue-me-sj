@@ -46,13 +46,11 @@ public class AtualizaTodasPessoas {
                         }
                         ps.setLong(2, id);
                         ps.executeUpdate();
-                        System.out.println("Pessoa atualizada: " + id + " - " + nome + " | Idade: " + pessoa.getIdade());
                     } catch (SQLException e) {
                         System.err.println("Erro ao atualizar pessoa ID " + id + ": " + e.getMessage());
                     }
                 }
             }
-            System.out.println("Processo concluído.");
         } catch (SQLException e) {
             e.printStackTrace();
         }

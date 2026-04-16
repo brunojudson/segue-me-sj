@@ -1331,7 +1331,7 @@ body.menu-open .menu-overlay {
 @media (max-width: 768px) {
     .menu-toggle {
         display: block;
-        top: 14px;
+        top: 7px;
         left: 12px;
     }
 

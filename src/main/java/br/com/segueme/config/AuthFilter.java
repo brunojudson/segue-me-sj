@@ -28,10 +28,13 @@ public class AuthFilter implements Filter {
     private static final String LOGIN_PAGE = "/pages/login.xhtml";
     private static final List<String> PUBLIC_PATHS = Arrays.asList(
             "/pages/login.xhtml",
-            "/pages/index.xhtml",
             "/resources/",
             "/public/",
             "/javax.faces.resource/" // Adicionado para liberar recursos do JSF e PrimeFaces
+    );
+    // Páginas acessíveis a qualquer usuário logado (independente do perfil)
+    private static final List<String> LOGGED_IN_PATHS = Arrays.asList(
+            "/pages/usuario/alterar-senha.xhtml"
     );
 
     @Override
@@ -85,43 +88,86 @@ public class AuthFilter implements Filter {
         }
 
         // A partir daqui: usuário logado
-        // ADMIN tem acesso a tudo
-        try {
-            if (loginController.hasPermission("ADMIN")) {
-                chain.doFilter(request, response);
-                return;
-            }
-        } catch (Exception e) {
-            // Se por algum motivo o método não existir ou falhar, negar acesso como fallback
+        // Páginas acessíveis a qualquer usuário logado
+        if (isLoggedInPath(path)) {
+            chain.doFilter(request, response);
+            return;
         }
 
-        // Bloquear acesso à área de usuários para não-ADMINs
+        // Detectar permissões do usuário
+        boolean isAdmin = loginController.hasPermission("ADMIN");
+        boolean isUser = loginController.hasPermission("USER");
+        boolean isVenda = loginController.hasPermission("VENDA");
+        boolean isProver = loginController.hasPermission("PROVER");
+
+        // Usuário sem nenhuma permissão: só alterar senha (já tratado acima), resto redireciona para login
+        if (!isAdmin && !isUser && !isVenda && !isProver) {
+            res.sendRedirect(req.getContextPath() + LOGIN_PAGE);
+            return;
+        }
+
+        // Página inicial é acessível a qualquer usuário com pelo menos um perfil
+        if (path.equals("/pages/index.xhtml")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // ADMIN tem acesso a tudo
+        if (isAdmin) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Bloquear acesso à área de usuários (cadastro/lista) para não-ADMINs
         if (path.startsWith("/pages/usuario")) {
             res.sendRedirect(req.getContextPath() + "/pages/index.xhtml");
             return;
         }
 
-        // Perfil VENDA só pode acessar páginas dentro de /pages/venda
-        try {
-            if (loginController.hasPermission("VENDA")) {
-                if (path.startsWith("/pages/venda") || isPublicPath(path)) {
-                    chain.doFilter(request, response);
-                    return;
-                } else {
-                    res.sendRedirect(req.getContextPath() + "/pages/index.xhtml");
-                    return;
-                }
+        // Perfil USER: quase tudo, exceto encontros (criar/manipular), vendas, financeiro, usuários
+        if (isUser) {
+            if (path.startsWith("/pages/venda")
+                || path.startsWith("/pages/encontro")
+                || path.startsWith("/pages/financeiro")) {
+                res.sendRedirect(req.getContextPath() + "/pages/index.xhtml");
+                return;
             }
-        } catch (Exception e) {
-            // Ignorar e tratar como usuário comum
+            chain.doFilter(request, response);
+            return;
         }
 
-        // Usuário comum (USER) — permitir acesso geral, exceto áreas administrativas já bloqueadas acima
-        chain.doFilter(request, response);
+        // Perfil PROVER: vendas, contribuições e alterar senha
+        if (isProver) {
+            if (path.startsWith("/pages/venda")
+                || path.startsWith("/pages/contribuicao")
+                || isPublicPath(path)) {
+                chain.doFilter(request, response);
+                return;
+            }
+            res.sendRedirect(req.getContextPath() + "/pages/index.xhtml");
+            return;
+        }
+
+        // Perfil VENDA: só páginas de venda e alterar senha
+        if (isVenda) {
+            if (path.startsWith("/pages/venda") || isPublicPath(path)) {
+                chain.doFilter(request, response);
+                return;
+            }
+            res.sendRedirect(req.getContextPath() + "/pages/index.xhtml");
+            return;
+        }
+
+        // Usuário sem nenhuma permissão conhecida: redireciona para login
+        res.sendRedirect(req.getContextPath() + LOGIN_PAGE);
     }
 
     private boolean isPublicPath(String path) {
         return PUBLIC_PATHS.stream().anyMatch(path::startsWith);
+    }
+
+    private boolean isLoggedInPath(String path) {
+        return LOGGED_IN_PATHS.stream().anyMatch(path::equals);
     }
 
     private boolean isLoggedIn(LoginController loginController) {

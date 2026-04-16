@@ -1,149 +1,1274 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Manual do Usuário — Sistema Segue-me</title>
-  <style>
-    body{font-family:Arial,Helvetica,sans-serif;color:#222;line-height:1.6;margin:24px}
-    h1,h2,h3{color:#0b5;}
-    .toc{background:#f7f7f7;padding:12px;border-radius:6px;margin-bottom:18px}
-    .step{border-left:4px solid #0b5;padding:10px;margin:10px 0;background:#fff}
-    code{background:#eee;padding:2px 4px;border-radius:4px}
-    a.file{color:#0645ad}
-    .note{background:#fffbe6;border:1px solid #ffeeba;padding:8px;border-radius:6px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual do Usuário - Sistema Segue-me</title>
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --info-color: #3498db;
+            --border-color: #ddd;
+            --bg-light: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary-color);
+            font-size: 2em;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            margin: 25px 0 15px 0;
+            font-size: 1.5em;
+        }
+
+        h4 {
+            color: #555;
+            margin: 20px 0 10px 0;
+            font-size: 1.2em;
+        }
+
+        .toc {
+            background: var(--bg-light);
+            border-left: 5px solid var(--primary-color);
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .toc ul {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .toc li {
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .toc li:last-child {
+            border-bottom: none;
+        }
+
+        .toc a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .toc a:hover {
+            color: var(--secondary-color);
+            padding-left: 5px;
+        }
+
+        .card {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .step-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+            border-left: 5px solid var(--primary-color);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 5px solid;
+        }
+
+        .alert-info {
+            background: #e8f4f8;
+            border-color: var(--info-color);
+            color: #0c5460;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-color: var(--warning-color);
+            color: #856404;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: var(--success-color);
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-color: var(--danger-color);
+            color: #721c24;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .feature-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-box h4 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        table tr:hover {
+            background: var(--bg-light);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .badge-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .badge-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .badge-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .badge-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 25px;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .screenshot-placeholder {
+            background: var(--bg-light);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            color: #999;
+            margin: 20px 0;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>Manual do Usuário — Sistema Segue-me</h1>
-  <p>Versão do manual: 1.0 — Gerado automaticamente a partir do código-fonte do projeto.</p>
+    <div class="container">
+        <header>
+            <h1>📖 Manual do Usuário</h1>
+            <p>Sistema Segue-me - Gestão de Encontros de Jovens</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Versão 2.0 | Abril 2026</p>
+        </header>
 
-  <div class="toc">
-    <strong>Índice</strong>
-    <ol>
-      <li>Visão geral</li>
-      <li>Fluxo de implantação inicial</li>
-      <li>Cadastro passo a passo</li>
-      <li>Gestão de fotos</li>
-      <li>Relatórios e exportação</li>
-      <li>Boas práticas e checagens finais</li>
-      <li>Referências técnicas (arquivos relevantes)</li>
-    </ol>
-  </div>
+        <div class="content">
+            <!-- Índice -->
+            <div class="toc">
+                <h3>📑 Índice</h3>
+                <ul>
+                    <li><a href="#introducao">1. Introdução ao Sistema</a></li>
+                    <li><a href="#primeiros-passos">2. Primeiros Passos</a></li>
+                    <li><a href="#login">3. Login e Autenticação</a></li>
+                    <li><a href="#navegacao">4. Navegação pelo Sistema</a></li>
+                    <li><a href="#implantacao">5. Fluxo de Implantação Inicial</a></li>
+                    <li><a href="#cadastros">6. Guia Completo de Cadastros</a></li>
+                    <li><a href="#consultas">7. Consultas e Pesquisas</a></li>
+                    <li><a href="#relatorios">8. Relatórios e Exportações</a></li>
+                    <li><a href="#fotos">9. Gestão de Fotos</a></li>
+                    <li><a href="#vendas">10. Módulo de Vendas</a></li>
+                    <li><a href="#financeiro">11. Controle Financeiro</a></li>
+                    <li><a href="#boas-praticas">12. Boas Práticas</a></li>
+                    <li><a href="#solucao-problemas">13. Solução de Problemas</a></li>
+                    <li><a href="#faq">14. Perguntas Frequentes (FAQ)</a></li>
+                    <li><a href="#glossario">15. Glossário</a></li>
+                </ul>
+            </div>
 
-  <h2>1. Visão geral</h2>
-  <p>Este manual descreve, passo a passo, como operar o sistema Segue-me na primeira implantação e no uso diário. Ele cobre os cadastros essenciais, sequência recomendada, finalização de encontros e verificações.</p>
+            <!-- 1. INTRODUÇÃO -->
+            <h2 id="introducao">1. Introdução ao Sistema</h2>
+            
+            <div class="card">
+                <h3>🎯 Sobre o Sistema Segue-me</h3>
+                <p>
+                    O <strong>Sistema Segue-me</strong> é uma aplicação web completa desenvolvida para gerenciar todos os aspectos 
+                    relacionados aos Encontros de Jovens, desde o cadastro de participantes até o controle financeiro e geração 
+                    de relatórios detalhados.
+                </p>
+            </div>
 
-  <h2>2. Fluxo de implantação inicial (ordem recomendada)</h2>
-  <p>Para a <strong>primeira implantação</strong>, siga esta ordem com cuidado — ela evita problemas com telefones, relacionamentos e dependências entre tabelas:</p>
-  <ol>
-    <li><strong>Cadastrar todas as pessoas</strong> — veja detalhes na seção 3.1. (Cadastrar de trás para frente para garantir telefones atualizados)</li>
-    <li><strong>Cadastrar casais</strong> — associe pessoas já cadastradas.</li>
-    <li><strong>Cadastrar encontro</strong> — use o padrão de nome: <em>Segue-me 2025</em> (ou ano correspondente).</li>
-    <li><strong>Cadastrar seguimistas (encontristas)</strong> — associando à pessoa e ao encontro.</li>
-    <li><strong>Cadastrar equipes</strong>, incluindo equipes de dirigentes.</li>
-    <li><strong>Cadastrar trabalhadores</strong>, incluindo dirigentes.</li>
-    <li><strong>Cadastrar pastas</strong> (se aplicável) e relacionar dirigentes.</li>
-    <li><strong>Cadastrar dirigentes</strong> (associar a pasta/equipe).</li>
-    <li><strong>Cadastrar contribuições</strong> financeiras (se aplicável).</li>
-    <li>Ao término do encontro, <strong>editar o encontro e finalizá-lo</strong> (mudar status/ativo).</li>
-  </ol>
+            <div class="feature-grid">
+                <div class="feature-box">
+                    <div class="icon">👥</div>
+                    <h4>Gestão de Pessoas</h4>
+                    <p>Cadastro completo de participantes, casais e encontristas</p>
+                </div>
+                <div class="feature-box">
+                    <div class="icon">📅</div>
+                    <h4>Controle de Encontros</h4>
+                    <p>Planejamento e acompanhamento de todos os encontros</p>
+                </div>
+                <div class="feature-box">
+                    <div class="icon">⚙️</div>
+                    <h4>Organização de Equipes</h4>
+                    <p>Gestão de trabalhadores, dirigentes e pastas</p>
+                </div>
+                <div class="feature-box">
+                    <div class="icon">💰</div>
+                    <h4>Controle Financeiro</h4>
+                    <p>Contribuições, vendas e relatórios financeiros</p>
+                </div>
+                <div class="feature-box">
+                    <div class="icon">📊</div>
+                    <h4>Relatórios Completos</h4>
+                    <p>Exportações em PDF e Excel para análises</p>
+                </div>
+                <div class="feature-box">
+                    <div class="icon">🔐</div>
+                    <h4>Segurança</h4>
+                    <p>Controle de acesso e autenticação segura</p>
+                </div>
+            </div>
 
-  <h2>3. Cadastro passo a passo</h2>
+            <div class="alert alert-info">
+                <strong>💡 Dica:</strong> Este manual está organizado de forma progressiva. Se você é um novo usuário, 
+                recomendamos seguir a ordem das seções. Para usuários experientes, utilize o índice para navegar 
+                rapidamente até o tópico desejado.
+            </div>
 
-  <h3>3.1 Pessoas</h3>
-  <div class="step">
-    <strong>Página de cadastro:</strong>
-    <ul>
-      <li>Formulário: <a class="file" href="src/main/webapp/pages/pessoa/cadastro.xhtml">pages/pessoa/cadastro.xhtml</a></li>
-    </ul>
-    <p>Recomendações:</p>
-    <ul>
-      <li>Ao cadastrar durante a implantação inicial, cadastre <em>de trás para frente</em> — isto é, se você estiver migrando de uma lista ordenada, insira os registros começando pelos mais antigos até os mais recentes de forma a preservar a consistência dos telefones e referências.</li>
-      <li>Campos essenciais: <em>Nome</em>, <em>Data de Nascimento</em>, <em>Sexo</em>, <em>Telefone</em>. Telefone é único no banco.</li>
-      <li>Use o campo <em>Foto</em> para carregar imagem — veja seção 4 sobre gestão de fotos.</li>
-      <li>Validação: o formulário aplica validações cliente/servidor. Mensagens aparecem no growl.</li>
-    </ul>
-  </div>
+            <!-- 2. PRIMEIROS PASSOS -->
+            <h2 id="primeiros-passos">2. Primeiros Passos</h2>
 
-  <h3>3.2 Casais</h3>
-  <div class="step">
-    <strong>Página de cadastro:</strong> <a class="file" href="src/main/webapp/pages/casal/cadastro.xhtml">pages/casal/cadastro.xhtml</a>
-    <p>Notas:</p>
-    <ul>
-      <li>Casais referenciam duas pessoas existentes. Selecione pessoas já cadastradas.</li>
-      <li>Há uma restrição de unicidade (pessoa1, pessoa2).</li>
-    </ul>
-  </div>
+            <div class="card">
+                <h3>🚀 Requisitos do Sistema</h3>
+                
+                <h4>Requisitos Mínimos:</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Componente</th>
+                            <th>Especificação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Navegador</strong></td>
+                            <td>Google Chrome 90+, Firefox 88+, Edge 90+ ou Safari 14+</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Resolução de Tela</strong></td>
+                            <td>Mínimo 1366x768 (recomendado: 1920x1080)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Conexão Internet</strong></td>
+                            <td>Banda larga (mínimo 2 Mbps)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>JavaScript</strong></td>
+                            <td>Habilitado (obrigatório)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-  <h3>3.3 Encontros</h3>
-  <div class="step">
-    <strong>Página de cadastro:</strong> <a class="file" href="src/main/webapp/pages/encontro/cadastro.xhtml">pages/encontro/cadastro.xhtml</a>
-    <p>Padronização de nome:</p>
-    <ul>
-      <li>Use o padrão <strong>Segue-me &lt;ano&gt;</strong> (ex.: Segue-me 2025) no campo nome para facilitar filtros e relatórios.</li>
-      <li>Preencha datas de início/fim, local, capacidade máxima e valores de inscrição conforme política do encontro.</li>
-    </ul>
-  </div>
+            <div class="card">
+                <h3>🌐 Acessando o Sistema</h3>
+                
+                <div class="step-card">
+                    <span class="step-number">1</span>
+                    <strong>Abra seu navegador preferido</strong>
+                    <p style="margin: 10px 0 0 50px;">
+                        Recomendamos Google Chrome ou Firefox para melhor compatibilidade com PrimeFaces.
+                    </p>
+                </div>
 
-  <h3>3.4 Seguimistas / Encontristas</h3>
-  <div class="step">
-    <strong>Página de cadastro:</strong> <a class="file" href="src/main/webapp/pages/encontrista/cadastro.xhtml">pages/encontrista/cadastro.xhtml</a>
-    <p>Observações:</p>
-    <ul>
-      <li>Cada encontrista deve estar vinculado a uma <em>Pessoa</em> e a um <em>Encontro</em>.</li>
-      <li>Registre dados de inscrição, forma de pagamento e observações quando disponíveis.</li>
-      <li>O sistema possui relatórios por encontro: <a class="file" href="src/main/webapp/pages/relatorios/encontristas-por-encontro.xhtml">relatorios/encontristas-por-encontro.xhtml</a></li>
-    </ul>
-  </div>
+                <div class="step-card">
+                    <span class="step-number">2</span>
+                    <strong>Digite o endereço do sistema</strong>
+                    <p style="margin: 10px 0 0 50px;">
+                        URL padrão: <code>http://localhost:8080/segue-me</code><br>
+                        <em>(O endereço pode variar conforme configuração do servidor)</em>
+                    </p>
+                </div>
 
-  <h3>3.5 Equipes e Dirigentes</h3>
-  <div class="step">
-    <strong>Páginas:</strong>
-    <ul>
-      <li>Cadastro de equipes: <a class="file" href="src/main/webapp/pages/equipe/cadastro.xhtml">pages/equipe/cadastro.xhtml</a></li>
-      <li>Listagem/visualização de equipes: <a class="file" href="src/main/webapp/pages/equipe/lista.xhtml">pages/equipe/lista.xhtml</a>, <a class="file" href="src/main/webapp/pages/equipe/visualizar.xhtml">pages/equipe/visualizar.xhtml</a></li>
-      <li>Dirigentes: <a class="file" href="src/main/webapp/pages/dirigente/cadastro.xhtml">pages/dirigente/cadastro.xhtml</a></li>
-    </ul>
-    <p>Boas práticas:</p>
-    <ul>
-      <li>Cadastre as equipes antes de atribuir trabalhadores a elas.</li>
-      <li>Dirigentes podem ser registrados separadamente e atribuídos a pastas/equipes.</li>
-    </ul>
-  </div>
+                <div class="step-card">
+                    <span class="step-number">3</span>
+                    <strong>Aguarde o carregamento</strong>
+                    <p style="margin: 10px 0 0 50px;">
+                        A página de login será exibida automaticamente.
+                    </p>
+                </div>
+            </div>
 
-  <h3>3.6 Trabalhadores</h3>
-  <div class="step">
-    <strong>Página de cadastro:</strong> <a class="file" href="src/main/webapp/pages/trabalhador/cadastro.xhtml">pages/trabalhador/cadastro.xhtml</a>
-    <p>Observações:</p>
-    <ul>
-      <li>Trabalhadores são associados a uma pessoa e a uma equipe. Marque o campo de dirigente quando aplicável.</li>
-      <li>Relatórios úteis: <a class="file" href="src/main/webapp/pages/relatorios/trabalhadores-por-equipe.xhtml">relatorios/trabalhadores-por-equipe.xhtml</a></li>
-    </ul>
-  </div>
+            <!-- 3. LOGIN -->
+            <h2 id="login">3. Login e Autenticação</h2>
 
-  <h3>3.7 Pastas</h3>
-  <div class="step">
-    <strong>Página de cadastro:</strong> <a class="file" href="src/main/webapp/pages/pasta/cadastro.xhtml">pages/pasta/cadastro.xhtml</a>
-    <p>Use pastas para organizar equipes e atribuir dirigentes.</p>
-  </div>
+            <div class="card">
+                <h3>🔐 Como Fazer Login</h3>
+                
+                <div class="screenshot-placeholder">
+                    <strong>📸 Tela de Login</strong><br>
+                    <em>Interface com campos de usuário e senha</em>
+                </div>
 
-  <h3>3.8 Contribuições</h3>
-  <div class="step">
-    <strong>Páginas:</strong>
-    <ul>
-      <li>Cadastro: <a class="file" href="src/main/webapp/pages/contribuicao/cadastro.xhtml">pages/contribuicao/cadastro.xhtml</a></li>
-      <li>Listagem: <a class="file" href="src/main/webapp/pages/contribuicao/lista.xhtml">pages/contribuicao/lista.xhtml</a></li>
-    </ul>
-    <p>Campos importantes: valor, forma de pagamento, comprovante (URL) e vínculo com trabalhador.</p>
-  </div>
+                <ol>
+                    <li>
+                        <strong>Informe seu nome de usuário</strong><br>
+                        Digite o login fornecido pelo administrador do sistema
+                    </li>
+                    <li>
+                        <strong>Digite sua senha</strong><br>
+                        A senha é <em>case-sensitive</em> (diferencia maiúsculas de minúsculas)
+                    </li>
+                    <li>
+                        <strong>Clique em "Entrar"</strong><br>
+                        Após validação bem-sucedida, você será redirecionado para a página inicial
+                    </li>
+                </ol>
 
-  <h3>3.9 Finalizar encontro</h3>
-  <div class="step">
-    <p>Ao finalizar o encontro, edite o registro em <a class="file" href="src/main/webapp/pages/encontro/visualizar.xhtml">pages/encontro/visualizar.xhtml</a> ou na edição e marque como inativo/fechado conforme o campo disponível no formulário. Confirme também os valores de presença e contribuições.</p>
-  </div>
+                <div class="alert alert-warning">
+                    <strong>⚠️ Atenção:</strong> Por segurança, após 3 tentativas incorretas de login, sua conta 
+                    poderá ser temporariamente bloqueada. Entre em contato com o administrador caso isso ocorra.
+                </div>
+            </div>
 
-  <h2>4. Gestão de fotos</h2>
+            <div class="card">
+                <h3>👤 Primeiro Acesso</h3>
+                
+                <div class="alert alert-info">
+                    <strong>📌 Credenciais padrão do administrador:</strong><br>
+                    Usuário: <code>admin</code><br>
+                    Senha: <code>admin123</code>
+                </div>
+
+                <div class="alert alert-danger">
+                    <strong>🔒 IMPORTANTE:</strong> Altere a senha padrão imediatamente após o primeiro acesso! 
+                    Vá em <em>Menu → Meu Perfil → Alterar Senha</em>.
+                </div>
+
+                <h4>Recuperação de Senha</h4>
+                <p>
+                    Se você esqueceu sua senha, entre em contato com o administrador do sistema. Por questões de 
+                    segurança, apenas administradores podem redefinir senhas de usuários.
+                </p>
+            </div>
+
+            <!-- 4. NAVEGAÇÃO -->
+            <!-- 4. NAVEGAÇÃO -->
+            <h2 id="navegacao">4. Navegação pelo Sistema</h2>
+
+            <div class="card">
+                <h3>🧭 Estrutura do Menu Principal</h3>
+                
+                <p>O sistema possui um menu lateral intuitivo organizado por módulos funcionais:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ícone</th>
+                            <th>Menu</th>
+                            <th>Funcionalidades</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: center; font-size: 1.5em;">🏠</td>
+                            <td><strong>Home</strong></td>
+                            <td>Página inicial com dashboard e estatísticas</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-size: 1.5em;">👥</td>
+                            <td><strong>Pessoas</strong></td>
+                            <td>Cadastro, listagem e busca de participantes</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-size: 1.5em;">💑</td>
+                            <td><strong>Casais</strong></td>
+                            <td>Gestão de relacionamentos entre pessoas</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-size: 1.5em;">📅</td>
+                            <td><strong>Encontros</strong></td>
+                            <td>Planejamento e controle de eventos</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-size: 1.5em;">🎓</td>
+                            <td><strong>Encontristas</strong></td>
+                            <td>Participantes inscritos em encontros</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-size: 1.5em;">⚙️</td>
+                            <td><strong>Equipes</strong></td>
+                            <td>Organização de equipes de trabalho</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-size: 1.5em;">👷</td>
+                            <td><strong>Trabalhadores</strong></td>
+                            <td>Colaboradores e suas atribuições</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-size: 1.5em;">📁</td>
+                            <td><strong>Pastas</strong></td>
+                            <td>Organização hierárquica de equipes</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-size: 1.5em;">🎤</td>
+                            <td><strong>Palestrantes</strong></td>
+                            <td>Cadastro e agenda de palestrantes</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-size: 1.5em;">💰</td>
+                            <td><strong>Contribuições</strong></td>
+                            <td>Registro de contribuições financeiras</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-size: 1.5em;">🛒</td>
+                            <td><strong>Vendas</strong></td>
+                            <td>Controle de vendas de produtos</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-size: 1.5em;">📊</td>
+                            <td><strong>Relatórios</strong></td>
+                            <td>Geração de relatórios e exportações</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>🔍 Estrutura Padrão das Páginas</h3>
+                
+                <p>Cada módulo segue uma estrutura consistente com três páginas principais:</p>
+
+                <div class="feature-grid">
+                    <div class="feature-box" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                        <div class="icon">📝</div>
+                        <h4>Cadastro</h4>
+                        <p>Formulário para incluir novos registros</p>
+                    </div>
+                    <div class="feature-box" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <div class="icon">📋</div>
+                        <h4>Listagem</h4>
+                        <p>Tabela com todos os registros e filtros</p>
+                    </div>
+                    <div class="feature-box" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                        <div class="icon">👁️</div>
+                        <h4>Visualizar</h4>
+                        <p>Detalhes completos e opções de edição</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. IMPLANTAÇÃO INICIAL -->
+            <h2 id="implantacao">5. Fluxo de Implantação Inicial</h2>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ ATENÇÃO:</strong> Esta seção é fundamental para quem está configurando o sistema pela primeira vez 
+                ou migrando dados de outro sistema. Siga rigorosamente a ordem descrita para evitar problemas de integridade.
+            </div>
+
+            <div class="card">
+                <h3>📋 Ordem Recomendada de Cadastro</h3>
+                
+                <p>
+                    O sistema possui relacionamentos entre entidades que devem ser respeitados. Seguir a ordem abaixo 
+                    evita erros de chave estrangeira e garante a consistência dos dados.
+                </p>
+
+                <div class="step-card" style="border-left-color: #e74c3c;">
+                    <span class="step-number" style="background: #e74c3c;">1</span>
+                    <strong>Cadastrar TODAS as Pessoas</strong>
+                    <div style="margin-left: 50px; margin-top: 10px;">
+                        <p><span class="badge badge-danger">CRÍTICO</span> Pessoa é a entidade base do sistema</p>
+                        <ul>
+                            <li>Comece por pessoas mais antigas (se estiver migrando dados)</li>
+                            <li>Garanta que telefones sejam únicos</li>
+                            <li>Valide CPF quando disponível</li>
+                            <li>Anexe fotos se disponíveis</li>
+                        </ul>
+                        <div class="alert alert-info">
+                            <strong>💡 Por que de trás para frente?</strong><br>
+                            Ao migrar de planilhas ordenadas, inserir do mais antigo para o mais recente preserva 
+                            a lógica histórica e facilita identificar duplicidades de telefone.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: #f39c12;">
+                    <span class="step-number" style="background: #f39c12;">2</span>
+                    <strong>Cadastrar Casais</strong>
+                    <div style="margin-left: 50px; margin-top: 10px;">
+                        <p><span class="badge badge-warning">IMPORTANTE</span> Requer pessoas já cadastradas</p>
+                        <ul>
+                            <li>Selecione Pessoa 1 (esposo/esposa)</li>
+                            <li>Selecione Pessoa 2 (esposo/esposa)</li>
+                            <li>Informe data de casamento se conhecida</li>
+                            <li>Sistema valida unicidade do par</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: #3498db;">
+                    <span class="step-number" style="background: #3498db;">3</span>
+                    <strong>Cadastrar Encontro</strong>
+                    <div style="margin-left: 50px; margin-top: 10px;">
+                        <p><span class="badge badge-primary">PADRÃO</span> Use nomenclatura consistente</p>
+                        <ul>
+                            <li><strong>Nome:</strong> Segue-me 2026 <em>(padrão recomendado)</em></li>
+                            <li><strong>Datas:</strong> Início e fim do evento</li>
+                            <li><strong>Local:</strong> Endereço completo</li>
+                            <li><strong>Capacidade:</strong> Número máximo de participantes</li>
+                            <li><strong>Valores:</strong> Inscrição, alimentação, hospedagem</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: #9b59b6;">
+                    <span class="step-number" style="background: #9b59b6;">4</span>
+                    <strong>Cadastrar Encontristas (Seguimistas)</strong>
+                    <div style="margin-left: 50px; margin-top: 10px;">
+                        <p>Vincula pessoas aos encontros</p>
+                        <ul>
+                            <li>Selecione a <strong>Pessoa</strong></li>
+                            <li>Selecione o <strong>Encontro</strong></li>
+                            <li>Informe dados de inscrição</li>
+                            <li>Registre forma de pagamento</li>
+                            <li>Anexe ficha de inscrição (opcional)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: #1abc9c;">
+                    <span class="step-number" style="background: #1abc9c;">5</span>
+                    <strong>Cadastrar Tipos de Equipe</strong>
+                    <div style="margin-left: 50px; margin-top: 10px;">
+                        <p>Defina os tipos de equipes que existirão</p>
+                        <ul>
+                            <li>Exemplos: Cozinha, Limpeza, Recepção, Segurança, etc.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: #2ecc71;">
+                    <span class="step-number" style="background: #2ecc71;">6</span>
+                    <strong>Cadastrar Equipes</strong>
+                    <div style="margin-left: 50px; margin-top: 10px;">
+                        <p>Crie as equipes de trabalho vinculadas ao encontro</p>
+                        <ul>
+                            <li>Nome da equipe</li>
+                            <li>Tipo da equipe (cadastrado no passo anterior)</li>
+                            <li>Descrição e responsabilidades</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: #e67e22;">
+                    <span class="step-number" style="background: #e67e22;">7</span>
+                    <strong>Cadastrar Trabalhadores</strong>
+                    <div style="margin-left: 50px; margin-top: 10px;">
+                        <p>Atribua pessoas às equipes como trabalhadores</p>
+                        <ul>
+                            <li>Selecione a <strong>Pessoa</strong></li>
+                            <li>Selecione a <strong>Equipe</strong></li>
+                            <li>Marque se é <strong>Dirigente</strong></li>
+                            <li>Informe função específica</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: #95a5a6;">
+                    <span class="step-number" style="background: #95a5a6;">8</span>
+                    <strong>Cadastrar Pastas <span class="badge badge-primary">OPCIONAL</span></strong>
+                    <div style="margin-left: 50px; margin-top: 10px;">
+                        <p>Organize equipes em pastas para melhor hierarquia</p>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: #34495e;">
+                    <span class="step-number" style="background: #34495e;">9</span>
+                    <strong>Cadastrar Dirigentes</strong>
+                    <div style="margin-left: 50px; margin-top: 10px;">
+                        <p>Registre dirigentes e suas pastas/equipes</p>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: #16a085;">
+                    <span class="step-number" style="background: #16a085;">10</span>
+                    <strong>Cadastrar Contribuições <span class="badge badge-primary">OPCIONAL</span></strong>
+                    <div style="margin-left: 50px; margin-top: 10px;">
+                        <p>Registre contribuições financeiras dos trabalhadores/participantes</p>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: #2ecc71;">
+                    <span class="step-number" style="background: #2ecc71;">✓</span>
+                    <strong>Finalizar Encontro</strong>
+                    <div style="margin-left: 50px; margin-top: 10px;">
+                        <p>Após conclusão do evento:</p>
+                        <ul>
+                            <li>Edite o encontro</li>
+                            <li>Marque como <strong>Finalizado/Inativo</strong></li>
+                            <li>Valide presença dos encontristas</li>
+                            <li>Confirme valores de contribuições</li>
+                            <li>Gere relatórios finais</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. CADASTROS DETALHADOS -->
+
+            <!-- 6. CADASTROS DETALHADOS -->
+            <h2 id="cadastros">6. Guia Completo de Cadastros</h2>
+
+            <!-- 6.1 PESSOAS -->
+            <div class="card">
+                <h3>👥 6.1. Cadastro de Pessoas</h3>
+                
+                <p>
+                    <strong>Caminho:</strong> Menu → Pessoas → Novo Cadastro<br>
+                    <strong>Arquivo:</strong> <code>pages/pessoa/cadastro.xhtml</code>
+                </p>
+
+                <h4>📋 Campos do Formulário</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Tipo</th>
+                            <th>Obrigatório</th>
+                            <th>Validações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Nome Completo</strong></td>
+                            <td>Texto</td>
+                            <td><span class="badge badge-danger">Sim</span></td>
+                            <td>Mínimo 3 caracteres</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data de Nascimento</strong></td>
+                            <td>Data</td>
+                            <td><span class="badge badge-danger">Sim</span></td>
+                            <td>Formato: DD/MM/AAAA</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sexo</strong></td>
+                            <td>Seleção</td>
+                            <td><span class="badge badge-danger">Sim</span></td>
+                            <td>M ou F</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CPF</strong></td>
+                            <td>Texto</td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Validação de CPF, único no sistema</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RG</strong></td>
+                            <td>Texto</td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Telefone</strong></td>
+                            <td>Texto</td>
+                            <td><span class="badge badge-danger">Sim</span></td>
+                            <td>Formato: (99) 99999-9999, <strong>Único</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Email</strong></td>
+                            <td>Email</td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Validação de formato</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Endereço</strong></td>
+                            <td>Texto</td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CEP</strong></td>
+                            <td>Texto</td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Formato: 99999-999</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cidade</strong></td>
+                            <td>Texto</td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Estado</strong></td>
+                            <td>Seleção</td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>UF (2 caracteres)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Foto</strong></td>
+                            <td>Upload</td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>JPG, PNG - Máx: 2MB</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Observações</strong></td>
+                            <td>Área de Texto</td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="alert alert-danger">
+                    <strong>🚨 ATENÇÃO - Telefone Único:</strong><br>
+                    O sistema não permite dois registros com o mesmo telefone. Esta validação evita duplicidades. 
+                    Se encontrar erro ao cadastrar, verifique se a pessoa já existe no sistema.
+                </div>
+
+                <h4>✅ Passo a Passo do Cadastro</h4>
+                <div class="step-card">
+                    <span class="step-number">1</span>
+                    <strong>Preencha os dados básicos</strong>
+                    <ul style="margin-left: 50px; margin-top: 5px;">
+                        <li>Nome completo sem abreviações</li>
+                        <li>Data de nascimento completa</li>
+                        <li>Sexo</li>
+                    </ul>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">2</span>
+                    <strong>Adicione informações de contato</strong>
+                    <ul style="margin-left: 50px; margin-top: 5px;">
+                        <li>Telefone com DDD (campo obrigatório)</li>
+                        <li>Email válido</li>
+                    </ul>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">3</span>
+                    <strong>Complete o endereço (opcional)</strong>
+                    <ul style="margin-left: 50px; margin-top: 5px;">
+                        <li>Logradouro, número e complemento</li>
+                        <li>CEP, cidade e estado</li>
+                    </ul>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">4</span>
+                    <strong>Faça upload da foto (opcional)</strong>
+                    <ul style="margin-left: 50px; margin-top: 5px;">
+                        <li>Clique em "Escolher arquivo"</li>
+                        <li>Selecione foto em JPG ou PNG</li>
+                        <li>Tamanho máximo: 2MB</li>
+                    </ul>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">5</span>
+                    <strong>Adicione observações (opcional)</strong>
+                    <ul style="margin-left: 50px; margin-top: 5px;">
+                        <li>Informações relevantes sobre a pessoa</li>
+                        <li>Restrições alimentares, medicamentos, etc.</li>
+                    </ul>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">6</span>
+                    <strong>Salvar</strong>
+                    <p style="margin-left: 50px; margin-top: 5px;">
+                        Clique em <strong>"Salvar"</strong>. Uma mensagem de sucesso será exibida 
+                        e você será redirecionado para a lista de pessoas.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 6.2 CASAIS -->
+            <div class="card">
+                <h3>💑 6.2. Cadastro de Casais</h3>
+                
+                <p>
+                    <strong>Caminho:</strong> Menu → Casais → Novo Cadastro<br>
+                    <strong>Arquivo:</strong> <code>pages/casal/cadastro.xhtml</code>
+                </p>
+
+                <p>
+                    O cadastro de casais permite vincular duas pessoas que formam um casal. 
+                    Ambas as pessoas devem estar previamente cadastradas no sistema.
+                </p>
+
+                <h4>📋 Campos do Formulário</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Pessoa 1</strong></td>
+                            <td>Seleção do primeiro cônjuge (campo com autocompletar)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pessoa 2</strong></td>
+                            <td>Seleção do segundo cônjuge (campo com autocompletar)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data do Casamento</strong></td>
+                            <td>Data em que o casal se casou (opcional)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Observações</strong></td>
+                            <td>Informações adicionais sobre o casal</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="alert alert-info">
+                    <strong>💡 Dica:</strong> Use o campo de busca com autocompletar. Digite parte do nome e o sistema 
+                    sugerirá as pessoas cadastradas. Isso facilita encontrar a pessoa correta e evita erros.
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Validação:</strong> O sistema não permite cadastrar o mesmo par de pessoas duas vezes. 
+                    A ordem (Pessoa1, Pessoa2) ou (Pessoa2, Pessoa1) é considerada a mesma.
+                </div>
+            </div>
+
+            <!-- 6.3 ENCONTROS -->
+            <div class="card">
+                <h3>📅 6.3. Cadastro de Encontros</h3>
+                
+                <p>
+                    <strong>Caminho:</strong> Menu → Encontros → Novo Cadastro<br>
+                    <strong>Arquivo:</strong> <code>pages/encontro/cadastro.xhtml</code>
+                </p>
+
+                <h4>📋 Campos do Formulário</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Obrigatório</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Nome do Encontro</strong></td>
+                            <td><span class="badge badge-danger">Sim</span></td>
+                            <td>Ex: "Segue-me 2026" (usar padrão)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data de Início</strong></td>
+                            <td><span class="badge badge-danger">Sim</span></td>
+                            <td>Primeiro dia do evento</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data de Fim</strong></td>
+                            <td><span class="badge badge-danger">Sim</span></td>
+                            <td>Último dia do evento</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Local</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Endereço completo do evento</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Capacidade Máxima</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Número máximo de participantes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Valor Inscrição</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Valor da taxa de inscrição</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Valor Alimentação</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Custo de alimentação por pessoa</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Valor Hospedagem</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Custo de hospedagem por pessoa</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Descrição</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Detalhes e objetivos do encontro</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Status</strong></td>
+                            <td><span class="badge badge-danger">Sim</span></td>
+                            <td>Ativo / Inativo / Concluído</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="alert alert-success">
+                    <strong>✅ Padrão de Nomenclatura:</strong><br>
+                    Utilize sempre o padrão <code>Segue-me [ANO]</code> para facilitar filtros e buscas.<br>
+                    Exemplos: Segue-me 2025, Segue-me 2026, Segue-me 2027
+                </div>
+            </div>
+
+            <!-- 6.4 ENCONTRISTAS -->
+            <div class="card">
+                <h3>🎓 6.4. Cadastro de Encontristas (Seguimistas)</h3>
+                
+                <p>
+                    <strong>Caminho:</strong> Menu → Encontristas → Novo Cadastro<br>
+                    <strong>Arquivo:</strong> <code>pages/encontrista/cadastro.xhtml</code>
+                </p>
+
+                <p>
+                    Encontristas são as pessoas inscritas em um encontro específico. Este cadastro vincula 
+                    uma <em>Pessoa</em> a um <em>Encontro</em>.
+                </p>
+
+                <h4>📋 Campos do Formulário</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Obrigatório</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Pessoa</strong></td>
+                            <td><span class="badge badge-danger">Sim</span></td>
+                            <td>Selecione a pessoa que participará</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Encontro</strong></td>
+                            <td><span class="badge badge-danger">Sim</span></td>
+                            <td>Selecione o encontro</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data de Inscrição</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Quando a inscrição foi realizada</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Valor Pago</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Valor efetivamente pago</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Forma de Pagamento</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Dinheiro, Pix, Cartão, etc.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Confirmado</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Checkbox: participação confirmada</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Presente</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Checkbox: compareceu ao evento</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ficha Inscricao</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Upload da ficha de inscrição (PDF)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Observações</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Informações adicionais</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="alert alert-info">
+                    <strong>📌 Workflow Típico:</strong><br>
+                    1. Cadastro inicial com dados mínimos (pessoa + encontro)<br>
+                    2. Atualização após pagamento (valor pago + forma de pagamento)<br>
+                    3. Confirmação de presença (marcar "Confirmado")<br>
+                    4. Registro de comparecimento (marcar "Presente" durante o evento)
+                </div>
+            </div>
+
+            <!-- 6.5 EQUIPES E TRABALHADORES -->
+            <div class="card">
+                <h3>⚙️ 6.5. Cadastro de Equipes e Trabalhadores</h3>
+                
+                <h4>📁 Tipos de Equipe</h4>
+                <p>
+                    <strong>Caminho:</strong> Menu → Tipos de Equipe → Novo Cadastro<br>
+                    Cadastre categorias de equipes antes de criar as equipes.
+                </p>
+                <p><strong>Exemplos:</strong> Cozinha, Limpeza, Recepção, Segurança, Som, Decoração</p>
+
+                <h4>⚙️ Equipes</h4>
+                <p>
+                    <strong>Caminho:</strong> Menu → Equipes → Novo Cadastro<br>
+                    <strong>Arquivo:</strong> <code>pages/equipe/cadastro.xhtml</code>
+                </p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Nome</strong></td>
+                            <td>Nome da equipe (ex: "Equipe Cozinha 1")</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tipo</strong></td>
+                            <td>Selecione o tipo de equipe</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Encontro</strong></td>
+                            <td>Vincule ao encontro</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Descrição</strong></td>
+                            <td>Responsabilidades e atribuições</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>👷 Trabalhadores</h4>
+                <p>
+                    <strong>Caminho:</strong> Menu → Trabalhadores → Novo Cadastro<br>
+                    <strong>Arquivo:</strong> <code>pages/trabalhador/cadastro.xhtml</code>
+                </p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Pessoa</strong></td>
+                            <td>Selecione a pessoa que será trabalhador</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Equipe</strong></td>
+                            <td>Equipe em que atuará</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Função</strong></td>
+                            <td>Cargo ou função específica</td>
+                        </tr>
+                        <tr>
+                            <td><strong>É Dirigente</strong></td>
+                            <td>Marque se a pessoa é dirigente</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 7. CONSULTAS -->
   <div class="step">
     <p>Local padrão das fotos: o sistema lê a propriedade <code>caminho_fotos</code>. Nos controllers a constante padrão é definida como:</p>
     <ul>
@@ -152,71 +1277,622 @@
     <p class="note">Se o diretório não existir, o sistema cria automaticamente (verificar permissões). Caso você prefira outro local, defina a propriedade de sistema <code>-Dcaminho_fotos=&lt;caminho&gt;</code> ao iniciar a JVM.</p>
   </div>
 
-  <h2>5. Relatórios e exportação</h2>
-  <div class="step">
-    <p>Relatórios estão disponíveis em:</p>
-    <ul>
-      <li><a class="file" href="src/main/webapp/pages/relatorios/relatorios.xhtml">Relatórios gerais</a></li>
-      <li>Relatórios específicos: encontristas por encontro, contribuições, trabalhadores por equipe</li>
-    </ul>
-    <p>Use os filtros por encontro (nome padronizado) e por datas para gerar exportações corretas.</p>
-  </div>
+            <!-- 7. CONSULTAS -->
+            <h2 id="consultas">7. Consultas e Pesquisas</h2>
 
-  <h2>6. Boas práticas e checagens finais</h2>
-  <ul>
-    <li>Antes de iniciar a migração, faça um backup do banco de dados.</li>
-    <li>Siga a ordem de implantação do item 2 para evitar problemas com FK e unicidades (telefone único, casais referenciam pessoas).</li>
-    <li>Após grandes importações, rode o script para reiniciar sequences: veja seção Referências Técnicas abaixo.</li>
-    <li>Verifique permissões de escrita no diretório de fotos antes de importar imagens em massa.</li>
-  </ul>
+            <div class="card">
+                <h3>🔍 Funcionalidades de Busca</h3>
+                
+                <p>Todas as páginas de listagem possuem recursos avançados de busca e filtro:</p>
 
-  <h2>7. Referências técnicas (arquivos importantes)</h2>
-  <ul>
-    <li>Formulários e páginas:
-      <ul>
-        <li><a class="file" href="src/main/webapp/pages/pessoa/cadastro.xhtml">pages/pessoa/cadastro.xhtml</a></li>
-        <li><a class="file" href="src/main/webapp/pages/casal/cadastro.xhtml">pages/casal/cadastro.xhtml</a></li>
-        <li><a class="file" href="src/main/webapp/pages/encontro/cadastro.xhtml">pages/encontro/cadastro.xhtml</a></li>
-        <li><a class="file" href="src/main/webapp/pages/encontrista/cadastro.xhtml">pages/encontrista/cadastro.xhtml</a></li>
-        <li><a class="file" href="src/main/webapp/pages/equipe/cadastro.xhtml">pages/equipe/cadastro.xhtml</a></li>
-        <li><a class="file" href="src/main/webapp/pages/trabalhador/cadastro.xhtml">pages/trabalhador/cadastro.xhtml</a></li>
-        <li><a class="file" href="src/main/webapp/pages/pasta/cadastro.xhtml">pages/pasta/cadastro.xhtml</a></li>
-        <li><a class="file" href="src/main/webapp/pages/dirigente/cadastro.xhtml">pages/dirigente/cadastro.xhtml</a></li>
-        <li><a class="file" href="src/main/webapp/pages/contribuicao/cadastro.xhtml">pages/contribuicao/cadastro.xhtml</a></li>
-      </ul>
-    </li>
-    <li>Controllers (lógica/paths):
-      <ul>
-        <li><a class="file" href="src/main/java/br/com/segueme/controller/PessoaController.java">src/main/java/br/com/segueme/controller/PessoaController.java</a></li>
-        <li><a class="file" href="src/main/java/br/com/segueme/controller/EncontristaController.java">src/main/java/br/com/segueme/controller/EncontristaController.java</a></li>
-      </ul>
-    </li>
-    <li>Script de limpeza / reset de sequences:
-      <ul>
-        <li><a class="file" href="modelo/cleanup_database.sql">modelo/cleanup_database.sql</a> — contém TRUNCATE + bloco para reiniciar sequences automaticamente.</li>
-      </ul>
-    </li>
-  </ul>
+                <div class="feature-grid">
+                    <div class="feature-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="icon">🔎</div>
+                        <h4>Busca Rápida</h4>
+                        <p>Campo de busca global no topo da tabela</p>
+                    </div>
+                    <div class="feature-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <div class="icon">🎯</div>
+                        <h4>Filtros por Coluna</h4>
+                        <p>Filtros individuais em cada coluna da tabela</p>
+                    </div>
+                    <div class="feature-box" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <div class="icon">📊</div>
+                        <h4>Ordenação</h4>
+                        <p>Clique no cabeçalho para ordenar crescente/decrescente</p>
+                    </div>
+                </div>
 
-  <h2>8. Procedimentos recomendados rápidos</h2>
-  <ol>
-    <li>Backup do banco.</li>
-    <li>Cadastre pessoas (garantir telefones atualizados).</li>
-    <li>Cadastre casais.</li>
-    <li>Cadastre encontro padrão (Segue-me &lt;ano&gt;).</li>
-    <li>Cadastre encontristas e equipes, depois trabalhadores e dirigentes.</li>
-    <li>Importe contribuições e confira relatórios.</li>
-    <li>Ao final do encontro, marque-o como finalizado na tela de edição.</li>
-    <li>Se necessário, rode <code>modelo/cleanup_database.sql</code> para limpeza e reinício de sequences.</li>
-  </ol>
+                <h4>💡 Dicas de Busca</h4>
+                <ul>
+                    <li>Use a <strong>busca global</strong> para localizar rapidamente qualquer informação visível</li>
+                    <li>Combine <strong>múltiplos filtros</strong> por coluna para refinar resultados</li>
+                    <li><strong>Limpe os filtros</strong> clicando no ícone de "X" ou no botão "Limpar"</li>
+                    <li>A busca é <strong>incremental</strong>: resultados aparecem conforme você digita</li>
+                </ul>
+            </div>
 
-  <hr/>
-  <p>Manual gerado automaticamente. Caso queira, eu posso:
-    <ul>
-      <li>Adicionar screenshots das telas (se fornecer imagens).</li>
-      <li>Gerar uma versão PDF do manual.</li>
-      <li>Extrair e listar endpoints/menus com mapeamento mais detalhado.</li>
-    </ul>
-  </p>
+            <div class="card">
+                <h3>📋 Ações nas Listas</h3>
+                
+                <p>As tabelas de listagem oferecem ações rápidas para cada registro:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ícone</th>
+                            <th>Ação</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: center;">👁️</td>
+                            <td><strong>Visualizar</strong></td>
+                            <td>Abre página de detalhes do registro</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">✏️</td>
+                            <td><strong>Editar</strong></td>
+                            <td>Permite modificar informações do registro</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">🗑️</td>
+                            <td><strong>Excluir</strong></td>
+                            <td>Remove o registro (requer confirmação)</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">📄</td>
+                            <td><strong>PDF</strong></td>
+                            <td>Gera documento PDF do registro</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Exclusão de Registros:</strong><br>
+                    Ao excluir um registro que está vinculado a outros (ex: uma pessoa que é encontrista), 
+                    o sistema pode impedir a exclusão ou criar órfãos. Revise dependências antes de excluir.
+                </div>
+            </div>
+
+            <!-- 8. RELATÓRIOS -->
+            <h2 id="relatorios">8. Relatórios e Exportações</h2>
+
+            <div class="card">
+                <h3>📊 Tipos de Relatórios Disponíveis</h3>
+                
+                <p><strong>Caminho:</strong> Menu → Relatórios</p>
+
+                <div class="step-card">
+                    <span class="step-number">1</span>
+                    <strong>Relatório de Encontristas por Encontro</strong>
+                    <ul style="margin-left: 50px; margin-top: 10px;">
+                        <li>Lista completa de participantes de um encontro</li>
+                        <li>Inclui: nome, idade, telefone, status de pagamento</li>
+                        <li>Filtros: por encontro, por status de confirmação</li>
+                        <li>Exportação: PDF e Excel</li>
+                    </ul>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">2</span>
+                    <strong>Relatório de Trabalhadores por Equipe</strong>
+                    <ul style="margin-left: 50px; margin-top: 10px;">
+                        <li>Distribu ição de trabalhadores nas equipes</li>
+                        <li>Identifica dirigentes</li>
+                        <li>Filtros: por encontro, por tipo de equipe</li>
+                    </ul>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">3</span>
+                    <strong>Relatório de Contribuições</strong>
+                    <ul style="margin-left: 50px; margin-top: 10px;">
+                        <li>Resumo financeiro de contribuições</li>
+                        <li>Total recebido por forma de pagamento</li>
+                        <li>Filtros: por período, por trabalhador</li>
+                    </ul>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">4</span>
+                    <strong>Relatório de Vendas</strong>
+                    <ul style="margin-left: 50px; margin-top: 10px;">
+                        <li>Controle de vendas de produtos</li>
+                        <li>Total vendido por produto</li>
+                        <li>Filtros: por período, por vendedor</li>
+                    </ul>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">5</span>
+                    <strong>Relatório Financeiro Consolidado</strong>
+                    <ul style="margin-left: 50px; margin-top: 10px;">
+                        <li>Visão geral financeira do encontro</li>
+                        <li>Receitas: inscrições + contribuições + vendas</li>
+                        <li>Despesas (se cadastradas)</li>
+                        <li>Saldo final</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📥 Como Exportar Dados</h3>
+                
+                <h4>Exportar para PDF</h4>
+                <ol>
+                    <li>Acesse a página do relatório desejado</li>
+                    <li>Configure os filtros necessários</li>
+                    <li>Clique no botão <strong>"Exportar PDF"</strong> ou ícone 📄</li>
+                    <li>O arquivo será aberto em nova aba ou baixado automaticamente</li>
+                </ol>
+
+                <h4>Exportar para Excel</h4>
+                <ol>
+                    <li>Na página de listagem, clique no botão <strong>"Exportar Excel"</strong> ou ícone 📊</li>
+                    <li>O arquivo .xlsx será baixado</li>
+                    <li>Abra com Microsoft Excel, LibreOffice ou Google Sheets</li>
+                </ol>
+
+                <div class="alert alert-info">
+                    <strong>💡 Dica:</strong> Use os filtros antes de exportar para gerar relatórios personalizados. 
+                    Por exemplo, filtre por um encontro específico antes de exportar a lista de encontristas.
+                </div>
+            </div>
+
+            <!-- 9. FOTOS -->
+            <h2 id="fotos">9. Gestão de Fotos</h2>
+
+            <div class="card">
+                <h3>📸 Configuração do Diretório de Fotos</h3>
+                
+                <p>
+                    O sistema armazena fotos de pessoas e encontristas em um diretório configurável no servidor.
+                </p>
+
+                <h4>📁 Local Padrão</h4>
+                <div class="alert alert-info">
+                    <strong>Caminho padrão:</strong> <code>C:\Desenvolvimento\fotos</code><br>
+                    <em>(Windows)</em>
+                </div>
+
+                <h4>⚙️ Configurar Caminho Personalizado</h4>
+                <p>Para alterar o diretório de fotos, defina a propriedade de sistema ao iniciar a aplicação:</p>
+                
+                <pre><code>java -Dcaminho_fotos=/opt/segueme/fotos -jar segue-me.war</code></pre>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Permissões:</strong><br>
+                    Certifique-se de que o usuário do servidor de aplicação (WildFly/JBoss) tenha permissões 
+                    de leitura e escrita no diretório configurado. Sem permissões adequadas, o upload falhará.
+                </div>
+
+                <h4>💾 Criação Automática</h4>
+                <p>
+                    Se o diretório não existir, o sistema tentará criá-lo automaticamente. Verifique os logs 
+                    para confirmar a criação bem-sucedida.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>📤 Upload de Fotos</h3>
+                
+                <h4>Requisitos para Imagens</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Requisito</th>
+                            <th>Especificação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Formatos Aceitos</strong></td>
+                            <td>JPG, JPEG, PNG</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tamanho Máximo</strong></td>
+                            <td>2 MB por arquivo</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Resolução Recomendada</strong></td>
+                            <td>Mínimo 300x300px (ideal: 800x800px)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Proporção</strong></td>
+                            <td>Quadrada (1:1) para melhor visualização</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>✅ Passo a Passo do Upload</h4>
+                <div class="step-card">
+                    <span class="step-number">1</span>
+                    <p style="margin-left: 50px;">
+                        No formulário de cadastro de pessoa ou encontrista, localize o campo <strong>"Foto"</strong>
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">2</span>
+                    <p style="margin-left: 50px;">
+                        Clique em <strong>"Escolher arquivo"</strong> ou <strong>"Browse"</strong>
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">3</span>
+                    <p style="margin-left: 50px;">
+                        Selecione a imagem no seu computador
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">4</span>
+                    <p style="margin-left: 50px;">
+                        A pré-visualização da imagem aparecerá (se disponível)
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">5</span>
+                    <p style="margin-left: 50px;">
+                        Clique em <strong>"Salvar"</strong> para enviar a foto junto com os dados
+                    </p>
+                </div>
+
+                <div class="alert alert-success">
+                    <strong>✅ Sucesso:</strong> Após salvar, a foto estará disponível na visualização do registro 
+                    e nas listagens (quando aplicável).
+                </div>
+            </div>
+
+            <!-- 10. VENDAS -->
+            <h2 id="vendas">10. Módulo de Vendas</h2>
+
+            <div class="card">
+                <h3>🛒 Cadastro de Vendas</h3>
+                
+                <p>
+                    <strong>Caminho:</strong> Menu → Vendas → Nova Venda<br>
+                    O módulo de vendas permite controlar a comercialização de produtos durante os encontros 
+                    (camisetas, livros, brindes, etc.).
+                </p>
+
+                <h4>📋 Campos do Formulário</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Produto</strong></td>
+                            <td>Nome do item vendido</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Quantidade</strong></td>
+                            <td>Unidades vendidas</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Valor Unitário</strong></td>
+                            <td>Preço por unidade</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Valor Total</strong></td>
+                            <td>Calculado automaticamente (quantidade × valor unitário)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Comprador</strong></td>
+                            <td>Pessoa que efetuou a compra (opcional)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data da Venda</strong></td>
+                            <td>Quando ocorreu a transação</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Forma de Pagamento</strong></td>
+                            <td>Dinheiro, Pix, Cartão, etc.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 11. FINANCEIRO -->
+            <h2 id="financeiro">11. Controle Financeiro</h2>
+
+            <div class="card">
+                <h3>💰 Módulo de Contribuições</h3>
+                
+                <p>
+                    <strong>Caminho:</strong> Menu → Contribuições → Nova Contribuição
+                </p>
+
+                <p>
+                    Registre contribuições financeiras de trabalhadores e participantes. Este módulo complementa 
+                    o controle de inscrições e permite rastrear doações adicionais.
+                </p>
+
+                <h4>📊 Visão Financeira Consolidada</h4>
+                <div class="feature-grid">
+                    <div class="feature-box" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                        <div class="icon">💵</div>
+                        <h4>Inscrições</h4>
+                        <p>Valores pagos pelos encontristas</p>
+                    </div>
+                    <div class="feature-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="icon">🙏</div>
+                        <h4>Contribuições</h4>
+                        <p>Doações de trabalhadores e apoiadores</p>
+                    </div>
+                    <div class="feature-box" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                        <div class="icon">🛍️</div>
+                        <h4>Vendas</h4>
+                        <p>Receita de produtos comercializados</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 12. BOAS PRÁTICAS -->
+            <h2 id="boas-praticas">12. Boas Práticas</h2>
+
+            <div class="card">
+                <h3>✅ Recomendações de Uso</h3>
+                
+                <h4>🔐 Segurança</h4>
+                <ul>
+                    <li><strong>Altere senhas padrão</strong> imediatamente após primeira instalação</li>
+                    <li><strong>Use senhas fortes</strong>: mínimo 8 caracteres, com letras, números e símbolos</li>
+                    <li><strong>Não compartilhe credenciais</strong> entre usuários</li>
+                    <li><strong>Faça logout</strong> ao terminar de usar o sistema, especialmente em computadores compartilhados</li>
+                </ul>
+
+                <h4>💾 Backup e Recuperação</h4>
+                <ul>
+                    <li><strong>Backup regular:</strong> Configure backups automáticos do banco de dados PostgreSQL</li>
+                    <li><strong>Antes de grandes migrações:</strong> Sempre faça backup completo</li>
+                    <li><strong>Teste restaurações:</strong> Valide que os backups funcionam</li>
+                    <li><strong>Backup de fotos:</strong> Inclua o diretório de fotos nos backups</li>
+                </ul>
+
+                <h4>📋 Qualidade de Dados</h4>
+                <ul>
+                    <li><strong>Padronize nomenclaturas:</strong> Use "Segue-me 2026" (não "SM 2026" ou variações)</li>
+                    <li><strong>Evite duplicidades:</strong> Pesquise antes de cadastrar nova pessoa</li>
+                    <li><strong>Preencha telefones corretamente:</strong> Use formato (99) 99999-9999</li>
+                    <li><strong>Valide CPFs:</strong> Sempre que possível, informe CPF válido</li>
+                    <li><strong>Atualize status:</strong> Marque encontristas como "Presente" durante o evento</li>
+                </ul>
+
+                <h4>⚡ Performance</h4>
+                <ul>
+                    <li><strong>Use filtros:</strong> Ao trabalhar com listas grandes, aplique filtros para melhorar desempenho</li>
+                    <li><strong>Exporte com critérios:</strong> Não exporte tabelas completas sem necessidade</li>
+                    <li><strong>Limpe cache:</strong> Se encontrar lentidão, limpe cache do navegador (Ctrl+F5)</li>
+                </ul>
+            </div>
+
+            <!-- 13. SOLUÇÃO DE PROBLEMAS -->
+            <h2 id="solucao-problemas">13. Solução de Problemas</h2>
+
+            <div class="card">
+                <h3>🔧 Problemas Comuns e Soluções</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Problema</th>
+                            <th>Solução</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Não consigo fazer login</strong></td>
+                            <td>
+                                1. Verifique se usuário e senha estão corretos (case-sensitive)<br>
+                                2. Confirme que não está bloqueado (3 tentativas)<br>
+                                3. Contate o administrador para reset de senha
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Erro ao cadastrar pessoa: "Telefone já existe"</strong></td>
+                            <td>
+                                Use a busca para localizar a pessoa existente com este telefone.<br>
+                                Telefones são únicos no sistema para evitar duplicidades.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Upload de foto falha</strong></td>
+                            <td>
+                                1. Verifique tamanho do arquivo (máx: 2MB)<br>
+                                2. Confirme formato (JPG, PNG)<br>
+                                3. Verifique permissões do diretório no servidor
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Relatório em PDF não abre</strong></td>
+                            <td>
+                                1. Verifique se pop-ups estão permitidos<br>
+                                2. Atualize leitor de PDF<br>
+                                3. Tente outro navegador
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tela fica em branco após login</strong></td>
+                            <td>
+                                1. Limpe cache do navegador (Ctrl+Shift+Del)<br>
+                                2. Verifique console JavaScript (F12)<br>
+                                3. Tente navegador diferente
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Não consigo excluir registro</strong></td>
+                            <td>
+                                O registro está vinculado a outros dados. Exemplo: pessoa que é encontrista.<br>
+                                Remova vínculos antes de excluir ou contate administrador.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="alert alert-info">
+                    <strong>💬 Precisa de Ajuda?</strong><br>
+                    Se o problema persistir, entre em contato com a equipe de suporte técnico informando:
+                    <ul style="margin-top: 10px;">
+                        <li>Descrição detalhada do erro</li>
+                        <li>Navegador e versão utilizada</li>
+                        <li>Passo a passo para reproduzir o problema</li>
+                        <li>Mensagem de erro exibida (se houver)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 14. FAQ -->
+            <h2 id="faq">14. Perguntas Frequentes (FAQ)</h2>
+
+            <div class="card">
+                <h3>❓ Dúvidas Frequentes</h3>
+                
+                <h4>1. Posso cadastrar uma pessoa sem telefone?</h4>
+                <p>
+                    <strong>Não.</strong> O campo telefone é obrigatório e único. Ele serve como identificador principal 
+                    para evitar duplicidades.
+                </p>
+
+                <h4>2. Como alterar dados de um encontrista já cadastrado?</h4>
+                <p>
+                    Acesse: Menu → Encontristas → Lista → Clique no ícone de edição (✏️) ao lado do registro → 
+                    Modifique os campos necessários → Salvar.
+                </p>
+
+                <h4>3. Posso ter mais de um encontro ativo simultaneamente?</h4>
+                <p>
+                    <strong>Sim.</strong> O sistema permite múltiplos encontros ativos. Use os filtros nas listas 
+                    para separar dados por encontro.
+                </p>
+
+                <h4>4. Como marcar presença dos encontristas durante o evento?</h4>
+                <p>
+                    Edite cada encontrista e marque o checkbox <strong>"Presente"</strong>. Alternativamente, 
+                    use relatórios para exportar lista e controlar externamente.
+                </p>
+
+                <h4>5. O que acontece se eu excluir um encontro?</h4>
+                <p>
+                    Se houver encontristas, equipes ou outros dados vinculados, a exclusão será bloqueada. 
+                    Você precisará remover todos os vínculos primeiro.
+                </p>
+
+                <h4>6. Posso importar dados de uma planilha Excel?</h4>
+                <p>
+                    O sistema não possui importação automática via interface. Para migrações em massa, 
+                    contate o administrador técnico para scripts SQL customizados.
+                </p>
+
+                <h4>7. As fotos ficam armazenadas no banco de dados?</h4>
+                <p>
+                    <strong>Não.</strong> As fotos são armazenadas em diretório no servidor. O banco guarda 
+                    apenas o nome/caminho do arquivo.
+                </p>
+
+                <h4>8. Como gerar etiquetas de crachás?</h4>
+                <p>
+                    Exporte o relatório de encontristas em Excel e use ferramentas externas (Word, Publisher) 
+                    para mala direta de etiquetas.
+                </p>
+            </div>
+
+            <!-- 15. GLOSSÁRIO -->
+            <h2 id="glossario">15. Glossário</h2>
+
+            <div class="card">
+                <h3>📖 Termos e Definições</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Termo</th>
+                            <th>Definição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Encontrista / Seguimista</strong></td>
+                            <td>Participante inscrito em um encontro específico</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pessoa</strong></td>
+                            <td>Entidade base: indivíduo cadastrado no sistema</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Casal</strong></td>
+                            <td>Vínculo entre duas pessoas que formam um casal</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Trabalhador</strong></td>
+                            <td>Pessoa que integra uma equipe de trabalho no encontro</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dirigente</strong></td>
+                            <td>Trabalhador com função de liderança em equipe ou pasta</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Equipe</strong></td>
+                            <td>Grupo de trabalhadores com função específica (ex: Cozinha)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pasta</strong></td>
+                            <td>Agrupamento hierárquico de equipes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tipo de Equipe</strong></td>
+                            <td>Categoria que classifica equipes (ex: Logística, Pastoral)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Palestrante</strong></td>
+                            <td>Pessoa responsável por ministrar palestras no encontro</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Palestra</strong></td>
+                            <td>Atividade de formação com tema, horário e palestrante</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Contribuição</strong></td>
+                            <td>Doação financeira de participante ou trabalhador</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Venda</strong></td>
+                            <td>Comercialização de produtos durante o encontro</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-success" style="margin-top: 40px;">
+                <h3 style="margin-top: 0;">✅ Manual Completo!</h3>
+                <p>
+                    Você chegou ao final do Manual do Usuário do Sistema Segue-me. Para dúvidas adicionais, 
+                    consulte a equipe de suporte técnico ou acesse a documentação técnica do sistema.
+                </p>
+                <p style="margin-bottom: 0;">
+                    <strong>Última atualização:</strong> Abril 2026<br>
+                    <strong>Versão do Sistema:</strong> 2.0
+                </p>
+            </div>
+
+        </div>
+
+        <footer>
+            <p><strong>Sistema Segue-me</strong> - Gestão de Encontros de Jovens</p>
+            <p>Desenvolvido com ❤️ para facilitar a organização dos Encontros</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">
+                © 2026 - Todos os direitos reservados | 
+                <a href="../index.html" style="color: white; text-decoration: underline;">Voltar à documentação</a>
+            </p>
+        </footer>
+    </div>
 </body>
 </html>

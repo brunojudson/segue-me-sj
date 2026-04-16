@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -30,14 +31,17 @@ import br.com.segueme.entity.Palestra;
 import br.com.segueme.entity.Palestrante;
 import br.com.segueme.entity.Pessoa;
 import br.com.segueme.entity.Trabalhador;
+import br.com.segueme.entity.Transferencia;
 import br.com.segueme.enums.Escolaridade;
 import br.com.segueme.enums.Sacramento;
+import br.com.segueme.enums.StatusTransferencia;
 import br.com.segueme.service.CasalService;
 import br.com.segueme.service.EncontristaService;
 import br.com.segueme.service.PalestranteService;
 import br.com.segueme.service.PdfService;
 import br.com.segueme.service.PessoaService;
 import br.com.segueme.service.TrabalhadorService;
+import br.com.segueme.service.TransferenciaService;
 
 @Named
 @ViewScoped
@@ -63,6 +67,15 @@ public class PessoaController implements Serializable {
 
 	@Inject
 	private CasalService casalService;
+
+	@Inject
+	private TransferenciaService transferenciaService;
+
+	// Campos de transferência
+	private String transferenciaParoquiaDestino;
+	private String transferenciaParoquiaOrigem;
+	private String transferenciaObservacoes;
+	private List<Transferencia> historicoTransferencias = new ArrayList<>();
 
 	private List<Pessoa> pessoas;
 	private Pessoa pessoa;
@@ -140,7 +153,6 @@ public class PessoaController implements Serializable {
 	}
 
 	private String salvarInterno(boolean redirecionarParaLista) {
-		System.out.println(CAMINHO_FOTOS);
 		if (pessoa.getSacramentos() == null) {
 			pessoa.setSacramentos(new ArrayList<>());
 		}
@@ -235,32 +247,146 @@ public class PessoaController implements Serializable {
 		if (idParam != null && !idParam.isEmpty()) {
 			try {
 				Long id = Long.valueOf(idParam);
-				pessoaService.buscarPorId(id).ifPresent(p -> {
+				// Usar buscarPorIdComPais para carregar relacionamentos pai e mãe
+				pessoaService.buscarPorIdComPais(id).ifPresent(p -> {
 					this.pessoa = p;
-					// Popula sacramentosSelecionados com os sacramentos da pessoa carregada
+					
 					if (this.pessoa.getSacramentos() != null) {
 						this.sacramentosSelecionados = new ArrayList<>(this.pessoa.getSacramentos());
 					} else {
 						this.sacramentosSelecionados = new ArrayList<>();
 					}
-					// Se houver foto, prepara para exibição (se necessário, mas seu getFoto() já
-					// lida com isso)
+					// Carrega histórico de transferências se o serviço estiver disponível
+					try {
+						if (transferenciaService != null) {
+							this.historicoTransferencias = transferenciaService.buscarPorPessoa(id);
+						}
+					} catch (Exception e) {
+						log.error("Erro ao carregar histórico de transferências para pessoa {}", id, e);
+						this.historicoTransferencias = new ArrayList<>();
+					}
 				});
 				if (this.pessoa == null) {
-					// Pessoa não encontrada, talvez adicionar uma mensagem ou redirecionar
 					FacesContext.getCurrentInstance().addMessage(null,
 							new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", "Pessoa não encontrada."));
-					// limpar(); // Opcional: limpar campos se a pessoa não for encontrada
 				}
 			} catch (NumberFormatException e) {
 				FacesContext.getCurrentInstance().addMessage(null,
 						new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "ID inválido para carregar pessoa."));
-				limpar(); // Limpa os campos se o ID for inválido
+				limpar();
 			}
 		} else {
-			// Nenhum ID fornecido, provavelmente é um novo cadastro
-			limpar(); // Garante que tudo está limpo para um novo cadastro
+			limpar();
 		}
+	}
+
+	// -------------------------------------------------------------------------
+	// Métodos de transferência
+	// -------------------------------------------------------------------------
+
+	public void registrarSaida() {
+		try {
+			String usuarioLogado = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal() != null
+					? FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal().getName()
+					: "sistema";
+			transferenciaService.registrarSaida(pessoa, transferenciaParoquiaDestino,
+					transferenciaObservacoes, usuarioLogado);
+			historicoTransferencias = transferenciaService.buscarPorPessoa(pessoa.getId());
+			limparCamposTransferencia();
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso",
+							"Transferência de saída registrada com sucesso!"));
+		} catch (IllegalStateException | IllegalArgumentException e) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
+		}
+	}
+
+	public void registrarEntrada() {
+		try {
+			String usuarioLogado = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal() != null
+					? FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal().getName()
+					: "sistema";
+			transferenciaService.registrarEntrada(pessoa, transferenciaParoquiaOrigem,
+					transferenciaObservacoes, usuarioLogado);
+			historicoTransferencias = transferenciaService.buscarPorPessoa(pessoa.getId());
+			limparCamposTransferencia();
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso",
+							"Entrada de seguidor externo registrada com sucesso!"));
+		} catch (IllegalStateException | IllegalArgumentException e) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
+		}
+	}
+
+	public void registrarRetorno() {
+		try {
+			String usuarioLogado = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal() != null
+					? FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal().getName()
+					: "sistema";
+			transferenciaService.registrarRetorno(pessoa, transferenciaObservacoes, usuarioLogado);
+			historicoTransferencias = transferenciaService.buscarPorPessoa(pessoa.getId());
+			limparCamposTransferencia();
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso",
+							"Retorno do seguidor registrado com sucesso!"));
+		} catch (IllegalStateException | IllegalArgumentException e) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
+		}
+	}
+
+	public boolean isPodeRegistrarSaida() {
+		return pessoa != null && pessoa.getId() != null
+				&& pessoa.getStatusTransferencia() != StatusTransferencia.TRANSFERIDO_SAIDA;
+	}
+
+	public boolean isPodeRegistrarRetorno() {
+		return pessoa != null && pessoa.getId() != null
+				&& pessoa.getStatusTransferencia() == StatusTransferencia.TRANSFERIDO_SAIDA;
+	}
+
+	public boolean isPodeRegistrarEntrada() {
+		return pessoa != null && pessoa.getId() != null;
+	}
+
+	private void limparCamposTransferencia() {
+		this.transferenciaParoquiaDestino = null;
+		this.transferenciaParoquiaOrigem = null;
+		this.transferenciaObservacoes = null;
+	}
+
+	public StatusTransferencia[] getTodosStatusTransferencia() {
+		return StatusTransferencia.values();
+	}
+
+	public List<Transferencia> getHistoricoTransferencias() {
+		return historicoTransferencias;
+	}
+
+	public String getTransferenciaParoquiaDestino() {
+		return transferenciaParoquiaDestino;
+	}
+
+	public void setTransferenciaParoquiaDestino(String transferenciaParoquiaDestino) {
+		this.transferenciaParoquiaDestino = transferenciaParoquiaDestino;
+	}
+
+	public String getTransferenciaParoquiaOrigem() {
+		return transferenciaParoquiaOrigem;
+	}
+
+	public void setTransferenciaParoquiaOrigem(String transferenciaParoquiaOrigem) {
+		this.transferenciaParoquiaOrigem = transferenciaParoquiaOrigem;
+	}
+
+	public String getTransferenciaObservacoes() {
+		return transferenciaObservacoes;
+	}
+
+	public void setTransferenciaObservacoes(String transferenciaObservacoes) {
+		this.transferenciaObservacoes = transferenciaObservacoes;
 	}
 
 	public void gerarFichaInscricao(Pessoa pessoa) {
@@ -298,10 +424,89 @@ public class PessoaController implements Serializable {
 		return nomes;
 	}
 
+	/**
+	 * Retorna lista de pessoas do sexo masculino para seleção como pai.
+	 * Exclui a própria pessoa sendo editada.
+	 */
+	public List<Pessoa> getPessoasDisponiveisParaPai() {
+		List<Pessoa> disponiveis = new ArrayList<>();
+		for (Pessoa p : pessoaService.buscarTodos()) {
+			// Apenas homens e não pode ser a própria pessoa
+			if (p.getSexo() != null && (p.getSexo() == 'M' || p.getSexo() == 'm')) {
+				if (pessoa == null || pessoa.getId() == null || !p.getId().equals(pessoa.getId())) {
+					disponiveis.add(p);
+				}
+			}
+		}
+		return disponiveis;
+	}
+
+	/**
+	 * Retorna lista de pessoas do sexo feminino para seleção como mãe.
+	 * Exclui a própria pessoa sendo editada.
+	 */
+	public List<Pessoa> getPessoasDisponiveisParaMae() {
+		List<Pessoa> disponiveis = new ArrayList<>();
+		for (Pessoa p : pessoaService.buscarTodos()) {
+			// Apenas mulheres e não pode ser a própria pessoa
+			if (p.getSexo() != null && (p.getSexo() == 'F' || p.getSexo() == 'f')) {
+				if (pessoa == null || pessoa.getId() == null || !p.getId().equals(pessoa.getId())) {
+					disponiveis.add(p);
+				}
+			}
+		}
+		return disponiveis;
+	}
+
+	/**
+	 * Retorna todos os filhos da pessoa sendo editada.
+	 * Útil para exibir na tela de edição.
+	 */
+	public List<Pessoa> getFilhosDaPessoaAtual() {
+		if (pessoa == null || pessoa.getId() == null) {
+			return new ArrayList<>();
+		}
+		
+		try {
+			// Buscar filhos diretamente do banco de dados
+			return pessoaService.buscarFilhos(pessoa.getId());
+		} catch (Exception e) {
+			log.error("Erro ao carregar filhos da pessoa {}", pessoa.getId(), e);
+			return new ArrayList<>();
+		}
+	}
+
+	/**
+	 * Retorna todos os filhos da pessoa em detalhes (no dialog da lista).
+	 */
+	public List<Pessoa> getFilhosDaPessoaDetalhes() {
+		if (pessoaDetalhes == null || pessoaDetalhes.getId() == null) {
+			return new ArrayList<>();
+		}
+		
+		try {
+			// Buscar filhos diretamente do banco de dados
+			return pessoaService.buscarFilhos(pessoaDetalhes.getId());
+		} catch (Exception e) {
+			log.error("Erro ao carregar filhos da pessoa {}", pessoaDetalhes.getId(), e);
+			return new ArrayList<>();
+		}
+	}
+
 	// Modal de detalhes da pessoa
 	public void abrirDetalhes(Pessoa pessoa) {
 		
-		this.pessoaDetalhes = pessoaService.buscarPorId(pessoa.getId()).orElse(pessoa);
+		// Usar buscarPorIdComPais para carregar relacionamentos pai e mãe
+		this.pessoaDetalhes = pessoaService.buscarPorIdComPais(pessoa.getId()).orElse(pessoa);
+
+		// Transferências
+		try {
+			List<Transferencia> transferencias = transferenciaService.buscarPorPessoa(pessoa.getId());
+			this.pessoaDetalhes.setTransferencias(transferencias);
+		} catch (Exception e) {
+			log.error("Erro ao carregar transferências para pessoa {}", pessoa.getId(), e);
+			this.pessoaDetalhes.setTransferencias(new ArrayList<>());
+		}
 
 		// Equipes
 		try {

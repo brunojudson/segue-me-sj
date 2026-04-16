@@ -61,6 +61,37 @@ public class PessoaRepositoryImpl implements PessoaRepository {
     }
 
     @Override
+    public Optional<Pessoa> findByIdWithParents(Long id) {
+        try {
+            Pessoa pessoa = entityManager.createQuery(
+                "SELECT DISTINCT p FROM Pessoa p " +
+                "LEFT JOIN FETCH p.sacramentos " +
+                "LEFT JOIN FETCH p.pai " +
+                "LEFT JOIN FETCH p.mae " +
+                "WHERE p.id = :id", Pessoa.class)
+                .setParameter("id", id)
+                .getSingleResult();
+            return Optional.of(pessoa);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<Pessoa> findFilhosByPessoaId(Long pessoaId) {
+        if (pessoaId == null) {
+            return java.util.Collections.emptyList();
+        }
+        
+        return entityManager.createQuery(
+            "SELECT p FROM Pessoa p " +
+            "WHERE p.pai.id = :pessoaId OR p.mae.id = :pessoaId " +
+            "ORDER BY p.nome", Pessoa.class)
+            .setParameter("pessoaId", pessoaId)
+            .getResultList();
+    }
+
+    @Override
     public List<Pessoa> findAll() {
         return entityManager.createQuery("SELECT p FROM Pessoa p ORDER BY p.nome", Pessoa.class)
                 .getResultList();

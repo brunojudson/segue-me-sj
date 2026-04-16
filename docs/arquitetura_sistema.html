@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitetura do Sistema - Segue-me</title>
+    <style>
+        :root {
+            --primary-color: #0b5;
+            --secondary-color: #2c3e50;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        header {
+            border-bottom: 4px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h3 {
+            color: var(--primary-color);
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: var(--secondary-color);
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #e9ecef;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .layer-box {
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .layer-title {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            margin: -20px -20px 15px -20px;
+            border-radius: 6px 6px 0 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .note {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .diagram {
+            background: #f8f9fa;
+            border: 2px solid var(--border-color);
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border-color);
+            text-align: center;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏗️ Arquitetura do Sistema Segue-me</h1>
+            <h2 style="color: #6c757d; font-size: 1.5em; margin-top: 10px; border: none;">Visão Técnica e Estrutural</h2>
+        </header>
+
+        <div class="note">
+            <strong>Versão:</strong> 1.0.0 | <strong>Data:</strong> 14 de Abril de 2026<br>
+            <strong>Stack:</strong> Java 11, Jakarta EE 8, JSF 2.3, PrimeFaces 12, Hibernate 5.6, PostgreSQL 12+
+        </div>
+
+        <section>
+            <h2>1. Visão Geral da Arquitetura</h2>
+            <p>
+                O Sistema Segue-me segue uma arquitetura em camadas baseada no padrão <strong>MVC (Model-View-Controller)</strong>
+                com extensões para separação de responsabilidades através de camadas de serviço e persistência.
+            </p>
+
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 12px; margin: 30px 0;">
+                <div style="background: white; border-radius: 8px; padding: 25px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <div style="font-size: 2em; margin-right: 15px;">📱</div>
+                        <div>
+                            <strong style="font-size: 1.3em; color: var(--primary-color);">Camada de Apresentação</strong>
+                            <div style="color: #6c757d; margin-top: 5px;">JSF/Facelets + PrimeFaces + HTML/CSS/JS</div>
+                            <code style="font-size: 0.85em;">src/main/webapp/pages/*.xhtml, templates/</code>
+                        </div>
+                    </div>
+                    <div style="padding-left: 55px; color: #555; font-size: 0.95em;">
+                        Interface com usuário, formulários, validações client-side
+                    </div>
+                </div>
+
+                <div style="text-align: center; color: white; font-size: 2em; margin: 10px 0;">⬇️</div>
+
+                <div style="background: white; border-radius: 8px; padding: 25px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <div style="font-size: 2em; margin-right: 15px;">🎮</div>
+                        <div>
+                            <strong style="font-size: 1.3em; color: var(--primary-color);">Camada de Controle</strong>
+                            <div style="color: #6c757d; margin-top: 5px;">Managed Beans (@Named, @ViewScoped)</div>
+                            <code style="font-size: 0.85em;">src/main/java/br/com/segueme/controller/</code>
+                        </div>
+                    </div>
+                    <div style="padding-left: 55px; color: #555; font-size: 0.95em;">
+                        Controla navegação, processa formulários, gerencia estado da sessão
+                    </div>
+                </div>
+
+                <div style="text-align: center; color: white; font-size: 2em; margin: 10px 0;">⬇️</div>
+
+                <div style="background: white; border-radius: 8px; padding: 25px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <div style="font-size: 2em; margin-right: 15px;">⚙️</div>
+                        <div>
+                            <strong style="font-size: 1.3em; color: var(--primary-color);">Camada de Serviço</strong>
+                            <div style="color: #6c757d; margin-top: 5px;">Regras de Negócio (@ApplicationScoped)</div>
+                            <code style="font-size: 0.85em;">src/main/java/br/com/segueme/service/</code>
+                        </div>
+                    </div>
+                    <div style="padding-left: 55px; color: #555; font-size: 0.95em;">
+                        Validações complexas, cálculos, orquestração de operações
+                    </div>
+                </div>
+
+                <div style="text-align: center; color: white; font-size: 2em; margin: 10px 0;">⬇️</div>
+
+                <div style="background: white; border-radius: 8px; padding: 25px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <div style="font-size: 2em; margin-right: 15px;">💾</div>
+                        <div>
+                            <strong style="font-size: 1.3em; color: var(--primary-color);">Camada de Persistência</strong>
+                            <div style="color: #6c757d; margin-top: 5px;">Repositórios (JPA + EntityManager)</div>
+                            <code style="font-size: 0.85em;">src/main/java/br/com/segueme/repository/</code>
+                        </div>
+                    </div>
+                    <div style="padding-left: 55px; color: #555; font-size: 0.95em;">
+                        Operações CRUD, queries JPQL, acesso ao banco de dados
+                    </div>
+                </div>
+
+                <div style="text-align: center; color: white; font-size: 2em; margin: 10px 0;">⬇️</div>
+
+                <div style="background: white; border-radius: 8px; padding: 25px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <div style="font-size: 2em; margin-right: 15px;">🗃️</div>
+                        <div>
+                            <strong style="font-size: 1.3em; color: var(--primary-color);">Camada de Dados</strong>
+                            <div style="color: #6c757d; margin-top: 5px;">Entidades JPA (@Entity)</div>
+                            <code style="font-size: 0.85em;">src/main/java/br/com/segueme/entity/</code>
+                        </div>
+                    </div>
+                    <div style="padding-left: 55px; color: #555; font-size: 0.95em;">
+                        Modelo de domínio, mapeamento objeto-relacional
+                    </div>
+                </div>
+
+                <div style="text-align: center; color: white; font-size: 2em; margin: 10px 0;">⬇️</div>
+
+                <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <div style="font-size: 2em; margin-right: 15px;">🐘</div>
+                        <div>
+                            <strong style="font-size: 1.3em; color: var(--primary-color);">Banco de Dados</strong>
+                            <div style="color: #6c757d; margin-top: 5px;">PostgreSQL 12+</div>
+                            <code style="font-size: 0.85em;">18 tabelas, relacionamentos, constraints</code>
+                        </div>
+                    </div>
+                    <div style="padding-left: 55px; color: #555; font-size: 0.95em;">
+                        Armazenamento persistente de dados com integridade referencial
+                    </div>
+                </div>
+            </div>
+
+            <div class="note" style="margin-top: 30px;">
+                <strong>💡 Benefícios da Arquitetura em Camadas:</strong>
+                <ul style="margin-top: 10px;">
+                    <li><strong>Separação de Responsabilidades:</strong> Cada camada possui função específica</li>
+                    <li><strong>Manutenibilidade:</strong> Alterações em uma camada não afetam as demais</li>
+                    <li><strong>Testabilidade:</strong> Camadas podem ser testadas isoladamente</li>
+                    <li><strong>Reusabilidade:</strong> Lógica de negócio pode ser reutilizada em diferentes interfaces</li>
+                    <li><strong>Escalabilidade:</strong> Facilita distribuição em múltiplos servidores</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>2. Camadas da Arquitetura</h2>
+
+            <div class="layer-box">
+                <div class="layer-title">📱 Camada de Apresentação (View)</div>
+                <p><strong>Tecnologia:</strong> JSF 2.3 + Facelets + PrimeFaces 12 + HTML5 + CSS3 + JavaScript</p>
+                <p><strong>Responsabilidade:</strong> Interface com o usuário, renderização de páginas, validações client-side</p>
+                <p><strong>Localização:</strong> <code>src/main/webapp/pages/</code>, <code>src/main/webapp/templates/</code></p>
+                <h4>Componentes:</h4>
+                <ul>
+                    <li><strong>Templates:</strong> Layout padrão (header, menu, footer, content)</li>
+                    <li><strong>Páginas:</strong> Formulários de cadastro, listas, visualizações detalhadas</li>
+                    <li><strong>Componentes Customizados:</strong> <code>resources/components/</code></li>
+                    <li><strong>Recursos Estáticos:</strong> CSS, JS, imagens em <code>resources/</code></li>
+                </ul>
+                <h4>Principais Bibliotecas:</h4>
+                <ul>
+                    <li><code>PrimeFaces 12.0.0</code> - Componentes ricos (DataTable, Calendar, FileUpload, etc.)</li>
+                    <li><code>PrimeFaces Extensions 12.0.0</code> - Componentes adicionais</li>
+                    <li><code>OmniFaces 2.7.3</code> - Utilitários JSF (ValidateAll, ViewParam, etc.)</li>
+                </ul>
+            </div>
+
+            <div class="layer-box">
+                <div class="layer-title">🎮 Camada de Controle (Controller)</div>
+                <p><strong>Tecnologia:</strong> CDI Managed Beans (@Named, @ViewScoped / @SessionScoped)</p>
+                <p><strong>Responsabilidade:</strong> Controlar fluxo de navegação, intermediar View e Service, manter estado da sessão</p>
+                <p><strong>Localização:</strong> <code>src/main/java/br/com/segueme/controller/</code></p>
+                <h4>Padrão de Nomenclatura:</h4>
+                <ul>
+                    <li><code>*Controller.java</code> - Ex: PessoaController, EncontroController</li>
+                    <li>Anotação <code>@Named</code> para injeção no JSF</li>
+                    <li>Escopo <code>@ViewScoped</code> para formulários</li>
+                    <li>Escopo <code>@SessionScoped</code> para dados de sessão (ex: LoginController)</li>
+                </ul>
+                <h4>Responsabilidades Típicas:</h4>
+                <ul>
+                    <li>Receber dados do formulário (binding com XHTML)</li>
+                    <li>Validar entrada do usuário</li>
+                    <li>Chamar métodos da camada de serviço</li>
+                    <li>Gerenciar mensagens de sucesso/erro (FacesMessage)</li>
+                    <li>Controlar navegação entre páginas</li>
+                </ul>
+                <div class="code-block">@Named
+@ViewScoped
+public class PessoaController implements Serializable {
+    
+    @Inject
+    private PessoaService pessoaService;
+    
+    private Pessoa pessoa = new Pessoa();
+    private List&lt;Pessoa&gt; pessoas;
+    
+    public String salvar() {
+        try {
+            pessoaService.salvar(pessoa);
+            FacesUtil.addSuccessMessage("Pessoa salva com sucesso!");
+            limpar();
+            return "lista?faces-redirect=true";
+        } catch (Exception e) {
+            FacesUtil.addErrorMessage("Erro ao salvar: " + e.getMessage());
+            return null;
+        }
+    }
+}</div>
+            </div>
+
+            <div class="layer-box">
+                <div class="layer-title">⚙️ Camada de Serviço (Service)</div>
+                <p><strong>Tecnologia:</strong> CDI (@ApplicationScoped) + Transações JTA (@Transactional)</p>
+                <p><strong>Responsabilidade:</strong> Implementar regras de negócio, orquestrar operações, gerenciar transações</p>
+                <p><strong>Localização:</strong> <code>src/main/java/br/com/segueme/service/</code></p>
+                <h4>Padrão de Nomenclatura:</h4>
+                <ul>
+                    <li><code>*Service.java</code> - Ex: PessoaService, EncontroService</li>
+                    <li>Anotação <code>@ApplicationScoped</code> (singleton)</li>
+                </ul>
+                <h4>Responsabilidades:</h4>
+                <ul>
+                    <li>Validações de negócio complexas</li>
+                    <li>Orquestração de múltiplas entidades</li>
+                    <li>Cálculos e processamentos</li>
+                    <li>Controle transacional (<code>@Transactional</code>)</li>
+                    <li>Delegação para repositórios</li>
+                </ul>
+                <div class="code-block">@ApplicationScoped
+public class EncontristaService implements Serializable {
+    
+    @Inject
+    private EntityManager em;
+    
+    @Inject
+    private PessoaService pessoaService;
+    
+    @Transactional
+    public void inscrever(Encontrista encontrista) {
+        // Validação: pessoa já inscrita?
+        if (jaInscrito(encontrista.getPessoa(), encontrista.getEncontro())) {
+            throw new NegocioException("Pessoa já inscrita neste encontro");
+        }
+        
+        // Calcular idade
+        encontrista.setIdade(calcularIdade(encontrista.getPessoa()));
+        
+        // Gerar token único
+        encontrista.setTokenFicha(UUID.randomUUID().toString());
+        
+        // Persistir
+        em.persist(encontrista);
+    }
+}</div>
+            </div>
+
+            <div class="layer-box">
+                <div class="layer-title">💾 Camada de Persistência (Repository)</div>
+                <p><strong>Tecnologia:</strong> JPA 2.2 + EntityManager + JPQL</p>
+                <p><strong>Responsabilidade:</strong> Acesso ao banco de dados, queries, operações CRUD</p>
+                <p><strong>Localização:</strong> <code>src/main/java/br/com/segueme/repository/</code></p>
+                <h4>Padrão:</h4>
+                <ul>
+                    <li>Interface <code>*Repository.java</code></li>
+                    <li>Implementação <code>*RepositoryImpl.java</code></li>
+                    <li>Injeção de <code>EntityManager</code></li>
+                </ul>
+                <h4>Operações Comuns:</h4>
+                <ul>
+                    <li>CRUD básico (create, read, update, delete)</li>
+                    <li>Queries customizadas (JPQL, Criteria API)</li>
+                    <li>Paginação e ordenação</li>
+                    <li>Buscas com filtros dinâmicos</li>
+                </ul>
+                <div class="code-block">public interface PessoaRepository {
+    void salvar(Pessoa pessoa);
+    Pessoa buscarPorId(Long id);
+    List&lt;Pessoa&gt; listarTodos();
+    List&lt;Pessoa&gt; buscarPorNome(String nome);
+    void remover(Pessoa pessoa);
+}
+
+@ApplicationScoped
+public class PessoaRepositoryImpl implements PessoaRepository {
+    
+    @PersistenceContext
+    private EntityManager em;
+    
+    @Override
+    public void salvar(Pessoa pessoa) {
+        if (pessoa.getId() == null) {
+            em.persist(pessoa);
+        } else {
+            em.merge(pessoa);
+        }
+    }
+    
+    @Override
+    public List&lt;Pessoa&gt; buscarPorNome(String nome) {
+        return em.createQuery(
+            "SELECT p FROM Pessoa p WHERE LOWER(p.nome) LIKE :nome", Pessoa.class)
+            .setParameter("nome", "%" + nome.toLowerCase() + "%")
+            .getResultList();
+    }
+}</div>
+            </div>
+
+            <div class="layer-box">
+                <div class="layer-title">🗃️ Camada de Dados (Model/Entity)</div>
+                <p><strong>Tecnologia:</strong> JPA 2.2 + Hibernate 5.6 + Bean Validation</p>
+                <p><strong>Responsabilidade:</strong> Representar modelo de domínio, mapeamento objeto-relacional</p>
+                <p><strong>Localização:</strong> <code>src/main/java/br/com/segueme/entity/</code></p>
+                <h4>Padrões:</h4>
+                <ul>
+                    <li>Anotação <code>@Entity</code></li>
+                    <li>Lombok para reduzir boilerplate (<code>@Data</code>, <code>@NoArgsConstructor</code>)</li>
+                    <li>Bean Validation (<code>@NotNull</code>, <code>@Size</code>, <code>@Pattern</code>, etc.)</li>
+                    <li>Serializable para suporte a sessão HTTP</li>
+                </ul>
+                <div class="code-block">@Entity
+@Table(name = "pessoa")
+@Data
+@NoArgsConstructor
+public class Pessoa implements Serializable {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @NotBlank(message = "Nome é obrigatório")
+    @Size(min = 3, max = 100)
+    @Column(nullable = false, length = 100)
+    private String nome;
+    
+    @Column(unique = true, length = 14)
+    private String cpf;
+    
+    @NotNull
+    @Past
+    @Column(name = "data_nascimento", nullable = false)
+    private LocalDate dataNascimento;
+    
+    @Pattern(regexp = "\\(\\d{2}\\) \\d{4,5}-\\d{4}")
+    @Column(unique = true, length = 15)
+    private String telefone;
+    
+    @Email
+    @Column(length = 100)
+    private String email;
+    
+    // ... demais atributos
+}</div>
+            </div>
+        </section>
+
+        <section>
+            <h2>3. Módulos Transversais</h2>
+
+            <h3>3.1. Segurança e Autenticação</h3>
+            <ul>
+                <li><strong>Filtro de Autenticação:</strong> <code>AuthFilter.java</code> - Intercepta requisições e valida sessão</li>
+                <li><strong>Hash de Senhas:</strong> BCrypt via <code>jbcrypt</code></li>
+                <li><strong>Controle de Sessão:</strong> <code>LoginController</code> gerencia login/logout</li>
+                <li><strong>Permissões:</strong> Entidade <code>Permissao</code> com níveis de acesso</li>
+            </ul>
+
+            <h3>3.2. Auditoria</h3>
+            <ul>
+                <li><strong>Service:</strong> <code>AuditoriaService</code> registra ações críticas</li>
+                <li><strong>Entidade:</strong> <code>Auditoria</code> armazena logs</li>
+                <li><strong>Dados Registrados:</strong> Usuário, data/hora, ação, entidade afetada, detalhes</li>
+            </ul>
+
+            <h3>3.3. API REST</h3>
+            <p><strong>Localização:</strong> <code>src/main/java/br/com/segueme/api/</code></p>
+            <ul>
+                <li><strong>Tecnologia:</strong> JAX-RS (Jakarta REST API)</li>
+                <li><strong>Application:</strong> <code>RestApplication</code> - Base path <code>/api</code></li>
+                <li><strong>Resources:</strong>
+                    <ul>
+                        <li><code>PessoaResource</code> - /api/pessoas</li>
+                        <li><code>EncontroResource</code> - /api/encontros</li>
+                        <li><code>EncontristaResource</code> - /api/encontristas</li>
+                        <li><code>EquipeResource</code> - /api/equipes</li>
+                    </ul>
+                </li>
+                <li><strong>CORS:</strong> <code>CorsFilter</code> habilita cross-origin para consumo externo</li>
+            </ul>
+
+            <h3>3.4. Relatórios</h3>
+            <ul>
+                <li><strong>Service:</strong> <code>RelatorioService</code> - Geração de relatórios</li>
+                <li><strong>PDF:</strong> <code>PdfService</code> com iText / JasperReports</li>
+                <li><strong>QR Code:</strong> <code>QrCodeService</code> com ZXing library</li>
+                <li><strong>Fichas Digitais:</strong> PDFs com dados + foto + QR Code</li>
+            </ul>
+
+            <h3>3.5. Utilitários</h3>
+            <p><strong>Localização:</strong> <code>src/main/java/br/com/segueme/util/</code></p>
+            <ul>
+                <li><code>calculaIdade.java</code> - Cálculo de idade</li>
+                <li><code>GerarHashSenha.java</code> - Utilitário para hash BCrypt</li>
+                <li><code>BackupPostgres.java</code> - Backup automatizado do banco</li>
+                <li><code>RestorePostgres.java</code> - Restauração de backup</li>
+                <li><code>DatabaseInitializer.java</code> - Inicialização de dados</li>
+            </ul>
+
+            <h3>3.6. Conversores</h3>
+            <p><strong>Localização:</strong> <code>src/main/java/br/com/segueme/converter/</code></p>
+            <ul>
+                <li><code>EncontroConverter</code> - Conversão de ID para objeto Encontro no JSF</li>
+                <li><code>EquipeConverter</code> - Conversão de ID para objeto Equipe</li>
+                <li><code>LocalDateConverter</code> - Conversão entre String ↔ LocalDate</li>
+                <li><code>LocalDateTimeConverter</code> - Conversão entre String ↔ LocalDateTime</li>
+                <li><code>TemaPalestraConverter</code> - Conversão de enum TemaPalestra</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Configuração e Deployment</h2>
+
+            <h3>4.1. Persistence Unit</h3>
+            <p><strong>Arquivo:</strong> <code>src/main/resources/META-INF/persistence.xml</code></p>
+            <div class="code-block">&lt;persistence-unit name="segueme-pu" transaction-type="JTA"&gt;
+    &lt;jta-data-source&gt;java:jboss/datasources/SegueMeDS&lt;/jta-data-source&gt;
+    &lt;properties&gt;
+        &lt;property name="hibernate.dialect" 
+                  value="org.hibernate.dialect.PostgreSQLDialect"/&gt;
+        &lt;property name="hibernate.hbm2ddl.auto" value="update"/&gt;
+        &lt;property name="hibernate.show_sql" value="false"/&gt;
+        &lt;property name="hibernate.format_sql" value="true"/&gt;
+    &lt;/properties&gt;
+&lt;/persistence-unit&gt;</div>
+
+            <h3>4.2. CDI Configuration</h3>
+            <p><strong>Arquivo:</strong> <code>src/main/webapp/WEB-INF/beans.xml (beans.xml vazio ativa CDI)</code></p>
+
+            <h3>4.3. JSF Configuration</h3>
+            <p><strong>Arquivo:</strong> <code>src/main/webapp/WEB-INF/faces-config.xml</code></p>
+            <ul>
+                <li>Configuração do JSF 2.3</li>
+                <li>Locale padrão: pt_BR</li>
+                <li>Message bundle para internacionalização</li>
+            </ul>
+
+            <h3>4.4. Web Descriptor</h3>
+            <p><strong>Arquivo:</strong> <code>src/main/webapp/WEB-INF/web.xml</code></p>
+            <ul>
+                <li>Servlet do JSF (FacesServlet)</li>
+                <li>Welcome file: index.xhtml</li>
+                <li>Parâmetros de contexto</li>
+                <li>Filtros (AuthFilter, CorsFilter)</li>
+                <li>Error pages</li>
+            </ul>
+
+            <h3>4.5. Servidor de Aplicação</h3>
+            <p><strong>Compatível com:</strong> Wildfly, Payara, TomEE (Jakarta EE 8)</p>
+            <p><strong>Requisitos:</strong></p>
+            <ul>
+                <li>Java 11+</li>
+                <li>Jakarta EE 8 ou Java EE 8</li>
+                <li>PostgreSQL driver no módulo do servidor</li>
+                <li>DataSource configurado (JNDI: <code>java:jboss/datasources/SegueMeDS</code>)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Estrutura de Diretórios</h2>
+            <p style="margin-bottom: 25px;">
+                A estrutura do projeto segue as convenções Maven padrão com organização modular por funcionalidade:
+            </p>
+
+            <div style="background: #f8f9fa; border: 2px solid var(--border-color); border-radius: 8px; padding: 25px; margin: 20px 0;">
+                <div style="font-family: 'Courier New', monospace; font-size: 0.9em;">
+                    
+                    <!-- Raiz do Projeto -->
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px; border-radius: 6px; font-weight: bold; margin-bottom: 10px;">
+                            <span style="font-size: 1.3em; margin-right: 10px;">📦</span>
+                            <span>segue-me-sj/ (Raiz do Projeto)</span>
+                        </div>
+                    </div>
+
+                    <!-- Código Fonte Java -->
+                    <div style="margin-left: 20px; margin-bottom: 20px;">
+                        <div style="background: var(--primary-color); color: white; padding: 10px; border-radius: 6px; font-weight: bold; margin-bottom: 8px;">
+                            <span style="font-size: 1.2em; margin-right: 8px;">☕</span>
+                            src/main/java/br/com/segueme/
+                        </div>
+                        
+                        <div style="margin-left: 25px; line-height: 2;">
+                            <div style="padding: 8px; background: white; margin: 5px 0; border-left: 3px solid #e74c3c; border-radius: 4px;">
+                                <strong>📡 api/</strong> - REST Resources (JAX-RS)
+                                <div style="font-size: 0.85em; color: #666; margin-top: 3px;">Endpoints REST para integrações externas</div>
+                            </div>
+                            
+                            <div style="padding: 8px; background: white; margin: 5px 0; border-left: 3px solid #3498db; border-radius: 4px;">
+                                <strong>⚙️ config/</strong> - Filtros e Configurações
+                                <div style="font-size: 0.85em; color: #666; margin-top: 3px;">AuthFilter, CorsFilter, OptionsHandler</div>
+                            </div>
+                            
+                            <div style="padding: 8px; background: white; margin: 5px 0; border-left: 3px solid #9b59b6; border-radius: 4px;">
+                                <strong>🎮 controller/</strong> - Managed Beans (MVC)
+                                <div style="font-size: 0.85em; color: #666; margin-top: 3px;">PessoaController, EncontroController, etc.</div>
+                            </div>
+                            
+                            <div style="padding: 8px; background: white; margin: 5px 0; border-left: 3px solid #1abc9c; border-radius: 4px;">
+                                <strong>🔄 converter/</strong> - Conversores JSF
+                                <div style="font-size: 0.85em; color: #666; margin-top: 3px;">LocalDateConverter, EncontroConverter</div>
+                            </div>
+                            
+                            <div style="padding: 8px; background: white; margin: 5px 0; border-left: 3px solid #e67e22; border-radius: 4px;">
+                                <strong>🗃️ entity/</strong> - Entidades JPA + enums/
+                                <div style="font-size: 0.85em; color: #666; margin-top: 3px;">Pessoa, Encontro, Encontrista (18 entidades)</div>
+                            </div>
+                            
+                            <div style="padding: 8px; background: white; margin: 5px 0; border-left: 3px solid #2ecc71; border-radius: 4px;">
+                                <strong>💾 repository/</strong> - Camada de Persistência + impl/
+                                <div style="font-size: 0.85em; color: #666; margin-top: 3px;">Interfaces e implementações de repositórios</div>
+                            </div>
+                            
+                            <div style="padding: 8px; background: white; margin: 5px 0; border-left: 3px solid #f39c12; border-radius: 4px;">
+                                <strong>⚙️ service/</strong> - Lógica de Negócio
+                                <div style="font-size: 0.85em; color: #666; margin-top: 3px;">PessoaService, EncontroService, RelatorioService</div>
+                            </div>
+                            
+                            <div style="padding: 8px; background: white; margin: 5px 0; border-left: 3px solid #95a5a6; border-radius: 4px;">
+                                <strong>🛠️ util/</strong> - Classes Utilitárias
+                                <div style="font-size: 0.85em; color: #666; margin-top: 3px;">BackupPostgres, GerarHashSenha, calculaIdade</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resources -->
+                    <div style="margin-left: 20px; margin-bottom: 20px;">
+                        <div style="background: #34495e; color: white; padding: 10px; border-radius: 6px; font-weight: bold; margin-bottom: 8px;">
+                            <span style="font-size: 1.2em; margin-right: 8px;">📄</span>
+                            src/main/resources/
+                        </div>
+                        
+                        <div style="margin-left: 25px; line-height: 2;">
+                            <div style="padding: 8px; background: white; margin: 5px 0; border-radius: 4px;">
+                                📝 logback.xml - Configuração de logging
+                            </div>
+                            <div style="padding: 8px; background: white; margin: 5px 0; border-radius: 4px;">
+                                📁 META-INF/ → beans.xml, persistence.xml
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WebApp -->
+                    <div style="margin-left: 20px; margin-bottom: 20px;">
+                        <div style="background: #16a085; color: white; padding: 10px; border-radius: 6px; font-weight: bold; margin-bottom: 8px;">
+                            <span style="font-size: 1.2em; margin-right: 8px;">🌐</span>
+                            src/main/webapp/
+                        </div>
+                        
+                        <div style="margin-left: 25px; line-height: 2;">
+                            <div style="padding: 8px; background: white; margin: 5px 0; border-left: 3px solid #3498db; border-radius: 4px;">
+                                <strong>📄 pages/</strong> - Páginas XHTML (JSF)
+                                <div style="font-size: 0.85em; color: #666; margin-top: 3px;">
+                                    pessoa/, casal/, encontro/, encontrista/, equipe/, dirigente/, contribuicao/, palestra/, financeiro/, relatorios/, venda/
+                                </div>
+                            </div>
+                            
+                            <div style="padding: 8px; background: white; margin: 5px 0; border-left: 3px solid #9b59b6; border-radius: 4px;">
+                                <strong>🎨 resources/</strong> - Recursos Estáticos
+                                <div style="font-size: 0.85em; color: #666; margin-top: 3px;">
+                                    components/, css/, images/, js/
+                                </div>
+                            </div>
+                            
+                            <div style="padding: 8px; background: white; margin: 5px 0; border-left: 3px solid #e74c3c; border-radius: 4px;">
+                                <strong>📋 templates/</strong> - Templates Facelets
+                                <div style="font-size: 0.85em; color: #666; margin-top: 3px;">
+                                    template.xhtml, header.xhtml, menu.xhtml, footer.xhtml, content.xhtml
+                                </div>
+                            </div>
+                            
+                            <div style="padding: 8px; background: white; margin: 5px 0; border-left: 3px solid #f39c12; border-radius: 4px;">
+                                <strong>⚙️ WEB-INF/</strong> - Configurações Web
+                                <div style="font-size: 0.85em; color: #666; margin-top: 3px;">
+                                    beans.xml, faces-config.xml, web.xml, jboss-web.xml
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Outros Diretórios -->
+                    <div style="margin-left: 20px; margin-bottom: 20px;">
+                        <div style="padding: 8px; background: white; margin: 5px 0; border: 2px solid #e67e22; border-radius: 4px;">
+                            <strong>🧪 src/test/java/</strong> - Testes Unitários
+                        </div>
+                        
+                        <div style="padding: 8px; background: white; margin: 5px 0; border: 2px solid #3498db; border-radius: 4px;">
+                            <strong>🗄️ modelo/</strong> - Scripts SQL
+                            <div style="font-size: 0.85em; color: #666; margin-top: 3px;">
+                                modelo_relacional.sql, cleanup_database.sql, migration_*.sql
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 8px; background: white; margin: 5px 0; border: 2px solid var(--primary-color); border-radius: 4px;">
+                            <strong>📚 docs/</strong> - Documentação HTML
+                            <div style="font-size: 0.85em; color: #666; margin-top: 3px;">
+                                index.html, visao_geral_projeto.html, especificacao_requisitos.html, 
+                                modelo_entidade_relacionamento.html, arquitetura_sistema.html, manual_usuario.html
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 8px; background: white; margin: 5px 0; border: 2px solid #95a5a6; border-radius: 4px;">
+                            <strong>📦 pom.xml</strong> - Configuração Maven
+                        </div>
+                        
+                        <div style="padding: 8px; background: white; margin: 5px 0; border: 2px solid #2c3e50; border-radius: 4px;">
+                            <strong>📖 README.md</strong> - Documentação do Repositório
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="note" style="margin-top: 25px;">
+                <strong>💡 Convenções de Organização:</strong>
+                <ul style="margin-top: 10px;">
+                    <li><strong>Camadas por Pacote:</strong> Cada camada da arquitetura possui seu próprio pacote</li>
+                    <li><strong>Módulos por Funcionalidade:</strong> Páginas organizadas por entidade/módulo (pessoa/, encontro/, etc.)</li>
+                    <li><strong>Separação clara:</strong> Código Java em <code>src/main/java/</code>, recursos em <code>resources/</code>, web em <code>webapp/</code></li>
+                    <li><strong>Nomenclatura consistente:</strong> Sufixos indicam tipo (*Controller, *Service, *Repository)</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>6. Dependências Principais</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Biblioteca</th>
+                        <th>Versão</th>
+                        <th>Finalidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Jakarta EE API</td>
+                        <td>8.0.0</td>
+                        <td>Plataforma Jakarta EE (JPA, CDI, JAX-RS, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>PrimeFaces</td>
+                        <td>12.0.0</td>
+                        <td>Componentes ricos JSF</td>
+                    </tr>
+                    <tr>
+                        <td>PrimeFaces Extensions</td>
+                        <td>12.0.0</td>
+                        <td>Componentes adicionais</td>
+                    </tr>
+                    <tr>
+                        <td>OmniFaces</td>
+                        <td>2.7.3</td>
+                        <td>Utilitários JSF</td>
+                    </tr>
+                    <tr>
+                        <td>Hibernate Core</td>
+                        <td>5.6.15.Final</td>
+                        <td>Implementação JPA</td>
+                    </tr>
+                    <tr>
+                        <td>PostgreSQL Driver</td>
+                        <td>42.6.0</td>
+                        <td>Driver JDBC PostgreSQL</td>
+                    </tr>
+                    <tr>
+                        <td>Lombok</td>
+                        <td>1.18.28</td>
+                        <td>Redução de boilerplate</td>
+                    </tr>
+                    <tr>
+                        <td>jBCrypt</td>
+                        <td>0.4</td>
+                        <td>Hash de senhas</td>
+                    </tr>
+                    <tr>
+                        <td>ZXing</td>
+                        <td>3.5.2</td>
+                        <td>Geração de QR Codes</td>
+                    </tr>
+                    <tr>
+                        <td>JasperReports</td>
+                        <td>6.21.0</td>
+                        <td>Geração de relatórios PDF</td>
+                    </tr>
+                    <tr>
+                        <td>Logback</td>
+                        <td>(via SLF4J)</td>
+                        <td>Logging</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>7. Padrões de Projeto Utilizados</h2>
+
+            <h3>7.1. MVC (Model-View-Controller)</h3>
+            <p>Separação entre apresentação (View - XHTML), controle (Controller - Managed Beans) e modelo (Model - Entities)</p>
+
+            <h3>7.2. Service Layer</h3>
+            <p>Camada intermediária entre Controllers e Repositories para lógica de negócio</p>
+
+            <h3>7.3. Repository (DAO)</h3>
+            <p>Encapsulamento de acesso a dados com interfaces e implementações</p>
+
+            <h3>7.4. Dependency Injection (CDI)</h3>
+            <p>Inversão de controle através de CDI (Context and Dependency Injection)</p>
+
+            <h3>7.5. Front Controller</h3>
+            <p>FacesServlet controla todas as requisições JSF</p>
+
+            <h3>7.6. Template Method</h3>
+            <p>Templates Facelets definem estrutura comum reutilizável</p>
+
+            <h3>7.7. Singleton</h3>
+            <p>Services com escopo <code>@ApplicationScoped</code></p>
+
+            <h3>7.8. Builder</h3>
+            <p>Lombok <code>@Builder</code> para construção fluente de objetos</p>
+        </section>
+
+        <section>
+            <h2>8. Fluxo de Requisição Completo</h2>
+            <p style="margin-bottom: 25px;">
+                Exemplo completo do fluxo de uma requisição desde o acesso à página até a persistência no banco de dados:
+            </p>
+
+            <!-- Passo 1 -->
+            <div style="margin: 20px 0;">
+                <div style="display: flex; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="background: white; color: #667eea; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">1</div>
+                    <div style="flex-grow: 1;">
+                        <div style="font-size: 1.2em; font-weight: bold;">Usuário acessa página</div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-top: 3px;">
+                            <code style="background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 3px;">/pages/pessoa/cadastro.xhtml</code>
+                        </div>
+                    </div>
+                    <div style="font-size: 2em; flex-shrink: 0;">🌐</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; font-size: 2em; color: var(--primary-color); margin: 10px 0;">↓</div>
+
+            <!-- Passo 2 -->
+            <div style="margin: 20px 0;">
+                <div style="display: flex; align-items: center; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="background: white; color: #f5576c; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">2</div>
+                    <div style="flex-grow: 1;">
+                        <div style="font-size: 1.2em; font-weight: bold;">FacesServlet intercepta requisição</div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-top: 3px;">
+                            Filtro JSF processa arquivos <strong>.xhtml</strong>
+                        </div>
+                    </div>
+                    <div style="font-size: 2em; flex-shrink: 0;">⚡</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; font-size: 2em; color: var(--primary-color); margin: 10px 0;">↓</div>
+
+            <!-- Passo 3 -->
+            <div style="margin: 20px 0;">
+                <div style="display: flex; align-items: start; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="background: white; color: #00f2fe; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">3</div>
+                    <div style="flex-grow: 1;">
+                        <div style="font-size: 1.2em; font-weight: bold;">AuthFilter valida autenticação</div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-top: 8px; line-height: 1.6;">
+                            <div style="background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 4px; margin-bottom: 5px;">
+                                ✅ <strong>Se autenticado:</strong> Continua processamento
+                            </div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 4px;">
+                                ❌ <strong>Se NÃO autenticado:</strong> Redireciona para <code>login.xhtml</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="font-size: 2em; flex-shrink: 0;">🛡️</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; font-size: 2em; color: var(--primary-color); margin: 10px 0;">↓</div>
+
+            <!-- Passo 4 -->
+            <div style="margin: 20px 0;">
+                <div style="display: flex; align-items: start; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="background: white; color: #38f9d7; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">4</div>
+                    <div style="flex-grow: 1;">
+                        <div style="font-size: 1.2em; font-weight: bold;">JSF renderiza cadastro.xhtml</div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-top: 8px; line-height: 1.6;">
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px; margin-bottom: 4px;">
+                                📄 Carrega <strong>template.xhtml</strong>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px; margin-bottom: 4px;">
+                                🧩 Injeta: header, menu, content, footer
+                            </div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px;">
+                                🎨 Renderiza formulário com binding para <strong>PessoaController</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="font-size: 2em; flex-shrink: 0;">📱</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; font-size: 2em; color: var(--primary-color); margin: 10px 0;">↓</div>
+
+            <!-- Passo 5 -->
+            <div style="margin: 20px 0;">
+                <div style="display: flex; align-items: center; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="background: white; color: #fa709a; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">5</div>
+                    <div style="flex-grow: 1;">
+                        <div style="font-size: 1.2em; font-weight: bold;">Usuário preenche e SUBMETA formulário</div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-top: 3px;">
+                            Clica em "Salvar" → <code style="background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 3px;">commandButton action="#{pessoaController.salvar}"</code>
+                        </div>
+                    </div>
+                    <div style="font-size: 2em; flex-shrink: 0;">👤</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; font-size: 2em; color: var(--primary-color); margin: 10px 0;">↓</div>
+
+            <!-- Passo 6 -->
+            <div style="margin: 20px 0;">
+                <div style="display: flex; align-items: start; background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="background: white; color: #a6c1ee; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">6</div>
+                    <div style="flex-grow: 1;">
+                        <div style="font-size: 1.2em; font-weight: bold;">JSF processa submissão</div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-top: 8px; line-height: 1.6;">
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px; margin-bottom: 4px;">
+                                🔄 Aplica conversores: <strong>LocalDateConverter</strong>, etc.
+                            </div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px; margin-bottom: 4px;">
+                                ✅ Valida Bean Validation: <strong>@NotNull, @Size, @CPF</strong>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px;">
+                                ✔️ Se válido → chama <strong>action</strong> do controller
+                            </div>
+                        </div>
+                    </div>
+                    <div style="font-size: 2em; flex-shrink: 0;">⚙️</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; font-size: 2em; color: var(--primary-color); margin: 10px 0;">↓</div>
+
+            <!-- Passo 7 -->
+            <div style="margin: 20px 0;">
+                <div style="display: flex; align-items: start; background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="background: white; color: #66a6ff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">7</div>
+                    <div style="flex-grow: 1;">
+                        <div style="font-size: 1.2em; font-weight: bold;">PessoaController.salvar()</div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-top: 8px; line-height: 1.6;">
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px; margin-bottom: 4px;">
+                                📥 Recebe objeto <strong>Pessoa</strong> preenchido (via binding)
+                            </div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px;">
+                                📞 Chama <strong>PessoaService.salvar(pessoa)</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="font-size: 2em; flex-shrink: 0;">🎮</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; font-size: 2em; color: var(--primary-color); margin: 10px 0;">↓</div>
+
+            <!-- Passo 8 -->
+            <div style="margin: 20px 0;">
+                <div style="display: flex; align-items: start; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="background: white; color: #ff9a9e; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">8</div>
+                    <div style="flex-grow: 1;">
+                        <div style="font-size: 1.2em; font-weight: bold;">PessoaService.salvar(pessoa)</div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-top: 8px; line-height: 1.6;">
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px; margin-bottom: 4px;">
+                                📏 Aplica regras de negócio
+                            </div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px; margin-bottom: 4px;">
+                                🔍 Valida: <strong>CPF único, telefone único</strong>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px; margin-bottom: 4px;">
+                                📅 Define <strong>data_cadastro = now()</strong>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px;">
+                                📞 Chama <strong>PessoaRepository.salvar(pessoa)</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="font-size: 2em; flex-shrink: 0;">⚙️</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; font-size: 2em; color: var(--primary-color); margin: 10px 0;">↓</div>
+
+            <!-- Passo 9 -->
+            <div style="margin: 20px 0;">
+                <div style="display: flex; align-items: start; background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="background: white; color: #30cfd0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">9</div>
+                    <div style="flex-grow: 1;">
+                        <div style="font-size: 1.2em; font-weight: bold;">PessoaRepository.salvar(pessoa)</div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-top: 8px; line-height: 1.6;">
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px; margin-bottom: 4px;">
+                                💾 <strong>EntityManager.persist(pessoa)</strong> ou <strong>merge()</strong>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px;">
+                                ✅ <strong>Commit da transação JTA</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="font-size: 2em; flex-shrink: 0;">💾</div>
+                </div>
+            </div>
+
+            <!-- Linha de retorno -->
+            <div style="text-align: center; margin: 30px 0 20px 0;">
+                <div style="display: inline-block; background: linear-gradient(to right, #11998e 0%, #38ef7d 100%); color: white; padding: 12px 30px; border-radius: 25px; font-weight: bold; font-size: 1.1em;">
+                    ⬆️ RETORNO AO CONTROLLER
+                </div>
+            </div>
+
+            <!-- Passo 10 -->
+            <div style="margin: 20px 0;">
+                <div style="display: flex; align-items: start; background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="background: white; color: #8ec5fc; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">10</div>
+                    <div style="flex-grow: 1;">
+                        <div style="font-size: 1.2em; font-weight: bold;">Retorno ao Controller</div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-top: 8px; line-height: 1.6;">
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px; margin-bottom: 4px;">
+                                ✅ Adiciona <strong>FacesMessage</strong> de sucesso
+                            </div>
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px;">
+                                🔄 Redireciona: <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 3px;">return "lista?faces-redirect=true"</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="font-size: 2em; flex-shrink: 0;">🎮</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; font-size: 2em; color: var(--primary-color); margin: 10px 0;">↓</div>
+
+            <!-- Passo 11 -->
+            <div style="margin: 20px 0;">
+                <div style="display: flex; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="background: white; color: #667eea; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">11</div>
+                    <div style="flex-grow: 1;">
+                        <div style="font-size: 1.2em; font-weight: bold;">JSF renderiza lista.xhtml com pessoas atualizadas</div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-top: 3px;">
+                            Tabela <strong>PrimeFaces DataTable</strong> exibe todos os registros incluindo o novo
+                        </div>
+                    </div>
+                    <div style="font-size: 2em; flex-shrink: 0;">📋</div>
+                </div>
+            </div>
+
+            <!-- Resumo -->
+            <div style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-left: 5px solid var(--primary-color); padding: 20px; border-radius: 8px; margin-top: 30px;">
+                <h3 style="margin-top: 0; color: var(--primary-color);">🎯 Características do Fluxo</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #3498db;">
+                        <strong>🔐 Segurança:</strong> Validação em múltiplas camadas (filtro + bean validation + service)
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #2ecc71;">
+                        <strong>🔄 Transações:</strong> Gerenciadas automaticamente pelo container CDI/JTA
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #e74c3c;">
+                        <strong>📏 Separação:</strong> Cada camada tem responsabilidade única e bem definida
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #f39c12;">
+                        <strong>🎨 Template:</strong> Reutilização de layout via Facelets (header, menu, footer)
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>9. Boas Práticas Implementadas</h2>
+
+            <h3>9.1. Código Limpo</h3>
+            <ul>
+                <li>Nomenclatura descritiva e em português</li>
+                <li>Métodos pequenos e focados (Single Responsibility)</li>
+                <li>Uso de Lombok para reduzir boilerplate</li>
+                <li>Separação clara de responsabilidades entre camadas</li>
+            </ul>
+
+            <h3>9.2. Segurança</h3>
+            <ul>
+                <li>Senhas hashadas com BCrypt (nunca plain text)</li>
+                <li>Validação server-side obrigatória</li>
+                <li>Prepared Statements via JPA (proteção contra SQL Injection)</li>
+                <li>Filtro de autenticação em todas as páginas protegidas</li>
+            </ul>
+
+            <h3>9.3. Performance</h3>
+            <ul>
+                <li>FetchType.LAZY em relacionamentos @OneToMany e @ManyToMany</li>
+                <li>Paginação em listas grandes (DataTable + LazyDataModel)</li>
+                <li>Índices em campos de busca frequente</li>
+                <li>Cache de segundo nível do Hibernate (quando necessário)</li>
+            </ul>
+
+            <h3>9.4. Manutenibilidade</h3>
+            <ul>
+                <li>Arquitetura em camadas bem definida</li>
+                <li>Injeção de dependências (fácil mockar em testes)</li>
+                <li>Configurações externalizadas</li>
+                <li>Logging adequado com Logback</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>10. Próximos Passos / Melhorias Futuras</h2>
+
+            <div class="warning">
+                <strong>Recomendações para Evolução do Sistema:</strong>
+                <ul>
+                    <li>📦 <strong>Containerização:</strong> Docker para fácil deploy e escalabilidade</li>
+                    <li>🧪 <strong>Testes Automatizados:</strong> JUnit + Mockito para cobertura >= 70%</li>
+                    <li>🔄 <strong>CI/CD:</strong> Pipeline automatizado (Jenkins, GitLab CI ou GitHub Actions)</li>
+                    <li>📊 <strong>Monitoramento:</strong> Integração com Prometheus + Grafana para métricas</li>
+                    <li>🗄️ <strong>Migrations:</strong> Flyway ou Liquibase ao invés de hbm2ddl.auto</li>
+                    <li>🔐 <strong>OAuth2/JWT:</strong> Autenticação moderna para API REST</li>
+                    <li>📱 <strong>PWA:</strong> Progressive Web App para acesso mobile offline</li>
+                    <li>🌐 <strong>Microservices:</strong> Separar módulos em serviços independentes (futuro)</li>
+                    <li>💾 <strong>Cache Distribuído:</strong> Redis para sessões e cache em cluster</li>
+                </ul>
+            </div>
+        </section>
+
+        <footer>
+            <p><strong>Sistema Segue-me - Documentação de Arquitetura</strong></p>
+            <p>Versão 1.0.0 - Jakarta EE 8 / JSF 2.3 / Hibernate 5.6 / PostgreSQL 12+</p>
+            <p>© 2026</p>
+        </footer>
+    </div>
+</body>
+</html>

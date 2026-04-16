@@ -80,4 +80,24 @@ public class UsuarioService {
     public List<Permissao> buscaPermissoes() {
         return usuarioRepository.buscaPermissoes();
     }
+    
+    public void alterarSenha(Long usuarioId, String senhaAtual, String novaSenha) {
+        // Busca o usuário
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+            .orElseThrow(() -> new SecurityException("Usuário não encontrado"));
+        
+        // Verifica se a senha atual está correta
+        if (!BCrypt.checkpw(senhaAtual, usuario.getSenha())) {
+            throw new SecurityException("Senha atual incorreta");
+        }
+        
+        // Valida a nova senha
+        if (novaSenha == null || novaSenha.length() < 6) {
+            throw new SecurityException("Nova senha deve ter no mínimo 6 caracteres");
+        }
+        
+        // Criptografa e atualiza apenas a senha via JPQL (evita validação da entidade inteira)
+        String senhaHash = BCrypt.hashpw(novaSenha, BCrypt.gensalt());
+        usuarioRepository.atualizarSenha(usuarioId, senhaHash);
+    }
 }

@@ -234,13 +234,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="modal-pessoa-actions">
-							<p:button icon="pi pi-pencil" title="Editar"
-								outcome="/pages/pessoa/cadastro.xhtml"
-								styleClass="action-button-primary">
-								<f:param name="id" value="#{pessoaController.pessoaDetalhes.id}" />
-							</p:button>
-						</div>
+
 					</div>
 
 					<!-- Stats bar -->
@@ -311,20 +305,43 @@
 										<h:outputText value="Não informado" rendered="#{empty pessoaController.pessoaDetalhes.endereco}" styleClass="empty-value" />
 									</span>
 								</div>
-								<div class="info-item">
+								
+								<!-- Pai cadastrado (relacionamento) -->
+								<div class="info-item" rendered="#{not empty pessoaController.pessoaDetalhes.pai}">
+									<label>Pai (cadastrado)</label>
+									<span style="color: #28a745; font-weight: 500;">
+										<i class="pi pi-check-circle" style="margin-right: 0.5rem;"></i>
+										<h:outputText value="#{pessoaController.pessoaDetalhes.pai.nome}" />
+									</span>
+								</div>
+								
+								<!-- Pai (texto livre) - se não houver relacionamento -->
+								<div class="info-item" rendered="#{empty pessoaController.pessoaDetalhes.pai}">
 									<label>Pai</label>
 									<span>
 										<h:outputText value="#{pessoaController.pessoaDetalhes.filiacaoPai}" rendered="#{not empty pessoaController.pessoaDetalhes.filiacaoPai}" />
 										<h:outputText value="Não informado" rendered="#{empty pessoaController.pessoaDetalhes.filiacaoPai}" styleClass="empty-value" />
 									</span>
 								</div>
-								<div class="info-item">
+								
+								<!-- Mãe cadastrada (relacionamento) -->
+								<div class="info-item" rendered="#{not empty pessoaController.pessoaDetalhes.mae}">
+									<label>Mãe (cadastrada)</label>
+									<span style="color: #28a745; font-weight: 500;">
+										<i class="pi pi-check-circle" style="margin-right: 0.5rem;"></i>
+										<h:outputText value="#{pessoaController.pessoaDetalhes.mae.nome}" />
+									</span>
+								</div>
+								
+								<!-- Mãe (texto livre) - se não houver relacionamento -->
+								<div class="info-item" rendered="#{empty pessoaController.pessoaDetalhes.mae}">
 									<label>Mãe</label>
 									<span>
 										<h:outputText value="#{pessoaController.pessoaDetalhes.filiacaoMae}" rendered="#{not empty pessoaController.pessoaDetalhes.filiacaoMae}" />
 										<h:outputText value="Não informado" rendered="#{empty pessoaController.pessoaDetalhes.filiacaoMae}" styleClass="empty-value" />
 									</span>
 								</div>
+								
 								<div class="info-item full-width">
 									<label>Sacramentos</label>
 									<div class="tag-list">
@@ -341,6 +358,28 @@
 											rendered="#{empty pessoaController.pessoaDetalhes.sacramentos}"
 											styleClass="empty-value" />
 									</div>
+								</div>
+								
+								<!-- Exibir filhos cadastrados (se houver) -->
+								<div class="info-item full-width" rendered="#{not empty pessoaController.filhosDaPessoaDetalhes}">
+									<label>Filhos cadastrados no sistema</label>
+									<p:dataTable value="#{pessoaController.filhosDaPessoaDetalhes}" 
+									             var="filho"
+									             emptyMessage="Nenhum filho cadastrado"
+									             styleClass="modern-table"
+									             style="margin-top: 0.5rem;">
+										<p:column headerText="Nome">
+											<h:outputText value="#{filho.nome}"/>
+										</p:column>
+										<p:column headerText="Idade">
+											<h:outputText value="#{filho.idade} anos"/>
+										</p:column>
+										<p:column headerText="Data de Nascimento">
+											<h:outputText value="#{filho.dataNascimento}">
+												<f:converter converterId="localDateConverter" />
+											</h:outputText>
+										</p:column>
+									</p:dataTable>
 								</div>
 							</div>
 						</p:tab>
@@ -455,7 +494,70 @@
 								</div>
 							</h:panelGroup>
 						</p:tab>
+
+						<!-- Tab: Histórico de Transferências -->
+						<p:tab title="Transferências">
+							<!-- Status atual de transferência -->
+							<div style="margin-bottom:1rem; display:flex; align-items:center; gap:0.75rem;">
+								<span style="font-size:0.85rem; color:#6c757d;">Status atual:</span>
+								<p:tag value="#{pessoaController.pessoaDetalhes.statusTransferencia.descricao}"
+									   severity="#{pessoaController.pessoaDetalhes.statusTransferencia.name() == 'TRANSFERIDO_SAIDA' ? 'danger' :
+									              pessoaController.pessoaDetalhes.statusTransferencia.name() == 'TRANSFERIDO_ENTRADA' ? 'warning' :
+									              pessoaController.pessoaDetalhes.statusTransferencia.name() == 'RETORNADO' ? 'success' : 'info'}" />
+								<h:panelGroup rendered="#{not empty pessoaController.pessoaDetalhes.paroquiaOrigem}">
+									<span style="font-size:0.82rem; color:#868e96;">
+										<i class="pi pi-map-marker" style="margin-right:0.25rem;"></i>Origem: #{pessoaController.pessoaDetalhes.paroquiaOrigem}
+									</span>
+								</h:panelGroup>
+							</div>
+							<!-- Histórico -->
+							<h:panelGroup rendered="#{not empty pessoaController.pessoaDetalhes.transferencias}">
+								<div class="lista-cards">
+									<ui:repeat value="#{pessoaController.pessoaDetalhes.transferencias}" var="trans">
+										<div class="card-item">
+											<div class="card-title">
+												<p:tag value="#{trans.tipoTransferencia.descricao}"
+													   severity="#{trans.tipoTransferencia.name() == 'TRANSFERIDO_SAIDA' ? 'danger' :
+													              trans.tipoTransferencia.name() == 'TRANSFERIDO_ENTRADA' ? 'warning' :
+													              trans.tipoTransferencia.name() == 'RETORNADO' ? 'success' : 'info'}" />
+												<span style="margin-left:auto; font-size:0.8rem; color:#868e96;">
+													<h:outputText value="#{trans.dataSolicitacao}">
+														<f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+													</h:outputText>
+												</span>
+											</div>
+											<div class="card-info">
+												<strong>De:</strong> #{trans.paroquiaOrigem}
+												<br/><strong>Para:</strong> #{trans.paroquiaDestino}
+												<h:panelGroup rendered="#{not empty trans.observacoes}">
+													<br/><strong>Obs:</strong> #{trans.observacoes}
+												</h:panelGroup>
+												<h:panelGroup rendered="#{not empty trans.registradoPor}">
+													<br/><strong>Registrado por:</strong> #{trans.registradoPor}
+												</h:panelGroup>
+											</div>
+										</div>
+									</ui:repeat>
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{empty pessoaController.pessoaDetalhes.transferencias}">
+								<div class="empty-state-modal">
+									<i class="pi pi-arrows-h"></i>
+									<p>Nenhuma transferência registrada</p>
+								</div>
+							</h:panelGroup>
+						</p:tab>
 					</p:tabView>
+
+					<!-- Ações do modal -->
+					<div style="display:flex; justify-content:flex-end; padding-top:1rem; border-top:1px solid #e9ecef; margin-top:1rem;">
+						<p:button value="Editar Seguidor" icon="pi pi-pencil"
+							outcome="/pages/pessoa/cadastro.xhtml"
+							styleClass="action-button-primary">
+							<f:param name="id" value="#{pessoaController.pessoaDetalhes.id}" />
+						</p:button>
+					</div>
+
 				</h:panelGroup>
 			</p:dialog>
 			</h:form>

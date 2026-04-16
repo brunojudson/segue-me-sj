@@ -26,6 +26,9 @@ public class UsuarioController implements Serializable {
 
 	@Inject
 	private UsuarioService usuarioservice;
+	
+	@Inject
+	private LoginController loginController;
 
 	private List<Permissao> permissoes;
 	
@@ -34,11 +37,22 @@ public class UsuarioController implements Serializable {
 	private List<Usuario> usuarios;
 	private Usuario usuario = new Usuario();
 	
+	private String senhaAtual;
+	private String novaSenha;
+	private String confirmaNovaSenha;
+	
 	@PostConstruct
 	public void init() {
-		usuarios = usuarioservice.findAll();
-		permissoes = usuarioservice.buscaPermissoes();
-
+		// Se for admin, carrega todos os usuários
+		if (loginController != null && loginController.hasPermission("ADMIN")) {
+			usuarios = usuarioservice.findAll();
+			permissoes = usuarioservice.buscaPermissoes();
+		} else {
+			// Se não for admin, carrega apenas o próprio usuário
+			if (loginController != null && loginController.getUsuarioLogado() != null) {
+				usuarios = List.of(loginController.getUsuarioLogado());
+			}
+		}
 	}
 
 	public void novo() {
@@ -61,6 +75,8 @@ public class UsuarioController implements Serializable {
 			Long id = Long.valueOf(idParam);
 			usuarioservice.buscarPorId(id).ifPresent(u -> {
 				this.usuario = u;
+				// Copia as permissões para um novo HashSet para evitar LazyInitializationException
+				this.permissoesSelecionadas = new java.util.HashSet<>(u.getPermissoes());
 				this.usuario.setSenha(null); // Limpa somente o campo senha
 			});
 		}
@@ -75,6 +91,64 @@ public class UsuarioController implements Serializable {
 		usuarioservice.delete(u.getId());
 		usuarios = usuarioservice.findAll();
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Usuário excluído com sucesso!"));
+	}
+	
+	public String alterarSenha() {
+		try {
+			// Valida se o usuário está logado
+			if (loginController == null || loginController.getUsuarioLogado() == null) {
+				FacesContext.getCurrentInstance().addMessage(null, 
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Usuário não autenticado"));
+				return null;
+			}
+			
+			// Valida se as senhas foram preenchidas
+			if (senhaAtual == null || senhaAtual.isEmpty()) {
+				FacesContext.getCurrentInstance().addMessage(null, 
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Senha atual é obrigatória"));
+				return null;
+			}
+			
+			if (novaSenha == null || novaSenha.isEmpty()) {
+				FacesContext.getCurrentInstance().addMessage(null, 
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Nova senha é obrigatória"));
+				return null;
+			}
+			
+			if (confirmaNovaSenha == null || confirmaNovaSenha.isEmpty()) {
+				FacesContext.getCurrentInstance().addMessage(null, 
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Confirmação de senha é obrigatória"));
+				return null;
+			}
+			
+			// Valida se as novas senhas coincidem
+			if (!novaSenha.equals(confirmaNovaSenha)) {
+				FacesContext.getCurrentInstance().addMessage(null, 
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "As senhas não coincidem"));
+				return null;
+			}
+			
+			// Chama o serviço para alterar a senha
+			usuarioservice.alterarSenha(loginController.getUsuarioLogado().getId(), senhaAtual, novaSenha);
+			
+			// Limpa os campos
+			senhaAtual = null;
+			novaSenha = null;
+			confirmaNovaSenha = null;
+			
+			FacesContext.getCurrentInstance().addMessage(null, 
+				new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Senha alterada com sucesso!"));
+			
+			return null;
+		} catch (SecurityException e) {
+			FacesContext.getCurrentInstance().addMessage(null, 
+				new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
+			return null;
+		} catch (Exception e) {
+			FacesContext.getCurrentInstance().addMessage(null, 
+				new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Erro ao alterar senha: " + e.getMessage()));
+			return null;
+		}
 	}
 	
 	public Set<Permissao> getPermissoesSelecionadas() {
@@ -108,6 +182,30 @@ public class UsuarioController implements Serializable {
 
 	public void setPermissoes(List<Permissao> permissoes) {
 		this.permissoes = permissoes;
+	}
+
+	public String getSenhaAtual() {
+		return senhaAtual;
+	}
+
+	public void setSenhaAtual(String senhaAtual) {
+		this.senhaAtual = senhaAtual;
+	}
+
+	public String getNovaSenha() {
+		return novaSenha;
+	}
+
+	public void setNovaSenha(String novaSenha) {
+		this.novaSenha = novaSenha;
+	}
+
+	public String getConfirmaNovaSenha() {
+		return confirmaNovaSenha;
+	}
+
+	public void setConfirmaNovaSenha(String confirmaNovaSenha) {
+		this.confirmaNovaSenha = confirmaNovaSenha;
 	}
 
 }

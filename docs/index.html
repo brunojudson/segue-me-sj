@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação - Sistema Segue-me</title>
+    <style>
+        :root {
+            --primary-color: #0b5;
+            --secondary-color: #2c3e50;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border-radius: 15px;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 4px solid var(--primary-color);
+            padding-bottom: 30px;
+            margin-bottom: 50px;
+        }
+
+        .logo {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            font-size: 1.4em;
+            font-weight: 300;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 15px;
+        }
+
+        .intro {
+            background: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            padding: 25px;
+            margin: 40px 0;
+            border-radius: 8px;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .doc-card {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .doc-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,187,85,0.3);
+            border-color: var(--primary-color);
+        }
+
+        .doc-icon {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .doc-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .doc-description {
+            color: #6c757d;
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .doc-audience {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            text-align: center;
+            color: #1976d2;
+            font-weight: 600;
+        }
+
+        .doc-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+
+        .quick-links {
+            background: linear-gradient(135deg, #00bb55 0%, #00994a 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin: 50px 0;
+            text-align: center;
+        }
+
+        .quick-links h2 {
+            color: white;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .quick-link-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: block;
+        }
+
+        .quick-link-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid var(--border-color);
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .last-updated {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 30px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">📚</div>
+            <h1>Documentação Completa</h1>
+            <p class="subtitle">Sistema Segue-me para Gestão de Encontros de Jovens</p>
+            <span class="version-badge">Versão 1.0.0 | Abril 2026</span>
+        </header>
+
+        <div class="intro">
+            <p>
+                <strong>Bem-vindo à documentação completa do Sistema Segue-me!</strong>
+            </p>
+            <p style="margin-top: 15px;">
+                Esta coleção de documentos técnicos e gerenciais foi elaborada para fornecer uma visão 
+                completa do sistema, desde conceitos de negócio até detalhes de implementação técnica. 
+                Escolha o documento mais adequado ao seu perfil e necessidade abaixo.
+            </p>
+        </div>
+
+        <div class="last-updated">
+            <strong>📅 Última Atualização:</strong> 14 de Abril de 2026<br>
+            <strong>📊 Status:</strong> Documentação Completa e Atualizada
+        </div>
+
+        <h2 style="color: var(--secondary-color); margin: 50px 0 30px 0; font-size: 2em; padding-bottom: 15px; border-bottom: 3px solid var(--border-color);">
+            📖 Documentos Disponíveis
+        </h2>
+
+        <div class="doc-grid">
+            <a href="visao_geral_projeto.html" class="doc-card">
+                <div class="doc-icon">🎯</div>
+                <div class="doc-title">Visão Geral do Projeto</div>
+                <div class="doc-description">
+                    Resumo executivo com objetivos, benefícios, funcionalidades principais e diferenciais do sistema.
+                    Ideal para apresentações e tomada de decisão.
+                </div>
+                <div class="doc-audience">👥 Coordenadores | Stakeholders | Gestores</div>
+                <div class="doc-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">10</div>
+                        <div class="stat-label">Seções</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">15min</div>
+                        <div class="stat-label">Leitura</div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="especificacao_requisitos.html" class="doc-card">
+                <div class="doc-icon">📋</div>
+                <div class="doc-title">Especificação de Requisitos</div>
+                <div class="doc-description">
+                    Documento técnico completo com requisitos funcionais e não-funcionais, casos de uso, 
+                    regras de negócio e fluxos de processo.
+                </div>
+                <div class="doc-audience">📊 Analistas | Gerentes de Projeto | Desenvolvedores</div>
+                <div class="doc-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">90+</div>
+                        <div class="stat-label">Requisitos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">30min</div>
+                        <div class="stat-label">Leitura</div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="modelo_entidade_relacionamento.html" class="doc-card">
+                <div class="doc-icon">📊</div>
+                <div class="doc-title">Modelo de Dados</div>
+                <div class="doc-description">
+                    Documentação detalhada do modelo entidade-relacionamento com todas as tabelas, 
+                    relacionamentos, constraints e índices do banco de dados.
+                </div>
+                <div class="doc-audience">💾 DBAs | Desenvolvedores | Arquitetos de Dados</div>
+                <div class="doc-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">18</div>
+                        <div class="stat-label">Entidades</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">25min</div>
+                        <div class="stat-label">Leitura</div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="arquitetura_sistema.html" class="doc-card">
+                <div class="doc-icon">🏗️</div>
+                <div class="doc-title">Arquitetura do Sistema</div>
+                <div class="doc-description">
+                    Visão técnica da arquitetura em camadas, padrões de projeto, tecnologias utilizadas, 
+                    estrutura de código e fluxos de requisição.
+                </div>
+                <div class="doc-audience">👨‍💻 Desenvolvedores | Arquitetos de Software | DevOps</div>
+                <div class="doc-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Camadas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">30min</div>
+                        <div class="stat-label">Leitura</div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="manual_usuario.html" class="doc-card">
+                <div class="doc-icon">📖</div>
+                <div class="doc-title">Manual do Usuário</div>
+                <div class="doc-description">
+                    Guia passo a passo para operação do sistema, incluindo fluxo de implantação inicial, 
+                    cadastros e boas práticas de uso.
+                </div>
+                <div class="doc-audience">👤 Usuários Finais | Secretários | Tesoureiros</div>
+                <div class="doc-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">Capítulos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">20min</div>
+                        <div class="stat-label">Leitura</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="quick-links">
+            <h2>🚀 Acesso Rápido</h2>
+            <p style="font-size: 1.1em; margin-bottom: 10px;">Documentos por Perfil de Usuário</p>
+            <div class="link-grid">
+                <a href="visao_geral_projeto.html" class="quick-link-btn">👔 Coordenadores</a>
+                <a href="manual_usuario.html" class="quick-link-btn">✍️ Secretários</a>
+                <a href="especificacao_requisitos.html#rf-gestao-financeiro" class="quick-link-btn">💰 Tesoureiros</a>
+                <a href="arquitetura_sistema.html" class="quick-link-btn">👨‍💻 Desenvolvedores</a>
+                <a href="modelo_entidade_relacionamento.html" class="quick-link-btn">💾 DBAs</a>
+                <a href="especificacao_requisitos.html" class="quick-link-btn">📊 Analistas</a>
+            </div>
+        </div>
+
+        <section style="margin-top: 60px;">
+            <h2 style="color: var(--secondary-color); margin-bottom: 25px; font-size: 2em; border-bottom: 3px solid var(--border-color); padding-bottom: 15px;">
+                📌 Informações Adicionais
+            </h2>
+
+            <h3 style="color: var(--primary-color); margin-top: 30px; margin-bottom: 15px; font-size: 1.4em;">
+                Estrutura da Documentação
+            </h3>
+            <ul style="margin-left: 30px; line-height: 2;">
+                <li><strong>Documentação de Negócio:</strong> Visão Geral, Manual do Usuário</li>
+                <li><strong>Documentação Técnica:</strong> Especificação de Requisitos, Modelo de Dados, Arquitetura</li>
+                <li><strong>Formato:</strong> HTML responsivo (pode ser impresso ou convertido para PDF)</li>
+                <li><strong>Navegação:</strong> Todos os documentos possuem índice e links internos</li>
+            </ul>
+
+            <h3 style="color: var(--primary-color); margin-top: 40px; margin-bottom: 15px; font-size: 1.4em;">
+                Como Utilizar Esta Documentação
+            </h3>
+            <ul style="margin-left: 30px; line-height: 2;">
+                <li><strong>Primeira Vez:</strong> Comece pela Visão Geral do Projeto para entender o contexto</li>
+                <li><strong>Implantação:</strong> Consulte o Manual do Usuário para o fluxo passo a passo</li>
+                <li><strong>Desenvolvimento:</strong> Arquitetura + Modelo de Dados + Especificação de Requisitos</li>
+                <li><strong>Manutenção:</strong> Use a Especificação de Requisitos como referência de regras de negócio</li>
+                <li><strong>Treinamento:</strong> Manual do Usuário é ideal para capacitação de novos usuários</li>
+            </ul>
+
+            <h3 style="color: var(--primary-color); margin-top: 40px; margin-bottom: 15px; font-size: 1.4em;">
+                Tecnologias do Sistema
+            </h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 15px; margin: 20px 0;">
+                <span style="background: var(--primary-color); color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold;">Java 11</span>
+                <span style="background: var(--primary-color); color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold;">Jakarta EE 8</span>
+                <span style="background: var(--primary-color); color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold;">JSF 2.3</span>
+                <span style="background: var(--primary-color); color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold;">PrimeFaces 12</span>
+                <span style="background: var(--primary-color); color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold;">Hibernate 5.6</span>
+                <span style="background: var(--primary-color); color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold;">PostgreSQL 12+</span>
+            </div>
+
+            <h3 style="color: var(--primary-color); margin-top: 40px; margin-bottom: 15px; font-size: 1.4em;">
+                Estatísticas do Projeto
+            </h3>
+            <div style="background: #f8f9fa; border-radius: 8px; padding: 25px; margin: 20px 0;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5em; font-weight: bold; color: var(--primary-color);">18</div>
+                        <div style="color: #6c757d;">Entidades de Dados</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5em; font-weight: bold; color: var(--primary-color);">10+</div>
+                        <div style="color: #6c757d;">Módulos Funcionais</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5em; font-weight: bold; color: var(--primary-color);">90+</div>
+                        <div style="color: #6c757d;">Requisitos Funcionais</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5em; font-weight: bold; color: var(--primary-color);">30+</div>
+                        <div style="color: #6c757d;">Páginas de Interface</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section style="background: #e3f2fd; border-radius: 12px; padding: 30px; margin: 50px 0;">
+            <h3 style="color: #1976d2; margin-top: 0; margin-bottom: 20px; font-size: 1.6em;">
+                💡 Dica para Leitura
+            </h3>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                Esta documentação foi estruturada para ser lida de forma modular. Você não precisa ler 
+                tudo de uma vez! Escolha o documento que atende sua necessidade atual e use os links 
+                internos para navegar entre seções relacionadas. Todos os documentos estão otimizados 
+                para impressão caso você prefira versões físicas.
+            </p>
+        </section>
+
+        <footer>
+            <p style="font-size: 1.3em; font-weight: bold; color: var(--secondary-color); margin-bottom: 15px;">
+                📚 Sistema Segue-me - Documentação Completa
+            </p>
+            <p style="margin: 10px 0;">
+                <strong>Versão:</strong> 1.0.0 | <strong>Data:</strong> Abril 2026
+            </p>
+            <p style="margin: 10px 0;">
+                <strong>Tecnologias:</strong> Java 11 | Jakarta EE 8 | JSF 2.3 | PrimeFaces 12 | Hibernate 5.6 | PostgreSQL 12+
+            </p>
+            <p style="margin-top: 25px; color: #999; font-size: 0.95em;">
+                Desenvolvido para servir ao Reino de Deus através da evangelização de jovens
+            </p>
+            <p style="margin-top: 10px; color: #999;">
+                © 2026 - Todos os direitos reservados
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

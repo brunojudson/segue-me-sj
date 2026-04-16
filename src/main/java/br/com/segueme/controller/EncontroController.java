@@ -24,6 +24,7 @@ import br.com.segueme.service.EquipeService;
 import br.com.segueme.service.TipoEquipeService;
 import br.com.segueme.entity.TipoEquipe;
 import br.com.segueme.entity.Equipe;
+import br.com.segueme.entity.Trabalhador;
 import br.com.segueme.service.TrabalhadorService;
 import br.com.segueme.service.UsuarioService;
 
@@ -64,6 +65,10 @@ public class EncontroController implements Serializable {
 	private Encontro encontroSelecionadoCirculos;
 	private List<Encontrista> integrantesSelecionados;
     private Circulo circuloSelecionado;
+	
+	// Controle de equipe selecionada e seus membros
+	private Equipe equipeSelecionada;
+	private List<Trabalhador> membrosDaEquipe;
 	
 	private List<Palestra> palestrasPorData;
 
@@ -251,6 +256,77 @@ public class EncontroController implements Serializable {
         return circuloSelecionado;
     }
     //FIM DA INFORMAÇÃO DE CIRCULOS
+
+	// INICIO DA INFORMAÇÃO DE EQUIPES
+	/**
+	 * Seleciona uma equipe e carrega seus membros (trabalhadores)
+	 */
+	public void selecionarEquipe(Equipe equipe) {
+		this.equipeSelecionada = equipe;
+		if (equipe != null && equipe.getId() != null) {
+			// Se o encontro estiver inativo, mostra todos os trabalhadores
+			// Se estiver ativo, mostra apenas os ativos
+			boolean encontroAtivo = encontro != null && Boolean.TRUE.equals(encontro.getAtivo());
+			
+			if (encontroAtivo) {
+				membrosDaEquipe = trabalhadorService.buscarPorEquipe(equipe.getId())
+					.stream()
+					.filter(Trabalhador::isAtivo)
+					.collect(java.util.stream.Collectors.toList());
+			} else {
+				// Encontro inativo: mostra todos os membros
+				membrosDaEquipe = trabalhadorService.buscarPorEquipe(equipe.getId());
+			}
+		} else {
+			membrosDaEquipe = new ArrayList<>();
+		}
+	}
+
+	public Equipe getEquipeSelecionada() {
+		return equipeSelecionada;
+	}
+
+	public List<Trabalhador> getMembrosDaEquipe() {
+		return membrosDaEquipe != null ? membrosDaEquipe : new ArrayList<>();
+	}
+
+	/**
+	 * Conta quantos membros uma equipe possui
+	 * Se o encontro estiver inativo, conta todos os membros
+	 * Se estiver ativo, conta apenas os ativos
+	 */
+	public long contarMembrosDaEquipe(Equipe equipe) {
+		if (equipe == null || equipe.getId() == null) {
+			return 0;
+		}
+		
+		boolean encontroAtivo = encontro != null && Boolean.TRUE.equals(encontro.getAtivo());
+		
+		if (encontroAtivo) {
+			return trabalhadorService.buscarPorEquipe(equipe.getId())
+					.stream()
+					.filter(Trabalhador::isAtivo)
+					.count();
+		} else {
+			// Encontro inativo: conta todos os membros
+			return trabalhadorService.buscarPorEquipe(equipe.getId()).size();
+		}
+	}
+
+	/**
+	 * Conta o total de membros em todas as equipes do encontro
+	 * Se o encontro estiver inativo, conta todos os membros
+	 * Se estiver ativo, conta apenas os ativos
+	 */
+	public long contarTotalMembrosDoEncontro() {
+		if (encontro == null || encontro.getEquipes() == null) {
+			return 0;
+		}
+		return encontro.getEquipes().stream()
+				.mapToLong(this::contarMembrosDaEquipe)
+				.sum();
+	}
+	// FIM DA INFORMAÇÃO DE EQUIPES
 
 	// Getter para palestrasPorData
 	public List<Palestra> getPalestrasPorData() {
