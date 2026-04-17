@@ -4611,6 +4611,7 @@ html.dark-mode body .photo-wrapper:hover .modal-pessoa-foto {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
+    padding: 1rem;
 }
 
 .chart-container {
@@ -4713,6 +4714,30 @@ html.dark-mode body .photo-wrapper:hover .modal-pessoa-foto {
 .status-badge.aguardando {
     background: rgba(251, 191, 36, 0.15) !important;
     color: var(--sm-warn) !important;
+}
+
+/* Status ABERTO (pedido em andamento) */
+.status-badge.aberto {
+    background: rgba(96, 165, 250, 0.1) !important;
+    color: #60a5fa !important;
+}
+
+/* Dark mode — status badges de venda */
+body.dark-mode .status-badge.pago {
+    background: rgba(109, 240, 200, 0.15) !important;
+    color: var(--sm-accent) !important;
+}
+body.dark-mode .status-badge.cancelado {
+    background: rgba(248, 113, 113, 0.15) !important;
+    color: var(--sm-danger) !important;
+}
+body.dark-mode .status-badge.aguardando {
+    background: rgba(251, 191, 36, 0.2) !important;
+    color: var(--sm-warn) !important;
+}
+body.dark-mode .status-badge.aberto {
+    background: rgba(96, 165, 250, 0.15) !important;
+    color: #60a5fa !important;
 }
 
 /* Action Button — Success (vendas) */

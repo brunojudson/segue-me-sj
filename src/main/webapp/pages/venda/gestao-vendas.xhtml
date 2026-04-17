@@ -45,10 +45,10 @@
                         <h:panelGroup id="pnlIniciarVenda" rendered="#{vendaPedidoController.pedidoAtual == null}">
                             <div class="venda-inline-form">
                                 <div class="info-item">
-                                    <label for="encontro">Encontro: *</label>
+                                    <p:outputLabel for="encontro" value="Encontro: *" />
                                     <p:selectOneMenu id="encontro" value="#{vendaPedidoController.encontroSelecionadoId}" 
                                                      required="true" requiredMessage="Selecione um encontro"
-                                                     filter="true" styleClass="w-full" style="width: 100%;">
+                                                     filter="true" styleClass="modern-select">
                                         <f:selectItem itemLabel="-- Selecione um encontro --" itemValue="#{null}" noSelectionOption="true"/>
                                         <f:selectItems value="#{vendaPedidoController.encontrosAtivos}" 
                                                        var="enc" itemLabel="#{enc.nome}" itemValue="#{enc.id}"/>
@@ -59,9 +59,9 @@
                                 </div>
 
                                 <div class="info-item">
-                                    <label for="trabalhador">Trabalhador: *</label>
+                                    <p:outputLabel for="trabalhador" value="Trabalhador: *" />
                                     <p:selectOneMenu id="trabalhador" value="#{vendaPedidoController.trabalhadorSelecionadoId}" 
-                                                     filter="true" filterMatchMode="contains">
+                                                     filter="true" filterMatchMode="contains" styleClass="modern-select">
                                         <f:selectItem itemLabel="-- Selecione o trabalhador --" itemValue="#{null}" noSelectionOption="true"/>
                                         <f:selectItems value="#{vendaPedidoController.trabalhadores}"
                                                        var="trab"
@@ -143,9 +143,9 @@
 
                             <div class="venda-inline-form">
                                 <div class="info-item venda-field-lg">
-                                    <label for="artigo">Artigo: *</label>
+                                    <p:outputLabel for="artigo" value="Artigo: *" />
                                     <p:selectOneMenu id="artigo" value="#{vendaPedidoController.artigoSelecionadoId}" 
-                                                     filter="true" filterMatchMode="contains" required="true">
+                                                     filter="true" filterMatchMode="contains" required="true" styleClass="modern-select">
                                         <f:selectItem itemLabel="-- Selecione o artigo --" itemValue="#{null}" noSelectionOption="true"/>
                                         <f:selectItems value="#{vendaPedidoController.artigosAtivos}" 
                                                        var="art" itemLabel="#{art.nome} - R$ #{art.precoBase}" itemValue="#{art.id}"/>
@@ -155,13 +155,13 @@
                                 </div>
                                 
                                 <div class="info-item venda-field-sm">
-                                    <label for="quantidade">Qtd: *</label>
+                                    <p:outputLabel for="quantidade" value="Qtd: *" />
                                     <p:inputNumber id="quantidade" value="#{vendaPedidoController.quantidadeItem}" 
                                                    decimalPlaces="0" minValue="1" required="true" />
                                 </div>
                                 
                                 <div class="info-item venda-field-md">
-                                    <label for="valorUnitario">Valor Unit.: *</label>
+                                    <p:outputLabel for="valorUnitario" value="Valor Unit.: *" />
                                     <p:inputNumber id="valorUnitario" value="#{vendaPedidoController.valorUnitarioItem}" 
                                                    mode="currency" currencySymbol="R$ " required="true" />
                                 </div>
@@ -175,7 +175,7 @@
                                     <p:commandButton value="Cancelar" icon="pi pi-times" 
                                                      actionListener="#{vendaPedidoController.limpar}"
                                                      process="@this"
-                                                     update="@form" styleClass="action-button-secondary" />
+                                                     update="@form" styleClass="ui-button-secondary" />
                                 </div>
                             </div>
                         </h:panelGroup>

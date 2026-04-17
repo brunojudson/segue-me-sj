@@ -57,6 +57,7 @@
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
     margin-bottom: 1.5rem;
+    padding: 1rem 1rem 0.25rem 1rem;
 }
 .relatorio-dashboard .dash-stats-sm {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -64,13 +65,18 @@
 
 /* --- Stat Card --- */
 .relatorio-dashboard .dash-stat-card {
-    background: var(--surface-card, #ffffff);
-    border: 1px solid var(--surface-border, #e2e8f0);
+    background: var(--sm-surface, #ffffff);
+    border: 1px solid var(--sm-border, #e2e8f0);
     border-radius: 8px;
     padding: 1.25rem;
     display: flex;
     align-items: center;
     gap: 1rem;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.relatorio-dashboard .dash-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(16, 24, 40, 0.08);
 }
 .relatorio-dashboard .dash-stat-icon {
     width: 44px;
@@ -90,13 +96,17 @@
 .relatorio-dashboard .dash-stat-icon.icon-rose   { background: rgba(251, 113, 133, 0.1); color: #fb7185; }
 
 .relatorio-dashboard .dash-stat-value {
-    font-size: 1.4rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    color: var(--text-color, #1e293b);
+    color: var(--sm-text, #1e293b);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 .relatorio-dashboard .dash-stat-label {
     font-size: 0.78rem;
-    color: var(--text-color-secondary, #64748b);
+    color: var(--sm-muted, #64748b);
     font-weight: 500;
 }
 
