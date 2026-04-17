@@ -129,6 +129,114 @@
                     </p:fieldset>
                 </div>
 
+                <!-- Seção: Comprovante -->
+                <div class="form-section">
+                    <p:fieldset legend="📎 Comprovante" styleClass="modern-fieldset" toggleable="true" collapsed="false">
+                        <div class="comprovante-upload-container">
+
+                            <!-- Preview / comprovante atual -->
+                            <div class="comprovante-preview-col">
+                                <span class="comprovante-preview-label">Comprovante atual</span>
+                                <div class="comprovante-preview-wrapper">
+
+                                    <!-- Preview do upload recém-feito (imagem) -->
+                                    <h:panelGroup rendered="#{not empty movimentoFinanceiroController.comprovantePreview}">
+                                        <img src="#{movimentoFinanceiroController.comprovantePreview}"
+                                             alt="Pré-visualização do comprovante"
+                                             class="comprovante-preview-img" />
+                                    </h:panelGroup>
+
+                                    <!-- Upload recém-feito de PDF -->
+                                    <h:panelGroup rendered="#{movimentoFinanceiroController.comprovanteIsPdf and movimentoFinanceiroController.comprovanteUploadPendente}">
+                                        <div class="comprovante-pdf-icon">
+                                            <i class="pi pi-file-pdf" style="font-size:3rem; color:#e53e3e;"></i>
+                                            <span>PDF carregado — salve para confirmar</span>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <!-- Comprovante salvo anteriormente (imagem local) -->
+                                    <h:panelGroup rendered="#{not movimentoFinanceiroController.comprovanteUploadPendente and not empty movimentoFinanceiroController.movimento.comprovanteUrl and movimentoFinanceiroController.isComprovanteLocal(movimentoFinanceiroController.movimento.comprovanteUrl) and not movimentoFinanceiroController.isComprovantePdf(movimentoFinanceiroController.movimento.comprovanteUrl)}">
+                                        <img src="#{request.contextPath}/comprovantes/#{movimentoFinanceiroController.movimento.comprovanteUrl}"
+                                             alt="Comprovante atual"
+                                             class="comprovante-preview-img"
+                                             onclick="window.open(this.src,'_blank')"
+                                             style="cursor:pointer;" title="Clique para ampliar" />
+                                    </h:panelGroup>
+
+                                    <!-- Comprovante salvo anteriormente (PDF local) -->
+                                    <h:panelGroup rendered="#{not movimentoFinanceiroController.comprovanteUploadPendente and not empty movimentoFinanceiroController.movimento.comprovanteUrl and movimentoFinanceiroController.isComprovanteLocal(movimentoFinanceiroController.movimento.comprovanteUrl) and movimentoFinanceiroController.isComprovantePdf(movimentoFinanceiroController.movimento.comprovanteUrl)}">
+                                        <div class="comprovante-pdf-icon">
+                                            <i class="pi pi-file-pdf" style="font-size:3rem; color:#e53e3e;"></i>
+                                            <h:outputLink value="#{request.contextPath}/comprovantes/#{movimentoFinanceiroController.movimento.comprovanteUrl}" target="_blank" styleClass="comprovante-link">
+                                                <i class="pi pi-external-link"></i> Visualizar PDF
+                                            </h:outputLink>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <!-- Comprovante por URL externa -->
+                                    <h:panelGroup rendered="#{not movimentoFinanceiroController.comprovanteUploadPendente and not empty movimentoFinanceiroController.movimento.comprovanteUrl and not movimentoFinanceiroController.isComprovanteLocal(movimentoFinanceiroController.movimento.comprovanteUrl)}">
+                                        <div class="comprovante-pdf-icon">
+                                            <i class="pi pi-link" style="font-size:2.5rem; color:var(--sm-accent);"></i>
+                                            <h:outputLink value="#{movimentoFinanceiroController.movimento.comprovanteUrl}" target="_blank" styleClass="comprovante-link">
+                                                <i class="pi pi-external-link"></i> Abrir link externo
+                                            </h:outputLink>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <!-- Sem comprovante -->
+                                    <h:panelGroup rendered="#{not movimentoFinanceiroController.comprovanteUploadPendente and empty movimentoFinanceiroController.movimento.comprovanteUrl}">
+                                        <div class="comprovante-placeholder">
+                                            <i class="pi pi-image"></i>
+                                            <span>Sem comprovante</span>
+                                        </div>
+                                    </h:panelGroup>
+
+                                </div>
+                            </div>
+
+                            <!-- Área de upload -->
+                            <div class="comprovante-upload-area">
+                                <p:outputLabel value="Fazer upload de comprovante" />
+                                <p:fileUpload id="comprovanteUpload"
+                                    listener="#{movimentoFinanceiroController.handleComprovanteUpload}"
+                                    mode="advanced"
+                                    auto="true"
+                                    multiple="false"
+                                    accept="image/*,application/pdf"
+                                    sizeLimit="10485760"
+                                    allowTypes="/(\.|\/)(jpe?g|png|gif|webp|pdf)$/i"
+                                    update="comprovantePreviewPanel messages"
+                                    dragDropSupport="true"
+                                    label="Selecionar arquivo"
+                                    uploadLabel="Enviar"
+                                    cancelLabel="Cancelar"
+                                    styleClass="modern-photo-upload" />
+                                <small class="field-hint">
+                                    <i class="pi pi-info-circle"></i>
+                                    JPG, PNG, GIF, WEBP ou PDF — máx. 10MB
+                                </small>
+
+                                <div style="margin-top:1rem;">
+                                    <p:outputLabel for="comprovanteUrl" value="Ou informe uma URL externa" />
+                                    <p:inputText id="comprovanteUrl"
+                                        value="#{movimentoFinanceiroController.movimento.comprovanteUrl}"
+                                        maxlength="255"
+                                        placeholder="https://drive.google.com/... (opcional)"
+                                        rendered="#{not movimentoFinanceiroController.comprovanteUploadPendente and not movimentoFinanceiroController.isComprovanteLocal(movimentoFinanceiroController.movimento.comprovanteUrl)}" />
+                                    <small class="field-hint">
+                                        Use esta opção para comprovantes hospedados externamente (Google Drive, etc.)
+                                    </small>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Panel de preview atualizado via AJAX -->
+                        <h:panelGroup id="comprovantePreviewPanel" layout="block" style="display:none;"></h:panelGroup>
+
+                    </p:fieldset>
+                </div>
+
                 <!-- Seção: Informações Complementares -->
                 <div class="form-section">
                     <p:fieldset legend="📝 Informações Complementares" styleClass="modern-fieldset" toggleable="true" collapsed="true">
@@ -139,13 +247,6 @@
                                     value="#{movimentoFinanceiroController.movimento.responsavel}"
                                     maxlength="100" placeholder="Nome do responsável" />
                                 <small class="field-hint">Pessoa responsável pelo movimento (opcional)</small>
-                            </div>
-                            <div class="field-group">
-                                <p:outputLabel for="comprovanteUrl" value="URL do Comprovante" />
-                                <p:inputText id="comprovanteUrl"
-                                    value="#{movimentoFinanceiroController.movimento.comprovanteUrl}"
-                                    maxlength="255" placeholder="Link do comprovante (opcional)" />
-                                <small class="field-hint">Link para o comprovante do movimento (opcional)</small>
                             </div>
                             <div class="field-group full-width">
                                 <p:outputLabel for="observacoes" value="Observações" />

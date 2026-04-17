@@ -1,8 +1,13 @@
 package br.com.segueme.controller;
 
+import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -10,6 +15,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.file.UploadedFile;
 
 import br.com.segueme.entity.Encontro;
 import br.com.segueme.entity.MovimentoFinanceiro;
@@ -26,6 +34,10 @@ import br.com.segueme.service.MovimentoFinanceiroService;
 public class MovimentoFinanceiroController implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private static final String CAMINHO_COMPROVANTES =
+            System.getProperty("caminho_comprovantes", "C:\\Desenvolvimento\\comprovantes")
+            + java.io.File.separator;
 
     @Inject
     private MovimentoFinanceiroService movimentoService;
@@ -46,6 +58,12 @@ public class MovimentoFinanceiroController implements Serializable {
     private BigDecimal totalReceitas;
     private BigDecimal totalDespesas;
     private BigDecimal saldo;
+
+    // Upload de comprovante
+    private byte[] comprovanteBytesUpload;
+    private String comprovanteContentType;
+    private String comprovantePreview; // base64 para preview imediato
+    private boolean comprovanteIsPdf;
 
     @PostConstruct
     public void init() {
@@ -72,6 +90,10 @@ public class MovimentoFinanceiroController implements Serializable {
 
     public void limpar() {
         movimento = new MovimentoFinanceiro();
+        comprovanteBytesUpload = null;
+        comprovanteContentType = null;
+        comprovantePreview = null;
+        comprovanteIsPdf = false;
     }
 
     public String salvar() {
@@ -84,6 +106,25 @@ public class MovimentoFinanceiroController implements Serializable {
 
     private String salvarInterno(boolean redirecionarParaLista) {
         try {
+            // Processa upload de comprovante antes de salvar
+            if (comprovanteBytesUpload != null && comprovanteBytesUpload.length > 0) {
+                File dir = new File(CAMINHO_COMPROVANTES);
+                if (!dir.exists()) dir.mkdirs();
+
+                // Remove comprovante antigo se existir
+                if (movimento.getComprovanteUrl() != null && !movimento.getComprovanteUrl().startsWith("http")) {
+                    new File(CAMINHO_COMPROVANTES + movimento.getComprovanteUrl()).delete();
+                }
+
+                String ext = comprovanteContentType != null && comprovanteContentType.contains("pdf") ? ".pdf"
+                        : comprovanteContentType != null && comprovanteContentType.contains("png") ? ".png"
+                        : ".jpg";
+                String nomeArquivo = "comprovante_" + UUID.randomUUID().toString().replace("-", "") + ext;
+                Files.write(Paths.get(CAMINHO_COMPROVANTES + nomeArquivo), comprovanteBytesUpload);
+                movimento.setComprovanteUrl(nomeArquivo);
+                comprovanteBytesUpload = null;
+            }
+
             if (movimento.getId() == null) {
                 movimentoService.salvar(movimento);
                 FacesContext.getCurrentInstance().addMessage(null,
@@ -158,6 +199,56 @@ public class MovimentoFinanceiroController implements Serializable {
     public void fecharDetalhes() {
         this.movimentoDetalhes = null;
     }
+
+    /**
+     * Recebe o arquivo de comprovante via upload e gera preview base64.
+     */
+    public void handleComprovanteUpload(FileUploadEvent event) {
+        UploadedFile file = event.getFile();
+        if (file != null && file.getSize() > 0) {
+            try {
+                this.comprovanteBytesUpload = file.getContent();
+                this.comprovanteContentType = file.getContentType();
+                this.comprovanteIsPdf = comprovanteContentType != null && comprovanteContentType.contains("pdf");
+                if (!comprovanteIsPdf) {
+                    String base64 = Base64.getEncoder().encodeToString(this.comprovanteBytesUpload);
+                    this.comprovantePreview = "data:" + comprovanteContentType + ";base64," + base64;
+                } else {
+                    this.comprovantePreview = null; // PDF não tem preview inline, só ícone
+                }
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Comprovante carregado",
+                                file.getFileName() + " pronto para salvar."));
+            } catch (Exception e) {
+                this.comprovanteBytesUpload = null;
+                this.comprovantePreview = null;
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro",
+                                "Não foi possível processar o comprovante."));
+            }
+        }
+    }
+
+    /** Verifica se o comprovanteUrl salvo é um arquivo local (não uma URL externa). */
+    public boolean isComprovanteLocal(String comprovanteUrl) {
+        return comprovanteUrl != null && !comprovanteUrl.startsWith("http");
+    }
+
+    /** Verifica se comprovante salvo é PDF. */
+    public boolean isComprovantePdf(String comprovanteUrl) {
+        return comprovanteUrl != null && comprovanteUrl.toLowerCase().endsWith(".pdf");
+    }
+
+    public String getComprovantePath(String nomeArquivo) {
+        if (nomeArquivo == null || nomeArquivo.startsWith("http")) return nomeArquivo;
+        return FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()
+                + "/comprovantes/" + nomeArquivo;
+    }
+
+    public byte[] getComprovanteBytesUpload() { return comprovanteBytesUpload; }
+    public String getComprovantePreview() { return comprovantePreview; }
+    public boolean isComprovanteIsPdf() { return comprovanteIsPdf; }
+    public boolean isComprovanteUploadPendente() { return comprovanteBytesUpload != null && comprovanteBytesUpload.length > 0; }
 
     public MovimentoFinanceiro getMovimentoDetalhes() {
         return movimentoDetalhes;

@@ -258,8 +258,7 @@
 				styleClass="detalhes-pessoa-dialog"
 				modal="true" responsive="true"
 				closable="true" closeOnEscape="true"
-				showEffect="fade" hideEffect="fade"
-				style="max-width:800px; width: calc(100% - 32px);">
+				showEffect="fade" hideEffect="fade">
 
 				<p:ajax event="close" listener="#{movimentoFinanceiroController.fecharDetalhes()}" />
 
@@ -270,7 +269,7 @@
 								<i class="pi pi-wallet" style="font-size: 2rem;"></i>
 							</div>
 							<div class="modal-pessoa-info-principal">
-								<h2 class="modal-pessoa-nome">#{movimentoFinanceiroController.movimentoDetalhes.descricao}</h2>
+								<h2 class="modal-pessoa-nome" style="text-align:left;">#{movimentoFinanceiroController.movimentoDetalhes.descricao}</h2>
 								<div class="modal-pessoa-meta">
 									<span class="sm-tag #{movimentoFinanceiroController.movimentoDetalhes.tipo == 'RECEITA' ? 'sm-tag-green' : 'sm-tag-red'}">
 										<i class="pi #{movimentoFinanceiroController.movimentoDetalhes.tipo == 'RECEITA' ? 'pi-arrow-up' : 'pi-arrow-down'}"></i>
@@ -283,16 +282,9 @@
 								</div>
 							</div>
 						</div>
-						<div class="modal-pessoa-actions">
-							<p:button icon="pi pi-pencil" title="Editar"
-								outcome="/pages/financeiro/cadastro.xhtml"
-								styleClass="action-button-primary">
-								<f:param name="id" value="#{movimentoFinanceiroController.movimentoDetalhes.id}" />
-							</p:button>
-						</div>
 					</div>
 
-					<div class="info-grid" style="padding: 0 1.5rem 1.5rem;">
+					<div class="info-grid">
 						<div class="info-item">
 							<label>Valor</label>
 							<span class="info-value highlight">
@@ -326,10 +318,36 @@
 						<div class="info-item">
 							<label>Comprovante</label>
 							<span>
-								<h:outputLink value="#{movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl}" target="_blank" rendered="#{not empty movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl}">
-									<i class="pi pi-external-link"></i> Ver comprovante
-								</h:outputLink>
-								<h:outputText value="Não informado" rendered="#{empty movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl}" styleClass="empty-value" />
+								<h:outputText value="Não informado"
+									rendered="#{empty movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl}"
+									styleClass="empty-value" />
+								<h:panelGroup rendered="#{not empty movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl and movimentoFinanceiroController.isComprovanteLocal(movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl) and not movimentoFinanceiroController.isComprovantePdf(movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl)}">
+									<div class="comprovante-modal-preview">
+										<img src="#{request.contextPath}/comprovantes/#{movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl}"
+											 alt="Comprovante"
+											 class="comprovante-modal-img"
+											 onclick="window.open(this.src,'_blank')"
+											 title="Clique para ampliar" />
+										<a href="#{request.contextPath}/comprovantes/#{movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl}"
+										   target="_blank" class="comprovante-link">
+											<i class="pi pi-external-link"></i> Abrir em nova aba
+										</a>
+									</div>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{not empty movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl and movimentoFinanceiroController.isComprovanteLocal(movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl) and movimentoFinanceiroController.isComprovantePdf(movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl)}">
+									<div class="comprovante-pdf-modal">
+										<i class="pi pi-file-pdf" style="font-size:2.5rem; color:#e53e3e;"></i>
+										<a href="#{request.contextPath}/comprovantes/#{movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl}"
+										   target="_blank" class="comprovante-link">
+											<i class="pi pi-external-link"></i> Visualizar PDF
+										</a>
+									</div>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{not empty movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl and not movimentoFinanceiroController.isComprovanteLocal(movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl)}">
+									<h:outputLink value="#{movimentoFinanceiroController.movimentoDetalhes.comprovanteUrl}" target="_blank" styleClass="comprovante-link">
+										<i class="pi pi-external-link"></i> Abrir comprovante
+									</h:outputLink>
+								</h:panelGroup>
 							</span>
 						</div>
 						<div class="info-item">
@@ -347,6 +365,14 @@
 								<h:outputText value="#{movimentoFinanceiroController.movimentoDetalhes.observacoes}" />
 							</span>
 						</div>
+					</div>
+
+					<div style="display:flex; justify-content:flex-end; padding: 1rem 1.5rem; border-top:1px solid #e9ecef; margin-top:0.5rem;">
+						<p:button icon="pi pi-pencil" value="Editar"
+							outcome="/pages/financeiro/cadastro.xhtml"
+							styleClass="action-button-primary">
+							<f:param name="id" value="#{movimentoFinanceiroController.movimentoDetalhes.id}" />
+						</p:button>
 					</div>
 				</h:panelGroup>
 			</p:dialog>

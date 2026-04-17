@@ -38,6 +38,9 @@
                 <div class="view-card anim-fade-in">
                     <!-- Header do card com tipo -->
                     <div class="view-header">
+                        <h2>
+                            <h:outputText value="#{movimentoFinanceiroController.movimento.descricao}" />
+                        </h2>
                         <div class="view-header-badges">
                             <span class="tipo-badge-lg tipo-#{movimentoFinanceiroController.movimento.tipo}">
                                 <i class="pi #{movimentoFinanceiroController.movimento.tipo == 'RECEITA' ? 'pi-arrow-up' : 'pi-arrow-down'}"></i>
@@ -47,9 +50,6 @@
                                 <h:outputText value="#{movimentoFinanceiroController.movimento.categoria.descricao}" />
                             </span>
                         </div>
-                        <h2>
-                            <h:outputText value="#{movimentoFinanceiroController.movimento.descricao}" />
-                        </h2>
                     </div>
 
                     <!-- Dados -->
