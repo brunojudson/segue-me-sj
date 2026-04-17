@@ -58,6 +58,7 @@ public class TrabalhadorController implements Serializable {
 	private List<Pessoa> pessoas;
 	private List<Equipe> equipes;
 	private List<Encontro> encontros;
+	private List<Encontro> encontrosParaFiltro; // Lista para filtro incluindo finalizados
 
 
 	// Filtros para a tabela
@@ -75,6 +76,7 @@ public class TrabalhadorController implements Serializable {
 		carregarPessoas();
 		carregarEquipes();
 		carregarEncontros();
+		carregarEncontrosParaFiltro();
 		limpar();
 		// Não carregar a lista completa ao abrir a página — aguardar filtros
 		this.trabalhadores = java.util.Collections.emptyList();
@@ -173,10 +175,25 @@ public class TrabalhadorController implements Serializable {
 		encontros = encontroService.buscarAtivos();
 	}
 
+	public void carregarEncontrosParaFiltro() {
+		// Carrega todos os encontros (incluindo finalizados) para o filtro da listagem
+		encontrosParaFiltro = encontroService.buscarTodos();
+	}
+
 	/**
 	 * Carrega as equipes vinculadas ao encontro selecionado nos filtros.
 	 * Se nenhum encontro for selecionado, carrega equipes ativas.
 	 */
+	/**
+	 * Marca automaticamente 'Apto para coordenar' quando marcar como coordenador.
+	 * Vinculação obrigatória: coordenador deve ser apto para coordenar.
+	 */
+	public void marcarAptoParaCoordenar() {
+		if (Boolean.TRUE.equals(trabalhador.getEhCoordenador())) {
+			trabalhador.setAptoParaCoordenar(true);
+		}
+	}
+
 	public void carregarEquipesPorEncontro() {
 		try {
 			if (this.filtroEncontroId != null) {
@@ -332,6 +349,13 @@ public class TrabalhadorController implements Serializable {
 							"Não é permitido adicionar trabalhadores em encontros finalizados/inativos.");
 					}
 				});
+			}
+			
+			// Validar vinculação obrigatória: coordenador deve ser apto para coordenar
+			if (Boolean.TRUE.equals(trabalhador.getEhCoordenador()) && 
+				!Boolean.TRUE.equals(trabalhador.getAptoParaCoordenar())) {
+				throw new IllegalArgumentException(
+					"Um coordenador deve estar marcado como 'Apto para coordenar'.");
 			}
 			
 			// Validar parentesco na equipe
@@ -555,6 +579,14 @@ public class TrabalhadorController implements Serializable {
 
 	public void setEncontros(List<Encontro> encontros) {
 		this.encontros = encontros;
+	}
+
+	public List<Encontro> getEncontrosParaFiltro() {
+		return encontrosParaFiltro;
+	}
+
+	public void setEncontrosParaFiltro(List<Encontro> encontrosParaFiltro) {
+		this.encontrosParaFiltro = encontrosParaFiltro;
 	}
 
 	// Getters e setters dos filtros

@@ -40,10 +40,10 @@
 									<p:outputLabel for="filtroEncontro" value="Encontro" />
 									<p:selectOneMenu id="filtroEncontro" value="#{trabalhadorController.filtroEncontroId}" styleClass="modern-select">
 										<f:selectItem itemLabel="Todos" itemValue="#{null}" />
-										<f:selectItems value="#{trabalhadorController.encontros}" var="encontro" itemLabel="#{encontro.nome}" itemValue="#{encontro.id}" />
+										<f:selectItems value="#{trabalhadorController.encontrosParaFiltro}" var="encontro" itemLabel="#{encontro.nome}" itemValue="#{encontro.id}" />
 										<p:ajax event="change" listener="#{trabalhadorController.carregarEquipesPorEncontro}" process="@this" update="filtroEquipe" />
 									</p:selectOneMenu>
-									<small class="field-hint">Filtrar por encontro</small>
+									<small class="field-hint">Filtrar por encontro (inclui finalizados)</small>
 								</div>
 
 								<div class="field-group">

@@ -140,10 +140,13 @@
                                 <div class="checkbox-container">
                                     <p:selectBooleanCheckbox id="coordenador"
                                         value="#{trabalhadorController.trabalhador.ehCoordenador}"
-                                        disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}" />
+                                        disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}">
+                                        <p:ajax event="change" listener="#{trabalhadorController.marcarAptoParaCoordenar}" 
+                                                update="aptoParaCoordenar" />
+                                    </p:selectBooleanCheckbox>
                                     <span class="checkbox-label">É coordenador da equipe</span>
                                 </div>
-                                <small class="field-hint">Marque se o trabalhador coordena esta equipe.</small>
+                                <small class="field-hint">Marque se o trabalhador coordena esta equipe (requer aptidão para coordenar).</small>
                             </div>
 
                             <div class="field-group checkbox-group">
