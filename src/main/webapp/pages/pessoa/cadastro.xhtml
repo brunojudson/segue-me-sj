@@ -309,23 +309,54 @@
                 <!-- Seção: Foto -->
                 <div class="form-section">
                     <p:fieldset legend="📷 Foto da Pessoa" styleClass="modern-fieldset" toggleable="true" collapsed="true">
-                        <div class="field-grid">
-                            <div class="field-group upload-section">
-                                <p:outputLabel for="foto" value="Foto da Pessoa" />
-                                <p:fileUpload id="foto" 
-                                            value="#{pessoaController.uploadedFile}"
-                                            mode="simple"
-                                            accept="image/*" 
-                                            label="Escolher Foto" 
+                        <div class="photo-upload-container">
+
+                            <!-- Preview da foto (coluna esquerda) -->
+                            <h:panelGroup id="fotoPreviewPanel" layout="block" styleClass="photo-preview-col">
+                                <!-- Base64 preview após seleção -->
+                                <h:panelGroup rendered="#{not empty pessoaController.fotoPreview}" layout="block" styleClass="photo-preview-wrapper">
+                                    <img src="#{pessoaController.fotoPreview}" class="photo-preview-img" alt="Preview" />
+                                    <span class="photo-preview-badge photo-preview-badge-new">
+                                        <i class="pi pi-check-circle"></i> Nova — salve para confirmar
+                                    </span>
+                                </h:panelGroup>
+                                <!-- Foto existente no servidor -->
+                                <h:panelGroup rendered="#{empty pessoaController.fotoPreview and pessoaController.fotoExiste}" layout="block" styleClass="photo-preview-wrapper">
+                                    <h:graphicImage value="/fotos/#{pessoaController.pessoa.foto}"
+                                                    alt="Foto" styleClass="photo-preview-img" />
+                                    <span class="photo-preview-badge photo-preview-badge-info">
+                                        <i class="pi pi-image"></i> Foto atual
+                                    </span>
+                                </h:panelGroup>
+                                <!-- Sem foto -->
+                                <h:panelGroup rendered="#{empty pessoaController.fotoPreview and not pessoaController.fotoExiste}" layout="block" styleClass="photo-preview-placeholder">
+                                    <i class="pi pi-user"></i>
+                                    <span>Sem foto</span>
+                                </h:panelGroup>
+                            </h:panelGroup>
+
+                            <!-- Área de upload (coluna direita) -->
+                            <div class="photo-upload-area">
+                                <p:fileUpload id="foto"
+                                            listener="#{pessoaController.handleFileUpload}"
+                                            mode="advanced"
+                                            auto="true"
+                                            multiple="false"
+                                            accept="image/*"
+                                            sizeLimit="5242880"
+                                            allowTypes="/(\.|\/)(jpe?g|png|gif|webp)$/i"
+                                            update="fotoPreviewPanel messages"
+                                            dragDropSupport="true"
+                                            label="Selecionar foto"
                                             uploadLabel="Enviar"
                                             cancelLabel="Cancelar"
-                                            sizeLimit="5242880"
-                                            allowTypes="/(\.|\/)(jpe?g|png|gif)$/i" />
+                                            styleClass="modern-photo-upload" />
                                 <small class="field-hint">
                                     <i class="pi pi-info-circle"></i>
-                                    Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB
+                                    JPG, PNG, GIF, WEBP — máx. 5MB
                                 </small>
                             </div>
+
                         </div>
                     </p:fieldset>
                 </div>

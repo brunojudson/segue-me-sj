@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.LinkedHashSet;
@@ -97,6 +96,9 @@ public class PessoaController implements Serializable {
 
 	private UploadedFile uploadedFile;
 	private String fotoPreview;
+	private byte[] fotoBytesUpload = null;
+	private String fotoContentTypeUpload = null;
+	private List<Pessoa> filhosDaPessoaDetalhes = new ArrayList<>();
 
 	private static final String CAMINHO_FOTOS = System.getProperty("caminho_fotos", "C:\\Desenvolvimento\\fotos") + java.io.File.separator;
 
@@ -108,11 +110,21 @@ public class PessoaController implements Serializable {
 
 	public String getFoto() {
 		if (pessoa != null && pessoa.getFoto() != null && !pessoa.getFoto().isEmpty()) {
-			// Adiciona um parâmetro único (timestamp) para evitar cache
-			return "/fotos/" + pessoa.getFoto() + "?t=" + System.currentTimeMillis();
+			File f = new File(CAMINHO_FOTOS + pessoa.getFoto());
+			if (f.exists()) {
+				return "/fotos/" + pessoa.getFoto() + "?t=" + System.currentTimeMillis();
+			}
+			log.warn("Foto órfã detectada para pessoa {}: arquivo '{}' não encontrado no filesystem.",
+					pessoa.getId(), pessoa.getFoto());
 		}
-		// Retorna uma imagem padrão caso o casal não tenha foto
-		return "/resources/images/default_avatar.png?t=" + System.currentTimeMillis();
+		return "/resources/images/default_avatar.png";
+	}
+
+	public boolean isFotoExiste() {
+		if (pessoa == null || pessoa.getFoto() == null || pessoa.getFoto().isEmpty()) {
+			return false;
+		}
+		return new File(CAMINHO_FOTOS + pessoa.getFoto()).exists();
 	}
 
 	// PessoaController.java
@@ -159,12 +171,18 @@ public class PessoaController implements Serializable {
 		pessoa.setSacramentos(new ArrayList<>(this.sacramentosSelecionados));
 
 		try {
-			// Verificar se há uma nova foto para upload
-			if (uploadedFile != null) {
-				String nomeArquivo = gerarNomeArquivo();
-				String caminhoArquivo = CAMINHO_FOTOS + nomeArquivo;
+			// Verificar se há uma nova foto para upload (via advanced mode)
+			if (fotoBytesUpload != null && fotoBytesUpload.length > 0) {
+				String ext = getExtensaoDoTipo(fotoContentTypeUpload);
+				String nomeArquivo = gerarNomeArquivoComExt(ext);
 
-				// Apagar a foto anterior, se existir
+				// Garantir que o diretório existe
+				File dir = new File(CAMINHO_FOTOS);
+				if (!dir.exists()) {
+					dir.mkdirs();
+				}
+
+				// Apagar a foto anterior, se existir fisicamente
 				if (pessoa.getFoto() != null) {
 					File fotoAnterior = new File(CAMINHO_FOTOS + pessoa.getFoto());
 					if (fotoAnterior.exists()) {
@@ -172,11 +190,15 @@ public class PessoaController implements Serializable {
 					}
 				}
 				// Salvar o novo arquivo no diretório
-				Files.copy(uploadedFile.getInputStream(), Paths.get(caminhoArquivo),
-						StandardCopyOption.REPLACE_EXISTING);
+				Files.write(Paths.get(CAMINHO_FOTOS + nomeArquivo), fotoBytesUpload);
 
 				// Atualizar o nome do arquivo no objeto pessoa
 				pessoa.setFoto(nomeArquivo);
+
+				// Limpar estado de upload após salvar
+				this.fotoBytesUpload = null;
+				this.fotoContentTypeUpload = null;
+				this.fotoPreview = null;
 			}
 			if (pessoa.getId() == null) {
 				pessoaService.salvar(pessoa);
@@ -199,10 +221,18 @@ public class PessoaController implements Serializable {
 	}
 
 
-	private String gerarNomeArquivo() {
-		String nome = pessoa.getNome();
-		long timestamp = System.currentTimeMillis(); // Gera o timestamp atual
-		return nome.replaceAll("\\s+", "_") + "_" + timestamp + ".jpg";
+	private String gerarNomeArquivoComExt(String ext) {
+		String nome = pessoa.getNome() != null ? pessoa.getNome() : "pessoa";
+		long timestamp = System.currentTimeMillis();
+		return nome.replaceAll("[^a-zA-Z0-9]", "_") + "_" + timestamp + ext;
+	}
+
+	private String getExtensaoDoTipo(String contentType) {
+		if (contentType == null) return ".jpg";
+		if (contentType.contains("png")) return ".png";
+		if (contentType.contains("gif")) return ".gif";
+		if (contentType.contains("webp")) return ".webp";
+		return ".jpg";
 	}
 
 	public String visualizar(Pessoa pessoa) {
@@ -392,26 +422,30 @@ public class PessoaController implements Serializable {
 	public void gerarFichaInscricao(Pessoa pessoa) {
 		pdfService.gerarFichaInscricaoPessoa(pessoa);
 	}
-	public void handleFileUpload(FileUploadEvent event) { // Ou apenas (UploadedFile file) se não usar FileUploadEvent
-        this.uploadedFile = event.getFile(); // Se usar FileUploadEvent
-        // Se não usar FileUploadEvent, o PrimeFaces pode injetar diretamente em um atributo UploadedFile
-        // desde que o listener aponte para um método que receba UploadedFile.
-        // Para o preview imediato, você pode converter para Data URL:
-        if (this.uploadedFile != null && this.uploadedFile.getSize() > 0) {
-            try {
-                byte[] bytes = this.uploadedFile.getContent();
-                String base64Image = Base64.getEncoder().encodeToString(bytes);
-                this.fotoPreview = "data:" + this.uploadedFile.getContentType() + ";base64," + base64Image;
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", event.getFile().getFileName() + " carregado."));
-            } catch (Exception e) { // Mude para IOException se getContent() lançar apenas isso
-                this.fotoPreview = null;
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Não foi possível processar a imagem para preview."));
-            }
-        } else {
-            this.fotoPreview = null; // Limpa o preview se nenhum arquivo for selecionado ou for inválido
-        }
-        // Não é necessário chamar PrimeFaces.current().ajax().update() aqui se o p:fileUpload já tem o update.
-    }
+	public void handleFileUpload(FileUploadEvent event) {
+		UploadedFile file = event.getFile();
+		if (file != null && file.getSize() > 0) {
+			try {
+				this.fotoBytesUpload = file.getContent();
+				this.fotoContentTypeUpload = file.getContentType();
+				String base64Image = Base64.getEncoder().encodeToString(this.fotoBytesUpload);
+				this.fotoPreview = "data:" + this.fotoContentTypeUpload + ";base64," + base64Image;
+				FacesContext.getCurrentInstance().addMessage(null,
+						new FacesMessage(FacesMessage.SEVERITY_INFO, "Foto carregada",
+								file.getFileName() + " pronto para salvar."));
+			} catch (Exception e) {
+				this.fotoPreview = null;
+				this.fotoBytesUpload = null;
+				this.fotoContentTypeUpload = null;
+				FacesContext.getCurrentInstance().addMessage(null,
+						new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro",
+								"Não foi possível processar a imagem."));
+			}
+		} else {
+			this.fotoPreview = null;
+			this.fotoBytesUpload = null;
+		}
+	}
 	
 	// Autocomplete para nomes de pessoas (pai/mãe)
 	public List<String> autocompleteNomePessoa(String query) {
@@ -477,20 +511,10 @@ public class PessoaController implements Serializable {
 	}
 
 	/**
-	 * Retorna todos os filhos da pessoa em detalhes (no dialog da lista).
+	 * Retorna os filhos da pessoa em detalhes (carregados em abrirDetalhes).
 	 */
 	public List<Pessoa> getFilhosDaPessoaDetalhes() {
-		if (pessoaDetalhes == null || pessoaDetalhes.getId() == null) {
-			return new ArrayList<>();
-		}
-		
-		try {
-			// Buscar filhos diretamente do banco de dados
-			return pessoaService.buscarFilhos(pessoaDetalhes.getId());
-		} catch (Exception e) {
-			log.error("Erro ao carregar filhos da pessoa {}", pessoaDetalhes.getId(), e);
-			return new ArrayList<>();
-		}
+		return filhosDaPessoaDetalhes;
 	}
 
 	// Modal de detalhes da pessoa
@@ -498,6 +522,24 @@ public class PessoaController implements Serializable {
 		
 		// Usar buscarPorIdComPais para carregar relacionamentos pai e mãe
 		this.pessoaDetalhes = pessoaService.buscarPorIdComPais(pessoa.getId()).orElse(pessoa);
+
+		// Verificar existência física da foto (tratar fotos órfãs)
+		if (this.pessoaDetalhes.getFoto() != null && !this.pessoaDetalhes.getFoto().isEmpty()) {
+			File fotoFile = new File(CAMINHO_FOTOS + this.pessoaDetalhes.getFoto());
+			if (!fotoFile.exists()) {
+				log.warn("Foto órfã detectada para pessoa {}: '{}' não existe no filesystem.",
+						pessoa.getId(), this.pessoaDetalhes.getFoto());
+				this.pessoaDetalhes.setFoto(null);
+			}
+		}
+
+		// Carregar filhos
+		try {
+			this.filhosDaPessoaDetalhes = pessoaService.buscarFilhos(pessoa.getId());
+		} catch (Exception e) {
+			log.error("Erro ao carregar filhos da pessoa {}", pessoa.getId(), e);
+			this.filhosDaPessoaDetalhes = new ArrayList<>();
+		}
 
 		// Transferências
 		try {
@@ -572,6 +614,7 @@ public class PessoaController implements Serializable {
 		this.encontrosParticipados = null;
 		this.equipesTrabalhou = null;
 		this.palestrasRealizadas = null;
+		this.filhosDaPessoaDetalhes = new ArrayList<>();
 	}
 
 	public String getFotoDetalhes() {

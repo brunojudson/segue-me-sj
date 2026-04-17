@@ -129,6 +129,7 @@ public class EncontroController implements Serializable {
 					for (TipoEquipe tipo : tipos) {
 						Equipe equipe = new Equipe();
 						equipe.setNome(tipo.getNome());
+						equipe.setDescricao(tipo.getDescricao());
 						equipe.setTipoEquipe(tipo);
 						equipe.setEncontro(encontroSalvo);
 						equipe.setAtivo(true);

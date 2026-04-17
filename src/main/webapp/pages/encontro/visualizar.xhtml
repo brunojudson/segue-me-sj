@@ -119,7 +119,7 @@
 				<p:dialog
 					header="#{encontroController.circuloSelecionado != null ? 'Integrantes do Círculo '.concat(encontroController.circuloSelecionado) : 'Integrantes'}"
 					closeOnEscape="true" widgetVar="dlgIntegrantes" modal="true"
-					id="dialogIntegrantes" resizable="false" width="600" height="500"
+					id="dialogIntegrantes" resizable="false" width="600"
 					styleClass="modern-dialog">
 					<div>
 						<h:panelGroup rendered="#{not empty encontroController.integrantesSelecionados}">
@@ -161,45 +161,56 @@
 				<p:dialog
 					header="#{encontroController.equipeSelecionada != null ? 'Membros da Equipe '.concat(encontroController.equipeSelecionada.nome) : 'Membros da Equipe'}"
 					closeOnEscape="true" widgetVar="dlgMembrosEquipe" modal="true"
-					id="dialogMembrosEquipe" resizable="false" width="600" height="500"
-					styleClass="modern-dialog">
-					<div>
-						<h:panelGroup rendered="#{not encontroController.encontro.ativo}">
-							<p style="margin-bottom:1rem; padding:0.75rem; background-color:#fff3cd; border-left:4px solid #ffc107; font-size:0.86rem;">
-								<i class="pi pi-info-circle" style="margin-right:0.5rem; color:#856404;"></i>
-								<strong style="color:#856404;">Encontro Finalizado:</strong> 
-								<span style="color:#856404;">Exibindo todos os membros que participaram desta equipe.</span>
-							</p>
-						</h:panelGroup>
-						<h:panelGroup rendered="#{not empty encontroController.membrosDaEquipe}">
-							<p class="text-muted" style="margin-bottom:1rem; font-size:0.86rem;">
+					id="dialogMembrosEquipe" resizable="false" width="600"
+					styleClass="modern-dialog" responsive="true"
+					contentHeight="auto" maximizable="false">
+					
+					<h:panelGroup rendered="#{encontroController.equipeSelecionada != null and encontroController.equipeSelecionada.descricao != null and encontroController.equipeSelecionada.descricao != ''}">
+						<div style="margin-bottom:1rem; padding:0.75rem; background-color:#f0f9ff; border-left:4px solid var(--sm-accent); border-radius:4px;">
+							<div style="color:#1e40af; font-size:0.85rem; line-height:1.5;">
 								<i class="pi pi-info-circle" style="margin-right:0.5rem;"></i>
-								Total de #{encontroController.membrosDaEquipe.size()} membro(s)
-							</p>
-						</h:panelGroup>
-						<div class="member-list">
-							<ui:repeat value="#{encontroController.membrosDaEquipe}" var="trabalhador">
-								<div class="member-item">
-									<div class="member-avatar member-iniciais">
-										#{trabalhador.pessoa.nome.substring(0,1)}
-									</div>
-									<div class="member-info">
-										<span class="member-nome">#{trabalhador.pessoa.nome}</span>
-										<span class="member-role">
-											<h:outputText value="Coordenador da equipe" rendered="#{trabalhador.ehCoordenador}" style="color: var(--sm-accent); font-weight: 500;" />
-											<h:outputText value="Membro da equipe" rendered="#{not trabalhador.ehCoordenador}" styleClass="text-muted" />
-											<h:outputText value=" • Foi encontrista" rendered="#{trabalhador.foiEncontrista}" style="font-size: 0.85rem; margin-left: 0.25rem;" />
-										</span>
-									</div>
-								</div>
-							</ui:repeat>
-							<ui:fragment rendered="#{empty encontroController.membrosDaEquipe}">
-								<div class="empty-state">
-									<i class="pi pi-users" style="font-size:2rem; display:block; margin-bottom:0.5rem;"></i>
-									<p>Nenhum membro cadastrado nesta equipe.</p>
-								</div>
-							</ui:fragment>
+								<strong>Descrição:</strong> #{encontroController.equipeSelecionada.descricao}
+							</div>
 						</div>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{not encontroController.encontro.ativo}">
+						<p style="margin-bottom:1rem; padding:0.75rem; background-color:#fff3cd; border-left:4px solid #ffc107; font-size:0.86rem;">
+							<i class="pi pi-info-circle" style="margin-right:0.5rem; color:#856404;"></i>
+							<strong style="color:#856404;">Encontro Finalizado:</strong> 
+							<span style="color:#856404;">Exibindo todos os membros que participaram desta equipe.</span>
+						</p>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{not empty encontroController.membrosDaEquipe}">
+						<p class="text-muted" style="margin-bottom:1rem; font-size:0.86rem;">
+							<i class="pi pi-info-circle" style="margin-right:0.5rem;"></i>
+							Total de #{encontroController.membrosDaEquipe.size()} membro(s)
+						</p>
+					</h:panelGroup>
+					
+					<div class="member-list" style="max-height:400px; overflow-y:auto;">
+						<ui:repeat value="#{encontroController.membrosDaEquipe}" var="trabalhador">
+							<div class="member-item">
+								<div class="member-avatar member-iniciais">
+									#{trabalhador.pessoa.nome.substring(0,1)}
+								</div>
+								<div class="member-info">
+									<span class="member-nome">#{trabalhador.pessoa.nome}</span>
+									<span class="member-role">
+										<h:outputText value="Coordenador da equipe" rendered="#{trabalhador.ehCoordenador}" style="color: var(--sm-accent); font-weight: 500;" />
+										<h:outputText value="Membro da equipe" rendered="#{not trabalhador.ehCoordenador}" styleClass="text-muted" />
+										<h:outputText value=" • Foi encontrista" rendered="#{trabalhador.foiEncontrista}" style="font-size: 0.85rem; margin-left: 0.25rem;" />
+									</span>
+								</div>
+							</div>
+						</ui:repeat>
+						<ui:fragment rendered="#{empty encontroController.membrosDaEquipe}">
+							<div class="empty-state">
+								<i class="pi pi-users" style="font-size:2rem; display:block; margin-bottom:0.5rem;"></i>
+								<p>Nenhum membro cadastrado nesta equipe.</p>
+							</div>
+						</ui:fragment>
 					</div>
 					<f:facet name="footer">
 						<p:commandButton value="Fechar" icon="pi pi-times" styleClass="ui-button-secondary"
@@ -218,24 +229,26 @@
 									Total de #{encontroController.encontro.encontristas.size()} encontrista(s)
 								</p>
 							</h:panelGroup>
-							<p:dataTable value="#{encontroController.encontro.encontristas}" var="encontrista"
-								styleClass="modern-datatable"
-								emptyMessage="Nenhum encontrista cadastrado para este encontro"
-								paginator="true" rows="10" paginatorPosition="bottom">
-								<p:column headerText="Nome" sortBy="#{encontrista.pessoa.nome}">
-									<h:outputText value="#{encontrista.pessoa.nome}" />
-								</p:column>
-								<p:column headerText="Data de Inscrição" sortBy="#{encontrista.dataInscricao}">
-									<h:outputText value="#{encontrista.dataInscricao}">
-										<f:converter converterId="localDateTimeConverter" />
-									</h:outputText>
-								</p:column>
-								<p:column headerText="Valor Pago" sortBy="#{encontrista.valorPago}">
-									<h:outputText value="#{encontrista.valorPago}" style="font-weight:600; color:var(--sm-accent);">
-										<f:convertNumber type="currency" currencySymbol="R$" locale="pt_BR" />
-									</h:outputText>
-								</p:column>
-							</p:dataTable>
+							<div class="table-responsive-wrapper">
+								<p:dataTable value="#{encontroController.encontro.encontristas}" var="encontrista"
+									styleClass="modern-datatable"
+									emptyMessage="Nenhum encontrista cadastrado para este encontro"
+									paginator="true" rows="10" paginatorPosition="bottom">
+									<p:column headerText="Nome" sortBy="#{encontrista.pessoa.nome}">
+										<h:outputText value="#{encontrista.pessoa.nome}" />
+									</p:column>
+									<p:column headerText="Data de Inscrição" sortBy="#{encontrista.dataInscricao}">
+										<h:outputText value="#{encontrista.dataInscricao}">
+											<f:converter converterId="localDateTimeConverter" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Valor Pago" sortBy="#{encontrista.valorPago}">
+										<h:outputText value="#{encontrista.valorPago}" style="font-weight:600; color:var(--sm-accent);">
+											<f:convertNumber type="currency" currencySymbol="R$" locale="pt_BR" />
+										</h:outputText>
+									</p:column>
+								</p:dataTable>
+							</div>
 						</p:tab>
 
 						<p:tab title="Equipes">
@@ -245,34 +258,36 @@
 									Total de #{encontroController.encontro.equipes.size()} equipe(s) com #{encontroController.contarTotalMembrosDoEncontro()} membro(s)
 								</p>
 							</h:panelGroup>
-							<p:dataTable value="#{encontroController.encontro.equipes}" var="equipe"
-								styleClass="modern-datatable"
-								emptyMessage="Nenhuma equipe cadastrada para este encontro"
-								paginator="true" rows="10" paginatorPosition="bottom">
-								<p:column headerText="Nome" sortBy="#{equipe.nome}">
-									<h:outputText value="#{equipe.nome}" style="font-weight:600;" />
-								</p:column>
-								<p:column headerText="Membros" style="text-align:center; width: 100px;">
-									<span class="sm-tag sm-tag-muted" style="font-size: 0.95rem;">
-										<i class="pi pi-users" style="margin-right: 0.25rem;"></i>
-										#{encontroController.contarMembrosDaEquipe(equipe)}
-									</span>
-								</p:column>
-								<p:column headerText="Dirigente" style="text-align:center;">
-									<span class="sm-tag #{equipe.ehEquipeDirigente() ? 'sm-tag-green' : 'sm-tag-muted'}">
-										#{equipe.ehEquipeDirigente() ? 'Sim' : 'Não'}
-									</span>
-								</p:column>
-								<p:column headerText="Ações" style="text-align:center; width: 100px;">
-									<p:commandButton icon="pi pi-users" 
-										title="Ver membros"
-										styleClass="ui-button-rounded ui-button-info"
-										actionListener="#{encontroController.selecionarEquipe(equipe)}"
-										update=":visualizarForm:dialogMembrosEquipe"
-										oncomplete="PF('dlgMembrosEquipe').show()"
-										process="@this" />
-								</p:column>
-							</p:dataTable>
+							<div class="table-responsive-wrapper">
+								<p:dataTable value="#{encontroController.encontro.equipes}" var="equipe"
+									styleClass="modern-datatable"
+									emptyMessage="Nenhuma equipe cadastrada para este encontro"
+									paginator="true" rows="10" paginatorPosition="bottom">
+									<p:column headerText="Nome" sortBy="#{equipe.nome}">
+										<h:outputText value="#{equipe.nome}" style="font-weight:600;" />
+									</p:column>
+									<p:column headerText="Membros" style="text-align:center; width: 100px;">
+										<span class="sm-tag sm-tag-muted" style="font-size: 0.95rem;">
+											<i class="pi pi-users" style="margin-right: 0.25rem;"></i>
+											#{encontroController.contarMembrosDaEquipe(equipe)}
+										</span>
+									</p:column>
+									<p:column headerText="Dirigente" style="text-align:center;">
+										<span class="sm-tag #{equipe.ehEquipeDirigente() ? 'sm-tag-green' : 'sm-tag-muted'}">
+											#{equipe.ehEquipeDirigente() ? 'Sim' : 'Não'}
+										</span>
+									</p:column>
+									<p:column headerText="Ações" style="text-align:center; width: 100px;">
+										<p:commandButton icon="pi pi-users" 
+											title="Ver membros"
+											styleClass="ui-button-rounded ui-button-info"
+											actionListener="#{encontroController.selecionarEquipe(equipe)}"
+											update=":visualizarForm:dialogMembrosEquipe"
+											oncomplete="PF('dlgMembrosEquipe').show()"
+											process="@this" />
+									</p:column>
+								</p:dataTable>
+							</div>
 						</p:tab>
 
 						<p:tab title="Palestras">
@@ -282,22 +297,24 @@
 									Total de #{encontroController.palestrasPorData.size()} palestra(s)
 								</p>
 							</h:panelGroup>
-							<p:dataTable value="#{encontroController.palestrasPorData}" var="palestra"
-								styleClass="modern-datatable"
-								emptyMessage="Nenhuma palestra cadastrada para este encontro"
-								rows="10" paginator="true" paginatorPosition="bottom">
-								<p:column headerText="Título" sortBy="#{palestra.titulo}">
-									<h:outputText value="#{palestra.titulo}" style="font-weight:600;" />
-								</p:column>
-								<p:column headerText="Tema" sortBy="#{palestra.tema.nomeExibicao}">
-									<span class="sm-tag sm-tag-purple">#{palestra.tema.nomeExibicao}</span>
-								</p:column>
-								<p:column headerText="Palestrantes">
-									<ui:repeat value="#{palestra.palestrantes.toArray()}" var="palestrante">
-										<span class="sm-tag sm-tag-muted" style="margin:2px;">#{palestrante.nomeDisplay}</span>
-									</ui:repeat>
-								</p:column>
-							</p:dataTable>
+							<div class="table-responsive-wrapper">
+								<p:dataTable value="#{encontroController.palestrasPorData}" var="palestra"
+									styleClass="modern-datatable"
+									emptyMessage="Nenhuma palestra cadastrada para este encontro"
+									rows="10" paginator="true" paginatorPosition="bottom">
+									<p:column headerText="Título" sortBy="#{palestra.titulo}">
+										<h:outputText value="#{palestra.titulo}" style="font-weight:600;" />
+									</p:column>
+									<p:column headerText="Tema" sortBy="#{palestra.tema.nomeExibicao}">
+										<span class="sm-tag sm-tag-purple">#{palestra.tema.nomeExibicao}</span>
+									</p:column>
+									<p:column headerText="Palestrantes">
+										<ui:repeat value="#{palestra.palestrantes.toArray()}" var="palestrante">
+											<span class="sm-tag sm-tag-muted" style="margin:2px;">#{palestrante.nomeDisplay}</span>
+										</ui:repeat>
+									</p:column>
+								</p:dataTable>
+							</div>
 						</p:tab>
 					</p:tabView>
 				</div>
