@@ -72,15 +72,15 @@
 					</p:column>
 
 					<p:column headerText="Trabalhador"
-						sortBy="#{contribuicao.trabalhador.pessoa.nome}"
-						filterBy="#{contribuicao.trabalhador.pessoa.nome}"
+						sortBy="#{contribuicao.trabalhador.nomeExibicao}"
+						filterBy="#{contribuicao.trabalhador.nomeExibicao}"
 						filterMatchMode="contains" priority="1" exportable="true">
 						<div class="user-info"
-							title="Trabalhador: #{contribuicao.trabalhador.pessoa.nome}">
+							title="Trabalhador: #{contribuicao.trabalhador.nomeExibicao}">
 							<div class="user-avatar">
 								<i class="pi pi-user"></i>
 							</div>
-							<p:commandLink value="#{contribuicao.trabalhador.pessoa.nome}" styleClass="nome-link user-name"
+							<p:commandLink value="#{contribuicao.trabalhador.nomeExibicao}" styleClass="nome-link user-name"
 								action="#{contribuicaoController.abrirDetalhes(contribuicao)}"
 								update=":detalhesForm:detalhesModal"
 								oncomplete="PF('detalhesDialog').show()" />
@@ -241,8 +241,8 @@
 						<div class="info-item">
 							<label>Trabalhador</label>
 							<span>
-								<h:outputText value="#{contribuicaoController.contribuicaoDetalhes.trabalhador.pessoa.nome}" rendered="#{not empty contribuicaoController.contribuicaoDetalhes.trabalhador.pessoa.nome}" />
-								<h:outputText value="Não informado" styleClass="empty-value" rendered="#{empty contribuicaoController.contribuicaoDetalhes.trabalhador.pessoa.nome}" />
+						<h:outputText value="#{contribuicaoController.contribuicaoDetalhes.trabalhador.nomeExibicao}" rendered="#{not empty contribuicaoController.contribuicaoDetalhes.trabalhador.nomeExibicao}" />
+						<h:outputText value="Não informado" styleClass="empty-value" rendered="#{empty contribuicaoController.contribuicaoDetalhes.trabalhador.nomeExibicao}" />
 							</span>
 						</div>
 						<div class="info-item">

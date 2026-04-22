@@ -36,11 +36,15 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 		try {
 			Trabalhador trabalhador = entityManager.createQuery(
 					"SELECT t FROM Trabalhador t " +
+							"LEFT JOIN FETCH t.pessoa p " +
+							"LEFT JOIN FETCH t.casal ca " +
+							"LEFT JOIN FETCH ca.pessoa1 " +
+							"LEFT JOIN FETCH ca.pessoa2 " +
 							"LEFT JOIN FETCH t.encontro e " +
 							"LEFT JOIN FETCH t.equipe eq " +
 							"LEFT JOIN FETCH eq.tipoEquipe " +
 							"LEFT JOIN FETCH t.contribuicoes c " +
-							"LEFT JOIN FETCH t.cargos cg " + // Adicione esta linha para carregar cargos
+							"LEFT JOIN FETCH t.cargos cg " +
 							"WHERE t.id = :id",
 					Trabalhador.class)
 					.setParameter("id", id)
@@ -56,6 +60,9 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 		return entityManager.createQuery(
 				"SELECT t FROM Trabalhador t " +
 						"LEFT JOIN FETCH t.pessoa " +
+						"LEFT JOIN FETCH t.casal c " +
+						"LEFT JOIN FETCH c.pessoa1 " +
+						"LEFT JOIN FETCH c.pessoa2 " +
 						"LEFT JOIN FETCH t.equipe e " +
 						"LEFT JOIN FETCH e.tipoEquipe " +
 						"LEFT JOIN FETCH t.encontro " +
@@ -63,8 +70,8 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 						"LEFT JOIN FETCH en.pessoa " +
 						"LEFT JOIN FETCH en.encontro " +
 						"LEFT JOIN FETCH t.contribuicoes " +
-						"ORDER BY t.ativo DESC, t.pessoa.nome",
-				Trabalhador.class) // Inclua outras associações
+						"ORDER BY t.ativo DESC, COALESCE(t.pessoa.nome, c.pessoa1.nome)",
+				Trabalhador.class)
 				.getResultList();
 	}
 
@@ -115,7 +122,16 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 
 	@Override
 	public List<Trabalhador> findByEquipe(Long equipeId) {
-		return entityManager.createQuery("SELECT t FROM Trabalhador t WHERE t.equipe.id = :equipeId", Trabalhador.class)
+		return entityManager.createQuery(
+				"SELECT t FROM Trabalhador t " +
+				"LEFT JOIN FETCH t.pessoa " +
+				"LEFT JOIN FETCH t.casal ca " +
+				"LEFT JOIN FETCH ca.pessoa1 " +
+				"LEFT JOIN FETCH ca.pessoa2 " +
+				"LEFT JOIN FETCH t.equipe e " +
+				"LEFT JOIN FETCH t.encontro " +
+				"WHERE e.id = :equipeId",
+				Trabalhador.class)
 				.setParameter("equipeId", equipeId).getResultList();
 	}
 
@@ -125,6 +141,9 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 			.createQuery(
 				"SELECT DISTINCT t FROM Trabalhador t " +
 				"LEFT JOIN FETCH t.pessoa p " +
+				"LEFT JOIN FETCH t.casal ca " +
+				"LEFT JOIN FETCH ca.pessoa1 " +
+				"LEFT JOIN FETCH ca.pessoa2 " +
 				"LEFT JOIN FETCH t.equipe e " +
 				"LEFT JOIN FETCH e.tipoEquipe " +
 				"LEFT JOIN FETCH t.encontro en " +
@@ -138,13 +157,15 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 		StringBuilder jpql = new StringBuilder();
 		jpql.append("SELECT DISTINCT t FROM Trabalhador t ");
 		jpql.append("LEFT JOIN FETCH t.pessoa p ");
+		jpql.append("LEFT JOIN FETCH t.casal c ");
+		jpql.append("LEFT JOIN FETCH c.pessoa1 cp1 ");
+		jpql.append("LEFT JOIN FETCH c.pessoa2 cp2 ");
 		jpql.append("LEFT JOIN FETCH t.equipe e ");
 		jpql.append("LEFT JOIN FETCH t.encontro en ");
 		jpql.append("WHERE 1=1 ");
 
-
 		if (nome != null && !nome.trim().isEmpty()) {
-			jpql.append(" AND LOWER(p.nome) LIKE :nome");
+			jpql.append(" AND (LOWER(p.nome) LIKE :nome OR LOWER(cp1.nome) LIKE :nome OR LOWER(cp2.nome) LIKE :nome)");
 		}
 		if (equipeId != null) {
 			jpql.append(" AND e.id = :equipeId");
@@ -152,8 +173,6 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 		if (encontroId != null) {
 			jpql.append(" AND en.id = :encontroId");
 		}
-		// Construir condição para aptidões: se o usuário marcou um ou ambos "true",
-		// usamos OR entre eles; flags false ou null são ignoradas (não filtram).
 		java.util.List<String> aptoConds = new java.util.ArrayList<>();
 		if (Boolean.TRUE.equals(aptoParaPalestrar)) {
 			aptoConds.add("t.aptoParaPalestrar = true");
@@ -176,12 +195,8 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 		if (encontroId != null) {
 			query.setParameter("encontroId", encontroId);
 		}
-		// parametros de aptoPara* foram injetados diretamente na JPQL quando true; nada a setar aqui
 
-
-		List<Trabalhador> results = query.getResultList();
-
-		return results;
+		return query.getResultList();
 	}
 
 	@Override
@@ -239,6 +254,28 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 		}
 	}
 
+
+	@Override
+	public Optional<Trabalhador> findByCasalEncontro(Long casalId, Long encontroId) {
+		try {
+			Trabalhador trabalhador = entityManager.createQuery(
+					"SELECT t FROM Trabalhador t WHERE t.casal.id = :casalId AND t.encontro.id = :encontroId",
+					Trabalhador.class)
+					.setParameter("casalId", casalId)
+					.setParameter("encontroId", encontroId).getSingleResult();
+			return Optional.of(trabalhador);
+		} catch (NoResultException e) {
+			return Optional.empty();
+		}
+	}
+
+	@Override
+	public List<Trabalhador> findByCasal(Long casalId) {
+		return entityManager.createQuery(
+				"SELECT t FROM Trabalhador t LEFT JOIN FETCH t.equipe LEFT JOIN FETCH t.encontro WHERE t.casal.id = :casalId",
+				Trabalhador.class)
+				.setParameter("casalId", casalId).getResultList();
+	}
 
 	@Override
 	public boolean hasAssociations(Long id) {

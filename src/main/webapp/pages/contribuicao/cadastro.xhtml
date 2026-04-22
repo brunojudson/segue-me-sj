@@ -58,7 +58,7 @@
                                                 filter="true" filterMatchMode="contains">
                                     <f:selectItem itemLabel="Selecione um trabalhador" itemValue="" noSelectionOption="true" />
                                     <f:selectItems value="#{contribuicaoController.trabalhadores}" var="trabalhador"
-                                                  itemLabel="#{trabalhador.pessoa.nome} - #{trabalhador.equipe.nome}" 
+                                                  itemLabel="#{trabalhador.nomeExibicao} - #{trabalhador.equipe.nome}" 
                                                   itemValue="#{trabalhador}" />
                                 </p:selectOneMenu>
                                 <small class="field-hint">Trabalhador que está fazendo a contribuição</small>

@@ -7,7 +7,7 @@
       xmlns:p="http://primefaces.org/ui"
       lang="pt-BR" xml:lang="pt-BR">
 
-<ui:define name="title">Visualizar Contribuição - #{contribuicaoController.contribuicao.trabalhador.pessoa.nome}</ui:define>
+<ui:define name="title">Visualizar Contribuição - #{contribuicaoController.contribuicao.trabalhador.nomeExibicao}</ui:define>
 
 <ui:composition template="/templates/template.xhtml">
     <ui:define name="content">
@@ -27,10 +27,10 @@
                         <div>
                             <h1><i class="pi pi-money-bill page-icon"></i> Contribuição</h1>
                             <p class="subtitle">
-                                <h:outputText value="#{contribuicaoController.contribuicao.trabalhador.pessoa.nome}"
-                                              rendered="#{not empty contribuicaoController.contribuicao.trabalhador.pessoa.nome}" />
+                                <h:outputText value="#{contribuicaoController.contribuicao.trabalhador.nomeExibicao}"
+                                              rendered="#{not empty contribuicaoController.contribuicao.trabalhador.nomeExibicao}" />
                                 <h:outputText value="Sem trabalhador"
-                                              rendered="#{empty contribuicaoController.contribuicao.trabalhador.pessoa.nome}" />
+                                              rendered="#{empty contribuicaoController.contribuicao.trabalhador.nomeExibicao}" />
                                 |
                                 <h:outputText value="#{contribuicaoController.contribuicao.valor}"
                                               rendered="#{not empty contribuicaoController.contribuicao.valor}">
@@ -59,10 +59,10 @@
                             <div class="info-item">
                                 <label>Trabalhador</label>
                                 <span>
-                                    <h:outputText value="#{contribuicaoController.contribuicao.trabalhador.pessoa.nome}"
-                                                  rendered="#{not empty contribuicaoController.contribuicao.trabalhador.pessoa.nome}" />
+                                    <h:outputText value="#{contribuicaoController.contribuicao.trabalhador.nomeExibicao}"
+                                                  rendered="#{not empty contribuicaoController.contribuicao.trabalhador.nomeExibicao}" />
                                     <h:outputText value="Não informado" styleClass="empty-value"
-                                                  rendered="#{empty contribuicaoController.contribuicao.trabalhador.pessoa.nome}" />
+                                                  rendered="#{empty contribuicaoController.contribuicao.trabalhador.nomeExibicao}" />
                                 </span>
                             </div>
                             <div class="info-item">

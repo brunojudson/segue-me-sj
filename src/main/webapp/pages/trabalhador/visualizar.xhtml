@@ -7,7 +7,7 @@
       xmlns:p="http://primefaces.org/ui"
       lang="pt-BR" xml:lang="pt-BR">
 
-<ui:define name="title">Visualizar Trabalhador - #{trabalhadorController.trabalhador.pessoa.nome}</ui:define>
+<ui:define name="title">Visualizar Trabalhador - #{trabalhadorController.trabalhador.nomeExibicao}</ui:define>
 
 <ui:composition template="/templates/template.xhtml">
     <ui:define name="content">
@@ -26,10 +26,10 @@
                         </p:link>
                         <div>
                             <h1><i class="pi pi-id-card page-icon"></i>
-                                <h:outputText value="#{trabalhadorController.trabalhador.pessoa.nome}"
-                                              rendered="#{not empty trabalhadorController.trabalhador.pessoa.nome}" />
+                                <h:outputText value="#{trabalhadorController.trabalhador.nomeExibicao}"
+                                              rendered="#{not empty trabalhadorController.trabalhador.nomeExibicao}" />
                                 <h:outputText value="Trabalhador sem nome"
-                                              rendered="#{empty trabalhadorController.trabalhador.pessoa.nome}" />
+                                              rendered="#{empty trabalhadorController.trabalhador.nomeExibicao}" />
                             </h1>
                             <p class="subtitle">
                                 <h:outputText value="Equipe: #{trabalhadorController.trabalhador.equipe.nome}"
@@ -43,6 +43,11 @@
                         <h:panelGroup rendered="#{trabalhadorController.trabalhador.ehCoordenador}">
                             <span class="sm-tag sm-tag-purple">
                                 <i class="pi pi-star"></i> Coordenador
+                            </span>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{trabalhadorController.trabalhador.ehCasalCoordenador}">
+                            <span class="sm-tag sm-tag-purple">
+                                <i class="pi pi-heart"></i> Casal Coordenador
                             </span>
                         </h:panelGroup>
                         <p:button value="Editar" outcome="/pages/trabalhador/cadastro.xhtml"
@@ -59,12 +64,12 @@
                         <h3 class="detail-section-title"><i class="pi pi-info-circle"></i> Informações Básicas</h3>
                         <div class="info-grid">
                             <div class="info-item">
-                                <label>Pessoa</label>
+                                <label>#{trabalhadorController.trabalhador.trabalhandoComoCasal ? 'Casal' : 'Pessoa'}</label>
                                 <span>
-                                    <h:outputText value="#{trabalhadorController.trabalhador.pessoa.nome}"
-                                                  rendered="#{not empty trabalhadorController.trabalhador.pessoa.nome}" />
-                                    <h:outputText value="Não informada" styleClass="empty-value"
-                                                  rendered="#{empty trabalhadorController.trabalhador.pessoa.nome}" />
+                                    <h:outputText value="#{trabalhadorController.trabalhador.nomeExibicao}"
+                                                  rendered="#{not empty trabalhadorController.trabalhador.nomeExibicao}" />
+                                    <h:outputText value="Não informado" styleClass="empty-value"
+                                                  rendered="#{empty trabalhadorController.trabalhador.nomeExibicao}" />
                                 </span>
                             </div>
                             <div class="info-item">

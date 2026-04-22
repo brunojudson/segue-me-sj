@@ -93,16 +93,24 @@
 					<p:dataTable value="#{equipeController.equipe.trabalhadores}" var="trabalhador"
 						emptyMessage="Nenhum trabalhador cadastrado para esta equipe"
 						styleClass="modern-datatable">
-						<p:column headerText="Nome" sortBy="#{trabalhador.pessoa.nome}">
-							<h:outputText value="#{trabalhador.pessoa.nome}" />
+						<p:column headerText="Nome" sortBy="#{trabalhador.nomeExibicao}">
+							<h:panelGroup rendered="#{trabalhador.trabalhandoComoCasal}">
+								<i class="pi pi-heart" style="color:#e53e3e;margin-right:.25rem;font-size:.8rem;"></i>
+							</h:panelGroup>
+							<h:outputText value="#{trabalhador.nomeExibicao}" />
 						</p:column>
 						<p:column headerText="Coordenador" style="text-align:center; width:150px;">
-							<h:panelGroup rendered="#{trabalhador.ehCoordenador}">
+							<h:panelGroup rendered="#{trabalhador.ehCoordenador and not trabalhador.trabalhandoComoCasal}">
 								<span class="sm-tag sm-tag-purple">
 									<i class="pi pi-star"></i> Coordenador
 								</span>
 							</h:panelGroup>
-							<h:outputText value="Membro" rendered="#{not trabalhador.ehCoordenador}" styleClass="text-muted" />
+							<h:panelGroup rendered="#{trabalhador.ehCasalCoordenador}">
+								<span class="sm-tag sm-tag-purple">
+									<i class="pi pi-heart"></i> Casal Coord.
+								</span>
+							</h:panelGroup>
+							<h:outputText value="Membro" rendered="#{(not trabalhador.ehCoordenador or trabalhador.trabalhandoComoCasal) and not trabalhador.ehCasalCoordenador}" styleClass="text-muted" />
 						</p:column>
 						<p:column headerText="Data de Início" style="text-align:center; width:120px;">
 							<h:outputText value="#{trabalhador.dataInicio}" rendered="#{trabalhador.dataInicio != null}">
@@ -111,10 +119,10 @@
 							<h:outputText value="N/I" rendered="#{trabalhador.dataInicio == null}" styleClass="empty-value" />
 						</p:column>
 						<p:column headerText="Casal" style="text-align:center; width:80px;">
-							<h:panelGroup rendered="#{trabalhador.ehCasal}">
+							<h:panelGroup rendered="#{trabalhador.ehCasal or trabalhador.trabalhandoComoCasal}">
 								<i class="pi pi-heart" style="color:var(--sm-accent2);"></i>
 							</h:panelGroup>
-							<h:outputText value="-" rendered="#{not trabalhador.ehCasal}" styleClass="empty-value" />
+							<h:outputText value="-" rendered="#{not trabalhador.ehCasal and not trabalhador.trabalhandoComoCasal}" styleClass="empty-value" />
 						</p:column>
 					</p:dataTable>
 				</div>

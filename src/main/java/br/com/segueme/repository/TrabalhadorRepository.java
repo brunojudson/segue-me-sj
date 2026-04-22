@@ -86,6 +86,10 @@ public interface TrabalhadorRepository {
     Optional<Trabalhador> findByPessoaEquipeEncontro(Long pessoaId, Long equipeId, Long encontroId);
 
     Optional<Trabalhador> findByPessoaEncontro(Long pessoaId, Long encontroId);
+
+    List<Trabalhador> findByCasal(Long casalId);
+
+    Optional<Trabalhador> findByCasalEncontro(Long casalId, Long encontroId);
     
     /**
      * Remove um trabalhador do banco de dados

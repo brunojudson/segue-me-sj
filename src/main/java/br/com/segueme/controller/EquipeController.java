@@ -174,9 +174,12 @@ public class EquipeController implements Serializable {
     public void identificarCasais() {
         if (equipe != null && equipe.getTrabalhadores() != null) {
             for (Trabalhador trabalhador : equipe.getTrabalhadores()) {
-                // Supondo que exista um método no serviço para verificar se a pessoa faz parte de um casal
-                boolean ehCasal = casalService.verificarSePessoaEhCasal(trabalhador.getPessoa().getId());
-                trabalhador.setEhCasal(ehCasal);
+                if (trabalhador.isTrabalhandoComoCasal()) {
+                    trabalhador.setEhCasal(true);
+                } else if (trabalhador.getPessoa() != null) {
+                    boolean ehCasal = casalService.verificarSePessoaEhCasal(trabalhador.getPessoa().getId());
+                    trabalhador.setEhCasal(ehCasal);
+                }
             }
         }
     }
@@ -187,8 +190,12 @@ public class EquipeController implements Serializable {
             // Identificar casais nos trabalhadores
             if (equipeDetalhes.getTrabalhadores() != null) {
                 for (Trabalhador trabalhador : equipeDetalhes.getTrabalhadores()) {
-                    boolean ehCasal = casalService.verificarSePessoaEhCasal(trabalhador.getPessoa().getId());
-                    trabalhador.setEhCasal(ehCasal);
+                    if (trabalhador.isTrabalhandoComoCasal()) {
+                        trabalhador.setEhCasal(true);
+                    } else if (trabalhador.getPessoa() != null) {
+                        boolean ehCasal = casalService.verificarSePessoaEhCasal(trabalhador.getPessoa().getId());
+                        trabalhador.setEhCasal(ehCasal);
+                    }
                 }
                 List<Trabalhador> trabalhadoresOrdenados = new ArrayList<>(equipeDetalhes.getTrabalhadores());
                 trabalhadoresOrdenados.sort(Comparator.comparing(Trabalhador::isEhCasal).reversed());

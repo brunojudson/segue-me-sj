@@ -11,11 +11,13 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import br.com.segueme.entity.Casal;
 import br.com.segueme.entity.Encontrista;
 import br.com.segueme.entity.Encontro;
 import br.com.segueme.entity.Equipe;
 import br.com.segueme.entity.Pessoa;
 import br.com.segueme.entity.Trabalhador;
+import br.com.segueme.service.CasalService;
 import br.com.segueme.service.EncontristaService;
 import br.com.segueme.service.EncontroService;
 import br.com.segueme.service.EquipeService;
@@ -48,6 +50,9 @@ public class TrabalhadorController implements Serializable {
 	@Inject
 	private EncontristaService encontristaService;
 
+	@Inject
+	private CasalService casalService;
+
     private static final Logger logger = Logger.getLogger(TrabalhadorController.class.getName());
 
 	private List<Trabalhador> trabalhadores;
@@ -58,7 +63,11 @@ public class TrabalhadorController implements Serializable {
 	private List<Pessoa> pessoas;
 	private List<Equipe> equipes;
 	private List<Encontro> encontros;
-	private List<Encontro> encontrosParaFiltro; // Lista para filtro incluindo finalizados
+	private List<Encontro> encontrosParaFiltro;
+	private List<Casal> casais;
+
+	/** Tipo de trabalhador: "PESSOA" ou "CASAL" */
+	private String tipoTrabalhador = "PESSOA";
 
 
 	// Filtros para a tabela
@@ -77,8 +86,8 @@ public class TrabalhadorController implements Serializable {
 		carregarEquipes();
 		carregarEncontros();
 		carregarEncontrosParaFiltro();
+		carregarCasais();
 		limpar();
-		// Não carregar a lista completa ao abrir a página — aguardar filtros
 		this.trabalhadores = java.util.Collections.emptyList();
 	}
 
@@ -165,6 +174,10 @@ public class TrabalhadorController implements Serializable {
 		pessoas = pessoaService.buscarTodosEcluindoEncotristasAtivos();
 	}
 
+	public void carregarCasais() {
+		casais = casalService.buscarTodos();
+	}
+
 	public void carregarEquipes() {
 		// Carrega equipes ativas por padrão
 		equipes = equipeService.buscarAtivas();
@@ -210,6 +223,18 @@ public class TrabalhadorController implements Serializable {
 	public void limpar() {
 		trabalhador = new Trabalhador();
 		trabalhador.setDataInicio(LocalDate.now());
+		tipoTrabalhador = "PESSOA";
+	}
+
+	/** Chamado pelo toggle Pessoa/Casal na tela de cadastro. Limpa o campo oposto. */
+	public void onTipoTrabalhadorChange() {
+		if ("CASAL".equals(tipoTrabalhador)) {
+			trabalhador.setPessoa(null);
+			trabalhador.setFoiEncontrista(false);
+		} else {
+			trabalhador.setCasal(null);
+			trabalhador.setEhCasalCoordenador(false);
+		}
 	}
 
 	/**
@@ -341,24 +366,41 @@ public class TrabalhadorController implements Serializable {
 
 	private String salvarInterno(boolean redirecionarParaLista) {
 		try {
-			// Validar se o encontro está ativo (se informado)
+			// Validar se o encontro está ativo (se informado) e definir dataInicio automaticamente
 			if (trabalhador.getEncontro() != null && trabalhador.getEncontro().getId() != null) {
 				encontroService.buscarPorId(trabalhador.getEncontro().getId()).ifPresent(enc -> {
 					if (enc.getAtivo() != null && !enc.getAtivo()) {
 						throw new IllegalArgumentException(
 							"Não é permitido adicionar trabalhadores em encontros finalizados/inativos.");
 					}
+					// Sempre usa a data de início do encontro
+					if (enc.getDataInicio() != null) {
+						trabalhador.setDataInicio(enc.getDataInicio());
+					}
 				});
 			}
-			
+
+			// Garantir consistência: limpar o campo não usado conforme tipo
+			if ("CASAL".equals(tipoTrabalhador)) {
+				trabalhador.setPessoa(null);
+				trabalhador.setEhCoordenador(false);
+				// Casal coordenador ativa automaticamente aptoParaCoordenar
+				if (Boolean.TRUE.equals(trabalhador.getEhCasalCoordenador())) {
+					trabalhador.setAptoParaCoordenar(true);
+				}
+			} else {
+				trabalhador.setCasal(null);
+				trabalhador.setEhCasalCoordenador(false);
+			}
+
 			// Validar vinculação obrigatória: coordenador deve ser apto para coordenar
-			if (Boolean.TRUE.equals(trabalhador.getEhCoordenador()) && 
+			if (Boolean.TRUE.equals(trabalhador.getEhCoordenador()) &&
 				!Boolean.TRUE.equals(trabalhador.getAptoParaCoordenar())) {
 				throw new IllegalArgumentException(
 					"Um coordenador deve estar marcado como 'Apto para coordenar'.");
 			}
-			
-			// Validar parentesco na equipe
+
+			// Validar parentesco na equipe (somente para pessoa individual)
 			if (trabalhador.getEquipe() != null && trabalhador.getPessoa() != null) {
 				validarParentescoNaEquipe(trabalhador.getPessoa(), trabalhador.getEquipe().getId());
 			}
@@ -419,7 +461,10 @@ public class TrabalhadorController implements Serializable {
 		String idParam = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("id");
 		if (idParam != null && !idParam.isEmpty()) {
 			Long id = Long.valueOf(idParam);
-			trabalhadorService.buscarPorId(id).ifPresent(t -> this.trabalhador = t);
+			trabalhadorService.buscarPorId(id).ifPresent(t -> {
+				this.trabalhador = t;
+				this.tipoTrabalhador = t.getCasal() != null ? "CASAL" : "PESSOA";
+			});
 		}
 	}
 
@@ -604,4 +649,13 @@ public class TrabalhadorController implements Serializable {
 	public void setFiltroAptoParaPalestrar(Boolean filtroAptoParaPalestrar) { this.filtroAptoParaPalestrar = filtroAptoParaPalestrar; }
 	public Boolean getFiltroAptoParaCoordenar() { return filtroAptoParaCoordenar; }
 	public void setFiltroAptoParaCoordenar(Boolean filtroAptoParaCoordenar) { this.filtroAptoParaCoordenar = filtroAptoParaCoordenar; }
+
+	public List<Casal> getCasais() { return casais; }
+	public void setCasais(List<Casal> casais) { this.casais = casais; }
+
+	public String getTipoTrabalhador() { return tipoTrabalhador; }
+	public void setTipoTrabalhador(String tipoTrabalhador) { this.tipoTrabalhador = tipoTrabalhador; }
+
+	public boolean isTipoCasal() { return "CASAL".equals(tipoTrabalhador); }
+	public boolean isTipoPessoa() { return "PESSOA".equals(tipoTrabalhador); }
 }

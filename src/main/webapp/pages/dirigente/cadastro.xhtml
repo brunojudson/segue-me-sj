@@ -58,7 +58,7 @@
                                                 filter="true" filterMatchMode="startsWith" filterNormalize="true">
                                     <f:selectItem itemLabel="Selecione um trabalhador" itemValue="" noSelectionOption="true" />
                                     <f:selectItems value="#{dirigenteController.trabalhadores}" var="trabalhador"
-                                                  itemLabel="#{trabalhador.pessoa.nome}" itemValue="#{trabalhador}" />
+                                                  itemLabel="#{trabalhador.nomeExibicao}" itemValue="#{trabalhador}" />
                                 </p:selectOneMenu>
                                 <small class="field-hint">Trabalhador que assumirá o cargo de dirigente</small>
                             </div>

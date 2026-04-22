@@ -46,22 +46,84 @@
                 <div class="form-section">
                     <p:fieldset legend="👥 Dados do Trabalhador" styleClass="modern-fieldset" toggleable="true">
                         <div class="field-grid">
-                            <div class="field-group">
-                                <p:outputLabel for="pessoa" value="Pessoa" styleClass="required-field" />
-                                <p:selectOneMenu id="pessoa" value="#{trabalhadorController.trabalhador.pessoa}"
-                                    converter="omnifaces.SelectItemsConverter" required="true"
-                                    requiredMessage="A pessoa é obrigatória"
-                                    disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}"
-                                    filter="true" filterMatchMode="startsWith" filterNormalize="true">
-                                    <f:selectItem itemLabel="Selecione a pessoa" itemValue=""
-                                        noSelectionOption="true" />
-                                    <f:selectItems value="#{trabalhadorController.pessoas}" var="pessoa"
-                                        itemLabel="#{pessoa.nome}" itemValue="#{pessoa}" />
-                                    <p:ajax event="change" listener="#{trabalhadorController.verificarSeEncontrista}"
-                                        process="@this" update="@form" />
-                                </p:selectOneMenu>
-                                <small class="field-hint">Selecione a pessoa que será o trabalhador.</small>
+
+                            <!-- Toggle Pessoa / Casal -->
+                            <div class="field-group" style="grid-column: 1 / -1;">
+                                <p:outputLabel value="Tipo de Trabalhador" />
+                                <div style="display: flex; gap: 1.5rem; align-items: center; margin-top: 0.25rem;">
+                                    <p:selectOneRadio id="tipoTrabalhador"
+                                        value="#{trabalhadorController.tipoTrabalhador}"
+                                        layout="custom"
+                                        disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}">
+                                        <f:selectItem itemLabel="Pessoa Individual" itemValue="PESSOA" />
+                                        <f:selectItem itemLabel="Casal" itemValue="CASAL" />
+                                        <p:ajax event="change"
+                                            listener="#{trabalhadorController.onTipoTrabalhadorChange}"
+                                            update="panelTipo wrapCoordenadores wrapFoiEncontrista aptoParaPalestrar"
+                                            process="@this" />
+                                    </p:selectOneRadio>
+                                    <label for="tipoTrabalhador:0">
+                                        <p:radioButton id="rb0" for="tipoTrabalhador" itemIndex="0" />
+                                        <span style="margin-left:.4rem; font-weight:500;">Pessoa Individual</span>
+                                    </label>
+                                    <label for="tipoTrabalhador:1">
+                                        <p:radioButton id="rb1" for="tipoTrabalhador" itemIndex="1" />
+                                        <span style="margin-left:.4rem; font-weight:500;">
+                                            <i class="pi pi-heart" style="color:#e53e3e;"></i> Casal
+                                        </span>
+                                    </label>
+                                </div>
+                                <small class="field-hint">Informe se é uma pessoa individual ou um casal.</small>
                             </div>
+
+                            <!-- Painel: Pessoa Individual / Casal — wrapper sempre presente para AJAX funcionar -->
+                            <h:panelGroup id="panelTipo" layout="block" style="display:contents;">
+
+                                <!-- Painel: Pessoa Individual -->
+                                <h:panelGroup id="panelPessoa" layout="block"
+                                    rendered="#{trabalhadorController.tipoPessoa}">
+                                    <div class="field-group">
+                                        <p:outputLabel for="pessoa" value="Pessoa" styleClass="required-field" />
+                                        <p:selectOneMenu id="pessoa" value="#{trabalhadorController.trabalhador.pessoa}"
+                                            converter="omnifaces.SelectItemsConverter"
+                                            required="#{trabalhadorController.tipoPessoa}"
+                                            requiredMessage="A pessoa é obrigatória"
+                                            disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}"
+                                            filter="true" filterMatchMode="startsWith" filterNormalize="true">
+                                            <f:selectItem itemLabel="Selecione a pessoa" itemValue=""
+                                                noSelectionOption="true" />
+                                            <f:selectItems value="#{trabalhadorController.pessoas}" var="pessoa"
+                                                itemLabel="#{pessoa.nome}" itemValue="#{pessoa}" />
+                                            <p:ajax event="change"
+                                                listener="#{trabalhadorController.verificarSeEncontrista}"
+                                                process="@this" update="wrapFoiEncontrista" />
+                                        </p:selectOneMenu>
+                                        <small class="field-hint">Selecione a pessoa que será o trabalhador.</small>
+                                    </div>
+                                </h:panelGroup>
+
+                                <!-- Painel: Casal -->
+                                <h:panelGroup id="panelCasal" layout="block"
+                                    rendered="#{trabalhadorController.tipoCasal}">
+                                    <div class="field-group">
+                                        <p:outputLabel for="casal" value="Casal" styleClass="required-field" />
+                                        <p:selectOneMenu id="casal" value="#{trabalhadorController.trabalhador.casal}"
+                                            converter="omnifaces.SelectItemsConverter"
+                                            required="#{trabalhadorController.tipoCasal}"
+                                            requiredMessage="O casal é obrigatório"
+                                            disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}"
+                                            filter="true" filterMatchMode="contains" filterNormalize="true">
+                                            <f:selectItem itemLabel="Selecione o casal" itemValue=""
+                                                noSelectionOption="true" />
+                                            <f:selectItems value="#{trabalhadorController.casais}" var="casal"
+                                                itemLabel="#{casal.pessoa1.nome} e #{casal.pessoa2.nome}"
+                                                itemValue="#{casal}" />
+                                        </p:selectOneMenu>
+                                        <small class="field-hint">Selecione o casal que trabalhará no encontro.</small>
+                                    </div>
+                                </h:panelGroup>
+
+                            </h:panelGroup>
 
                             <div class="field-group">
                                 <p:outputLabel for="encontro" value="Encontro" styleClass="required-field" />
@@ -73,8 +135,7 @@
                                         noSelectionOption="true" />
                                     <f:selectItems value="#{trabalhadorController.encontros}" var="encontro"
                                         itemLabel="#{encontro.nome}" itemValue="#{encontro}" />
-                                    <p:ajax event="change" listener="#{trabalhadorController.atualizarDataInicio}"
-                                        update="dataInicio" />
+                                    <p:ajax event="change" listener="#{trabalhadorController.atualizarDataInicio}" />
                                 </p:selectOneMenu>
                                 <small class="field-hint">Selecione o encontro ao qual o trabalhador está
                                     vinculado.</small>
@@ -97,14 +158,7 @@
                                 <small class="field-hint">Defina a equipe de trabalho.</small>
                             </div>
 
-                            <div class="field-group">
-                                <p:outputLabel for="dataInicio" value="Data de Início" styleClass="required-field" />
-                                <p:datePicker id="dataInicio" value="#{trabalhadorController.trabalhador.dataInicio}"
-                                    pattern="dd/MM/yyyy" showIcon="true" required="true" showOnFocus="false"
-                                    requiredMessage="A data de início é obrigatória"
-                                    disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}" />
-                                <small class="field-hint">Data em que o trabalho no encontro se inicia.</small>
-                            </div>
+
 
                             <div class="field-group">
                                 <p:outputLabel for="observacao" value="Observação" />
@@ -115,6 +169,7 @@
                                 <small class="field-hint">Campo opcional para observações gerais sobre o
                                     trabalhador.</small>
                             </div>
+
                             <div class="field-group checkbox-group">
                                 <p:outputLabel for="aptoParaPalestrar" value="Apto para palestrar" />
                                 <div class="checkbox-container">
@@ -135,31 +190,61 @@
                                 <small class="field-hint">Marque se o trabalhador tem aptidão para coordenar.</small>
                             </div>
 
-                            <div class="field-group checkbox-group">
-                                <p:outputLabel for="coordenador" value="Coordenação" />
-                                <div class="checkbox-container">
-                                    <p:selectBooleanCheckbox id="coordenador"
-                                        value="#{trabalhadorController.trabalhador.ehCoordenador}"
-                                        disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}">
-                                        <p:ajax event="change" listener="#{trabalhadorController.marcarAptoParaCoordenar}" 
-                                                update="aptoParaCoordenar" />
-                                    </p:selectBooleanCheckbox>
-                                    <span class="checkbox-label">É coordenador da equipe</span>
-                                </div>
-                                <small class="field-hint">Marque se o trabalhador coordena esta equipe (requer aptidão para coordenar).</small>
-                            </div>
+                            <!-- Coordenador / Casal Coordenador — wrapper fixo para AJAX -->
+                            <h:panelGroup id="wrapCoordenadores" layout="block" style="display:contents;">
 
-                            <div class="field-group checkbox-group">
-                                <p:outputLabel for="foiEncontrista" value="Histórico" />
-                                <div class="checkbox-container">
-                                    <p:selectBooleanCheckbox id="foiEncontrista"
-                                        value="#{trabalhadorController.trabalhador.foiEncontrista}"
-                                        onclick="return false;" tabindex="-1" aria-disabled="true" />
-                                    <span class="checkbox-label">Já participou como encontrista</span>
-                                </div>
-                                <small class="field-hint">Indica se a pessoa já foi encontrista (preenchido
-                                    automaticamente).</small>
-                            </div>
+                                <!-- Coordenador (somente para pessoa individual) -->
+                                <h:panelGroup layout="block" styleClass="field-group checkbox-group"
+                                             rendered="#{trabalhadorController.tipoPessoa}">
+                                    <p:outputLabel for="coordenador" value="Coordenação" />
+                                    <div class="checkbox-container">
+                                        <p:selectBooleanCheckbox id="coordenador"
+                                            value="#{trabalhadorController.trabalhador.ehCoordenador}"
+                                            disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}">
+                                            <p:ajax event="change" listener="#{trabalhadorController.marcarAptoParaCoordenar}"
+                                                    update="aptoParaCoordenar" />
+                                        </p:selectBooleanCheckbox>
+                                        <span class="checkbox-label">É coordenador da equipe</span>
+                                    </div>
+                                    <small class="field-hint">Marque se o trabalhador coordena esta equipe.</small>
+                                </h:panelGroup>
+
+                                <!-- Casal Coordenador (somente para casal) -->
+                                <h:panelGroup layout="block" styleClass="field-group checkbox-group"
+                                             rendered="#{trabalhadorController.tipoCasal}">
+                                    <p:outputLabel for="ehCasalCoordenador" value="Casal Coordenador" />
+                                    <div class="checkbox-container">
+                                        <p:selectBooleanCheckbox id="ehCasalCoordenador"
+                                            value="#{trabalhadorController.trabalhador.ehCasalCoordenador}"
+                                            disabled="#{trabalhadorController.trabalhador.encontro.ativo == false}">
+                                            <p:ajax event="change" listener="#{trabalhadorController.marcarAptoParaCoordenar}"
+                                                    update="aptoParaCoordenar" />
+                                        </p:selectBooleanCheckbox>
+                                        <span class="checkbox-label">
+                                            <i class="pi pi-heart" style="color:#e53e3e;"></i>
+                                            Este casal é o casal coordenador do encontro
+                                        </span>
+                                    </div>
+                                    <small class="field-hint">Marque se este casal exerce a função de coordenação do encontro.</small>
+                                </h:panelGroup>
+
+                            </h:panelGroup>
+
+                            <!-- Foi Encontrista — wrapper fixo para AJAX -->
+                            <h:panelGroup id="wrapFoiEncontrista" layout="block" style="display:contents;">
+                                <h:panelGroup layout="block" styleClass="field-group checkbox-group"
+                                             rendered="#{trabalhadorController.tipoPessoa}">
+                                    <p:outputLabel for="foiEncontrista" value="Histórico" />
+                                    <div class="checkbox-container">
+                                        <p:selectBooleanCheckbox id="foiEncontrista"
+                                            value="#{trabalhadorController.trabalhador.foiEncontrista}"
+                                            onclick="return false;" tabindex="-1" aria-disabled="true" />
+                                        <span class="checkbox-label">Já participou como encontrista</span>
+                                    </div>
+                                    <small class="field-hint">Indica se a pessoa já foi encontrista (preenchido
+                                        automaticamente).</small>
+                                </h:panelGroup>
+                            </h:panelGroup>
                         </div>
                     </p:fieldset>
                 </div>

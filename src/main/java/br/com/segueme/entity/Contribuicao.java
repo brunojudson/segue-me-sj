@@ -134,7 +134,7 @@ public class Contribuicao implements Serializable {
     public String toString() {
         return "Contribuicao{" +
                 "id=" + id +
-                ", trabalhador=" + (trabalhador != null ? trabalhador.getPessoa().getNome() : "null") +
+                ", trabalhador=" + (trabalhador != null ? trabalhador.getNomeExibicao() : "null") +
                 ", valor=" + valor +
                 ", dataPagamento=" + dataPagamento +
                 ", formaPagamento='" + formaPagamento + '\'' +

@@ -7,11 +7,13 @@ import java.util.Optional;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import br.com.segueme.entity.Casal;
 import br.com.segueme.entity.Encontrista;
 import br.com.segueme.entity.Encontro;
 import br.com.segueme.entity.Equipe;
 import br.com.segueme.entity.Pessoa;
 import br.com.segueme.entity.Trabalhador;
+import br.com.segueme.repository.CasalRepository;
 import br.com.segueme.repository.EncontristaRepository;
 import br.com.segueme.repository.EncontroRepository;
 import br.com.segueme.repository.EquipeRepository;
@@ -38,6 +40,9 @@ public class TrabalhadorService implements Serializable {
     private EncontristaRepository encontristaRepository;
 
     @Inject
+    private CasalRepository casalRepository;
+
+    @Inject
     private AuditoriaService auditoriaService;
 
     @Inject
@@ -54,8 +59,14 @@ public class TrabalhadorService implements Serializable {
             throw new IllegalArgumentException("Trabalhador não pode ser nulo");
         }
 
-        if (trabalhador.getPessoa() == null || trabalhador.getPessoa().getId() == null) {
-            throw new IllegalArgumentException("Pessoa do trabalhador é obrigatória");
+        boolean temPessoa = trabalhador.getPessoa() != null && trabalhador.getPessoa().getId() != null;
+        boolean temCasal = trabalhador.getCasal() != null && trabalhador.getCasal().getId() != null;
+
+        if (!temPessoa && !temCasal) {
+            throw new IllegalArgumentException("É obrigatório informar a pessoa ou o casal trabalhador.");
+        }
+        if (temPessoa && temCasal) {
+            throw new IllegalArgumentException("Informe apenas a pessoa ou o casal, não ambos.");
         }
 
         if (trabalhador.getEquipe() == null || trabalhador.getEquipe().getId() == null) {
@@ -67,9 +78,19 @@ public class TrabalhadorService implements Serializable {
         }
 
         // Verificar se pessoa existe
-        Optional<Pessoa> pessoaExistente = pessoaRepository.findById(trabalhador.getPessoa().getId());
-        if (!pessoaExistente.isPresent()) {
-            throw new IllegalArgumentException("Pessoa não encontrada com o ID: " + trabalhador.getPessoa().getId());
+        if (temPessoa) {
+            Optional<Pessoa> pessoaExistente = pessoaRepository.findById(trabalhador.getPessoa().getId());
+            if (!pessoaExistente.isPresent()) {
+                throw new IllegalArgumentException("Pessoa não encontrada com o ID: " + trabalhador.getPessoa().getId());
+            }
+        }
+
+        // Verificar se casal existe
+        if (temCasal) {
+            Optional<Casal> casalExistente = casalRepository.findById(trabalhador.getCasal().getId());
+            if (!casalExistente.isPresent()) {
+                throw new IllegalArgumentException("Casal não encontrado com o ID: " + trabalhador.getCasal().getId());
+            }
         }
 
         // Verificar se equipe existe
@@ -97,13 +118,21 @@ public class TrabalhadorService implements Serializable {
             trabalhador.setFoiEncontrista(true);
         }
 
-        // Verificar se já existe um trabalhador para esta pessoa e encontro
+        // Verificar duplicidade por pessoa ou casal no encontro
         if (trabalhador.getEncontro() != null && trabalhador.getEncontro().getId() != null) {
-            Optional<Trabalhador> trabalhadorExistente = trabalhadorRepository.findByPessoaEncontro
-                (trabalhador.getPessoa().getId(), trabalhador.getEncontro().getId());
-
-            if (trabalhadorExistente.isPresent()) {
-            throw new IllegalArgumentException("Já existe um trabalhador cadastrado para esta pessoa neste encontro");
+            if (temPessoa) {
+                Optional<Trabalhador> dup = trabalhadorRepository.findByPessoaEncontro(
+                        trabalhador.getPessoa().getId(), trabalhador.getEncontro().getId());
+                if (dup.isPresent()) {
+                    throw new IllegalArgumentException("Já existe um trabalhador cadastrado para esta pessoa neste encontro.");
+                }
+            }
+            if (temCasal) {
+                Optional<Trabalhador> dup = trabalhadorRepository.findByCasalEncontro(
+                        trabalhador.getCasal().getId(), trabalhador.getEncontro().getId());
+                if (dup.isPresent()) {
+                    throw new IllegalArgumentException("Já existe um trabalhador cadastrado para este casal neste encontro.");
+                }
             }
         }
         trabalhador.calcularIdade();
@@ -225,6 +254,13 @@ public class TrabalhadorService implements Serializable {
      */
     public List<Trabalhador> buscarPorFiltros(String nome, Long equipeId, Long encontroId, Boolean aptoParaPalestrar, Boolean aptoParaCoordenar) {
         return trabalhadorRepository.findByFilters(nome, equipeId, encontroId, aptoParaPalestrar, aptoParaCoordenar);
+    }
+
+    public List<Trabalhador> buscarPorCasal(Long casalId) {
+        if (casalId == null) {
+            throw new IllegalArgumentException("ID do casal não pode ser nulo");
+        }
+        return trabalhadorRepository.findByCasal(casalId);
     }
 
     /**

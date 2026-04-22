@@ -101,23 +101,40 @@
 						<div class="id-badge">#{trabalhador.id}</div>
 					</p:column>
 
-					<p:column headerText="Pessoa" sortBy="#{trabalhador.pessoa.nome}"
-						filterBy="#{trabalhador.pessoa.nome}" filterMatchMode="contains"
+					<p:column headerText="Trabalhador" sortBy="#{trabalhador.nomeExibicao}"
+						filterBy="#{trabalhador.nomeExibicao}" filterMatchMode="contains"
 						styleClass="text-left" width="25%">
 						<div class="worker-info">
-							<!-- Avatar com foto ou ícone -->
-							<h:panelGroup rendered="#{not empty trabalhador.pessoa.foto}">
+							<div class="worker-avatar">
+								<i class="pi #{trabalhador.trabalhandoComoCasal ? 'pi-heart' : 'pi-user'}"></i>
+							</div>
+							<!-- Badge casal -->
+							<h:panelGroup rendered="#{trabalhador.trabalhandoComoCasal}">
+								<span style="display:flex;flex-direction:column;gap:.1rem;">
+									<p:commandLink styleClass="nome-link worker-name"
+										action="#{trabalhadorController.abrirDetalhes(trabalhador)}"
+										update=":detalhesForm:detalhesModal"
+										oncomplete="PF('detalhesDialog').show()">
+										<i class="pi pi-heart" style="color:#e53e3e;font-size:.75rem;margin-right:.25rem;"></i>
+										<h:outputText value="#{trabalhador.casal.pessoa1.nome}" />
+										<span style="margin:0 .3rem;color:#888;">e</span>
+										<h:outputText value="#{trabalhador.casal.pessoa2.nome}" />
+									</p:commandLink>
+									<h:panelGroup rendered="#{trabalhador.ehCasalCoordenador}">
+										<span class="status-badge ativo" style="font-size:.7rem;padding:.1rem .4rem;">
+											<i class="pi pi-star-fill"></i> Casal Coordenador
+										</span>
+									</h:panelGroup>
+								</span>
 							</h:panelGroup>
-							<h:panelGroup>
-								<div class="worker-avatar">
-									<i class="pi pi-user"></i>
-								</div>
+							<!-- Pessoa individual -->
+							<h:panelGroup rendered="#{not trabalhador.trabalhandoComoCasal}">
+								<p:commandLink value="#{trabalhador.pessoa.nome}"
+									styleClass="nome-link worker-name"
+									action="#{trabalhadorController.abrirDetalhes(trabalhador)}"
+									update=":detalhesForm:detalhesModal"
+									oncomplete="PF('detalhesDialog').show()" />
 							</h:panelGroup>
-							<p:commandLink value="#{trabalhador.pessoa.nome}"
-								styleClass="nome-link worker-name"
-								action="#{trabalhadorController.abrirDetalhes(trabalhador)}"
-								update=":detalhesForm:detalhesModal"
-								oncomplete="PF('detalhesDialog').show()" />
 						</div>
 					</p:column>
 					<p:column headerText="Equipe" sortBy="#{trabalhador.equipe.nome}"
@@ -138,8 +155,7 @@
 					<p:column headerText="Coordenador" styleClass="text-center"
 						width="8%" responsivePriority="6">
 						<div class="status-indicator">
-							<i
-								class="pi #{trabalhador.ehCoordenador ? 'pi-check-circle status-active2' : 'pi-minus-circle status-inactive2'}"></i>
+							<i class="pi #{(trabalhador.ehCoordenador or trabalhador.ehCasalCoordenador) ? 'pi-check-circle status-active2' : 'pi-minus-circle status-inactive2'}"></i>
 						</div>
 					</p:column>
 
@@ -228,32 +244,47 @@
 						rendered="#{trabalhadorController.trabalhadorDetalhes != null}">
 						<div class="modal-pessoa-header">
 							<div class="modal-pessoa-avatar-section">
-								<h:panelGroup
-									rendered="#{not empty trabalhadorController.trabalhadorDetalhes.pessoa.foto}">
+								<!-- Avatar -->
+								<h:panelGroup rendered="#{not trabalhadorController.trabalhadorDetalhes.trabalhandoComoCasal
+								                          and not empty trabalhadorController.trabalhadorDetalhes.pessoa.foto}">
 									<h:graphicImage
 										value="/fotos/#{trabalhadorController.trabalhadorDetalhes.pessoa.foto}"
 										alt="Foto" styleClass="modal-pessoa-foto" />
 								</h:panelGroup>
-								<h:panelGroup
-									rendered="#{empty trabalhadorController.trabalhadorDetalhes.pessoa.foto}">
+								<h:panelGroup rendered="#{trabalhadorController.trabalhadorDetalhes.trabalhandoComoCasal
+								                          or empty trabalhadorController.trabalhadorDetalhes.pessoa.foto}">
 									<h:graphicImage name="images/default_avatar.png"
 										alt="Foto padrão" styleClass="modal-pessoa-foto" />
 								</h:panelGroup>
 								<div class="modal-pessoa-info-principal">
-									<h2 class="modal-pessoa-nome">#{trabalhadorController.trabalhadorDetalhes.pessoa.nome}</h2>
+									<!-- Nome: casal ou pessoa -->
+									<h:panelGroup rendered="#{trabalhadorController.trabalhadorDetalhes.trabalhandoComoCasal}">
+										<h2 class="modal-pessoa-nome">
+											<i class="pi pi-heart" style="color:#e53e3e;margin-right:.3rem;"></i>
+											#{trabalhadorController.trabalhadorDetalhes.casal.pessoa1.nome}
+											<span style="font-weight:400;color:#888;"> e </span>
+											#{trabalhadorController.trabalhadorDetalhes.casal.pessoa2.nome}
+										</h2>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{not trabalhadorController.trabalhadorDetalhes.trabalhandoComoCasal}">
+										<h2 class="modal-pessoa-nome">#{trabalhadorController.trabalhadorDetalhes.pessoa.nome}</h2>
+									</h:panelGroup>
 									<div class="modal-pessoa-meta">
-										<span class="sm-tag sm-tag-green"> <i
-											class="pi pi-sitemap"></i>
+										<span class="sm-tag sm-tag-green">
+											<i class="pi pi-sitemap"></i>
 											#{trabalhadorController.trabalhadorDetalhes.equipe.nome}
 										</span>
-										<h:panelGroup
-											rendered="#{trabalhadorController.trabalhadorDetalhes.ehCoordenador}">
-											<span class="sm-tag sm-tag-purple"> <i
-												class="pi pi-star"></i> Coordenador
+										<h:panelGroup rendered="#{trabalhadorController.trabalhadorDetalhes.ehCoordenador}">
+											<span class="sm-tag sm-tag-purple">
+												<i class="pi pi-star"></i> Coordenador
 											</span>
 										</h:panelGroup>
-										<span class="modal-pessoa-id">ID:
-											#{trabalhadorController.trabalhadorDetalhes.id}</span>
+										<h:panelGroup rendered="#{trabalhadorController.trabalhadorDetalhes.ehCasalCoordenador}">
+											<span class="sm-tag sm-tag-purple">
+												<i class="pi pi-heart"></i> Casal Coordenador
+											</span>
+										</h:panelGroup>
+										<span class="modal-pessoa-id">ID: #{trabalhadorController.trabalhadorDetalhes.id}</span>
 									</div>
 								</div>
 							</div>
@@ -271,9 +302,24 @@
 							<!-- Tab Informações Básicas -->
 							<p:tab title="Informações Básicas">
 								<div class="info-grid" style="padding: 1rem;">
-									<div class="info-item">
-										<label>Pessoa</label> <span>#{trabalhadorController.trabalhadorDetalhes.pessoa.nome}</span>
-									</div>
+									<!-- Casal: mostra os dois cônjuges -->
+									<h:panelGroup rendered="#{trabalhadorController.trabalhadorDetalhes.trabalhandoComoCasal}">
+										<div class="info-item">
+											<label>Cônjuge 1</label>
+											<span>#{trabalhadorController.trabalhadorDetalhes.casal.pessoa1.nome}</span>
+										</div>
+										<div class="info-item">
+											<label>Cônjuge 2</label>
+											<span>#{trabalhadorController.trabalhadorDetalhes.casal.pessoa2.nome}</span>
+										</div>
+									</h:panelGroup>
+									<!-- Pessoa individual -->
+									<h:panelGroup rendered="#{not trabalhadorController.trabalhadorDetalhes.trabalhandoComoCasal}">
+										<div class="info-item">
+											<label>Pessoa</label>
+											<span>#{trabalhadorController.trabalhadorDetalhes.pessoa.nome}</span>
+										</div>
+									</h:panelGroup>
 									<div class="info-item">
 										<label>Equipe</label> <span> <h:outputText
 												value="#{trabalhadorController.trabalhadorDetalhes.equipe.nome}"

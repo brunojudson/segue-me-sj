@@ -187,7 +187,7 @@ public class Dirigente implements Serializable {
 	@Override
 	public String toString() {
 		return "Dirigente{" + "id=" + id + ", trabalhador="
-				+ (trabalhador != null ? trabalhador.getPessoa().getNome() : "null") + ", pasta="
+				+ (trabalhador != null ? trabalhador.getNomeExibicao() : "null") + ", pasta="
 				+ (pasta != null ? pasta.getNome() : "null") + ", dataInicio=" + dataInicio + ", dataFim=" + dataFim
 				+ '}';
 	}

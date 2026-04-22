@@ -58,14 +58,14 @@
 							</div>
 						</p:column>
 
-						<p:column headerText="Trabalhador" sortBy="#{dirigente.trabalhador.pessoa.nome}"
-								  filterBy="#{dirigente.trabalhador.pessoa.nome}" filterMatchMode="contains"
-								  styleClass="text-left" width="300">
-							<div class="leader-info">
-								<div class="leader-avatar">
-									<i class="pi pi-crown"></i>
-								</div>
-								<p:commandLink value="#{dirigente.trabalhador.pessoa.nome}" styleClass="nome-link leader-name"
+<p:column headerText="Trabalhador" sortBy="#{dirigente.trabalhador.nomeExibicao}"
+							  filterBy="#{dirigente.trabalhador.nomeExibicao}" filterMatchMode="contains"
+							  styleClass="text-left" width="300">
+						<div class="leader-info">
+							<div class="leader-avatar">
+								<i class="pi pi-crown"></i>
+							</div>
+							<p:commandLink value="#{dirigente.trabalhador.nomeExibicao}" styleClass="nome-link leader-name"
 									action="#{dirigenteController.abrirDetalhes(dirigente)}"
 									update=":detalhesForm:detalhesModal"
 									oncomplete="PF('detalhesDialog').show()" />
@@ -173,7 +173,7 @@
 									<i class="pi pi-crown" style="font-size: 2rem;"></i>
 								</div>
 								<div class="modal-pessoa-info-principal">
-									<h2 class="modal-pessoa-nome">#{dirigenteController.dirigenteDetalhes.trabalhador.pessoa.nome}</h2>
+									<h2 class="modal-pessoa-nome">#{dirigenteController.dirigenteDetalhes.trabalhador.nomeExibicao}</h2>
 									<div class="modal-pessoa-meta">
 										<span class="sm-tag sm-tag-purple">
 											<i class="pi pi-folder"></i> #{dirigenteController.dirigenteDetalhes.pasta.nome}
@@ -198,8 +198,8 @@
 							<div class="info-item">
 								<label>Trabalhador</label>
 								<span>
-									<h:outputText value="#{dirigenteController.dirigenteDetalhes.trabalhador.pessoa.nome}" rendered="#{not empty dirigenteController.dirigenteDetalhes.trabalhador.pessoa.nome}" />
-									<h:outputText value="Não informado" styleClass="empty-value" rendered="#{empty dirigenteController.dirigenteDetalhes.trabalhador.pessoa.nome}" />
+								<h:outputText value="#{dirigenteController.dirigenteDetalhes.trabalhador.nomeExibicao}" rendered="#{not empty dirigenteController.dirigenteDetalhes.trabalhador.nomeExibicao}" />
+								<h:outputText value="Não informado" styleClass="empty-value" rendered="#{empty dirigenteController.dirigenteDetalhes.trabalhador.nomeExibicao}" />
 								</span>
 							</div>
 							<div class="info-item">

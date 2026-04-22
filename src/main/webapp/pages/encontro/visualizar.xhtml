@@ -193,14 +193,20 @@
 						<ui:repeat value="#{encontroController.membrosDaEquipe}" var="trabalhador">
 							<div class="member-item">
 								<div class="member-avatar member-iniciais">
-									#{trabalhador.pessoa.nome.substring(0,1)}
-								</div>
-								<div class="member-info">
-									<span class="member-nome">#{trabalhador.pessoa.nome}</span>
-									<span class="member-role">
-										<h:outputText value="Coordenador da equipe" rendered="#{trabalhador.ehCoordenador}" style="color: var(--sm-accent); font-weight: 500;" />
-										<h:outputText value="Membro da equipe" rendered="#{not trabalhador.ehCoordenador}" styleClass="text-muted" />
-										<h:outputText value=" • Foi encontrista" rendered="#{trabalhador.foiEncontrista}" style="font-size: 0.85rem; margin-left: 0.25rem;" />
+										<h:panelGroup rendered="#{trabalhador.trabalhandoComoCasal}">
+											<i class="pi pi-heart" style="font-size:1rem;"></i>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{not trabalhador.trabalhandoComoCasal}">
+											#{trabalhador.pessoa.nome.substring(0,1)}
+										</h:panelGroup>
+									</div>
+									<div class="member-info">
+										<span class="member-nome">#{trabalhador.nomeExibicao}</span>
+										<span class="member-role">
+											<h:outputText value="Coordenador da equipe" rendered="#{trabalhador.ehCoordenador and not trabalhador.trabalhandoComoCasal}" style="color: var(--sm-accent); font-weight: 500;" />
+											<h:outputText value="Casal Coordenador" rendered="#{trabalhador.ehCasalCoordenador}" style="color: var(--sm-accent); font-weight: 500;" />
+											<h:outputText value="Membro da equipe" rendered="#{(not trabalhador.ehCoordenador or trabalhador.trabalhandoComoCasal) and not trabalhador.ehCasalCoordenador}" styleClass="text-muted" />
+											<h:outputText value=" • Foi encontrista" rendered="#{trabalhador.foiEncontrista and not trabalhador.trabalhandoComoCasal}" style="font-size: 0.85rem; margin-left: 0.25rem;" />
 									</span>
 								</div>
 							</div>

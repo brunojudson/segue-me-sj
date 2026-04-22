@@ -11,7 +11,8 @@ import java.util.HashSet;
 
 @Entity
 @Table(name = "trabalhador", schema = "public", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "pessoa_id", "equipe_id", "encontro_id" })
+        @UniqueConstraint(columnNames = { "pessoa_id", "equipe_id", "encontro_id" }),
+        @UniqueConstraint(columnNames = { "casal_id", "equipe_id", "encontro_id" })
 })
 public class Trabalhador implements Serializable {
 
@@ -22,9 +23,8 @@ public class Trabalhador implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Pessoa é obrigatória")
     @ManyToOne
-    @JoinColumn(name = "pessoa_id", nullable = false)
+    @JoinColumn(name = "pessoa_id", nullable = true)
     private Pessoa pessoa;
 
     @NotNull(message = "Equipe é obrigatória")
@@ -35,6 +35,13 @@ public class Trabalhador implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "encontro_id")
     private Encontro encontro;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "casal_id")
+    private Casal casal;
+
+    @Column(name = "eh_casal_coordenador")
+    private Boolean ehCasalCoordenador = false;
 
     @Column(name = "eh_coordenador")
     private Boolean ehCoordenador;
@@ -86,6 +93,27 @@ public class Trabalhador implements Serializable {
         this.ehCasal = ehCasal;
     }
 
+    /** Retorna true se este trabalhador representa um casal (e não uma pessoa individual). */
+    @Transient
+    public boolean isTrabalhandoComoCasal() {
+        return casal != null;
+    }
+
+    /**
+     * Retorna o nome de exibição do trabalhador:
+     * - Para pessoa individual: nome da pessoa
+     * - Para casal: "Nome1 e Nome2"
+     */
+    @Transient
+    public String getNomeExibicao() {
+        if (casal != null) {
+            String n1 = casal.getPessoa1() != null ? casal.getPessoa1().getNome() : "?";
+            String n2 = casal.getPessoa2() != null ? casal.getPessoa2().getNome() : "?";
+            return n1 + " e " + n2;
+        }
+        return pessoa != null ? pessoa.getNome() : "";
+    }
+
     // Construtores
     public Trabalhador() {
         this.ehCoordenador = false;
@@ -135,6 +163,22 @@ public class Trabalhador implements Serializable {
 
     public void setEncontro(Encontro encontro) {
         this.encontro = encontro;
+    }
+
+    public Casal getCasal() {
+        return casal;
+    }
+
+    public void setCasal(Casal casal) {
+        this.casal = casal;
+    }
+
+    public Boolean getEhCasalCoordenador() {
+        return ehCasalCoordenador;
+    }
+
+    public void setEhCasalCoordenador(Boolean ehCasalCoordenador) {
+        this.ehCasalCoordenador = ehCasalCoordenador;
     }
 
     public Boolean getEhCoordenador() {
@@ -258,8 +302,16 @@ public class Trabalhador implements Serializable {
     // ...existing code...
 
     public void calcularIdade() {
-        if (this.pessoa != null && this.pessoa.getDataNascimento() != null && this.dataInicio != null) {
-            this.idade = java.time.Period.between(this.pessoa.getDataNascimento(), this.dataInicio).getYears();
+        if (this.dataInicio != null) {
+            if (this.pessoa != null && this.pessoa.getDataNascimento() != null) {
+                this.idade = java.time.Period.between(this.pessoa.getDataNascimento(), this.dataInicio).getYears();
+            } else if (this.casal != null && this.casal.getPessoa1() != null
+                    && this.casal.getPessoa1().getDataNascimento() != null) {
+                // Para casal, usa a idade do primeiro cônjuge como referência
+                this.idade = java.time.Period.between(this.casal.getPessoa1().getDataNascimento(), this.dataInicio).getYears();
+            } else {
+                this.idade = null;
+            }
         } else {
             this.idade = null;
         }
@@ -286,8 +338,9 @@ public class Trabalhador implements Serializable {
 
     @Override
 	public String toString() {
-		return "Trabalhador [pessoa=" + pessoa + ", equipe=" + equipe + ", encontro=" + encontro + ", ehCoordenador="
-				+ ehCoordenador + ", foiEncontrista=" + foiEncontrista + ", encontrista=" + encontrista
+		return "Trabalhador [pessoa=" + pessoa + ", casal=" + casal + ", equipe=" + equipe + ", encontro=" + encontro
+				+ ", ehCoordenador=" + ehCoordenador + ", ehCasalCoordenador=" + ehCasalCoordenador
+				+ ", foiEncontrista=" + foiEncontrista + ", encontrista=" + encontrista
 				+ ", dataInicio=" + dataInicio + ", dataFim=" + dataFim + ", observacoes=" + observacoes + ", ativo="
 				+ ativo + ", contribuicoes=" + contribuicoes + ", cargos=" + cargos + ", idade=" + idade + ", ehCasal="
 				+ ehCasal + "]";
