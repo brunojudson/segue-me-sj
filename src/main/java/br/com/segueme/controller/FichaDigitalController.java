@@ -243,6 +243,24 @@ public class FichaDigitalController implements Serializable {
     }
 
     // ================================
+    // Saúde e Emergência
+    // ================================
+
+    public boolean isPossuiDadosSaude() {
+        if (encontrista == null) return false;
+        return isNaoVazio(encontrista.getAlergias())
+            || isNaoVazio(encontrista.getRestricaoAlimentar())
+            || isNaoVazio(encontrista.getMedicamentos())
+            || isNaoVazio(encontrista.getCondicaoMedica())
+            || isNaoVazio(encontrista.getContatoEmergenciaNome())
+            || isNaoVazio(encontrista.getResponsavelNome());
+    }
+
+    private boolean isNaoVazio(String valor) {
+        return valor != null && !valor.trim().isEmpty();
+    }
+
+    // ================================
     // Foto
     // ================================
 

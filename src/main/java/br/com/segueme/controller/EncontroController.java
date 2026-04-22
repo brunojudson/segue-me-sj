@@ -26,6 +26,7 @@ import br.com.segueme.entity.TipoEquipe;
 import br.com.segueme.entity.Equipe;
 import br.com.segueme.entity.Trabalhador;
 import br.com.segueme.service.TrabalhadorService;
+import br.com.segueme.service.AtividadeEncontroService;
 import br.com.segueme.service.UsuarioService;
 
 @Named
@@ -38,7 +39,7 @@ public class EncontroController implements Serializable {
     private EntityManager entityManager;
 
 	@Inject
-	private transient EncontroService encontroService;
+	private EncontroService encontroService;
 
 	@Inject
 	private TrabalhadorService trabalhadorService;
@@ -57,6 +58,9 @@ public class EncontroController implements Serializable {
 
 	@Inject
 	private UsuarioService usuarioService;
+
+	@Inject
+	private AtividadeEncontroService atividadeEncontroService;
 
 	private List<Encontro> encontros;
 	private Encontro encontro;
@@ -335,6 +339,11 @@ public class EncontroController implements Serializable {
 			carregarPalestrasPorData();
 		}
 		return palestrasPorData;
+	}
+
+	public int getTotalAtividades() {
+		if (encontro == null || encontro.getId() == null) return 0;
+		return atividadeEncontroService.buscarPorEncontro(encontro).size();
 	}
 
 	// Getters e Setters

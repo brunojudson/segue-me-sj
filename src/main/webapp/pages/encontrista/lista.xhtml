@@ -125,6 +125,14 @@
 								<f:param name="id" value="#{encontrista.id}" />
 							</p:button>
 
+							<p:button icon="pi pi-id-card" title="Ficha Digital"
+								ariaLabel="Abrir ficha digital"
+								outcome="/pages/ficha/ficha.xhtml"
+								target="_blank"
+								styleClass="action-button-secondary-table action-btn">
+								<f:param name="id" value="#{encontrista.id}" />
+							</p:button>
+
 							<p:button icon="pi pi-pencil" title="Editar"
 								ariaLabel="Editar seguimista"
 								disabled="#{not encontrista.ativo}"

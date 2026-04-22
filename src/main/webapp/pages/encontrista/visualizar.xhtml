@@ -219,6 +219,81 @@
 									</div>
 								</div>
 							</p:tab>
+
+							<!-- Tab: Saúde e Emergência -->
+							<p:tab title="Saúde e Emergência">
+								<div class="info-grid">
+									<div class="info-item full-width">
+										<label><i class="pi pi-exclamation-triangle" style="color:#e53935"></i> Alergias</label>
+										<span>
+											<h:outputText value="#{encontristaController.encontrista.alergias}" rendered="#{not empty encontristaController.encontrista.alergias}" />
+											<h:outputText value="Nenhuma alergia informada" rendered="#{empty encontristaController.encontrista.alergias}" styleClass="empty-value" />
+										</span>
+									</div>
+									<div class="info-item full-width">
+										<label>Restrições Alimentares</label>
+										<span>
+											<h:outputText value="#{encontristaController.encontrista.restricaoAlimentar}" rendered="#{not empty encontristaController.encontrista.restricaoAlimentar}" />
+											<h:outputText value="Nenhuma restrição informada" rendered="#{empty encontristaController.encontrista.restricaoAlimentar}" styleClass="empty-value" />
+										</span>
+									</div>
+									<div class="info-item full-width">
+										<label>Medicamentos em Uso</label>
+										<span>
+											<h:outputText value="#{encontristaController.encontrista.medicamentos}" rendered="#{not empty encontristaController.encontrista.medicamentos}" />
+											<h:outputText value="Nenhum medicamento informado" rendered="#{empty encontristaController.encontrista.medicamentos}" styleClass="empty-value" />
+										</span>
+									</div>
+									<div class="info-item full-width">
+										<label>Condição Médica Relevante</label>
+										<span>
+											<h:outputText value="#{encontristaController.encontrista.condicaoMedica}" rendered="#{not empty encontristaController.encontrista.condicaoMedica}" />
+											<h:outputText value="Nenhuma condição informada" rendered="#{empty encontristaController.encontrista.condicaoMedica}" styleClass="empty-value" />
+										</span>
+									</div>
+
+									<div class="info-item">
+										<label><i class="pi pi-phone"></i> Contato de Emergência</label>
+										<span>
+											<h:outputText value="#{encontristaController.encontrista.contatoEmergenciaNome}" rendered="#{not empty encontristaController.encontrista.contatoEmergenciaNome}" />
+											<h:outputText value="Não informado" rendered="#{empty encontristaController.encontrista.contatoEmergenciaNome}" styleClass="empty-value" />
+										</span>
+									</div>
+									<div class="info-item">
+										<label>Telefone de Emergência</label>
+										<span>
+											<h:outputText value="#{encontristaController.encontrista.contatoEmergenciaTelefone}" rendered="#{not empty encontristaController.encontrista.contatoEmergenciaTelefone}" />
+											<h:outputText value="Não informado" rendered="#{empty encontristaController.encontrista.contatoEmergenciaTelefone}" styleClass="empty-value" />
+										</span>
+									</div>
+
+									<div class="info-item">
+										<label><i class="pi pi-shield" style="color:var(--sm-accent2)"></i> Responsável (menor)</label>
+										<span>
+											<h:outputText value="#{encontristaController.encontrista.responsavelNome}" rendered="#{not empty encontristaController.encontrista.responsavelNome}" />
+											<h:outputText value="Não informado" rendered="#{empty encontristaController.encontrista.responsavelNome}" styleClass="empty-value" />
+										</span>
+									</div>
+									<div class="info-item">
+										<label>Telefone do Responsável</label>
+										<span>
+											<h:outputText value="#{encontristaController.encontrista.responsavelTelefone}" rendered="#{not empty encontristaController.encontrista.responsavelTelefone}" />
+											<h:outputText value="Não informado" rendered="#{empty encontristaController.encontrista.responsavelTelefone}" styleClass="empty-value" />
+										</span>
+									</div>
+									<div class="info-item full-width">
+										<label>Autorização do Responsável</label>
+										<span>
+											<h:panelGroup rendered="#{encontristaController.encontrista.autorizacaoResponsavel != null}">
+												<span class="status-badge #{encontristaController.encontrista.autorizacaoResponsavel ? 'ativo' : 'inativo'}">
+													<h:outputText value="#{encontristaController.encontrista.autorizacaoResponsavel ? 'Autorizado' : 'Não autorizado'}" />
+												</span>
+											</h:panelGroup>
+											<h:outputText value="Não informado" rendered="#{encontristaController.encontrista.autorizacaoResponsavel == null}" styleClass="empty-value" />
+										</span>
+									</div>
+								</div>
+							</p:tab>
 						</p:tabView>
 					</div>
 				</div>

@@ -40,6 +40,7 @@
 				<!-- Tabela moderna de encontros -->
 				<p:dataTable id="encontrosTable" var="encontro" 
 					value="#{encontroController.encontros}"
+					lazy="false"
 					emptyMessage="Nenhum encontro encontrado"
 					styleClass="modern-datatable datatable-animation"
 					paginator="true" rows="20" paginatorPosition="bottom" stripeRows="true"

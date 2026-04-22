@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	lang="pt-BR" xml:lang="pt-BR">
+
+<ui:composition template="/templates/template.xhtml">
+	<ui:define name="title">#{empty param.id ? 'Nova' : 'Editar'} Atividade — Cronograma - Sistema Segue-me</ui:define>
+
+	<ui:define name="content">
+		<div class="content-container">
+
+			<div class="page-header">
+				<div class="page-header-content">
+					<div class="page-title-section">
+						<h1 class="page-title">
+							<i class="pi pi-calendar-plus page-icon"></i>
+							<span class="title-text">#{empty param.id ? 'Nova Atividade' : 'Editar Atividade'}</span>
+						</h1>
+						<p class="page-subtitle">#{empty param.id ? 'Adicione uma atividade ao cronograma do encontro' : 'Atualize os dados da atividade'}</p>
+					</div>
+					<div class="page-actions">
+						<p:button value="Voltar ao Cronograma"
+								  icon="pi pi-arrow-left"
+								  styleClass="action-button-primary"
+								  outcome="/pages/cronograma/lista.xhtml">
+							<f:param name="encontroId" value="#{atividadeEncontroController.encontroFiltro != null ? atividadeEncontroController.encontroFiltro.id : ''}" />
+						</p:button>
+					</div>
+				</div>
+			</div>
+
+			<h:form id="atividadeForm" styleClass="modern-form">
+				<p:growl id="messages" showDetail="true" closable="true" styleClass="modern-messages"
+						 onshow="scrollToTopOnError()">
+					<p:autoUpdate />
+				</p:growl>
+
+				<f:metadata>
+					<f:viewParam name="id" />
+					<f:viewParam name="encontroId" />
+					<f:viewAction action="#{atividadeEncontroController.carregarAtividade}" />
+				</f:metadata>
+
+				<!-- Seção: Dados Gerais -->
+				<div class="form-section">
+					<p:fieldset legend="📋 Dados da Atividade" styleClass="modern-fieldset" toggleable="true">
+						<div class="field-grid">
+
+							<div class="field-group">
+								<p:outputLabel for="encontro" value="Encontro" styleClass="required-field" />
+								<p:selectOneMenu id="encontro"
+												value="#{atividadeEncontroController.atividade.encontro}"
+												converter="omnifaces.SelectItemsConverter"
+												required="true"
+												requiredMessage="O encontro é obrigatório"
+												panelStyle="width:400px">
+									<f:selectItem itemLabel="Selecione um encontro" itemValue="" noSelectionOption="true" />
+									<f:selectItems value="#{atividadeEncontroController.encontros}"
+										var="enc" itemLabel="#{enc.nome} — #{enc.tema}" itemValue="#{enc}" />
+								</p:selectOneMenu>
+							</div>
+
+							<div class="field-group">
+								<p:outputLabel for="tipoAtividade" value="Tipo de Atividade" styleClass="required-field" />
+								<p:selectOneMenu id="tipoAtividade"
+												value="#{atividadeEncontroController.atividade.tipoAtividade}"
+												required="true"
+												requiredMessage="O tipo é obrigatório">
+									<f:selectItem itemLabel="Selecione o tipo" itemValue="" noSelectionOption="true" />
+									<f:selectItems value="#{atividadeEncontroController.tiposAtividade}"
+										var="tipo" itemLabel="#{tipo.descricao}" itemValue="#{tipo}" />
+									<p:ajax event="change" update="palestraPanel" process="tipoAtividade" />
+								</p:selectOneMenu>
+							</div>
+
+							<!-- Vínculo com Palestra (visível apenas quando tipo = PALESTRA) -->
+							<p:outputPanel id="palestraPanel" layout="block" styleClass="field-group full-width">
+								<h:panelGroup rendered="#{atividadeEncontroController.atividade.tipoAtividade != null and atividadeEncontroController.atividade.tipoAtividade.name() == 'PALESTRA'}">
+									<p:outputLabel for="palestraVinculada" value="Palestra Vinculada" />
+									<p:selectOneMenu id="palestraVinculada"
+											value="#{atividadeEncontroController.atividade.palestra}"
+											converter="omnifaces.SelectItemsConverter"
+											panelStyle="width:500px">
+										<f:selectItem itemLabel="— Nenhuma (preencher título manualmente) —" itemValue="" noSelectionOption="true" />
+										<f:selectItems value="#{atividadeEncontroController.palestrasDoEncontro}"
+											var="pal"
+											itemLabel="#{pal.tema.nomeExibicao} — #{pal.titulo}"
+											itemValue="#{pal}" />
+									</p:selectOneMenu>
+									<small class="field-hint">Vincule uma palestra já cadastrada para preencher automaticamente os dados.</small>
+								</h:panelGroup>
+							</p:outputPanel>
+
+							<div class="field-group full-width">
+								<p:outputLabel for="titulo" value="Título" styleClass="required-field" />
+								<p:inputText id="titulo"
+										value="#{atividadeEncontroController.atividade.titulo}"
+										required="true"
+										requiredMessage="O título é obrigatório"
+										maxlength="200"
+										placeholder="Ex: Palestra sobre Vocação, Almoço, Dinâmica de Grupo..." />
+							</div>
+
+							<div class="field-group">
+								<p:outputLabel for="dataHoraInicio" value="Início" styleClass="required-field" />
+								<p:datePicker id="dataHoraInicio"
+										value="#{atividadeEncontroController.atividade.dataHoraInicio}"
+										pattern="dd/MM/yyyy HH:mm"
+										showTime="true"
+										required="true"
+										requiredMessage="O horário de início é obrigatório"
+										showIcon="true" />
+							</div>
+
+							<div class="field-group">
+								<p:outputLabel for="dataHoraFim" value="Término" />
+								<p:datePicker id="dataHoraFim"
+										value="#{atividadeEncontroController.atividade.dataHoraFim}"
+										pattern="dd/MM/yyyy HH:mm"
+										showTime="true"
+										showIcon="true" />
+								<small class="field-hint">Opcional — utilizado para calcular a duração</small>
+							</div>
+
+							<div class="field-group">
+								<p:outputLabel for="responsavel" value="Responsável" />
+								<p:inputText id="responsavel"
+										value="#{atividadeEncontroController.atividade.responsavel}"
+										maxlength="100"
+										placeholder="Nome do responsável pela atividade" />
+							</div>
+
+							<div class="field-group">
+								<p:outputLabel for="localAtividade" value="Local" />
+								<p:inputText id="localAtividade"
+										value="#{atividadeEncontroController.atividade.localAtividade}"
+										maxlength="200"
+										placeholder="Ex: Salão principal, Refeitório, Campo..." />
+							</div>
+
+							<div class="field-group">
+								<p:outputLabel for="ordem" value="Ordem no Dia" />
+								<p:inputNumber id="ordem"
+										value="#{atividadeEncontroController.atividade.ordem}"
+										min="1" max="999"
+										placeholder="Número para ordenação manual (opcional)" />
+								<small class="field-hint">Use quando precisar ordenar atividades com o mesmo horário</small>
+							</div>
+
+							<div class="field-group full-width">
+								<p:outputLabel for="descricao" value="Descrição" />
+								<p:inputTextarea id="descricao"
+										value="#{atividadeEncontroController.atividade.descricao}"
+										rows="3" maxlength="500"
+										placeholder="Detalhes adicionais sobre a atividade..." />
+							</div>
+
+						</div>
+					</p:fieldset>
+				</div>
+
+				<!-- Botões -->
+				<div class="form-actions">
+					<div class="action-buttons">
+						<p:commandButton value="💾 Salvar"
+								action="#{atividadeEncontroController.salvar}"
+								update="@form"
+								styleClass="ui-button-success action-button-primary"
+								validateClient="true"
+								oncomplete="handleSaveComplete(args);" />
+						<p:button value="❌ Cancelar"
+								  outcome="/pages/cronograma/lista.xhtml"
+								  styleClass="ui-button-secondary action-button-cancel" />
+					</div>
+				</div>
+			</h:form>
+		</div>
+
+		<h:outputScript library="js" name="scrollUp.js" target="head" />
+	</ui:define>
+</ui:composition>
+</html>

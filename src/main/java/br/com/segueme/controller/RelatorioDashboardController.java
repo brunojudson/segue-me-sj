@@ -346,6 +346,201 @@ public class RelatorioDashboardController implements Serializable {
         return resultado;
     }
 
+    // ===================== ANÁLISE AVANÇADA =====================
+
+    /** Faixa etária permitida para participação como encontrista. */
+    private static final int IDADE_MIN = 16;
+    private static final int IDADE_MAX = 23;
+
+    /**
+     * Distribuição etária dos encontristas dentro da faixa permitida (16–23 anos),
+     * mais bucket de fora da faixa para identificar irregularidades.
+     */
+    public List<Map<String, Object>> getDistribuicaoEtariaEncontristas() {
+        List<Map<String, Object>> resultado = new ArrayList<>();
+        if (encontristas == null || encontristas.isEmpty()) return resultado;
+
+        // Faixas dentro do permitido: 16-17, 18-20, 21-23; fora: <16, >23
+        int abaixo = 0, f16a17 = 0, f18a20 = 0, f21a23 = 0, acima = 0, semIdade = 0;
+
+        for (Encontrista e : encontristas) {
+            Integer idade = e.getIdade();
+            if (idade == null) { semIdade++; continue; }
+            if (idade < 16)       abaixo++;
+            else if (idade <= 17) f16a17++;
+            else if (idade <= 20) f18a20++;
+            else if (idade <= 23) f21a23++;
+            else                  acima++;
+        }
+
+        int totalComIdade = abaixo + f16a17 + f18a20 + f21a23 + acima;
+
+        // Faixas dentro da faixa permitida
+        int[][] dentro = {{f16a17}, {f18a20}, {f21a23}};
+        String[] rotulosDentro = {"16–17 anos", "18–20 anos", "21–23 anos"};
+        for (int i = 0; i < rotulosDentro.length; i++) {
+            if (dentro[i][0] == 0) continue;
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("label", rotulosDentro[i]);
+            item.put("count", dentro[i][0]);
+            item.put("percent", totalComIdade > 0 ? Math.round((float) dentro[i][0] / totalComIdade * 100) : 0);
+            item.put("foraFaixa", false);
+            resultado.add(item);
+        }
+        // Fora da faixa
+        if (abaixo > 0) {
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("label", "Abaixo de 16 anos ⚠");
+            item.put("count", abaixo);
+            item.put("percent", totalComIdade > 0 ? Math.round((float) abaixo / totalComIdade * 100) : 0);
+            item.put("foraFaixa", true);
+            resultado.add(item);
+        }
+        if (acima > 0) {
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("label", "Acima de 23 anos ⚠");
+            item.put("count", acima);
+            item.put("percent", totalComIdade > 0 ? Math.round((float) acima / totalComIdade * 100) : 0);
+            item.put("foraFaixa", true);
+            resultado.add(item);
+        }
+        if (semIdade > 0) {
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("label", "Idade não informada");
+            item.put("count", semIdade);
+            item.put("percent", 0);
+            item.put("foraFaixa", false);
+            resultado.add(item);
+        }
+        return resultado;
+    }
+
+    /** Total de encontristas fora da faixa etária permitida (16–23). */
+    public int getEncontristasForaDaFaixa() {
+        if (encontristas == null) return 0;
+        return (int) encontristas.stream()
+                .filter(e -> e.getIdade() != null)
+                .filter(e -> e.getIdade() < IDADE_MIN || e.getIdade() > IDADE_MAX)
+                .count();
+    }
+
+    /** Percentual de encontristas dentro da faixa permitida (16–23). */
+    public int getPercentDentroFaixa() {
+        if (encontristas == null || encontristas.isEmpty()) return 0;
+        long comIdade = encontristas.stream().filter(e -> e.getIdade() != null).count();
+        if (comIdade == 0) return 0;
+        long dentroFaixa = encontristas.stream()
+                .filter(e -> e.getIdade() != null)
+                .filter(e -> e.getIdade() >= IDADE_MIN && e.getIdade() <= IDADE_MAX)
+                .count();
+        return Math.round((float) dentroFaixa / comIdade * 100);
+    }
+
+    /**
+     * Idadde média dos encontristas (apenas os que têm idade informada).
+     */
+    public String getIdadeMediaEncontristas() {
+        if (encontristas == null || encontristas.isEmpty()) return "—";
+        double media = encontristas.stream()
+                .filter(e -> e.getIdade() != null)
+                .mapToInt(Encontrista::getIdade)
+                .average()
+                .orElse(0);
+        return media == 0 ? "—" : String.format("%.1f", media).replace(".", ",") + " anos";
+    }
+
+    /**
+     * Conversão Encontrista → Trabalhador agrupada por encontro.
+     * Para cada encontro, calcula quantos encontristas desse encontro tornaram-se trabalhadores em qualquer encontro posterior.
+     */
+    public List<Map<String, Object>> getConversaoPorEncontro() {
+        List<Map<String, Object>> resultado = new ArrayList<>();
+        if (encontros == null || encontristas == null || trabalhadores == null) return resultado;
+
+        List<Encontro> sorted = new ArrayList<>(encontros);
+        sorted.sort(Comparator.comparing(
+                (Encontro e) -> e.getDataInicio() != null ? e.getDataInicio() : java.time.LocalDate.MIN));
+
+        for (Encontro enc : sorted) {
+            List<Encontrista> doEncontro = encontristas.stream()
+                    .filter(e -> e.getEncontro() != null && e.getEncontro().getId().equals(enc.getId()))
+                    .collect(Collectors.toList());
+            if (doEncontro.isEmpty()) continue;
+
+            // Contar quantos se tornaram trabalhadores (em qualquer encontro)
+            long convertidos = doEncontro.stream()
+                    .filter(e -> e.getPessoa() != null)
+                    .filter(e -> trabalhadores.stream()
+                            .anyMatch(t -> t.getPessoa() != null
+                                    && t.getPessoa().getId().equals(e.getPessoa().getId())))
+                    .count();
+
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("label", enc.getNome());
+            item.put("total", doEncontro.size());
+            item.put("convertidos", (int) convertidos);
+            item.put("percent", doEncontro.size() > 0
+                    ? Math.round((float) convertidos / doEncontro.size() * 100) : 0);
+            resultado.add(item);
+        }
+        return resultado;
+    }
+
+    /**
+     * Quantidade de encontristas com dados de saúde/emergência preenchidos.
+     */
+    public int getEncontristasComDadosSaude() {
+        if (encontristas == null) return 0;
+        return (int) encontristas.stream()
+                .filter(e -> isNaoVazioStr(e.getAlergias())
+                        || isNaoVazioStr(e.getMedicamentos())
+                        || isNaoVazioStr(e.getCondicaoMedica())
+                        || isNaoVazioStr(e.getContatoEmergenciaNome()))
+                .count();
+    }
+
+    /**
+     * Quantidade de encontristas menores de idade (< 18 anos) sem dados de responsável.
+     */
+    public int getMenoresComDadosResponsavel() {
+        if (encontristas == null) return 0;
+        return (int) encontristas.stream()
+                .filter(e -> e.getIdade() != null && e.getIdade() < 18)
+                .filter(e -> isNaoVazioStr(e.getResponsavelNome()))
+                .count();
+    }
+
+    public int getMenoresTotal() {
+        if (encontristas == null) return 0;
+        return (int) encontristas.stream()
+                .filter(e -> e.getIdade() != null && e.getIdade() < 18)
+                .count();
+    }
+
+    private boolean isNaoVazioStr(String s) {
+        return s != null && !s.trim().isEmpty();
+    }
+
+    /**
+     * Taxa de crescimento de encontristas entre o penúltimo e o último encontro.
+     * Retorna string descritiva.
+     */
+    public String getCrescimentoUltimoEncontro() {
+        if (resumoEncontros == null || resumoEncontros.size() < 2) return "—";
+        // resumoEncontros é ordenado DESC (mais recente primeiro)
+        ResumoEncontro ultimo = resumoEncontros.get(0);
+        ResumoEncontro penultimo = resumoEncontros.get(1);
+        int diff = ultimo.getTotalEncontristas() - penultimo.getTotalEncontristas();
+        if (penultimo.getTotalEncontristas() == 0) return "—";
+        int pct = Math.round((float) diff / penultimo.getTotalEncontristas() * 100);
+        return (pct >= 0 ? "+" : "") + pct + "%";
+    }
+
+    public boolean isCrescimentoPositivo() {
+        if (resumoEncontros == null || resumoEncontros.size() < 2) return false;
+        return resumoEncontros.get(0).getTotalEncontristas() >= resumoEncontros.get(1).getTotalEncontristas();
+    }
+
     // ===================== STATUS HELPERS =====================
 
     public String getStatusCssClass(String status) {

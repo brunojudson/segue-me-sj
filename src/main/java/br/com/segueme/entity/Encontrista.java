@@ -81,6 +81,43 @@ public class Encontrista implements Serializable {
     @Column(name = "token_ficha", length = 36, unique = true)
     private String tokenFicha;
 
+    // === Saúde e Emergência ===
+
+    @Size(max = 500, message = "Alergias devem ter no máximo 500 caracteres")
+    @Column(name = "alergias", length = 500)
+    private String alergias;
+
+    @Size(max = 500, message = "Restrições alimentares devem ter no máximo 500 caracteres")
+    @Column(name = "restricoes_alimentares", length = 500)
+    private String restricoesAlimentares;
+
+    @Size(max = 500, message = "Medicamentos devem ter no máximo 500 caracteres")
+    @Column(name = "medicamentos", length = 500)
+    private String medicamentos;
+
+    @Size(max = 500, message = "Condição médica deve ter no máximo 500 caracteres")
+    @Column(name = "condicao_medica", length = 500)
+    private String condicaoMedica;
+
+    @Size(max = 100, message = "Nome do contato de emergência deve ter no máximo 100 caracteres")
+    @Column(name = "contato_emergencia_nome", length = 100)
+    private String contatoEmergenciaNome;
+
+    @Size(max = 20, message = "Telefone de emergência deve ter no máximo 20 caracteres")
+    @Column(name = "contato_emergencia_telefone", length = 20)
+    private String contatoEmergenciaTelefone;
+
+    @Size(max = 100, message = "Nome do responsável deve ter no máximo 100 caracteres")
+    @Column(name = "responsavel_nome", length = 100)
+    private String responsavelNome;
+
+    @Size(max = 20, message = "Telefone do responsável deve ter no máximo 20 caracteres")
+    @Column(name = "responsavel_telefone", length = 20)
+    private String responsavelTelefone;
+
+    @Column(name = "autorizacao_responsavel")
+    private Boolean autorizacaoResponsavel;
+
     // Construtores
     public Encontrista() {
         this.dataInscricao = LocalDateTime.now();
@@ -190,6 +227,33 @@ public class Encontrista implements Serializable {
         this.tokenFicha = tokenFicha;
     }
 
+    public String getAlergias() { return alergias; }
+    public void setAlergias(String alergias) { this.alergias = alergias; }
+
+    public String getRestricaoAlimentar() { return restricoesAlimentares; }
+    public void setRestricaoAlimentar(String restricoesAlimentares) { this.restricoesAlimentares = restricoesAlimentares; }
+
+    public String getMedicamentos() { return medicamentos; }
+    public void setMedicamentos(String medicamentos) { this.medicamentos = medicamentos; }
+
+    public String getCondicaoMedica() { return condicaoMedica; }
+    public void setCondicaoMedica(String condicaoMedica) { this.condicaoMedica = condicaoMedica; }
+
+    public String getContatoEmergenciaNome() { return contatoEmergenciaNome; }
+    public void setContatoEmergenciaNome(String contatoEmergenciaNome) { this.contatoEmergenciaNome = contatoEmergenciaNome; }
+
+    public String getContatoEmergenciaTelefone() { return contatoEmergenciaTelefone; }
+    public void setContatoEmergenciaTelefone(String contatoEmergenciaTelefone) { this.contatoEmergenciaTelefone = contatoEmergenciaTelefone; }
+
+    public String getResponsavelNome() { return responsavelNome; }
+    public void setResponsavelNome(String responsavelNome) { this.responsavelNome = responsavelNome; }
+
+    public String getResponsavelTelefone() { return responsavelTelefone; }
+    public void setResponsavelTelefone(String responsavelTelefone) { this.responsavelTelefone = responsavelTelefone; }
+
+    public Boolean getAutorizacaoResponsavel() { return autorizacaoResponsavel; }
+    public void setAutorizacaoResponsavel(Boolean autorizacaoResponsavel) { this.autorizacaoResponsavel = autorizacaoResponsavel; }
+
     public void calcularIdade() {
         if (this.pessoa != null && this.pessoa.getDataNascimento() != null) {
             this.idade = java.time.Period.between(
@@ -222,6 +286,6 @@ public class Encontrista implements Serializable {
 		return "Encontrista [id=" + id + ", pessoa=" + pessoa + ", encontro=" + encontro + ", dataInscricao="
 				+ dataInscricao + ", valorPago=" + valorPago + ", formaPagamento=" + formaPagamento + ", observacoes="
 				+ observacoes + ", ativo=" + ativo + ", trabalhador=" + trabalhador + ", idade=" + idade + ", circulo="
-				+ circulo + "]";
+				+ circulo + ", contatoEmergenciaNome=" + contatoEmergenciaNome + "]";
 	}
 }

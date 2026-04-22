@@ -630,6 +630,82 @@
                     </div>
                 </div>
 
+                <div class="ficha-divider" />
+
+                <!-- =============================== -->
+                <!-- SEÇÃO: SAÚDE E EMERGÊNCIA       -->
+                <!-- =============================== -->
+                <ui:fragment rendered="#{fichaDigitalController.possuiDadosSaude}">
+                    <div class="ficha-secao">
+                        <div class="secao-titulo" style="color:#c62828; border-color:#c62828;">
+                            <span class="secao-icon">&#9877;</span> Sa&#250;de e Emerg&#234;ncia
+                        </div>
+                        <div class="ficha-dados-grid">
+                            <ui:fragment rendered="#{not empty fichaDigitalController.encontrista.alergias}">
+                                <div class="dado-item dado-item-full">
+                                    <span class="dado-label">Alergias</span>
+                                    <span class="dado-valor" style="color:#c62828; font-weight:600;">
+                                        <h:outputText value="#{fichaDigitalController.encontrista.alergias}" />
+                                    </span>
+                                </div>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{not empty fichaDigitalController.encontrista.restricaoAlimentar}">
+                                <div class="dado-item dado-item-full">
+                                    <span class="dado-label">Restri&#231;&#245;es Alimentares</span>
+                                    <span class="dado-valor">
+                                        <h:outputText value="#{fichaDigitalController.encontrista.restricaoAlimentar}" />
+                                    </span>
+                                </div>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{not empty fichaDigitalController.encontrista.medicamentos}">
+                                <div class="dado-item dado-item-full">
+                                    <span class="dado-label">Medicamentos em Uso</span>
+                                    <span class="dado-valor">
+                                        <h:outputText value="#{fichaDigitalController.encontrista.medicamentos}" />
+                                    </span>
+                                </div>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{not empty fichaDigitalController.encontrista.condicaoMedica}">
+                                <div class="dado-item dado-item-full">
+                                    <span class="dado-label">Condi&#231;&#227;o M&#233;dica</span>
+                                    <span class="dado-valor" style="color:#c62828;">
+                                        <h:outputText value="#{fichaDigitalController.encontrista.condicaoMedica}" />
+                                    </span>
+                                </div>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{not empty fichaDigitalController.encontrista.contatoEmergenciaNome}">
+                                <div class="dado-item">
+                                    <span class="dado-label">Contato de Emerg&#234;ncia</span>
+                                    <span class="dado-valor">
+                                        <h:outputText value="#{fichaDigitalController.encontrista.contatoEmergenciaNome}" />
+                                    </span>
+                                </div>
+                                <div class="dado-item">
+                                    <span class="dado-label">Telefone de Emerg&#234;ncia</span>
+                                    <span class="dado-valor" style="font-weight:700;">
+                                        <h:outputText value="#{fichaDigitalController.encontrista.contatoEmergenciaTelefone}" />
+                                    </span>
+                                </div>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{not empty fichaDigitalController.encontrista.responsavelNome}">
+                                <div class="dado-item">
+                                    <span class="dado-label">Respons&#225;vel (menor)</span>
+                                    <span class="dado-valor">
+                                        <h:outputText value="#{fichaDigitalController.encontrista.responsavelNome}" />
+                                    </span>
+                                </div>
+                                <div class="dado-item">
+                                    <span class="dado-label">Telefone do Respons&#225;vel</span>
+                                    <span class="dado-valor" style="font-weight:700;">
+                                        <h:outputText value="#{fichaDigitalController.encontrista.responsavelTelefone}" />
+                                    </span>
+                                </div>
+                            </ui:fragment>
+                        </div>
+                    </div>
+                    <div class="ficha-divider" />
+                </ui:fragment>
+
                 <!-- Botão Imprimir -->
                 <button type="button" class="btn-imprimir" onclick="window.print()">
                     &#128424; Imprimir Ficha

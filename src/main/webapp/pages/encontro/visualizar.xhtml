@@ -316,6 +316,28 @@
 								</p:dataTable>
 							</div>
 						</p:tab>
+
+						<p:tab title="Cronograma">
+							<div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
+								<p:button value="Gerenciar Cronograma" icon="pi pi-calendar-times"
+										  styleClass="action-button-primary"
+										  outcome="/pages/cronograma/lista.xhtml">
+									<f:param name="encontroId" value="#{encontroController.encontro.id}" />
+								</p:button>
+							</div>
+							<div class="info-grid" style="margin-bottom:0.5rem;">
+								<div class="info-item">
+									<label>Total de Atividades</label>
+									<span style="font-weight:700; font-size:1.1rem; color:var(--sm-accent);">
+										#{encontroController.totalAtividades}
+									</span>
+								</div>
+							</div>
+							<p style="color:var(--sm-text-muted); font-size:0.86rem;">
+								<i class="pi pi-info-circle" style="margin-right:0.5rem;"></i>
+								Clique em "Gerenciar Cronograma" para visualizar e editar as atividades programadas deste encontro.
+							</p>
+						</p:tab>
 					</p:tabView>
 				</div>
 

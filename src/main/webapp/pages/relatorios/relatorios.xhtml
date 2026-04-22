@@ -30,6 +30,7 @@
 				<button type="button" class="dash-tab" onclick="showDashTab('pessoas', this)">Pessoas</button>
 				<button type="button" class="dash-tab" onclick="showDashTab('financeiro', this)">Financeiro</button>
 				<button type="button" class="dash-tab" onclick="showDashTab('equipes', this)">Equipes</button>
+				<button type="button" class="dash-tab" onclick="showDashTab('analise', this)">Análise Avançada</button>
 			</div>
 
 			<!-- ═══════════ TAB: VISÃO GERAL ═══════════ -->
@@ -460,6 +461,130 @@
 						</ui:fragment>
 					</div>
 				</div>
+			</div>
+
+			<!-- ═══════════ TAB: ANÁLISE AVANÇADA ═══════════ -->
+			<div id="dashTab_analise" class="dash-tab-content" style="display: none;">
+
+				<!-- KPIs de análise -->
+				<div class="dash-stats-grid">
+					<div class="dash-stat-card">
+						<div class="dash-stat-icon icon-blue"><i class="pi pi-chart-line"></i></div>
+						<div>
+							<div class="dash-stat-value">#{relatorioDashboardController.idadeMediaEncontristas}</div>
+							<div class="dash-stat-label">Idade Média dos Encontristas</div>
+						</div>
+					</div>
+					<div class="dash-stat-card">
+						<div class="dash-stat-icon icon-green"><i class="pi pi-arrow-up"></i></div>
+						<div>
+							<div class="dash-stat-value" style="color: #{relatorioDashboardController.crescimentoPositivo ? 'var(--sm-accent)' : '#dc2626'};">
+								#{relatorioDashboardController.crescimentoUltimoEncontro}
+							</div>
+							<div class="dash-stat-label">Variação Último vs Penúltimo Encontro</div>
+						</div>
+					</div>
+					<div class="dash-stat-card">
+						<div class="dash-stat-icon icon-rose"><i class="pi pi-heart"></i></div>
+						<div>
+							<div class="dash-stat-value">#{relatorioDashboardController.encontristasComDadosSaude}</div>
+							<div class="dash-stat-label">Com Dados de Saúde/Emergência</div>
+						</div>
+					</div>
+					<div class="dash-stat-card">
+						<div class="dash-stat-icon icon-yellow"><i class="pi pi-shield"></i></div>
+						<div>
+							<div class="dash-stat-value">#{relatorioDashboardController.menoresComDadosResponsavel} / #{relatorioDashboardController.menoresTotal}</div>
+							<div class="dash-stat-label">Menores com Responsável Cadastrado</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="dash-report-grid">
+
+					<!-- Distribuição Etária -->
+					<div class="dash-card">
+						<div class="dash-card-header"><h3>Distribuição Etária dos Encontristas</h3></div>
+						<div class="dash-bar-list">
+							<ui:repeat value="#{relatorioDashboardController.distribuicaoEtariaEncontristas}" var="item">
+								<div class="dash-bar-item">
+									<div class="dash-bar-header">
+										<span class="dash-bar-label">#{item.label}</span>
+										<span class="dash-bar-value">#{item.count} (#{item.percent}%)</span>
+									</div>
+									<div class="dash-bar-track">
+										<div class="dash-bar-fill fill-purple" style="width: #{item.percent}%;"></div>
+									</div>
+								</div>
+							</ui:repeat>
+							<ui:fragment rendered="#{empty relatorioDashboardController.distribuicaoEtariaEncontristas}">
+								<div class="dash-empty-state">Idades não informadas nos cadastros.</div>
+							</ui:fragment>
+						</div>
+					</div>
+
+					<!-- Sacramentos na base de encontristas -->
+					<div class="dash-card">
+						<div class="dash-card-header"><h3>Sacramentos — Visão Geral das Pessoas</h3></div>
+						<div class="dash-bar-list">
+							<ui:repeat value="#{relatorioDashboardController.sacramentosDistribuicao}" var="item">
+								<div class="dash-bar-item">
+									<div class="dash-bar-header">
+										<span class="dash-bar-label">#{item.label}</span>
+										<span class="dash-bar-value">#{item.count} (#{item.percent}%)</span>
+									</div>
+									<div class="dash-bar-track">
+										<div class="dash-bar-fill fill-accent" style="width: #{item.percent}%;"></div>
+									</div>
+								</div>
+							</ui:repeat>
+							<ui:fragment rendered="#{empty relatorioDashboardController.sacramentosDistribuicao}">
+								<div class="dash-empty-state">Sem dados de sacramentos.</div>
+							</ui:fragment>
+						</div>
+					</div>
+				</div>
+
+				<!-- Taxa de Conversão por Encontro -->
+				<div class="dash-card mt-1">
+					<div class="dash-card-header">
+						<h3>Taxa de Conversão Encontrista → Trabalhador por Encontro</h3>
+					</div>
+					<table class="dash-data-table">
+						<thead>
+							<tr>
+								<th>Encontro</th>
+								<th class="text-center">Encontristas</th>
+								<th class="text-center">Tornaram-se Trabalhadores</th>
+								<th class="text-center">Taxa</th>
+								<th style="width:200px;">Progresso</th>
+							</tr>
+						</thead>
+						<tbody>
+							<ui:repeat value="#{relatorioDashboardController.conversaoPorEncontro}" var="item">
+								<tr>
+									<td class="cell-main">#{item.label}</td>
+									<td class="text-center">#{item.total}</td>
+									<td class="text-center">#{item.convertidos}</td>
+									<td class="text-center">
+										<span class="dash-tag #{item.percent >= 50 ? 'tag-green' : item.percent >= 25 ? 'tag-yellow' : 'tag-muted'}">
+											#{item.percent}%
+										</span>
+									</td>
+									<td>
+										<div class="dash-bar-track" style="margin:0;">
+											<div class="dash-bar-fill fill-accent" style="width: #{item.percent}%;"></div>
+										</div>
+									</td>
+								</tr>
+							</ui:repeat>
+							<ui:fragment rendered="#{empty relatorioDashboardController.conversaoPorEncontro}">
+								<tr><td colspan="5" class="dash-empty-state">Sem dados suficientes.</td></tr>
+							</ui:fragment>
+						</tbody>
+					</table>
+				</div>
+
 			</div>
 
 			<!-- Link para Relatórios Detalhados (página separada) -->

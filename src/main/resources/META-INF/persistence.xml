@@ -24,6 +24,7 @@
         <class>br.com.segueme.entity.Auditoria</class>
         <class>br.com.segueme.entity.Palestrante</class>
         <class>br.com.segueme.entity.Palestra</class>
+        <class>br.com.segueme.entity.AtividadeEncontro</class>
         
         <properties>
             <!-- Configurações do Hibernate -->

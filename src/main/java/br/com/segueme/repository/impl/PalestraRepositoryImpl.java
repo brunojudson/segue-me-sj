@@ -47,10 +47,18 @@ public class PalestraRepositoryImpl implements PalestraRepository {
 
 	@Override
 	public List<Palestra> findByEncontro(Encontro encontro) {
-		TypedQuery<Palestra> query = entityManager
-				.createQuery("SELECT p FROM Palestra p WHERE p.encontro = :encontro ORDER BY p.titulo", Palestra.class);
-		query.setParameter("encontro", encontro);
-		return query.getResultList();
+		return entityManager.createQuery(
+				"SELECT DISTINCT p FROM Palestra p " +
+				"LEFT JOIN FETCH p.encontro " +
+				"LEFT JOIN FETCH p.palestrantes pal " +
+				"LEFT JOIN FETCH pal.pessoaIndividual " +
+				"LEFT JOIN FETCH pal.casal c " +
+				"LEFT JOIN FETCH c.pessoa1 " +
+				"LEFT JOIN FETCH c.pessoa2 " +
+				"WHERE p.encontro = :encontro ORDER BY p.titulo",
+				Palestra.class)
+				.setParameter("encontro", encontro)
+				.getResultList();
 	}
 
 	@Override
