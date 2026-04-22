@@ -276,12 +276,12 @@
         </header>
 
         <div class="document-info">
-            <p><strong>Versão:</strong> 1.1.0</p>
-            <p><strong>Data:</strong> 15 de Abril de 2026</p>
+            <p><strong>Versão:</strong> 1.3.0</p>
+            <p><strong>Data:</strong> Junho de 2026</p>
             <p><strong>Status:</strong> Em Desenvolvimento</p>
             <p><strong>Projeto:</strong> br.com.segueme:segue-me-sistema</p>
             <p><strong>Tecnologia:</strong> Java 11, Jakarta EE 8, JSF, PrimeFaces 12, Hibernate, PostgreSQL</p>
-            <p><strong>Últimas Alterações:</strong> Adicionadas funcionalidades de transferência entre paróquias (RF007-RF009, RN005-RN010)</p>
+            <p><strong>Últimas Alterações:</strong> Adicionados: Módulo de Cronograma de Atividades (RF014-RF016), Dados de Saúde e Emergência do Encontrista (RF025-RF026), Análise Avançada no Dashboard (RF085), integração Palestra↔Cronograma, regras de faixa etária (RN025) e proteção de encontro finalizado (RN019).</p>
         </div>
 
         <div class="toc">
@@ -296,13 +296,19 @@
                         <li><a href="#rf-gestao-pessoas">5.1. Gestão de Pessoas e Casais</a></li>
                         <li><a href="#rf-transferencias">5.2. Transferências entre Paróquias</a></li>
                         <li><a href="#rf-gestao-encontros">5.3. Gestão de Encontros</a></li>
+                        <li><a href="#rf-cronograma">5.3.1. Cronograma de Atividades</a></li>
                         <li><a href="#rf-gestao-encontristas">5.4. Gestão de Encontristas</a></li>
+                        <li><a href="#rf-saude-emergencia">5.4.1. Dados de Saúde e Emergência</a></li>
                         <li><a href="#rf-gestao-equipes">5.5. Gestão de Equipes e Trabalhadores</a></li>
                         <li><a href="#rf-gestao-dirigentes">5.6. Gestão de Dirigentes e Pastas</a></li>
                         <li><a href="#rf-gestao-palestras">5.7. Gestão de Palestras</a></li>
                         <li><a href="#rf-gestao-financeiro">5.8. Gestão Financeira</a></li>
                         <li><a href="#rf-gestao-vendas">5.9. Gestão de Vendas</a></li>
-                        <li><a href="#rf-relatorios">5.10. Relatórios e Consultas</a></li>
+                        <li><a href="#rf-relatorios">5.10. Relatórios e Consultas</a>
+                            <ul>
+                                <li><a href="#rf-analise-avancada">5.10.1. Análise Avançada</a></li>
+                            </ul>
+                        </li>
                         <li><a href="#rf-autenticacao">5.11. Autenticação e Autorização</a></li>
                     </ul>
                 </li>
@@ -623,6 +629,58 @@
                 </div>
             </section>
 
+            <section id="rf-cronograma">
+                <h3>5.3.1. Cronograma de Atividades</h3>
+
+                <div class="requirement">
+                    <h4>RF014 - Cadastrar Atividade no Cronograma</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir cadastrar atividades no cronograma de um encontro.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Encontro (obrigatório, somente encontros ativos)</li>
+                        <li>Título (obrigatório, até 200 caracteres)</li>
+                        <li>Tipo de Atividade (obrigatório, enum: PALESTRA, DINAMICA, REFEICAO, ORACAO, SILENCIO, INTERVALO, LOUVOR, TESTEMUNHO, ENCERRAMENTO, OUTRO)</li>
+                        <li>Data/Hora de Início (obrigatório)</li>
+                        <li>Data/Hora de Fim (opcional)</li>
+                        <li>Responsável (opcional, até 100 caracteres)</li>
+                        <li>Local da Atividade (opcional, até 200 caracteres)</li>
+                        <li>Descrição (opcional, até 500 caracteres)</li>
+                        <li>Ordem (opcional, inteiro para ordenação manual)</li>
+                        <li>Palestra Vinculada (opcional, somente quando tipo = PALESTRA)</li>
+                    </ul>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF015 - Visualizar Cronograma por Encontro</h4>
+                    <p><strong>Descrição:</strong> O sistema deve exibir o cronograma de um encontro em formato de linha do tempo visual.</p>
+                    <p><strong>Funcionalidades:</strong></p>
+                    <ul>
+                        <li>Agrupamento por dia (separação automática por data)</li>
+                        <li>Ordenação cronológica por data/hora de início</li>
+                        <li>Exibição colorida conforme tipo de atividade (código de cores definido no enum)</li>
+                        <li>Exibição de ícone, duração calculada e palestrantes vinculados (quando tipo PALESTRA)</li>
+                        <li>Filtro por encontro (ativos e finalizados)</li>
+                        <li>Indicação "(Realizado)" para encontros já finalizados</li>
+                        <li>Ações de Nova, Editar e Excluir atividade disponíveis apenas para encontros ativos</li>
+                    </ul>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF016 - Vincular Palestra ao Cronograma</h4>
+                    <p><strong>Descrição:</strong> Quando o tipo de atividade for PALESTRA, o sistema deve permitir vincular uma palestra cadastrada do mesmo encontro à atividade do cronograma.</p>
+                    <p><strong>Comportamento:</strong></p>
+                    <ul>
+                        <li>Campo de seleção de palestra aparece dinamicamente ao escolher tipo PALESTRA</li>
+                        <li>Lista de palestras é filtrada pelo encontro selecionado</li>
+                        <li>A vinculação é opcional (palestra pode ser deixada em branco)</li>
+                        <li>Quando vinculada, o cronograma exibe o nome do tema, título da palestra e nome dos palestrantes</li>
+                    </ul>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+            </section>
+
             <section id="rf-gestao-encontristas">
                 <h3>5.4. Gestão de Encontristas (Seguimistas)</h3>
 
@@ -640,6 +698,7 @@
                         <li>Círculo (A, B, C, D, E, F, G, H)</li>
                         <li>Observações</li>
                         <li>Status ativo/inativo</li>
+                        <li><em>Dados de Saúde e Emergência (seção 5.4.1)</em></li>
                     </ul>
                     <p><strong>Regra:</strong> Combinação (Pessoa, Encontro) deve ser única</p>
                     <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
@@ -659,9 +718,20 @@
 
                 <div class="requirement">
                     <h4>RF023 - Gerar Ficha Digital</h4>
-                    <p><strong>Descrição:</strong> Gerar ficha digital individualizada para cada encontrista.</p>
-                    <p><strong>Conteúdo:</strong> Dados pessoais, foto, QR Code com token único, círculo, observações</p>
-                    <p><strong>Formato:</strong> PDF para impressão</p>
+                    <p><strong>Descrição:</strong> Gerar ficha digital individualizada para cada encontrista, acessível diretamente da lista de encontristas ou da página de visualização.</p>
+                    <p><strong>Conteúdo:</strong></p>
+                    <ul>
+                        <li>Dados pessoais (nome, idade, telefone, e-mail)</li>
+                        <li>Foto do encontrista</li>
+                        <li>Círculo atribuído e encontro</li>
+                        <li>Observações pastorais</li>
+                        <li>Seção de Saúde e Emergência (exibida quando houver dados preenchidos): alergias, restrições alimentares, medicamentos, condição médica, contato de emergência, dados do responsável (para menores)</li>
+                    </ul>
+                    <p><strong>Acesso:</strong></p>
+                    <ul>
+                        <li>Botão "Ficha Digital" na lista de encontristas (abre em nova aba)</li>
+                        <li>Botão "Ficha Digital" na página de visualização do encontrista</li>
+                    </ul>
                     <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
                 </div>
 
@@ -672,6 +742,38 @@
                     <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
                 </div>
             </section>
+
+            <section id="rf-saude-emergencia">
+                <h3>5.4.1. Dados de Saúde e Emergência</h3>
+
+                <div class="requirement">
+                    <h4>RF025 - Registrar Dados de Saúde do Encontrista</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir registrar informações médicas e de saúde relevantes para o encontrista durante o evento.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Alergias (texto livre, até 500 caracteres)</li>
+                        <li>Restrições Alimentares (texto livre, até 500 caracteres)</li>
+                        <li>Medicamentos em Uso (texto livre, até 500 caracteres)</li>
+                        <li>Condição Médica Especial (texto livre, até 500 caracteres)</li>
+                    </ul>
+                    <p><strong>Exibição:</strong> Na ficha digital, na aba "Saúde e Emergência" da visualização e no formulário de cadastro (seção colapsável)</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
+
+                <div class="requirement">
+                    <h4>RF026 - Registrar Contato de Emergência e Responsável</h4>
+                    <p><strong>Descrição:</strong> O sistema deve permitir registrar contatos de emergência e dados de responsável legal para menores de idade.</p>
+                    <p><strong>Dados:</strong></p>
+                    <ul>
+                        <li>Nome do Contato de Emergência (até 100 caracteres)</li>
+                        <li>Telefone do Contato de Emergência (até 20 caracteres)</li>
+                        <li>Nome do Responsável Legal (até 100 caracteres — para menores)</li>
+                        <li>Telefone do Responsável Legal (até 20 caracteres)</li>
+                        <li>Autorização do Responsável (boolean — indica se responsável autorizou a participação)</li>
+                    </ul>
+                    <p><strong>Regra:</strong> Para encontristas menores de 18 anos, os campos de responsável devem ser preenchidos (recomendação funcional).</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-high">ALTA</span></p>
+                </div>
 
             <section id="rf-gestao-equipes">
                 <h3>5.5. Gestão de Equipes e Trabalhadores</h3>
@@ -943,6 +1045,25 @@
                 </div>
             </section>
 
+            <section id="rf-analise-avancada">
+                <h3>5.10.1. Análise Avançada</h3>
+
+                <div class="requirement">
+                    <h4>RF085 - Análise Avançada de Encontristas</h4>
+                    <p><strong>Descrição:</strong> O sistema deve fornecer uma aba de "Análise Avançada" no painel de relatórios com indicadores gerenciais estratégicos.</p>
+                    <p><strong>Indicadores:</strong></p>
+                    <ul>
+                        <li><strong>Distribuição Etária:</strong> Agrupamento por faixas (&lt;16, 16-17, 18-20, 21-23, &gt;23, sem idade), com destaque visual (⚠) para encontristas fora da faixa permitida de 16-23 anos</li>
+                        <li><strong>Conformidade de Faixa Etária:</strong> Percentual dentro da faixa 16-23 anos e contagem de fora da faixa</li>
+                        <li><strong>Conversão Encontrista→Trabalhador por Encontro:</strong> Percentual de encontristas que se tornaram trabalhadores em encontros subsequentes</li>
+                        <li><strong>Crescimento de Inscritos:</strong> Comparação entre o último e o penúltimo encontro, com indicação positiva/negativa</li>
+                        <li><strong>Dados de Saúde:</strong> Total de encontristas com algum dado de saúde preenchido</li>
+                        <li><strong>Menores e Responsável:</strong> Total de menores de 18 anos e quantos possuem dados de responsável preenchidos</li>
+                    </ul>
+                    <p><strong>Regra de Faixa Etária:</strong> A faixa etária permitida para encontristas é 16 a 23 anos. Encontristas fora desta faixa são permitidos tecnicamente, mas sinalizados como exceção nos relatórios.</p>
+                    <p><strong>Prioridade:</strong> <span class="priority-medium">MÉDIA</span></p>
+                </div>
+
             <section id="rf-autenticacao">
                 <h3>5.11. Autenticação e Autorização</h3>
 
@@ -1069,7 +1190,7 @@
                     <tr>
                         <td><strong>Encontrista</strong></td>
                         <td>Participante inscrito em um encontro</td>
-                        <td>id, pessoa_id, encontro_id, data_inscricao, forma_pagamento, valor_pago, trabalhador_id, circulo, token_ficha, ativo, idade</td>
+                        <td>id, pessoa_id, encontro_id, data_inscricao, forma_pagamento, valor_pago, trabalhador_id, circulo, token_ficha, ativo, idade, <em>alergias, restricoes_alimentares, medicamentos, condicao_medica, contato_emergencia_nome, contato_emergencia_telefone, responsavel_nome, responsavel_telefone, autorizacao_responsavel</em></td>
                     </tr>
                     <tr>
                         <td><strong>TipoEquipe</strong></td>
@@ -1136,6 +1257,11 @@
                         <td>Registro de auditoria de ações</td>
                         <td>id, usuario, data_hora, acao, entidade, entidade_id, detalhes</td>
                     </tr>
+                    <tr>
+                        <td><strong>AtividadeEncontro</strong></td>
+                        <td>Atividade do cronograma de um encontro</td>
+                        <td>id, encontro_id, titulo, tipo_atividade (enum TipoAtividade), data_hora_inicio, data_hora_fim, responsavel, local_atividade, descricao, ordem, palestra_id (FK opcional)</td>
+                    </tr>
                 </tbody>
             </table>
 
@@ -1152,6 +1278,8 @@
                 <li><strong>Trabalhador → Contribuicao:</strong> Um trabalhador pode fazer várias contribuições (1:N)</li>
                 <li><strong>Encontro → MovimentoFinanceiro:</strong> Um encontro possui vários movimentos financeiros (1:N)</li>
                 <li><strong>Pessoa1 + Pessoa2 → Casal:</strong> Duas pessoas formam um casal (2:1)</li>
+                <li><strong>Encontro → AtividadeEncontro:</strong> Um encontro possui várias atividades no cronograma (1:N)</li>
+                <li><strong>Palestra → AtividadeEncontro:</strong> Uma palestra pode ser vinculada opcionalmente a uma atividade do cronograma (1:0..1)</li>
             </ul>
 
             <h3>7.3. Constraints e Índices</h3>
@@ -1265,22 +1393,19 @@
                 <p><strong>Fluxo Principal:</strong></p>
                 <ol>
                     <li>Secretário acessa lista de encontristas</li>
-                    <li>Secretário seleciona encontrista</li>
-                    <li>Secretário clica em "Gerar Ficha"</li>
-                    <li>Sistema monta ficha com:
+                    <li>Secretário clica em "Ficha Digital" (ícone de cartão de identificação) diretamente na lista, ou acessa a página de visualização do encontrista e clica no botão "Ficha Digital"</li>
+                    <li>A ficha é aberta em nova aba do navegador</li>
+                    <li>Sistema exibe ficha com:
                         <ul>
-                            <li>Foto do encontrista</li>
-                            <li>Dados pessoais (nome, idade)</li>
-                            <li>Círculo atribuído</li>
-                            <li>QR Code com token único</li>
+                            <li>Foto e dados pessoais do encontrista (nome, idade, e-mail, telefone)</li>
+                            <li>Encontro e círculo atribuído</li>
                             <li>Observações pastorais</li>
+                            <li>Seção "Saúde e Emergência" (visível somente quando existirem dados preenchidos): alergias, restrições alimentares, medicamentos, condição médica, contato de emergência, dados do responsável</li>
                         </ul>
                     </li>
-                    <li>Sistema gera PDF da ficha</li>
-                    <li>Sistema disponibiliza download</li>
-                    <li>Secretário imprime ficha</li>
+                    <li>Secretário imprime a ficha ou salva o PDF</li>
                 </ol>
-                <p><strong>Pós-condições:</strong> Ficha digital gerada e disponível para impressão</p>
+                <p><strong>Pós-condições:</strong> Ficha digital exibida com dados atualizados do encontrista</p>
             </div>
 
             <div class="use-case">
@@ -1395,6 +1520,10 @@
                 <strong>RN018:</strong> O encontro só pode ser finalizado (inativado) após a data de término prevista.
             </div>
 
+            <div class="business-rule">
+                <strong>RN019:</strong> Atividades do cronograma (AtividadeEncontro) <strong>não podem ser cadastradas ou editadas</strong> em encontros finalizados (status inativo). Somente a visualização é permitida para encontros passados.
+            </div>
+
             <h3>9.4. Regras de Inscrição</h3>
             <div class="business-rule">
                 <strong>RN020:</strong> Uma pessoa pode participar apenas uma vez como encontrista em um mesmo encontro (unicidade pessoa + encontro).
@@ -1414,6 +1543,14 @@
 
             <div class="business-rule">
                 <strong>RN024:</strong> Cada encontrista recebe um token único (UUID) para identificação em ficha digital e futuras consultas.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN025:</strong> A <strong>faixa etária padrão</strong> para encontristas é de <strong>16 a 23 anos</strong>. Encontristas fora desta faixa não são bloqueados pelo sistema, porém são <strong>sinalizados nos relatórios de Análise Avançada</strong> com ícone de atenção (⚠). A coordenação deve avaliar cada caso individualmente.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN026:</strong> Para encontristas <strong>menores de 18 anos</strong>, recomenda-se preencher os dados de responsável legal (nome e telefone) e marcar a autorização do responsável. O sistema não bloqueia o cadastro sem esses dados, mas os relatórios de conformidade indicam a ausência.
             </div>
 
             <h3>9.5. Regras de Equipe</h3>
@@ -1465,6 +1602,23 @@
 
             <div class="business-rule">
                 <strong>RN052:</strong> O horário de palestras não deve conflitar (duas palestras no mesmo horário).
+            </div>
+
+            <h3>9.8. Regras do Cronograma de Atividades</h3>
+            <div class="business-rule">
+                <strong>RN053:</strong> Atividades do cronograma só podem ser cadastradas, editadas ou excluídas em encontros com status <strong>ativo</strong>. Para encontros finalizados, apenas a visualização é permitida.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN054:</strong> Uma atividade do tipo <strong>PALESTRA</strong> pode opcionalmente ser vinculada a uma palestra cadastrada do mesmo encontro. Quando vinculada, o cronograma exibe automaticamente os dados do palestrante.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN055:</strong> O cronograma de um encontro pode ser visualizado para todos os encontros (ativos e finalizados). Encontros finalizados são identificados com "(Realizado)" na seleção.
+            </div>
+
+            <div class="business-rule">
+                <strong>RN056:</strong> Os tipos de atividade disponíveis são: <code>PALESTRA</code>, <code>DINAMICA</code>, <code>REFEICAO</code>, <code>ORACAO</code>, <code>SILENCIO</code>, <code>INTERVALO</code>, <code>LOUVOR</code>, <code>TESTEMUNHO</code>, <code>ENCERRAMENTO</code>, <code>OUTRO</code>. Cada tipo possui ícone e cor de identificação visual distintos.
             </div>
 
             <h3>9.8. Regras de Segurança</h3>
@@ -1673,13 +1827,37 @@
                         <td><strong>Auditoria</strong></td>
                         <td>Registro de log de ações críticas realizadas no sistema para rastreabilidade e segurança</td>
                     </tr>
+                    <tr>
+                        <td><strong>Cronograma de Atividades</strong></td>
+                        <td>Sequência temporal de atividades de um encontro, organizada em linha do tempo visual por dia</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AtividadeEncontro</strong></td>
+                        <td>Entidade que representa uma atividade do cronograma (palestra, dinâmica, refeição, oração, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TipoAtividade</strong></td>
+                        <td>Enum com os tipos de atividade do cronograma: PALESTRA, DINAMICA, REFEICAO, ORACAO, SILENCIO, INTERVALO, LOUVOR, TESTEMUNHO, ENCERRAMENTO, OUTRO</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dados de Saúde e Emergência</strong></td>
+                        <td>Informações médicas e de contato registradas para o encontrista: alergias, restrições alimentares, medicamentos, condição médica, contato de emergência e responsável legal</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Faixa Etária Padrão</strong></td>
+                        <td>Intervalo de 16 a 23 anos definido como faixa esperada para encontristas. Valores fora desta faixa são sinalizados nos relatórios de Análise Avançada</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Análise Avançada</strong></td>
+                        <td>Aba do painel de relatórios com indicadores estratégicos: distribuição etária, conformidade de faixa etária, conversão encontrista-trabalhador, crescimento de inscritos, dados de saúde e menores com responsável</td>
+                    </tr>
                 </tbody>
             </table>
         </section>
 
         <footer>
             <p><strong>Sistema Segue-me - Gestão de Encontros de Jovens</strong></p>
-            <p>Documento de Especificação de Requisitos - Versão 1.0.0</p>
+            <p>Documento de Especificação de Requisitos - Versão 1.3.0</p>
             <p>© 2026 - Todos os direitos reservados</p>
             <p style="margin-top: 15px; font-size: 0.9em;">
                 Este documento foi gerado automaticamente baseado na análise do código-fonte e estrutura do projeto.<br>

@@ -121,90 +121,124 @@
 					</p:fieldset>
 				</div>
 
-				<!-- Seção: Saúde e Emergência -->
+				<!-- Botão para abrir dialog de Saúde e Emergência -->
 				<div class="form-section">
-					<p:fieldset legend="🏥 Saúde e Emergência" styleClass="modern-fieldset" toggleable="true" collapsed="true">
-						<div class="field-grid">
-							<div class="field-group full-width">
-								<p:outputLabel for="alergias" value="Alergias" />
-								<p:inputTextarea id="alergias"
-												value="#{encontristaController.encontrista.alergias}"
-												rows="2" maxlength="500"
-												placeholder="Ex: amendoim, látex, penicilina..." />
-								<small class="field-hint">Informe alergias conhecidas (medicamentos, alimentos, materiais)</small>
-							</div>
-							<div class="field-group full-width">
-								<p:outputLabel for="restricoesAlimentares" value="Restrições Alimentares" />
-								<p:inputTextarea id="restricoesAlimentares"
-												value="#{encontristaController.encontrista.restricaoAlimentar}"
-												rows="2" maxlength="500"
-												placeholder="Ex: vegetariano, intolerante à lactose, celíaco..." />
-							</div>
-							<div class="field-group full-width">
-								<p:outputLabel for="medicamentos" value="Medicamentos em Uso" />
-								<p:inputTextarea id="medicamentos"
-												value="#{encontristaController.encontrista.medicamentos}"
-												rows="2" maxlength="500"
-												placeholder="Liste os medicamentos de uso contínuo e horários" />
-							</div>
-							<div class="field-group full-width">
-								<p:outputLabel for="condicaoMedica" value="Condição Médica Relevante" />
-								<p:inputTextarea id="condicaoMedica"
-												value="#{encontristaController.encontrista.condicaoMedica}"
-												rows="2" maxlength="500"
-												placeholder="Ex: epilepsia, diabetes, asma, problema cardíaco..." />
-							</div>
-						</div>
-
-						<p:separator />
-
-						<div class="field-grid">
-							<div class="field-group">
-								<p:outputLabel for="contatoEmergenciaNome" value="Contato de Emergência — Nome" />
-								<p:inputText id="contatoEmergenciaNome"
-											value="#{encontristaController.encontrista.contatoEmergenciaNome}"
-											maxlength="100"
-											placeholder="Nome completo" />
-							</div>
-							<div class="field-group">
-								<p:outputLabel for="contatoEmergenciaTelefone" value="Contato de Emergência — Telefone" />
-								<p:inputText id="contatoEmergenciaTelefone"
-											value="#{encontristaController.encontrista.contatoEmergenciaTelefone}"
-											maxlength="20"
-											placeholder="(12) 99999-9999" />
-							</div>
-						</div>
-
-						<p:separator />
-
-						<h3 style="font-size:0.85rem; color:var(--sm-text-muted); margin:0.5rem 0 0.75rem;">
-							<i class="pi pi-shield" style="color:var(--sm-accent2)"></i>
-							Responsável (para menores de 18 anos)
-						</h3>
-						<div class="field-grid">
-							<div class="field-group">
-								<p:outputLabel for="responsavelNome" value="Nome do Responsável" />
-								<p:inputText id="responsavelNome"
-											value="#{encontristaController.encontrista.responsavelNome}"
-											maxlength="100"
-											placeholder="Nome do pai, mãe ou responsável legal" />
-							</div>
-							<div class="field-group">
-								<p:outputLabel for="responsavelTelefone" value="Telefone do Responsável" />
-								<p:inputText id="responsavelTelefone"
-											value="#{encontristaController.encontrista.responsavelTelefone}"
-											maxlength="20"
-											placeholder="(12) 99999-9999" />
-							</div>
-							<div class="field-group full-width">
-								<p:outputLabel for="autorizacaoResponsavel" value="Autorização do Responsável" />
-								<p:selectBooleanCheckbox id="autorizacaoResponsavel"
-												value="#{encontristaController.encontrista.autorizacaoResponsavel}"
-												itemLabel=" Responsável autorizou a participação no encontro" />
-							</div>
-						</div>
-					</p:fieldset>
+					<div class="saude-trigger-bar">
+						<p:commandButton value="🏥 Saúde e Emergência"
+										icon="pi pi-heart"
+										styleClass="saude-trigger-btn"
+										type="button"
+										onclick="PF('saudeDialog').show()"
+										process="@none"
+										update="@none" />
+						<span class="saude-trigger-hint">Alergias, medicamentos, contato de emergência e responsável</span>
+					</div>
 				</div>
+
+				<!-- Dialog: Saúde e Emergência -->
+				<p:dialog header="🏥 Saúde e Emergência"
+						  widgetVar="saudeDialog"
+						  modal="true"
+						  resizable="false"
+						  width="640"
+						  styleClass="saude-dialog">
+
+					<p:tabView styleClass="saude-tabview">
+
+						<!-- Aba 1: Condições Médicas -->
+						<p:tab title="💊 Condições Médicas">
+							<div class="dialog-field-grid">
+								<div class="dialog-field-group">
+									<p:outputLabel for="alergias" value="Alergias" />
+									<p:inputTextarea id="alergias"
+													value="#{encontristaController.encontrista.alergias}"
+													rows="3" maxlength="500" style="width:100%"
+													placeholder="Ex: amendoim, látex, penicilina..." />
+									<small class="field-hint">Alergias a medicamentos, alimentos ou materiais</small>
+								</div>
+								<div class="dialog-field-group">
+									<p:outputLabel for="restricoesAlimentares" value="Restrições Alimentares" />
+									<p:inputTextarea id="restricoesAlimentares"
+													value="#{encontristaController.encontrista.restricaoAlimentar}"
+													rows="3" maxlength="500" style="width:100%"
+													placeholder="Ex: vegetariano, intolerante à lactose, celíaco..." />
+								</div>
+								<div class="dialog-field-group">
+									<p:outputLabel for="medicamentos" value="Medicamentos em Uso" />
+									<p:inputTextarea id="medicamentos"
+													value="#{encontristaController.encontrista.medicamentos}"
+													rows="3" maxlength="500" style="width:100%"
+													placeholder="Liste os medicamentos de uso contínuo e horários" />
+								</div>
+								<div class="dialog-field-group">
+									<p:outputLabel for="condicaoMedica" value="Condição Médica Relevante" />
+									<p:inputTextarea id="condicaoMedica"
+													value="#{encontristaController.encontrista.condicaoMedica}"
+													rows="3" maxlength="500" style="width:100%"
+													placeholder="Ex: epilepsia, diabetes, asma, problema cardíaco..." />
+								</div>
+							</div>
+						</p:tab>
+
+						<!-- Aba 2: Emergência e Responsável -->
+						<p:tab title="🚨 Emergência e Responsável">
+							<div class="dialog-field-grid">
+								<div class="dialog-field-group">
+									<p:outputLabel for="contatoEmergenciaNome" value="Nome — Contato de Emergência" />
+									<p:inputText id="contatoEmergenciaNome"
+												value="#{encontristaController.encontrista.contatoEmergenciaNome}"
+												maxlength="100" style="width:100%"
+												placeholder="Nome completo" />
+								</div>
+								<div class="dialog-field-group">
+									<p:outputLabel for="contatoEmergenciaTelefone" value="Telefone — Contato de Emergência" />
+									<p:inputText id="contatoEmergenciaTelefone"
+												value="#{encontristaController.encontrista.contatoEmergenciaTelefone}"
+												maxlength="20" style="width:100%"
+												placeholder="(12) 99999-9999" />
+								</div>
+							</div>
+
+							<p:separator style="margin:1rem 0" />
+
+							<p style="font-size:0.82rem; color:var(--sm-text-muted); margin:0 0 0.75rem;">
+								<i class="pi pi-shield" style="color:var(--sm-accent2); margin-right:4px"></i>
+								<strong>Responsável legal</strong> — preencha para menores de 18 anos
+							</p>
+							<div class="dialog-field-grid">
+								<div class="dialog-field-group">
+									<p:outputLabel for="responsavelNome" value="Nome do Responsável" />
+									<p:inputText id="responsavelNome"
+												value="#{encontristaController.encontrista.responsavelNome}"
+												maxlength="100" style="width:100%"
+												placeholder="Nome do pai, mãe ou responsável legal" />
+								</div>
+								<div class="dialog-field-group">
+									<p:outputLabel for="responsavelTelefone" value="Telefone do Responsável" />
+									<p:inputText id="responsavelTelefone"
+												value="#{encontristaController.encontrista.responsavelTelefone}"
+												maxlength="20" style="width:100%"
+												placeholder="(12) 99999-9999" />
+								</div>
+								<div class="dialog-field-group" style="grid-column: span 2">
+									<p:selectBooleanCheckbox id="autorizacaoResponsavel"
+													value="#{encontristaController.encontrista.autorizacaoResponsavel}"
+													itemLabel=" Responsável autorizou a participação no encontro" />
+								</div>
+							</div>
+						</p:tab>
+
+					</p:tabView>
+
+					<f:facet name="footer">
+						<p:commandButton value="Confirmar"
+										icon="pi pi-check"
+										styleClass="ui-button-success"
+										onclick="PF('saudeDialog').hide(); return false;"
+										process="@none"
+										update="@none" />
+					</f:facet>
+				</p:dialog>
 
 				<!-- Botões de Ação -->
 				<div class="form-actions">

@@ -350,7 +350,7 @@
         <header>
             <h1>📖 Manual do Usuário</h1>
             <p>Sistema Segue-me - Gestão de Encontros de Jovens</p>
-            <p style="font-size: 0.9em; margin-top: 10px;">Versão 2.0 | Abril 2026</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Versão 3.0 | Junho 2026</p>
         </header>
 
         <div class="content">
@@ -364,15 +364,16 @@
                     <li><a href="#navegacao">4. Navegação pelo Sistema</a></li>
                     <li><a href="#implantacao">5. Fluxo de Implantação Inicial</a></li>
                     <li><a href="#cadastros">6. Guia Completo de Cadastros</a></li>
-                    <li><a href="#consultas">7. Consultas e Pesquisas</a></li>
-                    <li><a href="#relatorios">8. Relatórios e Exportações</a></li>
-                    <li><a href="#fotos">9. Gestão de Fotos</a></li>
-                    <li><a href="#vendas">10. Módulo de Vendas</a></li>
-                    <li><a href="#financeiro">11. Controle Financeiro</a></li>
-                    <li><a href="#boas-praticas">12. Boas Práticas</a></li>
-                    <li><a href="#solucao-problemas">13. Solução de Problemas</a></li>
-                    <li><a href="#faq">14. Perguntas Frequentes (FAQ)</a></li>
-                    <li><a href="#glossario">15. Glossário</a></li>
+                    <li><a href="#cronograma">7. Módulo de Cronograma de Atividades</a></li>
+                    <li><a href="#consultas">8. Consultas e Pesquisas</a></li>
+                    <li><a href="#relatorios">9. Relatórios e Exportações</a></li>
+                    <li><a href="#fotos">10. Gestão de Fotos</a></li>
+                    <li><a href="#vendas">11. Módulo de Vendas</a></li>
+                    <li><a href="#financeiro">12. Controle Financeiro</a></li>
+                    <li><a href="#boas-praticas">13. Boas Práticas</a></li>
+                    <li><a href="#solucao-problemas">14. Solução de Problemas</a></li>
+                    <li><a href="#faq">15. Perguntas Frequentes (FAQ)</a></li>
+                    <li><a href="#glossario">16. Glossário</a></li>
                 </ul>
             </div>
 
@@ -412,7 +413,17 @@
                 <div class="feature-box">
                     <div class="icon">📊</div>
                     <h4>Relatórios Completos</h4>
-                    <p>Exportações em PDF e Excel para análises</p>
+                    <p>Exportações em PDF e Excel com Análise Avançada de dados</p>
+                </div>
+                <div class="feature-box">
+                    <div class="icon">🗓️</div>
+                    <h4>Cronograma de Atividades</h4>
+                    <p>Linha do tempo visual com todas as atividades do encontro</p>
+                </div>
+                <div class="feature-box">
+                    <div class="icon">🏥</div>
+                    <h4>Saúde e Emergência</h4>
+                    <p>Dados médicos e contatos de emergência dos encontristas</p>
                 </div>
                 <div class="feature-box">
                     <div class="icon">🔐</div>
@@ -1185,8 +1196,75 @@
                     <strong>📌 Workflow Típico:</strong><br>
                     1. Cadastro inicial com dados mínimos (pessoa + encontro)<br>
                     2. Atualização após pagamento (valor pago + forma de pagamento)<br>
-                    3. Confirmação de presença (marcar "Confirmado")<br>
-                    4. Registro de comparecimento (marcar "Presente" durante o evento)
+                    3. Preenchimento dos dados de saúde e emergência (seção "🏥 Saúde e Emergência")<br>
+                    4. Confirmação de presença (marcar "Confirmado")<br>
+                    5. Registro de comparecimento (marcar "Presente" durante o evento)
+                </div>
+
+                <h4>🏥 Dados de Saúde e Emergência</h4>
+                <p>
+                    O formulário de cadastro contém uma seção colapsável <strong>"Saúde e Emergência"</strong> com campos médicos e de contato de emergência. Esta seção é opcional, porém altamente recomendada, especialmente para menores de idade.
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Alergias</strong></td>
+                            <td>Alergias conhecidas (medicamentos, alimentos, etc.)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Restrições Alimentares</strong></td>
+                            <td>Dieta especial, intolerâncias, restrições religiosas</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Medicamentos em Uso</strong></td>
+                            <td>Medicamentos que o participante usa regularmente</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Condição Médica</strong></td>
+                            <td>Doenças crônicas ou condições de saúde relevantes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Contato de Emergência</strong></td>
+                            <td>Nome e telefone de pessoa a ser acionada em emergência</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Responsável Legal</strong></td>
+                            <td>Para menores de 18 anos: nome e telefone do responsável</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Autorização do Responsável</strong></td>
+                            <td>Checkbox indicando que o responsável autorizou a participação</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Menores de Idade:</strong><br>
+                    Para encontristas com menos de 18 anos, recomenda-se preencher obrigatoriamente os dados de 
+                    <strong>Responsável Legal</strong> e marcar a <strong>Autorização do Responsável</strong>. 
+                    O relatório de Análise Avançada identifica menores sem dados de responsável.
+                </div>
+
+                <h4>🪪 Ficha Digital</h4>
+                <p>
+                    A ficha digital do encontrista pode ser acessada de dois pontos:
+                </p>
+                <ul>
+                    <li><strong>Lista de Encontristas:</strong> Clique no ícone de cartão (🪪) na coluna de ações de cada encontrista — abre em nova aba</li>
+                    <li><strong>Visualização do Encontrista:</strong> Clique no botão "Ficha Digital" na barra de ações no topo da página</li>
+                </ul>
+                <p>
+                    A ficha exibe todos os dados do participante. A seção de saúde e emergência aparece automaticamente quando houver pelo menos um campo preenchido.
+                </p>
+
+                <div class="alert alert-success">
+                    <strong>✅ Dica:</strong> Use o acesso rápido da lista de encontristas para abrir a ficha de múltiplos participantes em abas diferentes simultaneamente.
                 </div>
             </div>
 
@@ -1277,8 +1355,167 @@
     <p class="note">Se o diretório não existir, o sistema cria automaticamente (verificar permissões). Caso você prefira outro local, defina a propriedade de sistema <code>-Dcaminho_fotos=&lt;caminho&gt;</code> ao iniciar a JVM.</p>
   </div>
 
-            <!-- 7. CONSULTAS -->
-            <h2 id="consultas">7. Consultas e Pesquisas</h2>
+            <!-- 7. CRONOGRAMA DE ATIVIDADES -->
+            <h2 id="cronograma">7. Módulo de Cronograma de Atividades</h2>
+
+            <div class="card">
+                <h3>📅 Sobre o Cronograma</h3>
+                <p>
+                    O módulo de Cronograma permite registrar e visualizar todas as atividades de um encontro 
+                    em formato de linha do tempo. Cada atividade é categorizada por tipo e exibida com 
+                    cor e ícone próprios para facilitar a identificação visual.
+                </p>
+                <p>
+                    <strong>Caminho:</strong> Menu → Cronograma<br>
+                    <strong>Página:</strong> <code>pages/cronograma/lista.xhtml</code>
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>📋 Tipos de Atividade</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Palestra</strong></td><td>Palestra de formação (pode ser vinculada a uma palestra cadastrada)</td></tr>
+                        <tr><td><strong>Dinâmica</strong></td><td>Atividade dinâmica em grupo</td></tr>
+                        <tr><td><strong>Refeição</strong></td><td>Café da manhã, almoço, jantar ou lanche</td></tr>
+                        <tr><td><strong>Oração</strong></td><td>Momento de oração coletiva</td></tr>
+                        <tr><td><strong>Silêncio</strong></td><td>Período de silêncio e reflexão</td></tr>
+                        <tr><td><strong>Intervalo</strong></td><td>Intervalo ou pausa</td></tr>
+                        <tr><td><strong>Louvor</strong></td><td>Momento de louvor e adoração</td></tr>
+                        <tr><td><strong>Testemunho</strong></td><td>Partilha de testemunho pessoal</td></tr>
+                        <tr><td><strong>Encerramento</strong></td><td>Cerimônia de encerramento</td></tr>
+                        <tr><td><strong>Outro</strong></td><td>Atividade não categorizada</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>👁️ Visualizando o Cronograma</h3>
+                <div class="step-card">
+                    <span class="step-number">1</span>
+                    <strong>Selecione o Encontro</strong>
+                    <p style="margin: 10px 0 0 50px;">
+                        Use o menu suspenso no topo da página para selecionar o encontro. 
+                        Encontros finalizados aparecem com o sufixo <em>"(Realizado)"</em>.
+                    </p>
+                </div>
+                <div class="step-card">
+                    <span class="step-number">2</span>
+                    <strong>Visualize a Linha do Tempo</strong>
+                    <p style="margin: 10px 0 0 50px;">
+                        As atividades são agrupadas por dia e ordenadas cronologicamente. 
+                        Cada cartão exibe: tipo, título, horário, duração, responsável e — para palestras — os palestrantes vinculados.
+                    </p>
+                </div>
+                <div class="step-card">
+                    <span class="step-number">3</span>
+                    <strong>Gerencie Atividades (somente encontros ativos)</strong>
+                    <p style="margin: 10px 0 0 50px;">
+                        Os botões <em>Nova Atividade</em>, <em>Editar</em> e <em>Excluir</em> ficam disponíveis 
+                        apenas para encontros com status ativo. Em encontros finalizados, somente a visualização é permitida.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>➕ Cadastrando uma Nova Atividade</h3>
+                <p>
+                    <strong>Caminho:</strong> Cronograma → (selecione um encontro ativo) → Nova Atividade<br>
+                    <strong>Página:</strong> <code>pages/cronograma/cadastro.xhtml</code>
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Obrigatório</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Encontro</strong></td>
+                            <td><span class="badge badge-danger">Sim</span></td>
+                            <td>Encontro ao qual a atividade pertence (somente ativos)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Título</strong></td>
+                            <td><span class="badge badge-danger">Sim</span></td>
+                            <td>Nome ou descrição curta da atividade</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tipo de Atividade</strong></td>
+                            <td><span class="badge badge-danger">Sim</span></td>
+                            <td>Selecione entre os 10 tipos disponíveis</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data/Hora de Início</strong></td>
+                            <td><span class="badge badge-danger">Sim</span></td>
+                            <td>Data e horário de início da atividade</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data/Hora de Fim</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Data e horário de término (para cálculo da duração)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Responsável</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Nome do responsável pela condução da atividade</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Local</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Onde a atividade será realizada</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Palestra Vinculada</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Aparece apenas quando tipo = PALESTRA. Permite vincular uma palestra cadastrada do mesmo encontro.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ordem</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Número inteiro para desempate na ordenação</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Descrição</strong></td>
+                            <td><span class="badge badge-warning">Não</span></td>
+                            <td>Detalhes adicionais sobre a atividade</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="alert alert-info">
+                    <strong>💡 Integração com Palestras:</strong><br>
+                    Ao selecionar o tipo <strong>PALESTRA</strong>, um campo extra aparece automaticamente para 
+                    vincular uma palestra já cadastrada no mesmo encontro. Quando vinculada, o cronograma exibirá 
+                    o tema, título e nome dos palestrantes diretamente no cartão da atividade.
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🔗 Acessando o Cronograma pelo Encontro</h3>
+                <p>
+                    Você também pode acessar o cronograma de um encontro específico diretamente pela 
+                    página de <strong>Visualização do Encontro</strong>:
+                </p>
+                <ol>
+                    <li>Acesse <em>Menu → Encontros → Lista</em></li>
+                    <li>Clique em "Visualizar" no encontro desejado</li>
+                    <li>Navegue até a aba <strong>"Cronograma"</strong></li>
+                    <li>Veja o total de atividades cadastradas</li>
+                    <li>Clique em "Ver Cronograma Completo" para ir à linha do tempo</li>
+                </ol>
+            </div>
+
+            <!-- 8. CONSULTAS -->
+            <h2 id="consultas">8. Consultas e Pesquisas</h2>
 
             <div class="card">
                 <h3>🔍 Funcionalidades de Busca</h3>
@@ -1356,8 +1593,8 @@
                 </div>
             </div>
 
-            <!-- 8. RELATÓRIOS -->
-            <h2 id="relatorios">8. Relatórios e Exportações</h2>
+            <!-- 9. RELATÓRIOS -->
+            <h2 id="relatorios">9. Relatórios e Exportações</h2>
 
             <div class="card">
                 <h3>📊 Tipos de Relatórios Disponíveis</h3>
@@ -1415,6 +1652,19 @@
                         <li>Saldo final</li>
                     </ul>
                 </div>
+
+                <div class="step-card">
+                    <span class="step-number">6</span>
+                    <strong>Análise Avançada</strong>
+                    <ul style="margin-left: 50px; margin-top: 10px;">
+                        <li><strong>Distribuição Etária:</strong> Gráfico de barras dos encontristas por faixa etária (&lt;16, 16-17, 18-20, 21-23, &gt;23). Faixas fora dos limites 16-23 anos são destacadas com ⚠</li>
+                        <li><strong>Conformidade de Faixa Etária:</strong> KPIs com percentual dentro da faixa e total fora da faixa</li>
+                        <li><strong>Conversão Encontrista→Trabalhador:</strong> Tabela mostrando, por encontro, quantos ex-encontristas tornaram-se trabalhadores</li>
+                        <li><strong>Crescimento:</strong> Comparação de inscritos entre o último e o penúltimo encontro</li>
+                        <li><strong>Dados de Saúde:</strong> Total de encontristas com informações de saúde preenchidas</li>
+                        <li><strong>Menores c/ Responsável:</strong> Contagem de menores de 18 anos e quantos têm dados de responsável registrados</li>
+                    </ul>
+                </div>
             </div>
 
             <div class="card">
@@ -1441,8 +1691,8 @@
                 </div>
             </div>
 
-            <!-- 9. FOTOS -->
-            <h2 id="fotos">9. Gestão de Fotos</h2>
+            <!-- 10. FOTOS -->
+            <h2 id="fotos">10. Gestão de Fotos</h2>
 
             <div class="card">
                 <h3>📸 Configuração do Diretório de Fotos</h3>
@@ -1548,8 +1798,8 @@
                 </div>
             </div>
 
-            <!-- 10. VENDAS -->
-            <h2 id="vendas">10. Módulo de Vendas</h2>
+            <!-- 11. VENDAS -->
+            <h2 id="vendas">11. Módulo de Vendas</h2>
 
             <div class="card">
                 <h3>🛒 Cadastro de Vendas</h3>
@@ -1601,8 +1851,8 @@
                 </table>
             </div>
 
-            <!-- 11. FINANCEIRO -->
-            <h2 id="financeiro">11. Controle Financeiro</h2>
+            <!-- 12. FINANCEIRO -->
+            <h2 id="financeiro">12. Controle Financeiro</h2>
 
             <div class="card">
                 <h3>💰 Módulo de Contribuições</h3>
@@ -1636,8 +1886,8 @@
                 </div>
             </div>
 
-            <!-- 12. BOAS PRÁTICAS -->
-            <h2 id="boas-praticas">12. Boas Práticas</h2>
+            <!-- 13. BOAS PRÁTICAS -->
+            <h2 id="boas-praticas">13. Boas Práticas</h2>
 
             <div class="card">
                 <h3>✅ Recomendações de Uso</h3>
@@ -1675,8 +1925,8 @@
                 </ul>
             </div>
 
-            <!-- 13. SOLUÇÃO DE PROBLEMAS -->
-            <h2 id="solucao-problemas">13. Solução de Problemas</h2>
+            <!-- 14. SOLUÇÃO DE PROBLEMAS -->
+            <h2 id="solucao-problemas">14. Solução de Problemas</h2>
 
             <div class="card">
                 <h3>🔧 Problemas Comuns e Soluções</h3>
@@ -1750,8 +2000,8 @@
                 </div>
             </div>
 
-            <!-- 14. FAQ -->
-            <h2 id="faq">14. Perguntas Frequentes (FAQ)</h2>
+            <!-- 15. FAQ -->
+            <h2 id="faq">15. Perguntas Frequentes (FAQ)</h2>
 
             <div class="card">
                 <h3>❓ Dúvidas Frequentes</h3>
@@ -1803,10 +2053,35 @@
                     Exporte o relatório de encontristas em Excel e use ferramentas externas (Word, Publisher) 
                     para mala direta de etiquetas.
                 </p>
+
+                <h4>9. Como acessar a Ficha Digital de um encontrista?</h4>
+                <p>
+                    Existem dois caminhos: (a) na lista de encontristas, clique no ícone de cartão 🪪 na linha do participante — a ficha abre em nova aba; (b) na página de visualização do encontrista, clique no botão <strong>"Ficha Digital"</strong> no topo.
+                </p>
+
+                <h4>10. Por que não consigo cadastrar atividades no cronograma de um encontro?</h4>
+                <p>
+                    O cronograma só permite cadastro, edição e exclusão em encontros <strong>ativos</strong>. 
+                    Se o encontro estiver finalizado (status inativo), as ações de escrita ficam ocultas e 
+                    somente a visualização é disponibilizada.
+                </p>
+
+                <h4>11. A faixa etária de 16-23 anos é obrigatória?</h4>
+                <p>
+                    <strong>Não.</strong> O sistema não bloqueia inscrições fora desta faixa. Porém, encontristas 
+                    com menos de 16 ou mais de 23 anos aparecem sinalizados (⚠) no relatório de 
+                    <em>Análise Avançada</em> para que a coordenação possa avaliar cada caso.
+                </p>
+
+                <h4>12. O campo "Autorização do Responsável" é obrigatório para menores?</h4>
+                <p>
+                    Tecnicamente não, o sistema não bloqueia. Porém o relatório de conformidade identifica 
+                    menores de 18 anos sem dados de responsável preenchidos, permitindo que a secretaria tome as providências necessárias.
+                </p>
             </div>
 
-            <!-- 15. GLOSSÁRIO -->
-            <h2 id="glossario">15. Glossário</h2>
+            <!-- 16. GLOSSÁRIO -->
+            <h2 id="glossario">16. Glossário</h2>
 
             <div class="card">
                 <h3>📖 Termos e Definições</h3>
@@ -1867,6 +2142,38 @@
                             <td><strong>Venda</strong></td>
                             <td>Comercialização de produtos durante o encontro</td>
                         </tr>
+                        <tr>
+                            <td><strong>Cronograma de Atividades</strong></td>
+                            <td>Linha do tempo com todas as atividades do encontro, organizada por dia e horário</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Atividade do Encontro</strong></td>
+                            <td>Entrada no cronograma representando palestra, dinâmica, refeição, oração e outros eventos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tipo de Atividade</strong></td>
+                            <td>Categoria da atividade: PALESTRA, DINAMICA, REFEICAO, ORACAO, SILENCIO, INTERVALO, LOUVOR, TESTEMUNHO, ENCERRAMENTO, OUTRO</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dados de Saúde</strong></td>
+                            <td>Informações médicas do encontrista: alergias, restrições alimentares, medicamentos e condição médica</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Contato de Emergência</strong></td>
+                            <td>Pessoa a ser acionada em caso de emergência durante o encontro</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Responsável Legal</strong></td>
+                            <td>Responsável por menores de 18 anos que deve autorizar a participação</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Faixa Etária Padrão</strong></td>
+                            <td>Intervalo de 16 a 23 anos definido como o esperado para encontristas</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Análise Avançada</strong></td>
+                            <td>Aba de relatórios com indicadores de distribuição etária, conformidade, conversão e dados de saúde</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -1878,8 +2185,8 @@
                     consulte a equipe de suporte técnico ou acesse a documentação técnica do sistema.
                 </p>
                 <p style="margin-bottom: 0;">
-                    <strong>Última atualização:</strong> Abril 2026<br>
-                    <strong>Versão do Sistema:</strong> 2.0
+                    <strong>Última atualização:</strong> Junho 2026<br>
+                    <strong>Versão do Sistema:</strong> 3.0
                 </p>
             </div>
 

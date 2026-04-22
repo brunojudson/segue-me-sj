@@ -4126,7 +4126,7 @@ body.dark-mode .categoria-tag {
     flex-shrink: 0;
 }
 
-/* Container das fotos do casal */
+/* Container das fotos do casal — apenas no dialog de casal */
 .modal-pessoa-photos {
     display: flex;
     align-items: center;
@@ -4162,7 +4162,7 @@ body.dark-mode .categoria-tag {
 
 @keyframes heartbeat {
     0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    50% { transform: translate(-50%, -50%) scale(1.1); }
+    50%       { transform: translate(-50%, -50%) scale(1.15); }
 }
 
 /* Wrapper de cada foto */
@@ -4206,18 +4206,37 @@ body.dark-mode .categoria-tag {
     word-wrap: break-word;
 }
 
-/* Info principal do casal - centralizada */
-.modal-pessoa-avatar-section .modal-pessoa-info-principal {
+/* Info principal do casal - centralizada (escopo: somente dialog casal) */
+.detalhes-casal-dialog .modal-pessoa-info-principal {
     text-align: center;
     width: 100%;
 }
 
-/* Info principal do casal - centralizada */
-.modal-pessoa-avatar-section .modal-pessoa-info-principal {
-    text-align: center;
+/* =============================================
+   Overrides exclusivos do dialog de Casal
+   ============================================= */
+
+/* Empilha meta-info acima das fotos */
+.detalhes-casal-dialog .modal-pessoa-avatar-section {
+    flex-direction: column;
+    align-items: center;
     width: 100%;
 }
 
+/* Fotos lado a lado com espaço para o coração */
+.detalhes-casal-dialog .modal-pessoa-photos {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 4.5rem;
+    padding: 0.5rem 0;
+}
+
+/* Coração posicionado no centro vertical do círculo (120px / 2 = 60px + 4px borda) */
+.detalhes-casal-dialog .modal-pessoa-photos::before {
+    top: 64px;
+    transform: translate(-50%, -50%);
+    animation: heartbeat 2s ease-in-out infinite;
+}
 .modal-pessoa-foto-placeholder {
     width: 72px;
     height: 72px;
@@ -4320,13 +4339,14 @@ body.dark-mode .categoria-tag {
         padding: 1rem;
     }
     
-    .modal-pessoa-photos {
+    .detalhes-casal-dialog .modal-pessoa-photos {
         flex-direction: column;
-        gap: 3rem;
-        padding: 2rem 0;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.5rem 0;
     }
     
-    .modal-pessoa-photos::before {
+    .detalhes-casal-dialog .modal-pessoa-photos::before {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%) rotate(90deg);
@@ -5238,5 +5258,103 @@ body.dark-mode .status-badge.aberto {
     .venda-inline-form > .venda-inline-actions {
         flex: 1 1 100% !important;
         justify-content: flex-end !important;
+    }
+}
+
+/* =============================================
+   Saúde e Emergência — botão trigger + dialog
+   ============================================= */
+
+.saude-trigger-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--sm-surface2);
+    border: 1px solid var(--sm-border);
+    border-left: 4px solid var(--sm-accent2);
+    border-radius: 6px;
+}
+
+.saude-trigger-btn.ui-button {
+    background: var(--sm-accent2) !important;
+    border-color: var(--sm-accent2) !important;
+    color: #fff !important;
+    font-size: 0.88rem !important;
+    padding: 0.45rem 1rem !important;
+    white-space: nowrap;
+}
+
+.saude-trigger-btn.ui-button:hover {
+    filter: brightness(1.1);
+}
+
+.saude-trigger-hint {
+    font-size: 0.82rem;
+    color: var(--sm-text-muted);
+}
+
+/* Dialog */
+.saude-dialog .ui-dialog-titlebar {
+    background: var(--sm-accent2) !important;
+    color: #fff !important;
+    border-radius: 6px 6px 0 0;
+}
+
+.saude-dialog .ui-dialog-titlebar .ui-dialog-titlebar-icon {
+    color: #fff !important;
+}
+
+.saude-dialog .ui-dialog-content {
+    padding: 0 !important;
+}
+
+.saude-dialog .ui-dialog-footer {
+    border-top: 1px solid var(--sm-border);
+    padding: 0.6rem 1rem;
+    text-align: right;
+}
+
+/* TabView dentro do dialog */
+.saude-tabview .ui-tabs-nav {
+    background: var(--sm-surface2) !important;
+    border-bottom: 2px solid var(--sm-accent2) !important;
+}
+
+.saude-tabview .ui-tabs-nav .ui-tabs-header.ui-state-active a {
+    color: var(--sm-accent2) !important;
+    font-weight: 600;
+}
+
+.saude-tabview .ui-tabs-panels {
+    padding: 1.25rem !important;
+}
+
+/* Grid dos campos dentro do dialog */
+.dialog-field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.dialog-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.dialog-field-group label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--sm-text-muted);
+}
+
+@media (max-width: 640px) {
+    .dialog-field-grid {
+        grid-template-columns: 1fr;
+    }
+    .saude-trigger-bar {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
