@@ -147,11 +147,7 @@
 							action="#{casalController.salvarEContinuar}"
 							update="@form messages" process="@form"
 							styleClass="ui-button-info action-button-secondary"
-							validateClient="true" oncomplete="handleSaveComplete(args);" />
-
-						<p:button value="❌ Cancelar" outcome="/pages/casal/lista.xhtml"
-							icon="pi pi-times"
-							styleClass="ui-button-secondary action-button-cancel" />
+						validateClient="true" oncomplete="handleSaveAndContinueComplete(args);" />
 					</div>
 
 					<div class="form-help">

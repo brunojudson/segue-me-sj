@@ -272,6 +272,7 @@
                             styleClass="ui-button-info action-button-secondary" 
                             action="#{movimentoFinanceiroController.salvarEContinuar()}"
                             update="@form messages"
+                            oncomplete="handleSaveAndContinueComplete(args);"
                             aria-label="Salvar e cadastrar outro" />
                         <p:button value="❌ Cancelar" 
                             outcome="/pages/financeiro/lista.xhtml"

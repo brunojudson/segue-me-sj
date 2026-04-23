@@ -80,6 +80,9 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 		return entityManager.createQuery(
 				"SELECT DISTINCT t FROM Trabalhador t " +
 						"LEFT JOIN FETCH t.pessoa " +
+						"LEFT JOIN FETCH t.casal ca " +
+						"LEFT JOIN FETCH ca.pessoa1 " +
+						"LEFT JOIN FETCH ca.pessoa2 " +
 						"LEFT JOIN FETCH t.equipe e " +
 						"LEFT JOIN FETCH e.tipoEquipe " +
 						"LEFT JOIN FETCH t.encontro " +
@@ -87,7 +90,7 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 						"LEFT JOIN FETCH en.pessoa " +
 						"LEFT JOIN FETCH en.encontro " +
 						"LEFT JOIN FETCH t.contribuicoes " +
-						"LEFT JOIN FETCH t.cargos " + // Adicione esta linha
+						"LEFT JOIN FETCH t.cargos " +
 						"WHERE t.ativo = true",
 				Trabalhador.class)
 				.getResultList();
@@ -96,19 +99,24 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 	@Override
 	public List<Trabalhador> findAllDistinct() {
 	    return entityManager.createQuery(
-	            "SELECT DISTINCT t FROM Trabalhador t " +
+	            "SELECT t FROM Trabalhador t " +
 	                    "LEFT JOIN FETCH t.pessoa p " +
+	                    "LEFT JOIN FETCH t.casal ca " +
+	                    "LEFT JOIN FETCH ca.pessoa1 cp1 " +
+	                    "LEFT JOIN FETCH ca.pessoa2 cp2 " +
 	                    "LEFT JOIN FETCH t.equipe e " +
 	                    "LEFT JOIN FETCH e.tipoEquipe " +
 	                    "LEFT JOIN FETCH t.encontro " +
 	                    "LEFT JOIN FETCH t.encontrista en " +
 	                    "LEFT JOIN FETCH en.pessoa " +
-	                    "LEFT JOIN FETCH t.contribuicoes " + // Carrega Contribuições
-	                    "LEFT JOIN FETCH t.cargos " +        // Carrega Cargos
+	                    "LEFT JOIN FETCH t.contribuicoes " +
+	                    "LEFT JOIN FETCH t.cargos " +
 	                    "WHERE t.id IN (" +
-	                    "    SELECT MIN(t2.id) FROM Trabalhador t2 GROUP BY t2.pessoa.id" +
+	                    "    SELECT MIN(t2.id) FROM Trabalhador t2 WHERE t2.pessoa IS NOT NULL GROUP BY t2.pessoa.id" +
+	                    ") OR t.id IN (" +
+	                    "    SELECT MIN(t2.id) FROM Trabalhador t2 WHERE t2.casal IS NOT NULL GROUP BY t2.casal.id" +
 	                    ") " +
-	                    "ORDER BY t.pessoa.nome, t.id",
+	                    "ORDER BY t.id",
 	            Trabalhador.class).getResultList();
 	}
 

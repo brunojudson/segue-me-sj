@@ -139,14 +139,11 @@
 								process="@form"
 								styleClass="ui-button-info action-button-secondary"
 								validateClient="true"
-								oncomplete="handleSaveComplete(args);" />
-
+						oncomplete="handleSaveAndContinueComplete(args);" />
                         <p:button value="❌ Cancelar" 
                                 outcome="/pages/dirigente/lista.xhtml"
                                 styleClass="ui-button-secondary action-button-cancel" />
-                    </div>
-                    
-                    <div class="form-help">
+                    </div>                    <div class="form-help">
                         <small>
                             <i class="pi pi-info-circle"></i>
                             Campos marcados com * são obrigatórios. 

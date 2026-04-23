@@ -423,8 +423,34 @@ function hideLoadingOverlay() {
     }
 }
 
+// Função para lidar com o botão "Salvar e Continuar" — rola ao topo e foca o primeiro campo
+function handleSaveAndContinueComplete(args) {
+    if (args && !args.validationFailed) {
+        showSuccessToast('Dados salvos com sucesso!');
+        scrollToTop();
+        // Foca o primeiro campo editável do formulário após o AJAX atualizar o DOM
+        setTimeout(function() {
+            var form = document.querySelector('.modern-form');
+            if (!form) { return; }
+            var selector = [
+                'input:not([type="hidden"]):not([disabled]):not([readonly])',
+                'select:not([disabled]):not([readonly])',
+                'textarea:not([disabled]):not([readonly])'
+            ].join(', ');
+            var firstField = form.querySelector(selector);
+            if (firstField) {
+                firstField.focus();
+            }
+        }, 300);
+    } else if (args && args.validationFailed) {
+        showErrorToast('Por favor, corrija os erros antes de continuar.');
+        focusFirstError();
+    }
+}
+
 // Expor funções globalmente
 window.handleSaveComplete = handleSaveComplete;
+window.handleSaveAndContinueComplete = handleSaveAndContinueComplete;
 window.showSuccessToast = showSuccessToast;
 window.showErrorToast = showErrorToast;
 window.confirmDangerousAction = confirmDangerousAction;

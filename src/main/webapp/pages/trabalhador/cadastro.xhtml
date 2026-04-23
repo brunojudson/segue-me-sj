@@ -259,7 +259,7 @@
                         <p:commandButton value="📋 Salvar e Continuar"
                             action="#{trabalhadorController.salvarEContinuar}" update="@form messages" process="@form"
                             styleClass="ui-button-info action-button-secondary" validateClient="true"
-                            oncomplete="handleSaveComplete(args);" />
+                            oncomplete="handleSaveAndContinueComplete(args);" />
 
                         <p:button value="❌ Cancelar" outcome="/pages/trabalhador/lista.xhtml"
                             styleClass="ui-button-secondary action-button-cancel" />
