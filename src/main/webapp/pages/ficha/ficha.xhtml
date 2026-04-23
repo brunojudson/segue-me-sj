@@ -15,18 +15,18 @@
     <title>Ficha Digital - Segue-me SJ</title>
     <style>
         :root {
-            --primary: #1565C0;
-            --primary-light: #1976D2;
-            --primary-dark: #0D47A1;
-            --accent: #FF6F00;
-            --bg: #f0f2f5;
+            --primary: #0d9668;
+            --primary-light: #10b87d;
+            --primary-dark: #0a7a52;
+            --accent: #7c3aed;
+            --bg: #f0f4f2;
             --card-bg: #ffffff;
             --text: #212529;
             --text-muted: #6c757d;
             --success: #2e7d32;
             --danger: #c62828;
-            --border: #dee2e6;
-            --shadow: 0 4px 24px rgba(0,0,0,0.10);
+            --border: #d4e8de;
+            --shadow: 0 4px 24px rgba(13,150,104,0.10);
             --radius: 12px;
         }
 
@@ -57,6 +57,14 @@
             padding: 1rem 1rem 2.5rem;
             text-align: center;
             position: relative;
+        }
+
+        .ficha-header .header-logo {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+            margin-bottom: 0.3rem;
         }
 
         .ficha-header .logo-text {
@@ -290,6 +298,20 @@
             background: var(--primary-dark);
         }
 
+        /* Linhas para escrita manual */
+        .escrita-manual-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-top: 0.15rem;
+        }
+
+        .escrita-linha {
+            border-bottom: 1px solid #b0c4b8;
+            height: 1.4rem;
+            display: block;
+        }
+
         /* Página de erro */
         .ficha-erro {
             text-align: center;
@@ -335,6 +357,7 @@
                 print-color-adjust: exact;
                 padding: 8px 10px 20px;
             }
+            .ficha-header .header-logo { width: 40px; height: 40px; margin-bottom: 2px; }
             .ficha-header .logo-text { font-size: 8pt; }
             .ficha-header .titulo { font-size: 9pt; }
             .foto-wrapper { margin-top: -16px; }
@@ -358,6 +381,7 @@
             .ficha-footer { margin-top: 4px; padding-top: 3px; }
             .ficha-footer span { font-size: 6pt; }
             .btn-imprimir { display: none !important; }
+            .escrita-linha { border-bottom: 1px solid #999; height: 1.2rem; }
             .status-badge, .circulo-badge, .sacramento-tag,
             .circulo-ROSA, .circulo-AZUL, .circulo-VERDE, .circulo-VERMELHO, .circulo-AMARELO,
             .sacramento-0, .sacramento-1, .sacramento-2, .sacramento-3,
@@ -375,6 +399,7 @@
         <ui:fragment rendered="#{fichaDigitalController.fichaEncontrada}">
             <!-- Header -->
             <div class="ficha-header">
+                <img src="#{request.contextPath}/javax.faces.resource/segue-me.png.xhtml?ln=images" alt="Logo Segue-me" class="header-logo" />
                 <div class="logo-text">Segue-me SJ</div>
                 <div class="titulo">Ficha Digital do Seguimista</div>
             </div>
@@ -619,14 +644,21 @@
                             </span>
                         </div>
 
-                        <ui:fragment rendered="#{not empty fichaDigitalController.observacoes}">
-                            <div class="dado-item dado-item-full">
+                        <div class="dado-item dado-item-full">
                                 <span class="dado-label">Observa&#231;&#245;es</span>
-                                <span class="dado-valor">
-                                    <h:outputText value="#{fichaDigitalController.observacoes}" />
-                                </span>
+                                <ui:fragment rendered="#{not empty fichaDigitalController.observacoes}">
+                                    <span class="dado-valor">
+                                        <h:outputText value="#{fichaDigitalController.observacoes}" />
+                                    </span>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{empty fichaDigitalController.observacoes}">
+                                    <div class="escrita-manual-container">
+                                        <span class="escrita-linha"></span>
+                                        <span class="escrita-linha"></span>
+                                        <span class="escrita-linha"></span>
+                                    </div>
+                                </ui:fragment>
                             </div>
-                        </ui:fragment>
                     </div>
                 </div>
 

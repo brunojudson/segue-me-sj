@@ -378,13 +378,17 @@ body .ui-panelgrid .ui-panelgrid-cell {
 .logo-icon {
     width: 36px;
     height: 36px;
-    background: linear-gradient(135deg, var(--sm-accent), var(--sm-accent2));
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1em;
-    color: var(--sm-btn-text);
+    overflow: hidden;
+}
+
+.logo-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .logo-text {
