@@ -11,22 +11,22 @@
    ══════════════════════════════════════════════════════════════════════ */
 
 :root {
-    --sm-bg:        #f0f2f5;
+    --sm-bg:        #faf5ef;
     --sm-surface:   #ffffff;
-    --sm-surface2:  #f7f8fa;
-    --sm-surface3:  #ebedf0;
+    --sm-surface2:  #F8E9DD;
+    --sm-surface3:  #f0d9b5;
     --sm-border:    rgba(0, 0, 0, 0.08);
-    --sm-accent:    #0d9668;
-    --sm-accent2:   #7c3aed;
+    --sm-accent:    #FFB819;
+    --sm-accent2:   #8A4A2A;
     --sm-danger:    #dc2626;
     --sm-warn:      #d97706;
     --sm-text:      #1a1a2e;
-    --sm-muted:     #6b7280;
+    --sm-muted:     #A8A8A7;
     --sm-radius:    10px;
-    --sm-btn-text:  #ffffff;
+    --sm-btn-text:  #1a1a2e;
     --sm-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
     --sm-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-    --sm-card-bg:   #f0f4fa;
+    --sm-card-bg:   #F8E9DD;
     --header-h:     56px;
     --sidebar-w:    240px;
 }
@@ -44,12 +44,12 @@ body.dark-mode {
     --sm-surface2:  #1a1b24;
     --sm-surface3:  #22232f;
     --sm-border:    rgba(255, 255, 255, 0.07);
-    --sm-accent:    #6df0c8;
-    --sm-accent2:   #a78bfa;
+    --sm-accent:    #FFD166;
+    --sm-accent2:   #c47a4a;
     --sm-danger:    #f87171;
     --sm-warn:      #fbbf24;
     --sm-text:      #e4e4f0;
-    --sm-muted:     #6b6b82;
+    --sm-muted:     #A8A8A7;
     --sm-btn-text:  #0b0c10;
     --sm-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
     --sm-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -279,10 +279,10 @@ body.dark-mode {
     background: currentColor;
 }
 
-.sm-tag-green  { background: rgba(109, 240, 200, 0.1); color: var(--sm-accent); }
+.sm-tag-green  { background: rgba(255, 184, 25, 0.12); color: var(--sm-accent); }
 .sm-tag-red    { background: rgba(248, 113, 113, 0.1); color: var(--sm-danger); }
 .sm-tag-warn   { background: rgba(251, 191, 36, 0.1);  color: var(--sm-warn); }
-.sm-tag-purple { background: rgba(167, 139, 250, 0.1); color: var(--sm-accent2); }
+.sm-tag-purple { background: rgba(138, 74, 42, 0.12); color: var(--sm-accent2); }
 .sm-tag-muted  { background: var(--sm-surface3);        color: var(--sm-muted); }
 .sm-tag-blue   { background: rgba(59, 130, 246, 0.15);  color: #3b82f6; }
 
@@ -317,7 +317,7 @@ body.dark-mode {
 }
 
 .status-badge.ativo {
-    background: rgba(109, 240, 200, 0.1) !important;
+    background: rgba(255, 184, 25, 0.12) !important;
     color: var(--sm-accent) !important;
     border: none !important;
 }
@@ -360,8 +360,8 @@ body.dark-mode {
     font-size: 1.2rem;
 }
 
-.stat-icon.icon-green  { background: rgba(109, 240, 200, 0.1); color: var(--sm-accent); }
-.stat-icon.icon-purple { background: rgba(167, 139, 250, 0.1); color: var(--sm-accent2); }
+.stat-icon.icon-green  { background: rgba(255, 184, 25, 0.12); color: var(--sm-accent); }
+.stat-icon.icon-purple { background: rgba(138, 74, 42, 0.12); color: var(--sm-accent2); }
 .stat-icon.icon-blue   { background: rgba(96, 165, 250, 0.1);  color: #60a5fa; }
 .stat-icon.icon-yellow { background: rgba(251, 191, 36, 0.1);  color: var(--sm-warn); }
 .stat-icon.icon-red    { background: rgba(248, 113, 113, 0.1); color: var(--sm-danger); }
@@ -679,7 +679,7 @@ body.dark-mode {
 }
 
 .sacramento-0 { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
-.sacramento-1 { background: rgba(167, 139, 250, 0.15); color: #a78bfa; }
+.sacramento-1 { background: rgba(138, 74, 42, 0.15); color: #c47a4a; }
 .sacramento-2 { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
 .sacramento-3 { background: rgba(244, 114, 182, 0.15); color: #f472b6; }
 
@@ -4464,10 +4464,10 @@ html.dark-mode body .photo-wrapper:hover .modal-pessoa-foto {
     font-weight: bold;
 }
 
-/* Dashboard Card Variants — Green theme */
+/* Dashboard Card Variants — Brand theme */
 .card-info {
-    background: linear-gradient(135deg, var(--sm-accent) 0%, #065f46 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--sm-accent) 0%, #cc8f00 100%);
+    color: #1a1a2e;
 }
 
 .card-success {
@@ -4481,7 +4481,7 @@ html.dark-mode body .photo-wrapper:hover .modal-pessoa-foto {
 }
 
 .card-primary {
-    background: linear-gradient(135deg, var(--sm-accent2) 0%, #a78bfa 100%);
+    background: linear-gradient(135deg, var(--sm-accent2) 0%, #c47a4a 100%);
     color: white;
 }
 

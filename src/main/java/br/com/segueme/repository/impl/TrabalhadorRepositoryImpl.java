@@ -155,6 +155,8 @@ public class TrabalhadorRepositoryImpl implements TrabalhadorRepository {
 				"LEFT JOIN FETCH t.equipe e " +
 				"LEFT JOIN FETCH e.tipoEquipe " +
 				"LEFT JOIN FETCH t.encontro en " +
+				"LEFT JOIN FETCH t.contribuicoes " +
+				"LEFT JOIN FETCH t.cargos " +
 				"WHERE e.encontro.id = :encontroId",
 				Trabalhador.class)
 			.setParameter("encontroId", encontroId).getResultList();

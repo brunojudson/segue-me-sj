@@ -65,7 +65,7 @@
                                         <f:selectItem itemLabel="-- Selecione o trabalhador --" itemValue="#{null}" noSelectionOption="true"/>
                                         <f:selectItems value="#{vendaPedidoController.trabalhadores}"
                                                        var="trab"
-                                                       itemLabel="#{not empty trab.equipe ? trab.pessoa.nome.concat(' (').concat(trab.equipe.nome).concat(')') : trab.pessoa.nome}"
+                                                       itemLabel="#{not empty trab.equipe ? trab.nomeExibicao.concat(' (').concat(trab.equipe.nome).concat(')') : trab.nomeExibicao}"
                                                        itemValue="#{trab.id}"/>
                                             <p:ajax update="pnlEquipeSelecionada mensagensTrabalhador" process="@this" />
                                     </p:selectOneMenu>
@@ -117,7 +117,7 @@
                                 </div>
                                 <div class="pedido-info-item">
                                     <strong>Trabalhador:</strong> 
-                                    <span class="worker-name">#{vendaPedidoController.pedidoAtual.trabalhadorResponsavel.pessoa.nome}</span>
+                                    <span class="worker-name">#{vendaPedidoController.pedidoAtual.trabalhadorResponsavel.nomeExibicao}</span>
                                 </div>
                                 <div class="pedido-info-item">
                                     <strong>Equipe:</strong>
@@ -278,13 +278,13 @@
                             <div class="id-badge">#{pedido.numeroPedido}</div>
                         </p:column>
                         
-                        <p:column headerText="Trabalhador" sortBy="#{pedido.trabalhadorResponsavel.pessoa.nome}"
+                        <p:column headerText="Trabalhador" sortBy="#{pedido.trabalhadorResponsavel.nomeExibicao}"
                                   width="30%" responsivePriority="1">
                             <div class="worker-info">
                                 <div class="worker-avatar">
                                     <i class="pi pi-user"></i>
                                 </div>
-                                <div class="worker-name">#{pedido.trabalhadorResponsavel.pessoa.nome}</div>
+                                <div class="worker-name">#{pedido.trabalhadorResponsavel.nomeExibicao}</div>
                             </div>
                         </p:column>
                         
@@ -365,7 +365,7 @@
                                 <div class="worker-avatar">
                                     <i class="pi pi-user"></i>
                                 </div>
-                                <div class="worker-name">#{pedido.trabalhadorResponsavel.pessoa.nome}</div>
+                                <div class="worker-name">#{pedido.trabalhadorResponsavel.nomeExibicao}</div>
                             </div>
                         </p:column>
                         
@@ -401,7 +401,7 @@
                                     <span class="id-badge">#{vendaPedidoController.pedidoAtual.numeroPedido}</span>
                                     
                                     <strong>Trabalhador:</strong>
-                                    <span>#{vendaPedidoController.pedidoAtual.trabalhadorResponsavel.pessoa.nome}</span>
+                                    <span>#{vendaPedidoController.pedidoAtual.trabalhadorResponsavel.nomeExibicao}</span>
                                     
                                     <strong>Equipe:</strong>
                                     <span class="team-name-muted">#{vendaPedidoController.equipeNomePedidoAtual}</span>
@@ -475,7 +475,7 @@
                                     <span class="id-badge">#{vendaPedidoController.pedidoParaPagamento.numeroPedido}</span>
                                     
                                     <strong>Trabalhador:</strong>
-                                    <span>#{vendaPedidoController.pedidoParaPagamento.trabalhadorResponsavel.pessoa.nome}</span>
+                                    <span>#{vendaPedidoController.pedidoParaPagamento.trabalhadorResponsavel.nomeExibicao}</span>
                                     
                                     <strong>Valor Total:</strong>
                                     <span class="price-value">

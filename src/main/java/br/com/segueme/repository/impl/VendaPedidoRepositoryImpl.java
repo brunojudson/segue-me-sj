@@ -41,8 +41,16 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                     "LEFT JOIN FETCH p.encontro e " +
                     "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
                     "LEFT JOIN FETCH tr.pessoa " +
+                    "LEFT JOIN FETCH tr.casal trca " +
+                    "LEFT JOIN FETCH trca.pessoa1 " +
+                    "LEFT JOIN FETCH trca.pessoa2 " +
+                    "LEFT JOIN FETCH tr.contribuicoes " +
+                    "LEFT JOIN FETCH tr.cargos " +
                     "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                     "LEFT JOIN FETCH ft.pessoa " +
+                    "LEFT JOIN FETCH ft.casal ftca " +
+                    "LEFT JOIN FETCH ftca.pessoa1 " +
+                    "LEFT JOIN FETCH ftca.pessoa2 " +
                     "LEFT JOIN FETCH p.usuarioRegistro " +
                     "LEFT JOIN FETCH p.itens i " +
                     "LEFT JOIN FETCH i.artigo " +
@@ -64,8 +72,14 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                     "LEFT JOIN FETCH p.encontro " +
                     "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
                     "LEFT JOIN FETCH tr.pessoa " +
+                    "LEFT JOIN FETCH tr.casal trca " +
+                    "LEFT JOIN FETCH trca.pessoa1 " +
+                    "LEFT JOIN FETCH trca.pessoa2 " +
                     "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                     "LEFT JOIN FETCH ft.pessoa " +
+                    "LEFT JOIN FETCH ft.casal ftca " +
+                    "LEFT JOIN FETCH ftca.pessoa1 " +
+                    "LEFT JOIN FETCH ftca.pessoa2 " +
                     "LEFT JOIN FETCH p.usuarioRegistro " +
                     "WHERE p.numeroPedido = :numeroPedido", 
                     VendaPedido.class)
@@ -84,8 +98,14 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                 "LEFT JOIN FETCH p.encontro " +
                 "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
                 "LEFT JOIN FETCH tr.pessoa " +
+                    "LEFT JOIN FETCH tr.casal trca " +
+                    "LEFT JOIN FETCH trca.pessoa1 " +
+                    "LEFT JOIN FETCH trca.pessoa2 " +
                 "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                 "LEFT JOIN FETCH ft.pessoa " +
+                    "LEFT JOIN FETCH ft.casal ftca " +
+                    "LEFT JOIN FETCH ftca.pessoa1 " +
+                    "LEFT JOIN FETCH ftca.pessoa2 " +
                 "LEFT JOIN FETCH p.usuarioRegistro " +
                 "LEFT JOIN FETCH p.itens i " +
                 "LEFT JOIN FETCH i.artigo " +
@@ -101,8 +121,14 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                 "LEFT JOIN FETCH p.encontro " +
                 "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
                 "LEFT JOIN FETCH tr.pessoa " +
+                    "LEFT JOIN FETCH tr.casal trca " +
+                    "LEFT JOIN FETCH trca.pessoa1 " +
+                    "LEFT JOIN FETCH trca.pessoa2 " +
                 "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                 "LEFT JOIN FETCH ft.pessoa " +
+                    "LEFT JOIN FETCH ft.casal ftca " +
+                    "LEFT JOIN FETCH ftca.pessoa1 " +
+                    "LEFT JOIN FETCH ftca.pessoa2 " +
                 "LEFT JOIN FETCH p.usuarioRegistro " +
                 "LEFT JOIN FETCH p.itens i " +
                 "LEFT JOIN FETCH i.artigo " +
@@ -120,6 +146,9 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                 "LEFT JOIN FETCH p.encontro " +
                 "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
                 "LEFT JOIN FETCH tr.pessoa " +
+                    "LEFT JOIN FETCH tr.casal trca " +
+                    "LEFT JOIN FETCH trca.pessoa1 " +
+                    "LEFT JOIN FETCH trca.pessoa2 " +
                 "LEFT JOIN FETCH p.usuarioRegistro " +
                 "LEFT JOIN FETCH p.itens i " +
                 "LEFT JOIN FETCH i.artigo " +
@@ -137,8 +166,14 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                 "LEFT JOIN FETCH p.encontro " +
                 "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
                 "LEFT JOIN FETCH tr.pessoa " +
+                    "LEFT JOIN FETCH tr.casal trca " +
+                    "LEFT JOIN FETCH trca.pessoa1 " +
+                    "LEFT JOIN FETCH trca.pessoa2 " +
                 "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                 "LEFT JOIN FETCH ft.pessoa " +
+                    "LEFT JOIN FETCH ft.casal ftca " +
+                    "LEFT JOIN FETCH ftca.pessoa1 " +
+                    "LEFT JOIN FETCH ftca.pessoa2 " +
                 "LEFT JOIN FETCH p.usuarioRegistro " +
                 "LEFT JOIN FETCH p.itens i " +
                 "LEFT JOIN FETCH i.artigo " +
@@ -155,8 +190,16 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
             "LEFT JOIN FETCH p.encontro " +
             "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
             "LEFT JOIN FETCH tr.pessoa " +
+                    "LEFT JOIN FETCH tr.casal trca " +
+                    "LEFT JOIN FETCH trca.pessoa1 " +
+                    "LEFT JOIN FETCH trca.pessoa2 " +
+            "LEFT JOIN FETCH tr.contribuicoes " +
+            "LEFT JOIN FETCH tr.cargos " +
             "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
             "LEFT JOIN FETCH ft.pessoa " +
+                    "LEFT JOIN FETCH ft.casal ftca " +
+                    "LEFT JOIN FETCH ftca.pessoa1 " +
+                    "LEFT JOIN FETCH ftca.pessoa2 " +
             "LEFT JOIN FETCH p.usuarioRegistro " +
             "LEFT JOIN FETCH p.itens i " +
             "LEFT JOIN FETCH i.artigo " +
@@ -176,8 +219,16 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
             "LEFT JOIN FETCH p.encontro " +
             "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
             "LEFT JOIN FETCH tr.pessoa " +
+                    "LEFT JOIN FETCH tr.casal trca " +
+                    "LEFT JOIN FETCH trca.pessoa1 " +
+                    "LEFT JOIN FETCH trca.pessoa2 " +
+            "LEFT JOIN FETCH tr.contribuicoes " +
+            "LEFT JOIN FETCH tr.cargos " +
             "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
             "LEFT JOIN FETCH ft.pessoa " +
+                    "LEFT JOIN FETCH ft.casal ftca " +
+                    "LEFT JOIN FETCH ftca.pessoa1 " +
+                    "LEFT JOIN FETCH ftca.pessoa2 " +
             "LEFT JOIN FETCH p.usuarioRegistro " +
             "LEFT JOIN FETCH p.itens i " +
             "LEFT JOIN FETCH i.artigo " +
@@ -197,8 +248,14 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                 "LEFT JOIN FETCH p.encontro " +
                 "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
                 "LEFT JOIN FETCH tr.pessoa " +
+                    "LEFT JOIN FETCH tr.casal trca " +
+                    "LEFT JOIN FETCH trca.pessoa1 " +
+                    "LEFT JOIN FETCH trca.pessoa2 " +
                 "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                 "LEFT JOIN FETCH ft.pessoa " +
+                    "LEFT JOIN FETCH ft.casal ftca " +
+                    "LEFT JOIN FETCH ftca.pessoa1 " +
+                    "LEFT JOIN FETCH ftca.pessoa2 " +
                 "LEFT JOIN FETCH p.usuarioRegistro " +
                 "LEFT JOIN FETCH p.itens i " +
                 "LEFT JOIN FETCH i.artigo " +
@@ -218,8 +275,14 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                 "LEFT JOIN FETCH p.encontro " +
                 "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
                 "LEFT JOIN FETCH tr.pessoa " +
+                    "LEFT JOIN FETCH tr.casal trca " +
+                    "LEFT JOIN FETCH trca.pessoa1 " +
+                    "LEFT JOIN FETCH trca.pessoa2 " +
                 "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                 "LEFT JOIN FETCH ft.pessoa " +
+                    "LEFT JOIN FETCH ft.casal ftca " +
+                    "LEFT JOIN FETCH ftca.pessoa1 " +
+                    "LEFT JOIN FETCH ftca.pessoa2 " +
                 "LEFT JOIN FETCH p.usuarioRegistro " +
                 "LEFT JOIN FETCH p.itens i " +
                 "LEFT JOIN FETCH i.artigo " +
@@ -238,8 +301,14 @@ public class VendaPedidoRepositoryImpl implements VendaPedidoRepository {
                 "LEFT JOIN FETCH p.encontro " +
                 "LEFT JOIN FETCH p.trabalhadorResponsavel tr " +
                 "LEFT JOIN FETCH tr.pessoa " +
+                    "LEFT JOIN FETCH tr.casal trca " +
+                    "LEFT JOIN FETCH trca.pessoa1 " +
+                    "LEFT JOIN FETCH trca.pessoa2 " +
                 "LEFT JOIN FETCH p.fechadoPorTrabalhador ft " +
                 "LEFT JOIN FETCH ft.pessoa " +
+                    "LEFT JOIN FETCH ft.casal ftca " +
+                    "LEFT JOIN FETCH ftca.pessoa1 " +
+                    "LEFT JOIN FETCH ftca.pessoa2 " +
                 "LEFT JOIN FETCH p.usuarioRegistro " +
                 "LEFT JOIN FETCH p.itens i " +
                 "LEFT JOIN FETCH i.artigo " +

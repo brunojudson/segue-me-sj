@@ -193,14 +193,14 @@
                             </span>
                         </p:column>
                         
-                        <p:column headerText="Trabalhador" width="22%" sortBy="#{pedido.trabalhadorResponsavel.pessoa.nome}"
-                                  filterBy="#{pedido.trabalhadorResponsavel.pessoa.nome}" filterMatchMode="contains"
+                        <p:column headerText="Trabalhador" width="22%" sortBy="#{pedido.trabalhadorResponsavel.nomeExibicao}"
+                                  filterBy="#{pedido.trabalhadorResponsavel.nomeExibicao}" filterMatchMode="contains"
                                   responsivePriority="1">
                             <div class="worker-info">
                                 <div class="worker-avatar">
                                     <i class="pi pi-user"></i>
                                 </div>
-                                <div class="worker-name">#{pedido.trabalhadorResponsavel.pessoa.nome}</div>
+                                <div class="worker-name">#{pedido.trabalhadorResponsavel.nomeExibicao}</div>
                             </div>
                         </p:column>
                         
@@ -309,7 +309,7 @@
                                             <label>Trabalhador Responsável:</label>
                                             <div class="worker-name">
                                                 <i class="pi pi-user" style="margin-right: 0.5rem; color: var(--sm-accent);"></i>
-                                                #{vendaPedidoController.pedidoSelecionado.trabalhadorResponsavel.pessoa.nome}
+                                                #{vendaPedidoController.pedidoSelecionado.trabalhadorResponsavel.nomeExibicao}
                                             </div>
                                         </div>
                                         <div class="info-item">
@@ -454,7 +454,7 @@
                                     <strong>Pedido:</strong>
                                     <span class="id-badge">#{vendaPedidoController.pedidoAtual.numeroPedido}</span>
                                     <strong>Trabalhador:</strong>
-                                    <span>#{vendaPedidoController.pedidoAtual.trabalhadorResponsavel.pessoa.nome}</span>
+                                    <span>#{vendaPedidoController.pedidoAtual.trabalhadorResponsavel.nomeExibicao}</span>
                                     <strong>Valor Total:</strong>
                                     <span class="price-value">
                                         <h:outputText value="#{vendaPedidoController.pedidoAtual.valorTotal}">

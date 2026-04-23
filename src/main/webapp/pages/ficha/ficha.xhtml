@@ -15,18 +15,18 @@
     <title>Ficha Digital - Segue-me SJ</title>
     <style>
         :root {
-            --primary: #0d9668;
-            --primary-light: #10b87d;
-            --primary-dark: #0a7a52;
-            --accent: #7c3aed;
-            --bg: #f0f4f2;
+            --primary: #FFB819;
+            --primary-light: #ffc94d;
+            --primary-dark: #cc8f00;
+            --accent: #8A4A2A;
+            --bg: #faf5ef;
             --card-bg: #ffffff;
             --text: #212529;
-            --text-muted: #6c757d;
+            --text-muted: #A8A8A7;
             --success: #2e7d32;
             --danger: #c62828;
-            --border: #d4e8de;
-            --shadow: 0 4px 24px rgba(13,150,104,0.10);
+            --border: #f0d9b5;
+            --shadow: 0 4px 24px rgba(255,184,25,0.12);
             --radius: 12px;
         }
 
@@ -51,41 +51,56 @@
 
         /* Header / Banner */
         .ficha-header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: #fff;
+            background: #fff;
+            border-top: 5px solid var(--primary);
+            border-bottom: 1px solid var(--border);
             border-radius: var(--radius) var(--radius) 0 0;
-            padding: 1rem 1rem 2.5rem;
+            padding: 1.5rem 1rem 1.25rem;
             text-align: center;
             position: relative;
         }
 
         .ficha-header .header-logo {
-            width: 56px;
-            height: 56px;
+            width: 80px;
+            height: 80px;
             object-fit: contain;
-            filter: brightness(0) invert(1);
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .ficha-header .logo-text {
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 2px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            opacity: 0.85;
+            color: var(--accent);
             margin-bottom: 0.15rem;
         }
 
         .ficha-header .titulo {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 400;
-            opacity: 0.9;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        /* Linha decorativa abaixo do header */
+        .ficha-header::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 2px;
+            background: var(--primary);
+            margin: 0.75rem auto 0;
+            border-radius: 2px;
         }
 
         /* Foto avatar */
         .foto-wrapper {
             position: relative;
-            margin-top: -2rem;
+            margin-top: 0.75rem;
             text-align: center;
             z-index: 2;
         }
@@ -94,9 +109,9 @@
             width: 72px;
             height: 72px;
             border-radius: 50%;
-            border: 3px solid var(--card-bg);
+            border: 3px solid var(--border);
             object-fit: cover;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
             background: #e0e0e0;
         }
 
@@ -120,7 +135,7 @@
         .ficha-encontro {
             text-align: center;
             font-size: 0.8rem;
-            color: var(--primary);
+            color: var(--accent);
             font-weight: 500;
             margin-top: 0.1rem;
         }
@@ -159,10 +174,10 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            color: var(--primary);
+            color: var(--accent);
             margin-bottom: 0.3rem;
             padding-bottom: 0.2rem;
-            border-bottom: 1.5px solid var(--primary);
+            border-bottom: 1.5px solid var(--accent);
             display: flex;
             align-items: center;
             gap: 0.3rem;
@@ -284,11 +299,11 @@
             padding: 0.6rem;
             margin-top: 0.75rem;
             background: var(--primary);
-            color: #fff;
+            color: #1a1a2e;
             border: none;
             border-radius: 8px;
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             text-align: center;
             transition: background 0.2s;
@@ -296,6 +311,7 @@
 
         .btn-imprimir:hover {
             background: var(--primary-dark);
+            color: #fff;
         }
 
         /* Linhas para escrita manual */
@@ -307,9 +323,29 @@
         }
 
         .escrita-linha {
-            border-bottom: 1px solid #b0c4b8;
+            border-bottom: 1px solid #c9a87a;
             height: 1.4rem;
             display: block;
+        }
+
+        /* Seção de Observações (ao final) */
+        .obs-secao {
+            background: #faf5ef;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            margin-top: 0.5rem;
+        }
+
+        .obs-texto {
+            font-size: 0.82rem;
+            color: var(--text);
+            line-height: 1.6;
+            padding: 0.4rem 0.5rem;
+            background: #fff;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+            margin-bottom: 0.5rem;
         }
 
         /* Página de erro */
@@ -346,46 +382,81 @@
             .ficha-dados-grid { grid-template-columns: 1fr; }
         }
 
-        /* Print - compacto para caber em 1 folha */
+        /* Print - compacto para caber em 1 folha A4 */
         @media print {
-            @page { margin: 8mm 10mm; size: A4; }
-            body { background: #fff; padding: 0; font-size: 9pt; }
+            @page { margin: 5mm 7mm; size: A4; }
+            body { background: #fff; padding: 0; font-size: 7.5pt; }
             .ficha-container { box-shadow: none; max-width: 100%; margin: 0; }
+
+            /* Header horizontal compacto */
             .ficha-header {
-                background: var(--primary) !important;
+                background: #fff !important;
+                border-top: 3px solid #FFB819;
+                border-bottom: 1px solid #f0d9b5;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
-                padding: 8px 10px 20px;
+                padding: 4px 8px;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+                text-align: left;
+                border-radius: 0;
             }
-            .ficha-header .header-logo { width: 40px; height: 40px; margin-bottom: 2px; }
-            .ficha-header .logo-text { font-size: 8pt; }
-            .ficha-header .titulo { font-size: 9pt; }
-            .foto-wrapper { margin-top: -16px; }
-            .foto-avatar { width: 56px; height: 56px; border-width: 2px; }
-            .ficha-body { box-shadow: none; padding: 0 10px 8px; }
-            .ficha-nome { font-size: 12pt; margin-top: 4px; }
-            .ficha-encontro { font-size: 8pt; }
-            .status-badge { font-size: 6pt; padding: 1px 6px; margin-top: 2px; }
-            .ficha-divider { margin: 4px 0; }
-            .ficha-secao { margin-bottom: 1px; }
-            .secao-titulo { font-size: 6.5pt; margin-bottom: 2px; padding-bottom: 1px; }
-            .secao-icon { font-size: 8pt; }
-            .ficha-dados-grid { gap: 1px 8px; }
-            .dado-item { padding: 1px 0; }
-            .dado-label { font-size: 6pt; }
-            .dado-valor { font-size: 8pt; }
-            .sacramento-list { gap: 2px; }
-            .sacramento-tag { font-size: 6.5pt; padding: 0 3px; }
-            .circulo-badge { font-size: 7.5pt; padding: 0 4px; }
-            .circulo-dot { width: 6px; height: 6px; }
-            .ficha-footer { margin-top: 4px; padding-top: 3px; }
-            .ficha-footer span { font-size: 6pt; }
+            .ficha-header::after { display: none; }
+            .ficha-header .header-logo { width: 34px; height: 34px; margin: 0; flex-shrink: 0; }
+            .ficha-header .logo-text { font-size: 7pt; margin: 0; letter-spacing: 1.5px; }
+            .ficha-header .titulo { font-size: 6pt; color: #A8A8A7; }
+
+            /* Foto + nome compactos */
+            .foto-wrapper { margin-top: 3px; margin-bottom: 0; }
+            .foto-avatar { width: 40px; height: 40px; border-width: 2px; }
+            .ficha-nome { font-size: 9.5pt; margin-top: 2px; }
+            .ficha-encontro { font-size: 6.5pt; margin-top: 0; }
+            .status-badge { font-size: 5.5pt; padding: 1px 5px; margin-top: 1px; }
+            .status-center { margin-bottom: 0; }
+
+            /* Corpo compacto */
+            .ficha-body { box-shadow: none; padding: 0 8px 3px; }
+            .ficha-divider { margin: 2px 0; }
+            .ficha-secao { margin-bottom: 0; }
+            .secao-titulo { font-size: 5.5pt; margin-bottom: 1px; padding-bottom: 1px; border-bottom-width: 1px; }
+            .secao-icon { display: none; }
+            .ficha-dados-grid { gap: 0 8px; }
+            .dado-item { padding: 0; }
+            .dado-label { font-size: 5pt; line-height: 1.2; }
+            .dado-valor { font-size: 7pt; line-height: 1.2; }
+
+            /* Badges e tags */
+            .sacramento-list { gap: 1px; }
+            .sacramento-tag { font-size: 5.5pt; padding: 0 2px; }
+            .circulo-badge { font-size: 6.5pt; padding: 0 3px; }
+            .circulo-dot { width: 5px; height: 5px; }
+
+            /* Observações */
+            .obs-secao {
+                background: #faf5ef !important;
+                border: 1px solid #f0d9b5;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding: 2px 5px;
+                margin-top: 2px;
+                border-radius: 3px;
+            }
+            .obs-texto { border-left: 2px solid #FFB819; padding: 1px 3px; font-size: 6.5pt; margin-bottom: 2px; }
+            .escrita-manual-container { gap: 0.15rem; }
+            .escrita-linha { border-bottom: 1px solid #a08060; height: 0.85rem; }
+
+            /* Footer e botão */
+            .ficha-footer { margin-top: 2px; padding-top: 2px; }
+            .ficha-footer span { font-size: 5.5pt; }
             .btn-imprimir { display: none !important; }
-            .escrita-linha { border-bottom: 1px solid #999; height: 1.2rem; }
+
+            /* Forçar cores na impressão */
             .status-badge, .circulo-badge, .sacramento-tag,
             .circulo-ROSA, .circulo-AZUL, .circulo-VERDE, .circulo-VERMELHO, .circulo-AMARELO,
             .sacramento-0, .sacramento-1, .sacramento-2, .sacramento-3,
-            .status-ativo, .status-inativo {
+            .status-ativo, .status-inativo, .obs-secao {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -643,22 +714,6 @@
                                 </h:outputText>
                             </span>
                         </div>
-
-                        <div class="dado-item dado-item-full">
-                                <span class="dado-label">Observa&#231;&#245;es</span>
-                                <ui:fragment rendered="#{not empty fichaDigitalController.observacoes}">
-                                    <span class="dado-valor">
-                                        <h:outputText value="#{fichaDigitalController.observacoes}" />
-                                    </span>
-                                </ui:fragment>
-                                <ui:fragment rendered="#{empty fichaDigitalController.observacoes}">
-                                    <div class="escrita-manual-container">
-                                        <span class="escrita-linha"></span>
-                                        <span class="escrita-linha"></span>
-                                        <span class="escrita-linha"></span>
-                                    </div>
-                                </ui:fragment>
-                            </div>
                     </div>
                 </div>
 
@@ -738,9 +793,29 @@
                     <div class="ficha-divider" />
                 </ui:fragment>
 
+                <!-- =============================== -->
+                <!-- SEÇÃO: OBSERVAÇÕES              -->
+                <!-- =============================== -->
+                <div class="ficha-secao obs-secao">
+                    <div class="secao-titulo">
+                        <span class="secao-icon">&#128221;</span> Observa&#231;&#245;es
+                    </div>
+                    <h:panelGroup rendered="#{not empty fichaDigitalController.observacoes}" layout="block">
+                        <p class="obs-texto">
+                            <h:outputText value="#{fichaDigitalController.observacoes}" />
+                        </p>
+                    </h:panelGroup>
+                    <div class="escrita-manual-container">
+                        <span class="escrita-linha"></span>
+                        <span class="escrita-linha"></span>
+                        <span class="escrita-linha"></span>
+                    </div>
+                </div>
+
+                <div class="ficha-divider" style="margin-top:0.75rem;" />
+
                 <!-- Botão Imprimir -->
-                <button type="button" class="btn-imprimir" onclick="window.print()">
-                    &#128424; Imprimir Ficha
+                <button type="button" class="btn-imprimir" onclick="window.print()">                    &#128424; Imprimir Ficha
                 </button>
 
                 <!-- Footer -->

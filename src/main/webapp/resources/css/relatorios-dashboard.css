@@ -47,8 +47,8 @@
     color: var(--text-color, #1e293b);
 }
 .relatorio-dashboard .dash-tab.active {
-    color: var(--primary-color, #6df0c8);
-    border-bottom-color: var(--primary-color, #6df0c8);
+    color: var(--primary-color, #FFB819);
+    border-bottom-color: var(--primary-color, #FFB819);
 }
 
 /* --- Stats Grid --- */
@@ -88,8 +88,8 @@
     flex-shrink: 0;
     font-size: 1.3rem;
 }
-.relatorio-dashboard .dash-stat-icon.icon-green  { background: rgba(109, 240, 200, 0.1); color: #10b981; }
-.relatorio-dashboard .dash-stat-icon.icon-purple { background: rgba(167, 139, 250, 0.1); color: #a78bfa; }
+.relatorio-dashboard .dash-stat-icon.icon-green  { background: rgba(255, 184, 25, 0.12); color: #FFB819; }
+.relatorio-dashboard .dash-stat-icon.icon-purple { background: rgba(138, 74, 42, 0.12); color: #8A4A2A; }
 .relatorio-dashboard .dash-stat-icon.icon-blue   { background: rgba(96, 165, 250, 0.1);  color: #60a5fa; }
 .relatorio-dashboard .dash-stat-icon.icon-yellow { background: rgba(251, 191, 36, 0.1);  color: #f59e0b; }
 .relatorio-dashboard .dash-stat-icon.icon-teal   { background: rgba(45, 212, 191, 0.1);  color: #2dd4bf; }
@@ -119,8 +119,8 @@
     text-align: center;
 }
 .relatorio-dashboard .dash-stat-card-sm.highlight {
-    border-color: #10b981;
-    background: rgba(109, 240, 200, 0.03);
+    border-color: #FFB819;
+    background: rgba(255, 184, 25, 0.04);
 }
 .relatorio-dashboard .dash-stat-sm-value {
     font-size: 1.2rem;
@@ -195,7 +195,7 @@
 .relatorio-dashboard .dash-bar-fill.fill-blue   { background: #60a5fa; }
 .relatorio-dashboard .dash-bar-fill.fill-pink   { background: #f472b6; }
 .relatorio-dashboard .dash-bar-fill.fill-gray   { background: #94a3b8; }
-.relatorio-dashboard .dash-bar-fill.fill-accent  { background: #10b981; }
+.relatorio-dashboard .dash-bar-fill.fill-accent  { background: #FFB819; }
 .relatorio-dashboard .dash-bar-fill.fill-rose   { background: #fb7185; }
 
 /* --- Horizontal Bars --- */
@@ -231,7 +231,7 @@
     transition: width 0.5s ease;
     min-width: 2px;
 }
-.relatorio-dashboard .dash-h-bar-fill.fill-accent { background: #10b981; }
+.relatorio-dashboard .dash-h-bar-fill.fill-accent { background: #FFB819; }
 .relatorio-dashboard .dash-h-bar-fill.fill-rose   { background: #fb7185; }
 .relatorio-dashboard .dash-h-bar-value {
     font-size: 0.78rem;
@@ -263,15 +263,15 @@
     color: var(--text-color, #1e293b);
 }
 .relatorio-dashboard .dash-data-table tbody tr:hover {
-    background: rgba(109, 240, 200, 0.03);
+    background: rgba(255, 184, 25, 0.04);
 }
 .relatorio-dashboard .dash-data-table .text-center { text-align: center; }
 .relatorio-dashboard .dash-data-table .text-right { text-align: right; }
 .relatorio-dashboard .dash-data-table .cell-main { font-weight: 500; }
 .relatorio-dashboard .dash-data-table tfoot td {
     padding: 0.75rem;
-    background: rgba(109, 240, 200, 0.05);
-    border-top: 2px solid #10b981;
+    background: rgba(255, 184, 25, 0.06);
+    border-top: 2px solid #FFB819;
     font-weight: 700;
 }
 
@@ -305,8 +305,8 @@
     border-radius: 8px;
 }
 .relatorio-dashboard .dash-conversion-step.highlight {
-    border-color: #10b981;
-    background: rgba(109, 240, 200, 0.05);
+    border-color: #FFB819;
+    background: rgba(255, 184, 25, 0.05);
 }
 .relatorio-dashboard .dash-conversion-value {
     font-size: 1.5rem;
@@ -320,13 +320,13 @@
 }
 .relatorio-dashboard .dash-conversion-arrow {
     font-size: 1.5rem;
-    color: #10b981;
+    color: #FFB819;
     font-weight: 700;
 }
 .relatorio-dashboard .dash-conversion-info {
     text-align: center;
     font-size: 0.86rem;
-    color: #10b981;
+    color: #FFB819;
     font-weight: 600;
     padding-bottom: 0.5rem;
 }
@@ -376,7 +376,7 @@ body.dark-mode .relatorio-dashboard .dash-card {
 
 body.dark-mode .relatorio-dashboard .dash-stat-card-sm.highlight {
     border-color: var(--sm-accent) !important;
-    background: rgba(109, 240, 200, 0.05) !important;
+    background: rgba(255, 184, 25, 0.07) !important;
 }
 
 body.dark-mode .relatorio-dashboard .dash-stat-value,
@@ -434,7 +434,7 @@ body.dark-mode .relatorio-dashboard .dash-h-bar-value {
 .modern-card .card-sub { color: var(--text-color-secondary, #64748b); font-size:0.82rem; }
 .modern-card .card-body { padding: 0.75rem 0; font-size:0.92rem; color:var(--text-color,#1e293b); }
 .modern-card .card-footer { padding-top:0.5rem; border-top:1px solid var(--surface-border,#e6eef6); display:flex; justify-content:space-between; align-items:center; }
-.card-header .team-badge { background: linear-gradient(90deg,#6df0c8 0%, #60a5fa 100%); color: #083344; padding:0.25rem 0.6rem; border-radius:999px; font-weight:700; font-size:0.78rem; }
+.card-header .team-badge { background: linear-gradient(90deg,#FFB819 0%, #8A4A2A 100%); color: #1a1a2e; padding:0.25rem 0.6rem; border-radius:999px; font-weight:700; font-size:0.78rem; }
 
 /* Grid responsivo para os cards */
 @media (min-width: 1024px) {

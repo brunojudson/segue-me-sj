@@ -443,7 +443,7 @@ body .ui-panelgrid .ui-panelgrid-cell {
 }
 
 .header-btn:focus {
-    box-shadow: 0 0 0 2px rgba(109, 240, 200, 0.3) !important;
+    box-shadow: 0 0 0 2px rgba(255, 184, 25, 0.3) !important;
     color: var(--sm-text) !important;
 }
 
@@ -788,12 +788,12 @@ body .ui-panelgrid .ui-panelgrid-cell {
 }
 
 .dash-stat-icon.icon-green {
-    background: rgba(109, 240, 200, 0.1);
+    background: rgba(255, 184, 25, 0.12);
     color: var(--sm-accent);
 }
 
 .dash-stat-icon.icon-purple {
-    background: rgba(167, 139, 250, 0.1);
+    background: rgba(138, 74, 42, 0.12);
     color: var(--sm-accent2);
 }
 
@@ -1010,7 +1010,7 @@ body .ui-panelgrid .ui-panelgrid-cell {
 }
 
 .dash-quick-action:hover {
-    background: rgba(109, 240, 200, 0.05) !important;
+    background: rgba(255, 184, 25, 0.06) !important;
     border-color: var(--sm-accent) !important;
     color: var(--sm-accent) !important;
 }
@@ -1256,10 +1256,10 @@ body .ui-panelgrid .ui-panelgrid-cell {
     flex: 1;
 }
 
-/* Link ativo — indicador lateral verde */
+/* Link ativo — indicador lateral amarelo */
 .menu-link.active {
     color: var(--sm-accent) !important;
-    background: rgba(109, 240, 200, 0.08);
+    background: rgba(255, 184, 25, 0.09);
     font-weight: 600;
     border-left: none;
 }
@@ -1682,8 +1682,8 @@ body.menu-open .menu-overlay {
     align-items: center;
     justify-content: center;
     padding: 12px;
-    background: rgba(109, 240, 200, 0.06);
-    border: 1px solid rgba(109, 240, 200, 0.15);
+    background: rgba(255, 184, 25, 0.07);
+    border: 1px solid rgba(255, 184, 25, 0.18);
     border-radius: 8px;
     color: var(--sm-text);
     font-size: 0.84rem;
@@ -2004,7 +2004,7 @@ body.dark-mode a {
     color: var(--sm-btn-text) !important;
     border: none !important;
     font-weight: 600 !important;
-    box-shadow: 0 2px 8px rgba(109, 240, 200, 0.18) !important;
+    box-shadow: 0 2px 8px rgba(255, 184, 25, 0.22) !important;
 }
 
 .ui-tabs .ui-tabs-nav li.ui-state-active a::after {
