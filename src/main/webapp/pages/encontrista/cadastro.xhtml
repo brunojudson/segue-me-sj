@@ -205,6 +205,40 @@
 					</p:fieldset>
 				</div>
 
+			<!-- Seção: Avaliações e Aptidões -->
+			<div class="form-section">
+				<p:fieldset legend="⭐ Avaliações e Aptidões" styleClass="modern-fieldset" toggleable="true" collapsed="true">
+					<div class="field-grid">
+
+						<div class="field-group full-width">
+							<p:outputLabel for="avaliacaoGeral" value="Avaliação Geral" />
+							<p:inputTextarea id="avaliacaoGeral"
+											value="#{encontristaController.encontrista.avaliacaoGeral}"
+											rows="4" maxlength="1000"
+											placeholder="Observações sobre o perfil, comportamento, pontos fortes..." />
+							<small class="field-hint">Avaliação do seguimista para orientar designações futuras (máximo 1000 caracteres)</small>
+						</div>
+
+						<div class="field-group full-width">
+							<p:outputLabel for="aptidoes" value="Aptidões para Equipes" />
+							<p:selectCheckboxMenu id="aptidoes"
+											value="#{encontristaController.aptidoesSelecionadas}"
+											label="Selecionar aptidões"
+											multiple="true"
+											panelStyle="width:380px"
+											scrollHeight="280">
+								<f:selectItems value="#{encontristaController.aptidoesDisponiveis}"
+											var="apt"
+											itemLabel="#{apt.descricao}"
+											itemValue="#{apt}" />
+							</p:selectCheckboxMenu>
+							<small class="field-hint">Selecione as equipes para as quais o seguimista demonstra aptidão</small>
+						</div>
+
+					</div>
+				</p:fieldset>
+			</div>
+
 				<!-- Botões de Ação -->
 				<div class="form-actions">
 					<div class="action-buttons">

@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -575,6 +576,9 @@ public class PessoaController implements Serializable {
 				}
 			}
 			this.encontrosParticipados = new ArrayList<>(encontrosSet);
+			this.encontrosParticipados.sort(Comparator.comparing(
+					e -> e.getDataInicio() != null ? e.getDataInicio() : java.time.LocalDate.MIN,
+					Comparator.reverseOrder()));
 		} catch (Exception e) {
 			log.error("Erro ao carregar encontros para pessoa {}", pessoa.getId(), e);
 			this.encontrosParticipados = new ArrayList<>();

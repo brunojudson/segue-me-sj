@@ -298,15 +298,17 @@
 								<div class="info-item">
 									<label>Pai</label>
 									<span>
-										<h:outputText value="#{encontristaController.encontristaDetalhes.pessoa.filiacaoPai}" rendered="#{not empty encontristaController.encontristaDetalhes.pessoa.filiacaoPai}" />
-										<h:outputText value="Não informado" rendered="#{empty encontristaController.encontristaDetalhes.pessoa.filiacaoPai}" styleClass="empty-value" />
+										<h:outputText value="#{encontristaController.encontristaDetalhes.pessoa.pai.nome}" rendered="#{not empty encontristaController.encontristaDetalhes.pessoa.pai}" />
+										<h:outputText value="#{encontristaController.encontristaDetalhes.pessoa.filiacaoPai}" rendered="#{empty encontristaController.encontristaDetalhes.pessoa.pai and not empty encontristaController.encontristaDetalhes.pessoa.filiacaoPai}" />
+										<h:outputText value="Não informado" rendered="#{empty encontristaController.encontristaDetalhes.pessoa.pai and empty encontristaController.encontristaDetalhes.pessoa.filiacaoPai}" styleClass="empty-value" />
 									</span>
 								</div>
 								<div class="info-item">
 									<label>Mãe</label>
 									<span>
-										<h:outputText value="#{encontristaController.encontristaDetalhes.pessoa.filiacaoMae}" rendered="#{not empty encontristaController.encontristaDetalhes.pessoa.filiacaoMae}" />
-										<h:outputText value="Não informado" rendered="#{empty encontristaController.encontristaDetalhes.pessoa.filiacaoMae}" styleClass="empty-value" />
+										<h:outputText value="#{encontristaController.encontristaDetalhes.pessoa.mae.nome}" rendered="#{not empty encontristaController.encontristaDetalhes.pessoa.mae}" />
+										<h:outputText value="#{encontristaController.encontristaDetalhes.pessoa.filiacaoMae}" rendered="#{empty encontristaController.encontristaDetalhes.pessoa.mae and not empty encontristaController.encontristaDetalhes.pessoa.filiacaoMae}" />
+										<h:outputText value="Não informado" rendered="#{empty encontristaController.encontristaDetalhes.pessoa.mae and empty encontristaController.encontristaDetalhes.pessoa.filiacaoMae}" styleClass="empty-value" />
 									</span>
 								</div>
 								<div class="info-item">

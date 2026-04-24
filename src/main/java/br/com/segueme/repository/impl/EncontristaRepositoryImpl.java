@@ -36,6 +36,8 @@ public class EncontristaRepositoryImpl implements EncontristaRepository {
                     "SELECT e FROM Encontrista e " +
                     "JOIN FETCH e.pessoa p " +
                     "LEFT JOIN FETCH p.sacramentos " +
+                    "LEFT JOIN FETCH p.pai " +
+                    "LEFT JOIN FETCH p.mae " +
                     "JOIN FETCH e.encontro " +
                     "LEFT JOIN FETCH e.trabalhador " +
                     "WHERE e.id = :id", Encontrista.class)

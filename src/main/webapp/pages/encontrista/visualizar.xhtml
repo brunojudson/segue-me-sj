@@ -150,15 +150,17 @@
 									<div class="info-item">
 										<label>Pai</label>
 										<span>
-											<h:outputText value="#{encontristaController.encontrista.pessoa.filiacaoPai}" rendered="#{not empty encontristaController.encontrista.pessoa.filiacaoPai}" />
-											<h:outputText value="Não informado" rendered="#{empty encontristaController.encontrista.pessoa.filiacaoPai}" styleClass="empty-value" />
+											<h:outputText value="#{encontristaController.encontrista.pessoa.pai.nome}" rendered="#{not empty encontristaController.encontrista.pessoa.pai}" />
+											<h:outputText value="#{encontristaController.encontrista.pessoa.filiacaoPai}" rendered="#{empty encontristaController.encontrista.pessoa.pai and not empty encontristaController.encontrista.pessoa.filiacaoPai}" />
+											<h:outputText value="Não informado" rendered="#{empty encontristaController.encontrista.pessoa.pai and empty encontristaController.encontrista.pessoa.filiacaoPai}" styleClass="empty-value" />
 										</span>
 									</div>
 									<div class="info-item">
 										<label>Mãe</label>
 										<span>
-											<h:outputText value="#{encontristaController.encontrista.pessoa.filiacaoMae}" rendered="#{not empty encontristaController.encontrista.pessoa.filiacaoMae}" />
-											<h:outputText value="Não informado" rendered="#{empty encontristaController.encontrista.pessoa.filiacaoMae}" styleClass="empty-value" />
+											<h:outputText value="#{encontristaController.encontrista.pessoa.mae.nome}" rendered="#{not empty encontristaController.encontrista.pessoa.mae}" />
+											<h:outputText value="#{encontristaController.encontrista.pessoa.filiacaoMae}" rendered="#{empty encontristaController.encontrista.pessoa.mae and not empty encontristaController.encontrista.pessoa.filiacaoMae}" />
+											<h:outputText value="Não informado" rendered="#{empty encontristaController.encontrista.pessoa.mae and empty encontristaController.encontrista.pessoa.filiacaoMae}" styleClass="empty-value" />
 										</span>
 									</div>
 									<div class="info-item">

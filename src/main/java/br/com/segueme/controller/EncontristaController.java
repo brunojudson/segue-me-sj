@@ -1,6 +1,7 @@
 package br.com.segueme.controller;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -13,6 +14,7 @@ import javax.inject.Named;
 import br.com.segueme.entity.Encontrista;
 import br.com.segueme.entity.Encontro;
 import br.com.segueme.entity.Pessoa;
+import br.com.segueme.enums.AptidaoEquipe;
 import br.com.segueme.enums.Circulo;
 import br.com.segueme.service.EncontristaService;
 import br.com.segueme.service.EncontroService;
@@ -47,6 +49,9 @@ public class EncontristaController implements Serializable {
     // Modal detalhes
     private Encontrista encontristaDetalhes;
 
+    // Aptidões selecionadas (binding separado por causa do @ElementCollection)
+    private List<AptidaoEquipe> aptidoesSelecionadas = new ArrayList<>();
+
     private static final String CAMINHO_FOTOS = System.getProperty("caminho_fotos", "C:\\Desenvolvimento\\fotos") + java.io.File.separator;
     
     @PostConstruct
@@ -71,6 +76,7 @@ public class EncontristaController implements Serializable {
 
     public void limpar() {
         encontrista = new Encontrista();
+        aptidoesSelecionadas = new ArrayList<>();
     }
 
     public String salvar() {
@@ -83,6 +89,8 @@ public class EncontristaController implements Serializable {
 
     private String salvarInterno(boolean redirecionarParaLista) {
         try {
+            encontrista.setAptidoes(new ArrayList<>(aptidoesSelecionadas != null ? aptidoesSelecionadas : new ArrayList<>()));
+
             if (encontrista.getId() == null) {
                 encontristaService.salvar(encontrista);
                 FacesContext.getCurrentInstance().addMessage(null,
@@ -133,7 +141,12 @@ public class EncontristaController implements Serializable {
         String idParam = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("id");
         if (idParam != null && !idParam.isEmpty()) {
             Long id = Long.valueOf(idParam);
-            encontristaService.buscarPorId(id).ifPresent(e -> this.encontrista = e);
+            encontristaService.buscarPorId(id).ifPresent(e -> {
+                this.encontrista = e;
+                this.aptidoesSelecionadas = e.getAptidoes() != null
+                        ? new ArrayList<>(e.getAptidoes())
+                        : new ArrayList<>();
+            });
         }
     }
 
@@ -160,6 +173,19 @@ public class EncontristaController implements Serializable {
 
     public Circulo[] getCirculos() {
         return Circulo.values();
+    }
+
+    public AptidaoEquipe[] getAptidoesDisponiveis() {
+        return AptidaoEquipe.values();
+    }
+
+    public List<AptidaoEquipe> getAptidoesSelecionadas() {
+        if (aptidoesSelecionadas == null) aptidoesSelecionadas = new ArrayList<>();
+        return aptidoesSelecionadas;
+    }
+
+    public void setAptidoesSelecionadas(List<AptidaoEquipe> aptidoesSelecionadas) {
+        this.aptidoesSelecionadas = aptidoesSelecionadas;
     }
 
     public void abrirDetalhes(Encontrista encontrista) {

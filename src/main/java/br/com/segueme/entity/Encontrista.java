@@ -3,11 +3,15 @@ package br.com.segueme.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -21,6 +25,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import br.com.segueme.enums.AptidaoEquipe;
 import br.com.segueme.enums.Circulo;
 
 import javax.validation.constraints.DecimalMin;
@@ -117,6 +122,18 @@ public class Encontrista implements Serializable {
 
     @Column(name = "autorizacao_responsavel")
     private Boolean autorizacaoResponsavel;
+
+    // === Avaliações e Aptidões ===
+
+    @Size(max = 1000, message = "Avaliação deve ter no máximo 1000 caracteres")
+    @Column(name = "avaliacao_geral", length = 1000)
+    private String avaliacaoGeral;
+
+    @ElementCollection(targetClass = AptidaoEquipe.class, fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "encontrista_aptidao", joinColumns = @JoinColumn(name = "encontrista_id"))
+    @Column(name = "aptidao", nullable = false)
+    private List<AptidaoEquipe> aptidoes = new ArrayList<>();
 
     // Construtores
     public Encontrista() {
@@ -253,6 +270,12 @@ public class Encontrista implements Serializable {
 
     public Boolean getAutorizacaoResponsavel() { return autorizacaoResponsavel; }
     public void setAutorizacaoResponsavel(Boolean autorizacaoResponsavel) { this.autorizacaoResponsavel = autorizacaoResponsavel; }
+
+    public String getAvaliacaoGeral() { return avaliacaoGeral; }
+    public void setAvaliacaoGeral(String avaliacaoGeral) { this.avaliacaoGeral = avaliacaoGeral; }
+
+    public List<AptidaoEquipe> getAptidoes() { return aptidoes; }
+    public void setAptidoes(List<AptidaoEquipe> aptidoes) { this.aptidoes = aptidoes; }
 
     public void calcularIdade() {
         if (this.pessoa != null && this.pessoa.getDataNascimento() != null) {

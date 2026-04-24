@@ -213,7 +213,8 @@
 								<p:button icon="pi pi-pencil" title="Editar movimento"
 									outcome="/pages/financeiro/cadastro.xhtml"
 									styleClass="action-button-warn-table action-btn"
-									ariaLabel="Editar movimento">
+									ariaLabel="Editar movimento"
+									disabled="#{mov.encontro != null and not mov.encontro.ativo}">
 									<f:param name="id" value="#{mov.id}" />
 								</p:button>
 
@@ -222,7 +223,8 @@
 									action="#{movimentoFinanceiroController.prepararExclusao(mov)}"
 									update=":confirmDialog" oncomplete="PF('confirmDialog').show()"
 									styleClass="action-button-danger-table action-btn"
-									ariaLabel="Excluir movimento">
+									ariaLabel="Excluir movimento"
+									disabled="#{mov.encontro != null and not mov.encontro.ativo}">
 									<p:confirm header="Confirmar Exclusão"
 										message="Tem certeza que deseja excluir este movimento financeiro?"
 										icon="pi pi-exclamation-triangle" />
