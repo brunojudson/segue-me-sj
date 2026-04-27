@@ -260,43 +260,39 @@ public class TrabalhadorController implements Serializable {
 			// Recarregar a pessoa com relacionamentos pai/mãe para validação
 			Pessoa pessoaComPais = pessoaService.buscarPorIdComPais(pessoa.getId()).orElse(pessoa);
 			
-			logger.info(String.format("Validando parentesco - Pessoa ID: %d, Nome: %s, Pai ID: %s, Mãe ID: %s",
-				pessoaComPais.getId(),
-				pessoaComPais.getNome(),
-				pessoaComPais.getPai() != null ? pessoaComPais.getPai().getId() : "null",
-				pessoaComPais.getMae() != null ? pessoaComPais.getMae().getId() : "null"));
-			
+						
 			// Buscar todos os trabalhadores ativos da equipe
 			List<Trabalhador> trabalhadoresDaEquipe = trabalhadorService.buscarPorEquipe(equipeId)
 				.stream()
 				.filter(Trabalhador::isAtivo)
 				.collect(Collectors.toList());
 
-			logger.info(String.format("Equipe ID: %d (%s) tem %d trabalhadores ativos", equipeId, nomeEquipe, trabalhadoresDaEquipe.size()));
 
 			// Verificar se há parentes próximos
 			for (Trabalhador trabalhadorExistente : trabalhadoresDaEquipe) {
-				Pessoa pessoaExistente = trabalhadorExistente.getPessoa();
-				
+				// Coletar as pessoas deste trabalhador (individual ou casal)
+				List<Pessoa> pessoasDoTrabalhador = new java.util.ArrayList<>();
+				if (trabalhadorExistente.getPessoa() != null) {
+					pessoasDoTrabalhador.add(trabalhadorExistente.getPessoa());
+				} else if (trabalhadorExistente.getCasal() != null) {
+					if (trabalhadorExistente.getCasal().getPessoa1() != null)
+						pessoasDoTrabalhador.add(trabalhadorExistente.getCasal().getPessoa1());
+					if (trabalhadorExistente.getCasal().getPessoa2() != null)
+						pessoasDoTrabalhador.add(trabalhadorExistente.getCasal().getPessoa2());
+				}
+				for (Pessoa pessoaExistente : pessoasDoTrabalhador) {
 				// Pular se for a mesma pessoa (caso de edição)
-				if (pessoaExistente != null && pessoaExistente.getId().equals(pessoaComPais.getId())) {
+				if (pessoaExistente.getId() != null && pessoaExistente.getId().equals(pessoaComPais.getId())) {
 					continue;
 				}
 
 				// Recarregar pessoa existente com relacionamentos para validação
 				Pessoa pessoaExistenteComPais = pessoaService.buscarPorIdComPais(pessoaExistente.getId()).orElse(pessoaExistente);
 
-				logger.info(String.format("  Verificando contra - Pessoa ID: %d, Nome: %s, Pai ID: %s, Mãe ID: %s",
-					pessoaExistenteComPais.getId(),
-					pessoaExistenteComPais.getNome(),
-					pessoaExistenteComPais.getPai() != null ? pessoaExistenteComPais.getPai().getId() : "null",
-					pessoaExistenteComPais.getMae() != null ? pessoaExistenteComPais.getMae().getId() : "null"));
-
 				// Usar o método da entidade Pessoa para verificar parentesco
 				if (pessoaComPais.ehParenteProximoDe(pessoaExistenteComPais)) {
 					String tipoParentesco = determinarTipoParentesco(pessoaComPais, pessoaExistenteComPais);
-					logger.warning(String.format("PARENTESCO DETECTADO! %s é %s de %s",
-						pessoaComPais.getNome(), tipoParentesco, pessoaExistenteComPais.getNome()));
+					
 					throw new IllegalArgumentException(
 						String.format("Não é permitido adicionar %s na equipe '%s' pois %s '%s' já faz parte dela.",
 							pessoaComPais.getNome(),
@@ -304,9 +300,9 @@ public class TrabalhadorController implements Serializable {
 							tipoParentesco,
 							pessoaExistenteComPais.getNome()));
 				}
-			}
+				} // fim for pessoasDoTrabalhador
+			} // fim for trabalhadoresDaEquipe
 
-			logger.info("Validação de parentesco OK - Nenhum parente encontrado na equipe");
 			return true;
 
 		} catch (IllegalArgumentException e) {
@@ -508,14 +504,36 @@ public class TrabalhadorController implements Serializable {
 		// Verificação 1: pais na equipe
 		String nomePai = pessoa.getFiliacaoPai();
 		String nomeMae = pessoa.getFiliacaoMae();
+		Pessoa paiEntity = pessoa.getPai();
+		Pessoa maeEntity = pessoa.getMae();
 		List<Pessoa> membrosEquipe = equipeService.buscarMembrosDaEquipe(equipe.getId());
 		boolean paiNaEquipe = false;
 		boolean maeNaEquipe = false;
-		if (nomePai != null && !nomePai.trim().isEmpty()) {
-			paiNaEquipe = membrosEquipe.stream().anyMatch(p -> nomePai.equalsIgnoreCase(p.getNome()));
+		// Verificar pelo relacionamento de entidade (pai/mãe cadastrados como Pessoa)
+		if (paiEntity != null && paiEntity.getId() != null) {
+			paiNaEquipe = membrosEquipe.stream().filter(p -> p != null && p.getId() != null)
+					.anyMatch(p -> paiEntity.getId().equals(p.getId()));
+			if (paiNaEquipe && (nomePai == null || nomePai.trim().isEmpty())) {
+				nomePai = paiEntity.getNome();
+			}
 		}
-		if (nomeMae != null && !nomeMae.trim().isEmpty()) {
-			maeNaEquipe = membrosEquipe.stream().anyMatch(p -> nomeMae.equalsIgnoreCase(p.getNome()));
+		if (maeEntity != null && maeEntity.getId() != null) {
+			maeNaEquipe = membrosEquipe.stream().filter(p -> p != null && p.getId() != null)
+					.anyMatch(p -> maeEntity.getId().equals(p.getId()));
+			if (maeNaEquipe && (nomeMae == null || nomeMae.trim().isEmpty())) {
+				nomeMae = maeEntity.getNome();
+			}
+		}
+		// Verificar também pelos campos texto, caso não tenha entidade vinculada
+		if (!paiNaEquipe && nomePai != null && !nomePai.trim().isEmpty()) {
+			final String np = nomePai;
+			paiNaEquipe = membrosEquipe.stream().filter(p -> p != null)
+					.anyMatch(p -> np.equalsIgnoreCase(p.getNome()));
+		}
+		if (!maeNaEquipe && nomeMae != null && !nomeMae.trim().isEmpty()) {
+			final String nm = nomeMae;
+			maeNaEquipe = membrosEquipe.stream().filter(p -> p != null)
+					.anyMatch(p -> nm.equalsIgnoreCase(p.getNome()));
 		}
 		if (paiNaEquipe || maeNaEquipe) {
 			String msg = "Atenção: " + (paiNaEquipe ? "O pai " + nomePai : "") + (paiNaEquipe && maeNaEquipe ? " e " : "") + (maeNaEquipe ? "a mãe " + nomeMae : "") + " já faz(em) parte da equipe.";
