@@ -12,7 +12,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import br.com.segueme.entity.Dirigente;
+import br.com.segueme.entity.MotivoEncerramentoMandato;
 import br.com.segueme.entity.Pasta;
+import br.com.segueme.entity.StatusMandato;
 import br.com.segueme.entity.Trabalhador;
 import br.com.segueme.service.DirigenteService;
 import br.com.segueme.service.PastaService;
@@ -40,6 +42,9 @@ public class DirigenteController implements Serializable {
 
     private List<Trabalhador> trabalhadores;
     private List<Pasta> pastas;
+    
+    private MotivoEncerramentoMandato motivoEncerramento;
+    private String observacaoEncerramento;
 
     @PostConstruct
     public void init() {
@@ -65,9 +70,12 @@ public class DirigenteController implements Serializable {
     public void limpar() {
         dirigente = new Dirigente();
         dirigente.setAtivo(true);
+        dirigente.setStatusMandato(StatusMandato.ATIVO);
         dirigente.setDataInicio(LocalDate.now());
-        // Definir data de fim como 2 anos após a data de início (mandato padrão)
-        dirigente.setDataFim(LocalDate.now().plusYears(2));
+        // Mandato padrão de 1 ano (pode ser prorrogado por mais 1)
+        dirigente.setDataFim(LocalDate.now().plusYears(1));
+        this.motivoEncerramento = null;
+        this.observacaoEncerramento = null;
     }
 
     public String salvar() {
@@ -124,6 +132,62 @@ public class DirigenteController implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
         }
+    }
+
+    /**
+     * Prorroga o mandato do dirigente selecionado por mais 1 ano.
+     */
+    public void prorrogarMandato() {
+        try {
+            if (dirigenteSelecionado == null || dirigenteSelecionado.getId() == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", "Selecione um dirigente."));
+                return;
+            }
+            dirigenteService.prorrogarMandato(dirigenteSelecionado.getId());
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso",
+                    "Mandato prorrogado por mais 1 ano com sucesso!"));
+            carregarDirigentes();
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
+        }
+    }
+
+    /**
+     * Encerra o mandato do dirigente selecionado com o motivo e observação informados.
+     */
+    public void encerrarMandato() {
+        try {
+            if (dirigenteSelecionado == null || dirigenteSelecionado.getId() == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", "Selecione um dirigente."));
+                return;
+            }
+            if (motivoEncerramento == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", "Informe o motivo do encerramento."));
+                return;
+            }
+            dirigenteService.encerrarMandato(dirigenteSelecionado.getId(), motivoEncerramento, observacaoEncerramento);
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Mandato encerrado com sucesso!"));
+            carregarDirigentes();
+            this.motivoEncerramento = null;
+            this.observacaoEncerramento = null;
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
+        }
+    }
+
+    public MotivoEncerramentoMandato[] getMotivosEncerramento() {
+        return MotivoEncerramentoMandato.values();
+    }
+
+    public StatusMandato[] getStatusMandatoValues() {
+        return StatusMandato.values();
     }
 
     public void carregarDirigente() {
@@ -186,5 +250,21 @@ public class DirigenteController implements Serializable {
 
     public void setPastas(List<Pasta> pastas) {
         this.pastas = pastas;
+    }
+
+    public MotivoEncerramentoMandato getMotivoEncerramento() {
+        return motivoEncerramento;
+    }
+
+    public void setMotivoEncerramento(MotivoEncerramentoMandato motivoEncerramento) {
+        this.motivoEncerramento = motivoEncerramento;
+    }
+
+    public String getObservacaoEncerramento() {
+        return observacaoEncerramento;
+    }
+
+    public void setObservacaoEncerramento(String observacaoEncerramento) {
+        this.observacaoEncerramento = observacaoEncerramento;
     }
 }

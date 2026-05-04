@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import br.com.segueme.entity.Dirigente;
+import br.com.segueme.entity.StatusMandato;
 import br.com.segueme.repository.DirigenteRepository;
 
 @Stateless
@@ -160,6 +161,26 @@ public class DirigenteRepositoryImpl implements DirigenteRepository {
                     Dirigente.class)
                     .setParameter("trabalhadorId", trabalhadorId)
                     .setParameter("pastaId", pastaId)
+                    .getSingleResult();
+            return Optional.of(dirigente);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Dirigente> findMandatoVigente(Long trabalhadorId, Long pastaId) {
+        try {
+            Dirigente dirigente = entityManager.createQuery(
+                    "SELECT d FROM Dirigente d WHERE " +
+                            "d.trabalhador.id = :trabalhadorId AND d.pasta.id = :pastaId " +
+                            "AND d.statusMandato IN (:statusVigentes) " +
+                            "AND d.ativo = true",
+                    Dirigente.class)
+                    .setParameter("trabalhadorId", trabalhadorId)
+                    .setParameter("pastaId", pastaId)
+                    .setParameter("statusVigentes", java.util.Arrays.asList(
+                            StatusMandato.ATIVO, StatusMandato.PRORROGADO))
                     .getSingleResult();
             return Optional.of(dirigente);
         } catch (NoResultException e) {

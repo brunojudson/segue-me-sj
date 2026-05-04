@@ -61,8 +61,7 @@ public class EncontristaService implements Serializable {
 		encontrista.calcularIdade();
 		Encontrista encontristaSalva = encontristaRepository.save(encontrista);
 		
-		auditoriaService.registrar("Encontrista", encontristaSalva.getId(), "INCLUÍDO", usuarioService.getUsuarioLogadoNome(),
-        		"Dados Salvo: " + encontrista.toString()); 
+		auditoriaService.registrar("Encontrista", encontristaSalva.getId(), "INCLUÍDO", usuarioService.getUsuarioLogadoNome(), encontrista); 
 		
 		// Salvar encontrista
 		return encontristaSalva;
@@ -98,8 +97,7 @@ public class EncontristaService implements Serializable {
 		}
 		encontrista.calcularIdade();
 		
-		auditoriaService.registrar("Encontrista", encontrista.getId(), "ATUALIZADO", usuarioService.getUsuarioLogadoNome(),
-        		"Dados atualizados: " + encontrista.toString()); 
+		auditoriaService.registrar("Encontrista", encontrista.getId(), "ATUALIZADO", usuarioService.getUsuarioLogadoNome(), encontrista); 
 		// Atualizar encontrista
 		return encontristaRepository.update(encontrista);
 	}
@@ -207,8 +205,7 @@ public class EncontristaService implements Serializable {
 		if (encontristaRepository.hasAssociations(id)) {
 			throw new IllegalArgumentException("Não é possível remover o encontrista pois ele possui associações");
 		}
-		auditoriaService.registrar("Encontrista", id , "EXCLUÍDO", usuarioService.getUsuarioLogadoNome(),
-        		"Dados Excluído: " + encontristaExistente.toString());
+		auditoriaService.registrar("Encontrista", id, "EXCLUÍDO", usuarioService.getUsuarioLogadoNome(), encontristaExistente.get());
 		return encontristaRepository.deleteDirect(id);
 	}
 

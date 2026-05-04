@@ -14,32 +14,33 @@ import java.util.HashSet;
         @UniqueConstraint(columnNames = { "pessoa_id", "equipe_id", "encontro_id" }),
         @UniqueConstraint(columnNames = { "casal_id", "equipe_id", "encontro_id" })
 })
-public class Trabalhador implements Serializable {
+public class Trabalhador implements Serializable, Auditavel {
 
-
+    
+    
     private static final long serialVersionUID = 1L;
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     @ManyToOne
     @JoinColumn(name = "pessoa_id", nullable = true)
     private Pessoa pessoa;
-
+    
     @NotNull(message = "Equipe é obrigatória")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "equipe_id", nullable = false)
     private Equipe equipe;
-
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "encontro_id")
     private Encontro encontro;
-
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "casal_id")
     private Casal casal;
-
+    
     @Column(name = "eh_casal_coordenador")
     private Boolean ehCasalCoordenador = false;
 
@@ -48,43 +49,43 @@ public class Trabalhador implements Serializable {
 
     @Column(name = "foi_encontrista")
     private Boolean foiEncontrista;
-
+    
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "encontrista_id")
     private Encontrista encontrista;
-
+    
     @NotNull(message = "Data de início é obrigatória")
     @Column(name = "data_inicio", nullable = false)
     private LocalDate dataInicio;
 
     @Column(name = "data_fim")
     private LocalDate dataFim;
-
+    
     @Size(max = 500, message = "Observações devem ter no máximo 500 caracteres")
     @Column(name = "observacoes")
     private String observacoes;
-
+    
     @Column(name = "ativo", nullable = false)
     private boolean ativo = true;
-
+    
     @OneToMany(mappedBy = "trabalhador", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Contribuicao> contribuicoes = new HashSet<>();
-
+    
     @OneToMany(mappedBy = "trabalhador", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Dirigente> cargos = new HashSet<>();
-
+    
     @Column(name = "idade")
     private Integer idade;
 
     @Transient
     private boolean ehCasal;
-
+    
     @Column(name = "apto_para_palestrar")
     private Boolean aptoParaPalestrar = false;
-
+    
     @Column(name = "apto_para_coordenar")
     private Boolean aptoParaCoordenar = false;
-
+    
     public boolean isEhCasal() {
         return ehCasal;
     }
@@ -92,7 +93,7 @@ public class Trabalhador implements Serializable {
     public void setEhCasal(boolean ehCasal) {
         this.ehCasal = ehCasal;
     }
-
+    
     /** Retorna true se este trabalhador representa um casal (e não uma pessoa individual). */
     @Transient
     public boolean isTrabalhandoComoCasal() {
@@ -120,7 +121,7 @@ public class Trabalhador implements Serializable {
         this.foiEncontrista = false;
         this.dataInicio = LocalDate.now();
     }
-
+    
     public Trabalhador(Pessoa pessoa, Equipe equipe) {
         this();
         this.pessoa = pessoa;
@@ -131,7 +132,7 @@ public class Trabalhador implements Serializable {
         this(pessoa, equipe);
         this.encontro = encontro;
     }
-
+    
     // Getters e Setters
     public Long getId() {
         return id;
@@ -148,7 +149,7 @@ public class Trabalhador implements Serializable {
     public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
     }
-
+    
     public Equipe getEquipe() {
         return equipe;
     }
@@ -156,7 +157,7 @@ public class Trabalhador implements Serializable {
     public void setEquipe(Equipe equipe) {
         this.equipe = equipe;
     }
-
+    
     public Encontro getEncontro() {
         return encontro;
     }
@@ -164,11 +165,11 @@ public class Trabalhador implements Serializable {
     public void setEncontro(Encontro encontro) {
         this.encontro = encontro;
     }
-
+    
     public Casal getCasal() {
         return casal;
     }
-
+    
     public void setCasal(Casal casal) {
         this.casal = casal;
     }
@@ -176,11 +177,11 @@ public class Trabalhador implements Serializable {
     public Boolean getEhCasalCoordenador() {
         return ehCasalCoordenador;
     }
-
+    
     public void setEhCasalCoordenador(Boolean ehCasalCoordenador) {
         this.ehCasalCoordenador = ehCasalCoordenador;
     }
-
+    
     public Boolean getEhCoordenador() {
         return ehCoordenador;
     }
@@ -188,15 +189,15 @@ public class Trabalhador implements Serializable {
     public void setEhCoordenador(Boolean ehCoordenador) {
         this.ehCoordenador = ehCoordenador;
     }
-
+    
     public Boolean getFoiEncontrista() {
         return foiEncontrista;
     }
-
+    
     public void setFoiEncontrista(Boolean foiEncontrista) {
         this.foiEncontrista = foiEncontrista;
     }
-
+    
     public Encontrista getEncontrista() {
         return encontrista;
     }
@@ -211,7 +212,7 @@ public class Trabalhador implements Serializable {
     public LocalDate getDataInicio() {
         return dataInicio;
     }
-
+    
     public void setDataInicio(LocalDate dataInicio) {
         this.dataInicio = dataInicio;
     }
@@ -219,7 +220,7 @@ public class Trabalhador implements Serializable {
     public LocalDate getDataFim() {
         return dataFim;
     }
-
+    
     public void setDataFim(LocalDate dataFim) {
         this.dataFim = dataFim;
     }
@@ -227,7 +228,7 @@ public class Trabalhador implements Serializable {
     public String getObservacoes() {
         return observacoes;
     }
-
+    
     public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
     }
@@ -235,7 +236,7 @@ public class Trabalhador implements Serializable {
     public Set<Contribuicao> getContribuicoes() {
         return contribuicoes;
     }
-
+    
     public void setContribuicoes(Set<Contribuicao> contribuicoes) {
         this.contribuicoes = contribuicoes;
     }
@@ -243,15 +244,15 @@ public class Trabalhador implements Serializable {
     public Set<Dirigente> getCargos() {
         return cargos;
     }
-
+    
     public void setCargos(Set<Dirigente> cargos) {
         this.cargos = cargos;
     }
-
+    
     public boolean isAtivo() {
         return ativo;
     }
-
+    
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
     }
@@ -259,18 +260,18 @@ public class Trabalhador implements Serializable {
     public Integer getIdade() {
         return idade;
     }
-
+    
     public void setIdade(Integer idade) {
         this.idade = idade;
     }
-     public Boolean getAptoParaPalestrar() {
+    public Boolean getAptoParaPalestrar() {
         return aptoParaPalestrar;
     }
-
+    
     public void setAptoParaPalestrar(Boolean aptoParaPalestrar) {
         this.aptoParaPalestrar = aptoParaPalestrar;
     }
-
+    
     public Boolean getAptoParaCoordenar() {
         return aptoParaCoordenar;
     }
@@ -284,7 +285,7 @@ public class Trabalhador implements Serializable {
         contribuicoes.add(contribuicao);
         contribuicao.setTrabalhador(this);
     }
-
+    
     public void removerContribuicao(Contribuicao contribuicao) {
         contribuicoes.remove(contribuicao);
         contribuicao.setTrabalhador(null);
@@ -300,13 +301,13 @@ public class Trabalhador implements Serializable {
         dirigente.setTrabalhador(null);
     }
     // ...existing code...
-
+    
     public void calcularIdade() {
         if (this.dataInicio != null) {
             if (this.pessoa != null && this.pessoa.getDataNascimento() != null) {
                 this.idade = java.time.Period.between(this.pessoa.getDataNascimento(), this.dataInicio).getYears();
             } else if (this.casal != null && this.casal.getPessoa1() != null
-                    && this.casal.getPessoa1().getDataNascimento() != null) {
+            && this.casal.getPessoa1().getDataNascimento() != null) {
                 // Para casal, usa a idade do primeiro cônjuge como referência
                 this.idade = java.time.Period.between(this.casal.getPessoa1().getDataNascimento(), this.dataInicio).getYears();
             } else {
@@ -327,10 +328,10 @@ public class Trabalhador implements Serializable {
         Trabalhador that = (Trabalhador) o;
         return Objects.equals(id, that.id) ||
                 (Objects.equals(pessoa, that.pessoa) &&
-                        Objects.equals(equipe, that.equipe) &&
+                Objects.equals(equipe, that.equipe) &&
                         Objects.equals(encontro, that.encontro));
     }
-
+    
     @Override
     public int hashCode() {
         return Objects.hash(id, pessoa, equipe, encontro);
@@ -345,6 +346,22 @@ public class Trabalhador implements Serializable {
 				+ ativo + ", contribuicoes=" + contribuicoes + ", cargos=" + cargos + ", idade=" + idade + ", ehCasal="
 				+ ehCasal + "]";
 	}
-    
-    
+        
+    @Override
+    public String toAuditString() {
+        return "id=" + id
+            + " | pessoa=" + (pessoa != null ? pessoa.getId() + "/" + pessoa.getNome() : null)
+            + " | casal=" + (casal != null ? casal.getId() : null)
+            + " | equipe=" + (equipe != null ? equipe.getId() + "/" + equipe.getNome() : null)
+            + " | encontro=" + (encontro != null ? encontro.getId() + "/" + encontro.getNome() : null)
+            + " | ehCoordenador=" + ehCoordenador
+            + " | ehCasalCoordenador=" + ehCasalCoordenador
+            + " | foiEncontrista=" + foiEncontrista
+            + " | aptoPalestrar=" + aptoParaPalestrar
+            + " | aptoCoordena=" + aptoParaCoordenar
+            + " | dataInicio=" + dataInicio
+            + " | dataFim=" + dataFim
+            + " | observacoes=" + observacoes
+            + " | ativo=" + ativo;
+    }
 }

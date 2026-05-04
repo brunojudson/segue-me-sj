@@ -102,41 +102,87 @@
 							</div>
 						</p:column>
 
-						<p:column headerText="Status" styleClass="text-center" width="100">
-							<span class="status-badge #{dirigente.ativo ? 'ativo' : 'inativo'}">
-								<i class="pi #{dirigente.ativo ? 'pi-check-circle' : 'pi-times-circle'}"></i>
-								#{dirigente.ativo ? 'Ativo' : 'Inativo'}
-							</span>
+						<p:column headerText="Status Mandato" sortBy="#{dirigente.statusMandato}" 
+								  filterBy="#{dirigente.statusMandato}" filterMatchMode="contains"
+								  styleClass="text-center" width="140">
+							<h:panelGroup rendered="#{dirigente.statusMandato eq 'ATIVO'}">
+								<span class="status-badge ativo">
+									<i class="pi pi-check-circle"></i> Ativo
+								</span>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{dirigente.statusMandato eq 'PRORROGADO'}">
+								<span class="status-badge aguardando">
+									<i class="pi pi-history"></i> Prorrogado
+								</span>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{dirigente.statusMandato eq 'ENCERRADO_NATURAL'}">
+								<span class="status-badge inativo">
+									<i class="pi pi-calendar-times"></i> Encerrado
+								</span>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{dirigente.statusMandato eq 'RENUNCIADO'}">
+								<span class="status-badge cancelado">
+									<i class="pi pi-sign-out"></i> Renunciado
+								</span>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{dirigente.statusMandato eq 'DESTITUIDO'}">
+								<span class="status-badge cancelado">
+									<i class="pi pi-ban"></i> Destituído
+								</span>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{dirigente.statusMandato eq 'ENCERRADO_OUTROS'}">
+								<span class="status-badge inativo">
+									<i class="pi pi-info-circle"></i> Enc. Outros
+								</span>
+							</h:panelGroup>
 						</p:column>
 
-						<p:column headerText="Ações" styleClass="text-center" width="80">
+						<p:column headerText="Ações" styleClass="text-center" width="160">
 							<div class="table-action-buttons">
-							<!-- 	<p:button icon="pi pi-eye" title="Visualizar"
-									ariaLabel="Visualizar dirigente"
-									outcome="/pages/dirigente/visualizar.xhtml"
-									styleClass="action-button-secondary-table action-btn">
-									<f:param name="id" value="#{dirigente.id}" />
-								</p:button> -->
-
 								<p:button icon="pi pi-pencil" title="Editar"
-							   ariaLabel="Editar dirigente"
-							   outcome="/pages/dirigente/cadastro.xhtml"
-							   styleClass="action-button-warn-table action-btn">
-							   <f:param name="id" value="#{dirigente.id}" />
-						   </p:button>
+								   ariaLabel="Editar dirigente"
+								   outcome="/pages/dirigente/cadastro.xhtml"
+								   styleClass="action-button-warn-table action-btn"
+								   rendered="#{dirigente.statusMandato.vigente}">
+								   <f:param name="id" value="#{dirigente.id}" />
+								</p:button>
 
-						   <p:commandButton icon="pi pi-trash" title="Excluir"
-							   ariaLabel="Excluir dirigente"
+								<p:button icon="pi pi-eye" title="Visualizar"
+								   ariaLabel="Visualizar dirigente encerrado"
+								   outcome="/pages/dirigente/cadastro.xhtml"
+								   styleClass="action-button-secondary-table action-btn"
+								   rendered="#{not dirigente.statusMandato.vigente}">
+								   <f:param name="id" value="#{dirigente.id}" />
+								</p:button>
+
+								<p:commandButton icon="pi pi-history" title="Prorrogar Mandato"
+								   ariaLabel="Prorrogar mandato"
+								   action="#{dirigenteController.prepararExclusao(dirigente)}"
+								   styleClass="action-button-secondary-table action-btn"
+								   update=":prorrogarDialog"
+								   oncomplete="PF('prorrogarDialog').show()"
+								   rendered="#{dirigente.statusMandato eq 'ATIVO' and not dirigente.prorrogado}" />
+
+								<p:commandButton icon="pi pi-sign-out" title="Encerrar Mandato"
+								   ariaLabel="Encerrar mandato"
+								   action="#{dirigenteController.prepararExclusao(dirigente)}"
+								   styleClass="action-button-danger-table action-btn"
+								   update=":encerrarDialog"
+								   oncomplete="PF('encerrarDialog').show()"
+								   rendered="#{dirigente.statusMandato.vigente}" />
+
+								<p:commandButton icon="pi pi-trash" title="Excluir"
+								   ariaLabel="Excluir dirigente"
 								   action="#{dirigenteController.prepararExclusao(dirigente)}"
 								   styleClass="action-button-danger-table action-btn"
 								   update=":confirmDialog"
-								   oncomplete="PF('confirmDialog').show()" 
-								   disabled="true" />
+								   oncomplete="PF('confirmDialog').show()"
+								   rendered="#{not dirigente.statusMandato.vigente}" />
 							</div>
 						</p:column>
 					</p:dataTable>
 
-					<!-- Diálogo de confirmação -->
+					<!-- Diálogo de confirmação de exclusão -->
 					<p:confirmDialog id="confirmDialog" widgetVar="confirmDialog"
 						header="Confirmar Exclusão" styleClass="modern-dialog"
 						message="Tem certeza que deseja excluir este dirigente?"
@@ -152,6 +198,84 @@
 							type="button" styleClass="ui-button-secondary"
 							icon="pi pi-times" />
 					</p:confirmDialog>
+
+					<!-- Diálogo de prorrogação de mandato -->
+					<p:dialog id="prorrogarDialog" widgetVar="prorrogarDialog"
+						header="Prorrogar Mandato" styleClass="modern-dialog"
+						modal="true" responsive="true" closable="true" closeOnEscape="true"
+						showEffect="fade" hideEffect="fade"
+						style="max-width:500px; width: calc(100% - 32px);">
+						<h:panelGroup rendered="#{dirigenteController.dirigenteSelecionado != null}">
+							<div style="padding: 1rem;">
+								<p><i class="pi pi-info-circle" style="color: var(--primary-color);"></i>
+									O mandato de <strong>#{dirigenteController.dirigenteSelecionado.trabalhador.nomeExibicao}</strong>
+									na pasta <strong>#{dirigenteController.dirigenteSelecionado.pasta.nome}</strong>
+									será prorrogado por mais <strong>1 ano</strong>.</p>
+								<p style="color: var(--text-secondary); font-size: 0.9rem;">
+									<i class="pi pi-exclamation-triangle"></i>
+									Esta ação só pode ser realizada uma vez por mandato.
+								</p>
+							</div>
+							<div style="display: flex; gap: 0.5rem; justify-content: flex-end; padding: 0 1rem 1rem;">
+								<p:commandButton value="Sim, prorrogar"
+									action="#{dirigenteController.prorrogarMandato}"
+									oncomplete="PF('prorrogarDialog').hide()"
+									update="dirigentesTable messages"
+									process="@this"
+									styleClass="ui-button-success"
+									icon="pi pi-check" />
+								<p:commandButton value="Cancelar"
+									onclick="PF('prorrogarDialog').hide()"
+									type="button" styleClass="ui-button-secondary"
+									icon="pi pi-times" />
+							</div>
+						</h:panelGroup>
+					</p:dialog>
+
+					<!-- Diálogo de encerramento de mandato -->
+					<p:dialog id="encerrarDialog" widgetVar="encerrarDialog"
+						header="Encerrar Mandato" styleClass="modern-dialog"
+						modal="true" responsive="true" closable="true" closeOnEscape="true"
+						showEffect="fade" hideEffect="fade"
+						style="max-width:550px; width: calc(100% - 32px);">
+						<h:panelGroup rendered="#{dirigenteController.dirigenteSelecionado != null}">
+							<div style="padding: 1rem;">
+								<p><i class="pi pi-exclamation-triangle" style="color: var(--orange-500);"></i>
+									Você está encerrando o mandato de <strong>#{dirigenteController.dirigenteSelecionado.trabalhador.nomeExibicao}</strong>
+									na pasta <strong>#{dirigenteController.dirigenteSelecionado.pasta.nome}</strong>.</p>
+								
+								<div class="field-group" style="margin-top: 1rem;">
+									<p:outputLabel for="motivoEnc" value="Motivo do Encerramento" styleClass="required-field" />
+									<p:selectOneMenu id="motivoEnc" value="#{dirigenteController.motivoEncerramento}"
+													 required="true" requiredMessage="Informe o motivo do encerramento">
+										<f:selectItem itemLabel="Selecione o motivo" itemValue="" noSelectionOption="true" />
+										<f:selectItems value="#{dirigenteController.motivosEncerramento}" var="motivo"
+													  itemLabel="#{motivo.descricao}" itemValue="#{motivo}" />
+									</p:selectOneMenu>
+								</div>
+								
+								<div class="field-group" style="margin-top: 0.75rem;">
+									<p:outputLabel for="obsEnc" value="Observações" />
+									<p:inputTextarea id="obsEnc" value="#{dirigenteController.observacaoEncerramento}"
+													 rows="3" maxlength="500"
+													 placeholder="Descreva os detalhes do encerramento..." />
+								</div>
+							</div>
+							<div style="display: flex; gap: 0.5rem; justify-content: flex-end; padding: 0 1rem 1rem;">
+								<p:commandButton value="Encerrar Mandato"
+									action="#{dirigenteController.encerrarMandato}"
+									oncomplete="if(!args.validationFailed) PF('encerrarDialog').hide()"
+									update="dirigentesTable messages"
+									process="@parent"
+									styleClass="ui-button-danger"
+									icon="pi pi-sign-out" />
+								<p:commandButton value="Cancelar"
+									onclick="PF('encerrarDialog').hide()"
+									type="button" styleClass="ui-button-secondary"
+									icon="pi pi-times" />
+							</div>
+						</h:panelGroup>
+					</p:dialog>
 				</h:form>
 
 				<!-- Modal de Detalhes do Dirigente -->
@@ -178,9 +302,31 @@
 										<span class="sm-tag sm-tag-purple">
 											<i class="pi pi-folder"></i> #{dirigenteController.dirigenteDetalhes.pasta.nome}
 										</span>
-										<span class="sm-tag #{dirigenteController.dirigenteDetalhes.ativo ? 'sm-tag-green' : 'sm-tag-red'}">
-											#{dirigenteController.dirigenteDetalhes.ativo ? 'Ativo' : 'Inativo'}
-										</span>
+										<h:panelGroup rendered="#{dirigenteController.dirigenteDetalhes.statusMandato eq 'ATIVO'}">
+											<span class="sm-tag sm-tag-green">
+												<i class="pi pi-check-circle"></i> Ativo
+											</span>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{dirigenteController.dirigenteDetalhes.statusMandato eq 'PRORROGADO'}">
+											<span class="sm-tag sm-tag-blue">
+												<i class="pi pi-history"></i> Prorrogado
+											</span>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{dirigenteController.dirigenteDetalhes.statusMandato eq 'RENUNCIADO'}">
+											<span class="sm-tag sm-tag-red">
+												<i class="pi pi-sign-out"></i> Renunciado
+											</span>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{dirigenteController.dirigenteDetalhes.statusMandato eq 'DESTITUIDO'}">
+											<span class="sm-tag sm-tag-red">
+												<i class="pi pi-ban"></i> Destituído
+											</span>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{dirigenteController.dirigenteDetalhes.statusMandato eq 'ENCERRADO_NATURAL' or dirigenteController.dirigenteDetalhes.statusMandato eq 'ENCERRADO_OUTROS'}">
+											<span class="sm-tag sm-tag-red">
+												<i class="pi pi-calendar-times"></i> Encerrado
+											</span>
+										</h:panelGroup>
 										<span class="modal-pessoa-id">ID: #{dirigenteController.dirigenteDetalhes.id}</span>
 									</div>
 								</div>
@@ -188,7 +334,14 @@
 							<div class="modal-pessoa-actions">
 								<p:button icon="pi pi-pencil" title="Editar"
 									outcome="/pages/dirigente/cadastro.xhtml"
-									styleClass="action-button-primary">
+									styleClass="action-button-primary"
+									rendered="#{dirigenteController.dirigenteDetalhes.statusMandato.vigente}">
+									<f:param name="id" value="#{dirigenteController.dirigenteDetalhes.id}" />
+								</p:button>
+								<p:button icon="pi pi-eye" title="Visualizar (somente leitura)"
+									outcome="/pages/dirigente/cadastro.xhtml"
+									styleClass="action-button-secondary"
+									rendered="#{not dirigenteController.dirigenteDetalhes.statusMandato.vigente}">
 									<f:param name="id" value="#{dirigenteController.dirigenteDetalhes.id}" />
 								</p:button>
 							</div>
@@ -229,7 +382,7 @@
 								</span>
 							</div>
 							<div class="info-item">
-								<label>Data de Fim</label>
+								<label>Data de Fim Prevista</label>
 								<span>
 									<h:outputText value="#{dirigenteController.dirigenteDetalhes.dataFim}" rendered="#{not empty dirigenteController.dirigenteDetalhes.dataFim}">
 										<f:converter converterId="localDateConverter" />
@@ -243,6 +396,30 @@
 									<h:outputText value="#{dirigenteController.dirigenteDetalhes.calcularDuracaoMandato()} dias" rendered="#{dirigenteController.dirigenteDetalhes.calcularDuracaoMandato() gt 0}" />
 									<h:outputText value="Não calculável" styleClass="empty-value" rendered="#{dirigenteController.dirigenteDetalhes.calcularDuracaoMandato() le 0}" />
 								</span>
+							</div>
+							<div class="info-item" rendered="#{dirigenteController.dirigenteDetalhes.prorrogado}">
+								<label>Prorrogado</label>
+								<span>
+									<span class="status-badge aguardando" style="font-size:0.8rem;">
+										<i class="pi pi-history"></i> #{dirigenteController.dirigenteDetalhes.prorrogado ? 'Sim' : 'Não'}
+									</span>
+									
+									<h:outputText value="#{dirigenteController.dirigenteDetalhes.dataProrrogacao}" rendered="#{not empty dirigenteController.dirigenteDetalhes.dataProrrogacao}">
+										<f:converter converterId="localDateConverter" />
+									</h:outputText>
+								</span>
+							</div>
+							<div class="info-item" rendered="#{not empty dirigenteController.dirigenteDetalhes.dataEncerramentoEfetivo}">
+								<label>Encerrado em</label>
+								<span>
+									<h:outputText value="#{dirigenteController.dirigenteDetalhes.dataEncerramentoEfetivo}">
+										<f:converter converterId="localDateConverter" />
+									</h:outputText>
+								</span>
+							</div>
+							<div class="info-item" rendered="#{not empty dirigenteController.dirigenteDetalhes.motivoEncerramento}">
+								<label>Motivo</label>
+								<span>#{dirigenteController.dirigenteDetalhes.motivoEncerramento.descricao}</span>
 							</div>
 							<div class="info-item full-width">
 								<label>Observações</label>

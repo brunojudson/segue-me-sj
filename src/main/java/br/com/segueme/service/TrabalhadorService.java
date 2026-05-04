@@ -140,8 +140,7 @@ public class TrabalhadorService implements Serializable {
 
         Trabalhador trabalhadorSalvo = trabalhadorRepository.save(trabalhador);
 
-        auditoriaService.registrar("Trabalhador", trabalhadorSalvo.getId(), "INCLUÍDO", usuarioService.getUsuarioLogadoNome(),
-        		"Dados Salvo: " + trabalhador.toString());
+        auditoriaService.registrar("Trabalhador", trabalhadorSalvo.getId(), "INCLUÍDO", usuarioService.getUsuarioLogadoNome(), trabalhador);
 
         return trabalhadorSalvo;
     }
@@ -174,8 +173,7 @@ public class TrabalhadorService implements Serializable {
         }
         trabalhador.calcularIdade();
 
-        auditoriaService.registrar("Trabalhador", trabalhador.getId(), "ATUALIZADO", usuarioService.getUsuarioLogadoNome(),
-                "Dados atualizados: " + trabalhador.toString());
+        auditoriaService.registrar("Trabalhador", trabalhador.getId(), "ATUALIZADO", usuarioService.getUsuarioLogadoNome(), trabalhador);
 
         // Atualizar trabalhador
         return trabalhadorRepository.update(trabalhador);

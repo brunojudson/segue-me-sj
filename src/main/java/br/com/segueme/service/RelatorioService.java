@@ -62,4 +62,12 @@ public class RelatorioService {
     public List<Map<String, Object>> buscarPalestrasPorEncontro(Long encontroId) {
         return relatorioRepository.buscarPalestrasPorEncontro(encontroId);
     }
+
+    public List<Map<String, Object>> buscarAptidoesPorEncontro(Long encontroId) {
+        return relatorioRepository.buscarAptidoesPorEncontro(encontroId);
+    }
+
+    public List<Map<String, Object>> buscarAptidoesSeguimistasPorEncontro(Long encontroId) {
+        return relatorioRepository.buscarAptidoesSeguimistasPorEncontro(encontroId);
+    }
 }

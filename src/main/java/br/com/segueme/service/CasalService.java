@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-
 import br.com.segueme.entity.Casal;
 import br.com.segueme.entity.Pessoa;
 import br.com.segueme.repository.CasalRepository;
@@ -21,6 +20,12 @@ public class CasalService implements Serializable {
 
     @Inject
     private PessoaRepository pessoaRepository;
+
+    @Inject
+    private AuditoriaService auditoriaService;
+
+    @Inject
+    private UsuarioService usuarioService;
 
     /**
      * Salva um novo casal
@@ -75,7 +80,9 @@ public class CasalService implements Serializable {
         }
 
         // Salvar casal
-        return casalRepository.save(casal);
+        Casal casalSalvo = casalRepository.save(casal);
+        auditoriaService.registrar("Casal", casalSalvo.getId(), "INCLUÍDO", usuarioService.getUsuarioLogadoNome(), casalSalvo);
+        return casalSalvo;
     }
 
     /**
@@ -116,7 +123,9 @@ public class CasalService implements Serializable {
         }
 
         // Atualizar casal
-        return casalRepository.update(casal);
+        Casal atualizado = casalRepository.update(casal);
+        auditoriaService.registrar("Casal", casal.getId(), "ATUALIZADO", usuarioService.getUsuarioLogadoNome(), casal);
+        return atualizado;
     }
 
     /**

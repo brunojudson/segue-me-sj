@@ -1,4 +1,4 @@
- package br.com.segueme.entity;
+package br.com.segueme.entity;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -22,8 +22,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "pasta", schema="public")
-public class Pasta implements Serializable {
+@Table(name = "pasta", schema = "public")
+public class Pasta implements Serializable, Auditavel {
 
     private static final long serialVersionUID = 1L;
 
@@ -63,7 +63,7 @@ public class Pasta implements Serializable {
 
     // Construtores
     public Pasta() {
-    	this.ativo = true;
+        this.ativo = true;
     }
 
     public Pasta(String nome, Equipe equipe, LocalDate dataInicio, LocalDate dataFim) {
@@ -77,12 +77,31 @@ public class Pasta implements Serializable {
             throw new IllegalArgumentException("Pasta só pode ser associada a uma equipe dirigente");
         }
     }
+
     public long calcularDuracaoMandato() {
         if (dataInicio != null && dataFim != null) {
             return ChronoUnit.DAYS.between(dataInicio, dataFim);
         }
-        return 0; // Retorna 0 se as datas não estiverem definidas
+        return 0;
     }
+
+    /**
+     * Verifica se a pasta está vigente na data informada.
+     */
+    public boolean isVigente(LocalDate data) {
+        if (dataInicio == null || dataFim == null || data == null) {
+            return false;
+        }
+        return !data.isBefore(dataInicio) && !data.isAfter(dataFim) && ativo;
+    }
+
+    /**
+     * Verifica se a pasta está vigente hoje.
+     */
+    public boolean isVigenteHoje() {
+        return isVigente(LocalDate.now());
+    }
+
     // Getters e Setters
     public Long getId() {
         return id;
@@ -163,19 +182,33 @@ public class Pasta implements Serializable {
         dirigente.setPasta(null);
     }
 
-    public boolean verificarMandatoDoisAnos() {
+    /**
+     * Verifica se a duração da pasta está dentro dos limites aceitáveis.
+     * A pasta pode ter duração de 1 a 2 anos (até ~731 dias).
+     */
+    public boolean verificarDuracaoValida() {
         if (dataInicio != null && dataFim != null) {
-            long dias = java.time.temporal.ChronoUnit.DAYS.between(dataInicio, dataFim);
-            return dias >= 720 && dias <= 732; // Entre 720 e 732 dias (aproximadamente 2 anos)
+            long dias = ChronoUnit.DAYS.between(dataInicio, dataFim);
+            return dias > 0 && dias <= 731;
         }
         return false;
+    }
+
+    /**
+     * @deprecated Use {@link #verificarDuracaoValida()} em vez deste método.
+     */
+    @Deprecated
+    public boolean verificarMandatoDoisAnos() {
+        return verificarDuracaoValida();
     }
 
     // Equals e HashCode
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Pasta pasta = (Pasta) o;
         return Objects.equals(id, pasta.id);
     }
@@ -194,5 +227,16 @@ public class Pasta implements Serializable {
                 ", dataInicio=" + dataInicio +
                 ", dataFim=" + dataFim +
                 '}';
+    }
+
+    @Override
+    public String toAuditString() {
+        return "id=" + id
+                + " | nome=" + nome
+                + " | descricao=" + descricao
+                + " | equipe=" + (equipe != null ? equipe.getId() + "/" + equipe.getNome() : null)
+                + " | dataInicio=" + dataInicio
+                + " | dataFim=" + dataFim
+                + " | ativo=" + ativo;
     }
 }

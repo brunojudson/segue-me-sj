@@ -7,7 +7,6 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-
 import br.com.segueme.entity.Encontro;
 import br.com.segueme.repository.EncontroRepository;
 import br.com.segueme.repository.EquipeRepository;
@@ -15,12 +14,18 @@ import br.com.segueme.repository.EquipeRepository;
 @ApplicationScoped
 public class EncontroService implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     @Inject
     private EncontroRepository encontroRepository;
 
     @Inject
     private EquipeRepository equipeRepository;
+
+    @Inject
+    private AuditoriaService auditoriaService;
+
+    @Inject
+    private UsuarioService usuarioService;
     
     /**
      * Salva um novo encontro
@@ -55,7 +60,9 @@ public class EncontroService implements Serializable {
         }
         
         // Salvar encontro
-        return encontroRepository.save(encontro);
+        Encontro encontroSalvo = encontroRepository.save(encontro);
+        auditoriaService.registrar("Encontro", encontroSalvo.getId(), "INCLUÍDO", usuarioService.getUsuarioLogadoNome(), encontroSalvo);
+        return encontroSalvo;
     }
     
     /**
@@ -85,7 +92,9 @@ public class EncontroService implements Serializable {
         }
         
         // Atualizar encontro
-        return encontroRepository.update(encontro);
+        Encontro atualizado = encontroRepository.update(encontro);
+        auditoriaService.registrar("Encontro", encontro.getId(), "ATUALIZADO", usuarioService.getUsuarioLogadoNome(), encontro);
+        return atualizado;
     }
     
     /**

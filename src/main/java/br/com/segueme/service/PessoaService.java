@@ -79,8 +79,7 @@ public class PessoaService implements Serializable {
 		// Salvar pessoa
 
 		Pessoa pessoaSalva = pessoaRepository.save(pessoa);
-		auditoriaService.registrar("Pessoa", pessoaSalva.getId(), "INCLUÍDO", usuarioService.getUsuarioLogadoNome(),
-				"Dados Salvo: " + pessoa.toString());
+		auditoriaService.registrar("Pessoa", pessoaSalva.getId(), "INCLUÍDO", usuarioService.getUsuarioLogadoNome(), pessoa);
 
 		return pessoaSalva;
 	}
@@ -122,8 +121,7 @@ public class PessoaService implements Serializable {
 		 * !pessoaPorCpf.get().getId().equals(pessoa.getId())) { throw new
 		 * IllegalArgumentException("CPF já cadastrado para outra pessoa"); }
 		 */
-		auditoriaService.registrar("Pessoa", pessoa.getId(), "ATUALIZADO", usuarioService.getUsuarioLogadoNome(),
-				"Dados atualizados: " + pessoa.toString());
+		auditoriaService.registrar("Pessoa", pessoa.getId(), "ATUALIZADO", usuarioService.getUsuarioLogadoNome(), pessoa);
 		pessoa.calcularIdade();
 		// Atualizar pessoa
 		return pessoaRepository.update(pessoa);

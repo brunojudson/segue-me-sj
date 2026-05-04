@@ -18,6 +18,9 @@ public class UsuarioService {
     @Inject
     private UsuarioRepository usuarioRepository;
 
+    @Inject
+    private AuditoriaService auditoriaService;
+
     public Usuario autenticar(String email, String senha) {
         // Busca o usuário pelo e-mail
         Usuario usuario = usuarioRepository.findByEmail(email)
@@ -70,11 +73,18 @@ public class UsuarioService {
 	}
 
     public void save(Usuario usuario) {
+        boolean isNovo = usuario.getId() == null;
         usuarioRepository.save(usuario);
+        String acao = isNovo ? "INCLUÍDO" : "ALTERADO";
+        auditoriaService.registrar("Usuario", usuario.getId(), acao, getUsuarioLogadoNome(), usuario);
     }
 
     public void delete(Long id) {
+        Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
         usuarioRepository.delete(id);
+        usuarioExistente.ifPresent(u ->
+            auditoriaService.registrar("Usuario", id, "EXCLUÍDO", getUsuarioLogadoNome(), u)
+        );
     }
 
     public List<Permissao> buscaPermissoes() {

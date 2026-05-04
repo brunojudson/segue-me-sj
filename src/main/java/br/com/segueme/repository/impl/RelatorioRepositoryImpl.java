@@ -281,6 +281,72 @@ public class RelatorioRepositoryImpl implements RelatorioRepository {
                 new String[] { "palestra_tema", "palestra_data_hora", "palestrante_nome", "tipo_palestrante" });
     }
 
+    @Override
+    public List<Map<String, Object>> buscarAptidoesPorEncontro(Long encontroId) {
+        String sql = "SELECT " +
+                "p.nome, " +
+                "CASE WHEN p.sexo = 'M' THEN 'Masculino' WHEN p.sexo = 'F' THEN 'Feminino' ELSE 'N/I' END AS sexo, " +
+                "eq.nome AS equipe, " +
+                "tipo.nome AS tipo_equipe, " +
+                "CASE WHEN t.eh_coordenador = true THEN 'Sim' ELSE 'Não' END AS coordenador, " +
+                "CASE WHEN t.apto_para_palestrar = true THEN 'Sim' ELSE 'Não' END AS apto_palestrar, " +
+                "CASE WHEN t.apto_para_coordenar = true THEN 'Sim' ELSE 'Não' END AS apto_coordenar, " +
+                "CASE WHEN t.foi_encontrista = true THEN 'Sim' ELSE 'Não' END AS foi_encontrista " +
+                "FROM trabalhador t " +
+                "JOIN pessoa p ON t.pessoa_id = p.id " +
+                "JOIN equipe eq ON t.equipe_id = eq.id " +
+                "JOIN tipo_equipe tipo ON eq.tipo_equipe_id = tipo.id " +
+                "WHERE t.encontro_id = :encontro_id " +
+                "ORDER BY p.nome";
+
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("encontro_id", encontroId);
+        return converterResultado(query,
+                new String[] { "nome", "sexo", "equipe", "tipo_equipe", "coordenador",
+                        "apto_palestrar", "apto_coordenar", "foi_encontrista" });
+    }
+
+    @Override
+    public List<Map<String, Object>> buscarAptidoesSeguimistasPorEncontro(Long encontroId) {
+        String sql = "SELECT " +
+                "p.nome, " +
+                "CASE WHEN p.sexo = 'M' THEN 'Masculino' WHEN p.sexo = 'F' THEN 'Feminino' ELSE 'N/I' END AS sexo, " +
+                "COALESCE(e.circulo, 'N/I') AS circulo, " +
+                "e.valor_pago, " +
+                "COALESCE(e.forma_pagamento, 'N/I') AS forma_pagamento, " +
+                "CASE WHEN e.ativo = true THEN 'Sim' ELSE 'Não' END AS ativo, " +
+                "COALESCE(( " +
+                "    SELECT STRING_AGG( " +
+                "        CASE ea.aptidao " +
+                "            WHEN 'ANIMACAO' THEN 'Animação' " +
+                "            WHEN 'CANTO' THEN 'Canto' " +
+                "            WHEN 'COZINHA' THEN 'Cozinha' " +
+                "            WHEN 'ESTACIONAMENTO' THEN 'Estacionamento' " +
+                "            WHEN 'FAXINA' THEN 'Faxina' " +
+                "            WHEN 'GRAFICA' THEN 'Gráfica' " +
+                "            WHEN 'LANCHE' THEN 'Lanche' " +
+                "            WHEN 'LITURGIA' THEN 'Liturgia' " +
+                "            WHEN 'MINI_MERCADO' THEN 'Mini Mercado' " +
+                "            WHEN 'SALA' THEN 'Sala' " +
+                "            WHEN 'VIGILIA_E_LITURGIA' THEN 'Vigília e Liturgia' " +
+                "            WHEN 'VIGILIA_PAROQUIAL' THEN 'Vigília Paroquial' " +
+                "            ELSE ea.aptidao " +
+                "        END, ', ' ORDER BY ea.aptidao " +
+                "    ) " +
+                "    FROM encontrista_aptidao ea " +
+                "    WHERE ea.encontrista_id = e.id " +
+                "), 'Nenhuma') AS aptidoes " +
+                "FROM encontrista e " +
+                "JOIN pessoa p ON e.pessoa_id = p.id " +
+                "WHERE e.encontro_id = :encontro_id " +
+                "ORDER BY p.nome";
+
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("encontro_id", encontroId);
+        return converterResultado(query,
+                new String[] { "nome", "sexo", "circulo", "valor_pago", "forma_pagamento", "ativo", "aptidoes" });
+    }
+
     // ==================== Método utilitário ====================
 
     @SuppressWarnings("unchecked")

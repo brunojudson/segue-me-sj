@@ -11,7 +11,8 @@ import java.util.Objects;
 @Table(name = "casal", schema="public", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"pessoa1_id", "pessoa2_id"})
 })
-public class Casal implements Serializable {
+public class Casal implements Serializable, Auditavel {
+
     
     private static final long serialVersionUID = 1L;
     
@@ -68,15 +69,15 @@ public class Casal implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-
+    
     public Pessoa getPessoa1() {
         return pessoa1;
     }
-
+    
     public void setPessoa1(Pessoa pessoa1) {
         this.pessoa1 = pessoa1;
     }
-
+    
     public Pessoa getPessoa2() {
         return pessoa2;
     }
@@ -84,7 +85,7 @@ public class Casal implements Serializable {
     public void setPessoa2(Pessoa pessoa2) {
         this.pessoa2 = pessoa2;
     }
-
+    
     public LocalDate getDataCasamento() {
         return dataCasamento;
     }
@@ -92,11 +93,11 @@ public class Casal implements Serializable {
     public void setDataCasamento(LocalDate dataCasamento) {
         this.dataCasamento = dataCasamento;
     }
-
+    
     public String getObservacoes() {
         return observacoes;
     }
-
+    
     public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
     }
@@ -104,12 +105,12 @@ public class Casal implements Serializable {
     public String getFoto() {
         return foto;
     }
-
+    
     public void setFoto(String foto) {
         this.foto = foto;
     }
     
-
+    
     // Equals e HashCode
     @Override
     public boolean equals(Object o) {
@@ -117,25 +118,33 @@ public class Casal implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Casal casal = (Casal) o;
         return Objects.equals(id, casal.id) || 
-               (Objects.equals(pessoa1, casal.pessoa1) && Objects.equals(pessoa2, casal.pessoa2)) ||
-               (Objects.equals(pessoa1, casal.pessoa2) && Objects.equals(pessoa2, casal.pessoa1));
+        (Objects.equals(pessoa1, casal.pessoa1) && Objects.equals(pessoa2, casal.pessoa2)) ||
+        (Objects.equals(pessoa1, casal.pessoa2) && Objects.equals(pessoa2, casal.pessoa1));
     }
-
+    
     @Override
     public int hashCode() {
         // Ordem independente para pessoa1 e pessoa2
         return Objects.hash(id, 
-                           (pessoa1 != null && pessoa2 != null) ? 
-                           (pessoa1.hashCode() + pessoa2.hashCode()) : 0);
+            (pessoa1 != null && pessoa2 != null) ? 
+            (pessoa1.hashCode() + pessoa2.hashCode()) : 0);
     }
     
     @Override
     public String toString() {
         return "Casal{" +
-                "id=" + id +
-                ", pessoa1=" + (pessoa1 != null ? pessoa1.getNome() : "null") +
-                ", pessoa2=" + (pessoa2 != null ? pessoa2.getNome() : "null") +
-                ", dataCasamento=" + dataCasamento +
-                '}';
+        "id=" + id +
+        ", pessoa1=" + (pessoa1 != null ? pessoa1.getNome() : "null") +
+        ", pessoa2=" + (pessoa2 != null ? pessoa2.getNome() : "null") +
+        ", dataCasamento=" + dataCasamento +
+        '}';
+    }
+    @Override
+    public String toAuditString() {
+        return "id=" + id
+            + " | pessoa1=" + (pessoa1 != null ? pessoa1.getId() + "/" + pessoa1.getNome() : null)
+            + " | pessoa2=" + (pessoa2 != null ? pessoa2.getId() + "/" + pessoa2.getNome() : null)
+            + " | dataCasamento=" + dataCasamento
+            + " | observacoes=" + observacoes;
     }
 }

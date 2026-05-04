@@ -72,6 +72,15 @@ public interface DirigenteRepository {
     Optional<Dirigente> findByTrabalhadorAndPasta(Long trabalhadorId, Long pastaId);
     
     /**
+     * Busca mandato vigente (ATIVO ou PRORROGADO) de um trabalhador em uma pasta.
+     * Diferente de findByTrabalhadorAndPasta, este método só retorna mandatos não encerrados.
+     * @param trabalhadorId ID do trabalhador
+     * @param pastaId ID da pasta
+     * @return Optional contendo o dirigente com mandato vigente, se existir
+     */
+    Optional<Dirigente> findMandatoVigente(Long trabalhadorId, Long pastaId);
+    
+    /**
      * Remove um dirigente do banco de dados
      * @param id ID do dirigente a ser removido
      * @return true se removido com sucesso, false caso contrário

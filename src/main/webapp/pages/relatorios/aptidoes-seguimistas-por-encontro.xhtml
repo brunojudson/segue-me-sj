@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      lang="pt-BR" xml:lang="pt-BR">
+<head>
+    <title>Aptidões dos Seguimistas/Encontristas - Sistema Segue-me São José</title>
+</head>
+
+<ui:composition template="/templates/template.xhtml">
+    <ui:define name="title">
+        Aptidões dos Seguimistas/Encontristas por Encontro - Sistema Segue-me
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="content-container">
+            <!-- Cabeçalho -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">
+                            <i class="pi pi-heart page-icon"></i>
+                            <span class="title-text">Aptidões dos Seguimistas/Encontristas</span>
+                        </h1>
+                        <p class="page-subtitle">
+                            Visualize as aptidões de equipe dos seguimistas de um encontro específico
+                        </p>
+                    </div>
+                    <div class="page-actions">
+                        <h:link outcome="/pages/relatorios/relatorios"
+                            styleClass="ui-button ui-button-outlined action-button-secondary"
+                            style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                            <i class="pi pi-arrow-left"></i>
+                            <span>📊 Voltar aos Relatórios</span>
+                        </h:link>
+                    </div>
+                </div>
+            </div>
+
+            <h:form id="relatorioForm" styleClass="modern-form">
+                <p:growl id="messages" showDetail="true" closable="true"/>
+
+                <!-- Filtros -->
+                <div class="form-section">
+                    <p:fieldset legend="🔍 Filtros do Relatório" styleClass="modern-fieldset">
+                        <div class="field-grid">
+                            <div class="field-group">
+                                <p:outputLabel for="encontroSeguimistas" value="Encontro" styleClass="required-field" />
+                                <p:selectOneMenu id="encontroSeguimistas"
+                                    value="#{relatorioController.encontroSelecionado}"
+                                    converter="omnifaces.SelectItemsConverter"
+                                    required="true"
+                                    requiredMessage="Selecione um encontro para gerar o relatório"
+                                    filter="true"
+                                    filterMatchMode="startsWith"
+                                    filterNormalize="true"
+                                    styleClass="modern-select">
+                                    <f:selectItem itemLabel="Selecione um encontro" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{relatorioController.encontros}" var="enc"
+                                                   itemLabel="#{enc.nome}" itemValue="#{enc}" />
+                                </p:selectOneMenu>
+                                <small class="field-hint">
+                                    <i class="pi pi-info-circle"></i>
+                                    Escolha o encontro para visualizar as aptidões de equipe dos seus seguimistas
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <div class="action-buttons">
+                                <p:commandButton value="⚡ Gerar Relatório de Aptidões"
+                                    action="#{relatorioController.gerarRelatorioAptidoesSeguimistasPorEncontro}"
+                                    update=":relatorioForm:resultadoPanel"
+                                    icon="pi pi-heart"
+                                    styleClass="ui-button-success action-button-primary"
+                                    process="@this encontroSeguimistas"
+                                    oncomplete="setTimeout(function(){
+                                        var panel = document.getElementById('relatorioForm:resultadoPanel');
+                                        if(panel){ panel.scrollIntoView({behavior: 'smooth', block: 'start'}); }
+                                    }, 200);" />
+
+                                <p:commandButton value="🔄 Limpar"
+                                    type="reset"
+                                    icon="pi pi-refresh"
+                                    styleClass="ui-button-outlined action-button-secondary"
+                                    style="margin-left: 0.5rem;" />
+                            </div>
+                        </div>
+                    </p:fieldset>
+                </div>
+
+                <!-- Resultados -->
+                <div class="form-section" style="margin-top: 2rem;">
+                    <p:panel id="resultadoPanel" widgetVar="resultadoPanelWidget" styleClass="modern-panel resultado-panel">
+                        <f:facet name="header">
+                            <div class="panel-header">
+                                <h3 class="panel-title">
+                                    <i class="pi pi-heart"></i>
+                                    Aptidões dos Seguimistas/Encontristas
+                                </h3>
+                                <div class="panel-actions">
+                                    <p:commandButton value="📥 Excel"
+                                        icon="pi pi-file-excel"
+                                        styleClass="ui-button-success ui-button-sm export-button"
+                                        style="margin-right: 0.75rem;"
+                                        title="Exportar para Excel"
+                                        rendered="#{not empty relatorioController.resultadoRelatorio}">
+                                        <p:dataExporter type="xlsx" target="tabelaSeguimistas"
+                                            fileName="aptidoes_seguimistas_por_encontro" />
+                                    </p:commandButton>
+
+                                    <p:commandButton value="📄 PDF"
+                                        icon="pi pi-file-pdf"
+                                        styleClass="ui-button-danger ui-button-sm export-button"
+                                        title="Exportar para PDF"
+                                        rendered="#{not empty relatorioController.resultadoRelatorio}">
+                                        <p:dataExporter type="pdf" target="tabelaSeguimistas"
+                                            fileName="aptidoes_seguimistas_por_encontro" />
+                                    </p:commandButton>
+                                </div>
+                            </div>
+                        </f:facet>
+
+                        <div class="resultado-content">
+                            <!-- Cards de resumo -->
+                            <ui:fragment rendered="#{not empty relatorioController.resultadoRelatorio}">
+                                <div class="stats-cards" style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+                                    <div class="stat-card">
+                                        <div class="stat-icon icon-blue"><i class="pi pi-users"></i></div>
+                                        <div class="stat-content">
+                                            <span class="stat-label">Total de Seguimistas</span>
+                                            <span class="stat-value">#{relatorioController.resultadoRelatorio.size()}</span>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-icon icon-green"><i class="pi pi-check-circle"></i></div>
+                                        <div class="stat-content">
+                                            <span class="stat-label">Com Aptidões Cadastradas</span>
+                                            <span class="stat-value">#{relatorioController.contarSeguimistasComAptidoes}</span>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-icon icon-orange"><i class="pi pi-exclamation-triangle"></i></div>
+                                        <div class="stat-content">
+                                            <span class="stat-label">Sem Aptidões Cadastradas</span>
+                                            <span class="stat-value">#{relatorioController.resultadoRelatorio.size() - relatorioController.contarSeguimistasComAptidoes}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+
+                            <!-- Tabela -->
+                            <p:dataTable id="tabelaSeguimistas"
+                                var="item"
+                                value="#{relatorioController.resultadoRelatorio}"
+                                styleClass="modern-datatable resultado-tabela"
+                                style="width: 100%;"
+                                responsiveLayout="scroll"
+                                striped="true"
+                                sortMode="multiple"
+                                paginator="#{relatorioController.resultadoRelatorio.size() > 15}"
+                                rows="20"
+                                paginatorPosition="both"
+                                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                currentPageReportTemplate="Exibindo {startRecord} - {endRecord} de {totalRecords} registros"
+                                rowsPerPageTemplate="10,20,50,100"
+                                filterable="true"
+                                filterDelay="300"
+                                emptyMessage="Nenhum seguimista encontrado para o encontro selecionado."
+                                rendered="#{not empty relatorioController.resultadoRelatorio}">
+
+                                <p:column headerText="Nome"
+                                    sortBy="#{item.nome}"
+                                    filterBy="#{item.nome}"
+                                    filterMatchMode="contains"
+                                    styleClass="text-left"
+                                    width="220">
+                                    <div class="worker-info">
+                                        <div class="worker-avatar">
+                                            <i class="pi pi-heart"></i>
+                                        </div>
+                                        <span class="worker-name">#{item.nome}</span>
+                                    </div>
+                                </p:column>
+
+                                <p:column headerText="Sexo"
+                                    sortBy="#{item.sexo}"
+                                    filterBy="#{item.sexo}"
+                                    filterMatchMode="contains"
+                                    styleClass="text-center"
+                                    width="110">
+                                    <span class="status-badge #{item.sexo eq 'Masculino' ? 'aguardando' : (item.sexo eq 'Feminino' ? 'ativo' : 'inativo')}"
+                                          style="font-size:0.8rem;">#{item.sexo}</span>
+                                </p:column>
+
+                                <p:column headerText="Círculo"
+                                    sortBy="#{item.circulo}"
+                                    filterBy="#{item.circulo}"
+                                    filterMatchMode="contains"
+                                    styleClass="text-center"
+                                    width="130">
+                                    <span class="status-badge aguardando" style="font-size:0.8rem;">
+                                        <i class="pi pi-circle"></i>
+                                        #{item.circulo}
+                                    </span>
+                                </p:column>
+
+                                <p:column headerText="Forma Pagamento"
+                                    sortBy="#{item.forma_pagamento}"
+                                    filterBy="#{item.forma_pagamento}"
+                                    filterMatchMode="contains"
+                                    styleClass="text-center"
+                                    width="150">
+                                    #{item.forma_pagamento}
+                                </p:column>
+
+                                <p:column headerText="Valor Pago"
+                                    sortBy="#{item.valor_pago}"
+                                    styleClass="text-right"
+                                    width="120">
+                                    <h:outputText value="#{item.valor_pago}">
+                                        <f:convertNumber type="currency" currencySymbol="R$ "
+                                            groupingUsed="true" maxFractionDigits="2" minFractionDigits="2" />
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText="Ativo"
+                                    sortBy="#{item.ativo}"
+                                    filterBy="#{item.ativo}"
+                                    filterMatchMode="exact"
+                                    styleClass="text-center"
+                                    width="90">
+                                    <span class="status-badge #{item.ativo eq 'Sim' ? 'ativo' : 'inativo'}" style="font-size:0.8rem;">
+                                        <i class="pi #{item.ativo eq 'Sim' ? 'pi-check-circle' : 'pi-minus-circle'}"></i>
+                                        #{item.ativo}
+                                    </span>
+                                </p:column>
+
+                                <p:column headerText="Aptidões de Equipe"
+                                    sortBy="#{item.aptidoes}"
+                                    filterBy="#{item.aptidoes}"
+                                    filterMatchMode="contains"
+                                    styleClass="text-left"
+                                    width="280">
+                                    <span style="font-size:0.85rem; color: var(--text-secondary);">
+                                        <i class="pi #{item.aptidoes eq 'Nenhuma' ? 'pi-minus-circle' : 'pi-star-fill'}"
+                                           style="margin-right:0.3rem; color: #{item.aptidoes eq 'Nenhuma' ? 'var(--text-secondary)' : 'var(--yellow-500)'};">
+                                        </i>#{item.aptidoes}
+                                    </span>
+                                </p:column>
+                            </p:dataTable>
+
+                            <!-- Estado vazio -->
+                            <ui:fragment rendered="#{empty relatorioController.resultadoRelatorio and relatorioController.tipoRelatorioSelecionado eq 'Aptidões dos Seguimistas/Encontristas por Encontro'}">
+                                <div class="empty-state" style="text-align:center; padding:2rem;">
+                                    <i class="pi pi-inbox" style="font-size:2.5rem; color:var(--text-secondary);"></i>
+                                    <p style="margin-top:0.75rem; color:var(--text-secondary);">
+                                        Nenhum seguimista encontrado para o encontro selecionado.
+                                    </p>
+                                </div>
+                            </ui:fragment>
+                        </div>
+                    </p:panel>
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>
+
+</html>

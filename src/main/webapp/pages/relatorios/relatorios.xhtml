@@ -597,13 +597,37 @@
 				Gere relatórios detalhados com filtros, exportação para Excel, CSV e PDF.
 			</p>
 
-			<div class="dash-stats-grid" style="grid-template-columns: 1fr;">
+			<div class="dash-stats-grid" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">
 				<h:link outcome="/pages/relatorios/relatorios-detalhados" styleClass="dash-stat-card" style="text-decoration: none; cursor: pointer;">
 					<div class="dash-stat-icon icon-purple"><i class="pi pi-table"></i></div>
 					<div>
-						<div class="dash-stat-label" style="font-size: 1.1rem; font-weight: 600;">Acessar Relatórios Detalhados</div>
+						<div class="dash-stat-label" style="font-size: 1.1rem; font-weight: 600;">Relatórios Detalhados</div>
 						<div class="dash-stat-label" style="margin-top: 0.25rem;">
 							12 tipos de relatórios com filtros avançados e exportação para Excel, CSV e PDF
+						</div>
+					</div>
+					<div style="margin-left: auto;">
+						<i class="pi pi-arrow-right" style="font-size: 1.5rem; color: var(--sm-accent);"></i>
+					</div>
+				</h:link>
+				<h:link outcome="/pages/relatorios/aptidoes-por-encontro.xhtml" styleClass="dash-stat-card" style="text-decoration: none; cursor: pointer;">
+					<div class="dash-stat-icon icon-orange"><i class="pi pi-star"></i></div>
+					<div>
+						<div class="dash-stat-label" style="font-size: 1.1rem; font-weight: 600;">Aptidões Trabalhadores</div>
+						<div class="dash-stat-label" style="margin-top: 0.25rem;">
+							Aptidões dos trabalhadores — apto para palestrar, coordenar e mais
+						</div>
+					</div>
+					<div style="margin-left: auto;">
+						<i class="pi pi-arrow-right" style="font-size: 1.5rem; color: var(--sm-accent);"></i>
+					</div>
+				</h:link>
+				<h:link outcome="/pages/relatorios/aptidoes-seguimistas-por-encontro.xhtml" styleClass="dash-stat-card" style="text-decoration: none; cursor: pointer;">
+					<div class="dash-stat-icon icon-pink"><i class="pi pi-heart"></i></div>
+					<div>
+						<div class="dash-stat-label" style="font-size: 1.1rem; font-weight: 600;">Aptidões Seguimistas</div>
+						<div class="dash-stat-label" style="margin-top: 0.25rem;">
+							Aptidões de equipe dos seguimistas/encontristas por encontro
 						</div>
 					</div>
 					<div style="margin-left: auto;">

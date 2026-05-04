@@ -25,55 +25,56 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "encontro", schema="public")
-public class Encontro implements Serializable {
+public class Encontro implements Serializable, Auditavel {
 
+    
     private static final long serialVersionUID = 1L;
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     @NotBlank(message = "Nome do encontro é obrigatório")
     @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres")
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
-
+    
     @Size(max = 200, message = "Tema deve ter no máximo 200 caracteres")
     @Column(name = "tema", length = 200)
     private String tema;
-
+    
     @NotNull(message = "Data de início é obrigatória")
     @Column(name = "data_inicio", nullable = false)
     private LocalDate dataInicio;
-
+    
     @NotNull(message = "Data de fim é obrigatória")
     @Column(name = "data_fim", nullable = false)
     private LocalDate dataFim;
-
+    
     @NotBlank(message = "Local é obrigatório")
     @Size(min = 3, max = 200, message = "Local deve ter entre 3 e 200 caracteres")
     @Column(name = "local", nullable = false, length = 200)
     private String local;
-
+    
     @Size(max = 1000, message = "Descrição deve ter no máximo 1000 caracteres")
     @Column(name = "descricao")
     private String descricao;
-
+    
     @Positive(message = "Capacidade máxima deve ser positiva")
     @Column(name = "capacidade_maxima")
     private Integer capacidadeMaxima;
-
+    
     @DecimalMin(value = "0.0", inclusive = true, message = "Valor de inscrição não pode ser negativo")
     @Column(name = "valor_inscricao", precision = 10, scale = 2)
     private BigDecimal valorInscricao;
-
+    
     @DecimalMin(value = "0.0", inclusive = true, message = "Valor de contribuição não pode ser negativo")
     @Column(name = "valor_contribuicao_trabalhador", precision = 10, scale = 2)
     private BigDecimal valorContribuicaoTrabalhador;
-
+    
     @Column(name = "ativo")
     private Boolean ativo = true;
-
+    
     @JsonbTransient
     @OneToMany(mappedBy = "encontro", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Encontrista> encontristas = new HashSet<>();
@@ -81,7 +82,7 @@ public class Encontro implements Serializable {
     @JsonbTransient
     @OneToMany(mappedBy = "encontro", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Equipe> equipes = new HashSet<>();
-
+    
     @JsonbTransient
     @OneToMany(mappedBy = "encontro", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Trabalhador> trabalhadores = new HashSet<>();
@@ -90,7 +91,7 @@ public class Encontro implements Serializable {
     @OneToMany(mappedBy = "encontro", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Palestra> palestras = new HashSet<>();
 	
-
+    
     // Construtores
     public Encontro() {
         this.capacidadeMaxima = 60;
@@ -104,16 +105,16 @@ public class Encontro implements Serializable {
         this.dataFim = dataFim;
         this.local = local;
     }
-
+    
     // Getters e Setters
     public Long getId() {
         return id;
     }
-
+    
     public void setId(Long id) {
         this.id = id;
     }
-
+    
     public String getNome() {
         return nome;
     }
@@ -121,47 +122,47 @@ public class Encontro implements Serializable {
     public void setNome(String nome) {
         this.nome = nome;
     }
-
+    
     public String getTema() {
         return tema;
     }
-
+    
     public void setTema(String tema) {
         this.tema = tema;
     }
-
+    
     public LocalDate getDataInicio() {
         return dataInicio;
     }
-
+    
     public void setDataInicio(LocalDate dataInicio) {
         this.dataInicio = dataInicio;
     }
-
+    
     public LocalDate getDataFim() {
         return dataFim;
     }
-
+    
     public void setDataFim(LocalDate dataFim) {
         this.dataFim = dataFim;
     }
-
+    
     public String getLocal() {
         return local;
     }
-
+    
     public void setLocal(String local) {
         this.local = local;
     }
-
+    
     public String getDescricao() {
         return descricao;
     }
-
+    
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
-
+    
     public Integer getCapacidadeMaxima() {
         return capacidadeMaxima;
     }
@@ -177,7 +178,7 @@ public class Encontro implements Serializable {
     public void setValorInscricao(BigDecimal valorInscricao) {
         this.valorInscricao = valorInscricao;
     }
-
+    
     public BigDecimal getValorContribuicaoTrabalhador() {
         return valorContribuicaoTrabalhador;
     }
@@ -189,11 +190,11 @@ public class Encontro implements Serializable {
     public Boolean getAtivo() {
         return ativo;
     }
-
+    
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
     }
-
+    
     public Set<Encontrista> getEncontristas() {
         return encontristas;
     }
@@ -205,15 +206,15 @@ public class Encontro implements Serializable {
     public Set<Equipe> getEquipes() {
         return equipes;
     }
-
+    
     public void setEquipes(Set<Equipe> equipes) {
         this.equipes = equipes;
     }
-
+    
     public Set<Trabalhador> getTrabalhadores() {
         return trabalhadores;
     }
-
+    
     public void setTrabalhadores(Set<Trabalhador> trabalhadores) {
         this.trabalhadores = trabalhadores;
     }
@@ -221,11 +222,11 @@ public class Encontro implements Serializable {
     public Set<Palestra> getPalestras() {
         return palestras;
     }
-
+    
     public void setPalestras(Set<Palestra> palestras) {
         this.palestras = palestras;
     }
-
+    
 	// Métodos auxiliares
     public void adicionarEncontrista(Encontrista encontrista) {
         encontristas.add(encontrista);
@@ -236,7 +237,7 @@ public class Encontro implements Serializable {
         encontristas.remove(encontrista);
         encontrista.setEncontro(null);
     }
-
+    
     public void adicionarEquipe(Equipe equipe) {
         equipes.add(equipe);
         equipe.setEncontro(this);
@@ -246,12 +247,12 @@ public class Encontro implements Serializable {
         equipes.remove(equipe);
         equipe.setEncontro(null);
     }
-
+    
     public void adicionarTrabalhador(Trabalhador trabalhador) {
         trabalhadores.add(trabalhador);
         trabalhador.setEncontro(this);
     }
-
+    
     public void removerTrabalhador(Trabalhador trabalhador) {
         trabalhadores.remove(trabalhador);
         trabalhador.setEncontro(null);
@@ -265,19 +266,33 @@ public class Encontro implements Serializable {
         Encontro encontro = (Encontro) o;
         return Objects.equals(id, encontro.id);
     }
-
+    
     @Override
     public int hashCode() {
         return Objects.hash(id);
     }
-
+    
     @Override
     public String toString() {
         return "Encontro{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", dataInicio=" + dataInicio +
-                ", dataFim=" + dataFim +
-                '}';
+        "id=" + id +
+        ", nome='" + nome + '\'' +
+        ", dataInicio=" + dataInicio +
+        ", dataFim=" + dataFim +
+        '}';
+    }
+    @Override
+    public String toAuditString() {
+        return "id=" + id
+            + " | nome=" + nome
+            + " | tema=" + tema
+            + " | descricao=" + descricao
+            + " | local=" + local
+            + " | dataInicio=" + dataInicio
+            + " | dataFim=" + dataFim
+            + " | capacidade=" + capacidadeMaxima
+            + " | valorInscricao=" + valorInscricao
+            + " | valorContribuicao=" + valorContribuicaoTrabalhador
+            + " | ativo=" + ativo;
     }
 }

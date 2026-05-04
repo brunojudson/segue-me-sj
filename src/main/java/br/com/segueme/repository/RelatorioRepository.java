@@ -31,4 +31,8 @@ public interface RelatorioRepository {
     List<Map<String, Object>> buscarHistoricoParticipacao(Long pessoaId);
 
     List<Map<String, Object>> buscarPalestrasPorEncontro(Long encontroId);
+
+    List<Map<String, Object>> buscarAptidoesPorEncontro(Long encontroId);
+
+    List<Map<String, Object>> buscarAptidoesSeguimistasPorEncontro(Long encontroId);
 }

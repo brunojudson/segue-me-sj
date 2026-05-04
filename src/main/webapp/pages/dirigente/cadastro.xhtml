@@ -45,6 +45,22 @@
                     <f:viewParam name="id" />
                     <f:viewAction action="#{dirigenteController.carregarDirigente}" if="#{not empty param.id}" />
                 </f:metadata>
+
+                <!-- Banner: Mandato Encerrado (somente leitura) -->
+                <ui:fragment rendered="#{not empty dirigenteController.dirigente.id and not dirigenteController.dirigente.statusMandato.vigente}">
+                    <div class="form-section">
+                        <div style="background: var(--red-50, #fff5f5); border: 1px solid var(--red-200, #fca5a5); border-radius: 8px; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem;">
+                            <i class="pi pi-lock" style="color: var(--red-500); font-size: 1.25rem;"></i>
+                            <div>
+                                <strong style="color: var(--red-700, #b91c1c);">Mandato Encerrado — Somente Leitura</strong>
+                                <p style="margin: 0.25rem 0 0; color: var(--red-600, #dc2626); font-size: 0.9rem;">
+                                    Este mandato está <strong>#{dirigenteController.dirigente.statusMandato.descricao}</strong> e não pode ser editado.
+                                    Para registrar um novo período, cadastre um novo dirigente.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </ui:fragment>
                 
                 <!-- Seção: Dados do Dirigente -->
                 <div class="form-section">
@@ -55,7 +71,8 @@
                                 <p:selectOneMenu id="trabalhador" value="#{dirigenteController.dirigente.trabalhador}" 
                                                 converter="omnifaces.SelectItemsConverter" required="true"
                                                 requiredMessage="O trabalhador é obrigatório"
-                                                filter="true" filterMatchMode="startsWith" filterNormalize="true">
+                                                filter="true" filterMatchMode="startsWith" filterNormalize="true"
+                                                disabled="#{not empty dirigenteController.dirigente.id and not dirigenteController.dirigente.statusMandato.vigente}">
                                     <f:selectItem itemLabel="Selecione um trabalhador" itemValue="" noSelectionOption="true" />
                                     <f:selectItems value="#{dirigenteController.trabalhadores}" var="trabalhador"
                                                   itemLabel="#{trabalhador.nomeExibicao}" itemValue="#{trabalhador}" />
@@ -67,7 +84,8 @@
                                 <p:outputLabel for="pasta" value="Pasta" styleClass="required-field" />
                                 <p:selectOneMenu id="pasta" value="#{dirigenteController.dirigente.pasta}" 
                                                 converter="omnifaces.SelectItemsConverter" required="true"
-                                                requiredMessage="A pasta é obrigatória">
+                                                requiredMessage="A pasta é obrigatória"
+                                                disabled="#{not empty dirigenteController.dirigente.id and not dirigenteController.dirigente.statusMandato.vigente}">
                                     <f:selectItem itemLabel="Selecione uma pasta" itemValue="" noSelectionOption="true" />
                                     <f:selectItems value="#{dirigenteController.pastas}" var="pasta"
                                                   itemLabel="#{pasta.nome}" itemValue="#{pasta}" />
@@ -77,9 +95,66 @@
 
                             <div class="field-group checkbox-group">
                                 <p:outputLabel for="ativo" value="Dirigente Ativo" />
-                                <p:selectBooleanCheckbox id="ativo" value="#{dirigenteController.dirigente.ativo}" />
+                                <p:selectBooleanCheckbox id="ativo" value="#{dirigenteController.dirigente.ativo}"
+                                                        disabled="#{not empty dirigenteController.dirigente.id and not dirigenteController.dirigente.statusMandato.vigente}" />
                                 <small class="field-hint">Marque se o dirigente está ativo no sistema</small>
                             </div>
+
+                            <ui:fragment rendered="#{not empty dirigenteController.dirigente.id}">
+                                <div class="field-group">
+                                    <p:outputLabel value="Status do Mandato" />
+                                    <h:panelGroup rendered="#{dirigenteController.dirigente.statusMandato eq 'ATIVO'}">
+                                        <span class="status-badge ativo"><i class="pi pi-check-circle"></i> Ativo</span>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{dirigenteController.dirigente.statusMandato eq 'PRORROGADO'}">
+                                        <span class="status-badge aguardando"><i class="pi pi-history"></i> Prorrogado</span>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{dirigenteController.dirigente.statusMandato eq 'ENCERRADO_NATURAL' or dirigenteController.dirigente.statusMandato eq 'ENCERRADO_OUTROS'}">
+                                        <span class="status-badge inativo"><i class="pi pi-calendar-times"></i> #{dirigenteController.dirigente.statusMandato.descricao}</span>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{dirigenteController.dirigente.statusMandato eq 'RENUNCIADO'}">
+                                        <span class="status-badge cancelado"><i class="pi pi-sign-out"></i> Renunciado</span>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{dirigenteController.dirigente.statusMandato eq 'DESTITUIDO'}">
+                                        <span class="status-badge cancelado"><i class="pi pi-ban"></i> Destituído</span>
+                                    </h:panelGroup>
+                                </div>
+
+                                <h:panelGroup layout="block" styleClass="field-group" rendered="#{dirigenteController.dirigente.prorrogado}">
+                                    <p:outputLabel value="Prorrogação" />
+                                    <span class="status-badge aguardando" style="font-size:0.85rem;">
+                                        <i class="pi pi-history"></i> Prorrogado em 
+                                        <h:outputText value="#{dirigenteController.dirigente.dataProrrogacao}">
+                                            <f:converter converterId="localDateConverter" />
+                                        </h:outputText>
+                                    </span>
+                                </h:panelGroup>
+
+                                <h:panelGroup layout="block" styleClass="field-group" rendered="#{not empty dirigenteController.dirigente.dataEncerramentoEfetivo}">
+                                    <p:outputLabel value="Data de Encerramento Efetivo" />
+                                    <span>
+                                        <i class="pi pi-calendar-times" style="color: var(--red-500);"></i>
+                                        <h:outputText value="#{dirigenteController.dirigente.dataEncerramentoEfetivo}">
+                                            <f:converter converterId="localDateConverter" />
+                                        </h:outputText>
+                                    </span>
+                                </h:panelGroup>
+
+                                <h:panelGroup layout="block" styleClass="field-group" rendered="#{not empty dirigenteController.dirigente.motivoEncerramento}">
+                                    <p:outputLabel value="Motivo do Encerramento" />
+                                    <span>#{dirigenteController.dirigente.motivoEncerramento.descricao}</span>
+                                </h:panelGroup>
+
+                                <h:panelGroup layout="block" styleClass="field-group" rendered="#{not empty dirigenteController.dirigente.dataCadastro}">
+                                    <p:outputLabel value="Data de Cadastro" />
+                                    <span>
+                                        <i class="pi pi-clock"></i>
+                                        <h:outputText value="#{dirigenteController.dirigente.dataCadastro}">
+                                            <f:converter converterId="localDateTimeConverter" />
+                                        </h:outputText>
+                                    </span>
+                                </h:panelGroup>
+                            </ui:fragment>
                         </div>
                     </p:fieldset>
                 </div>
@@ -92,7 +167,8 @@
                                 <p:outputLabel for="dataInicio" value="Data de Início" styleClass="required-field" />
                                 <p:datePicker id="dataInicio" value="#{dirigenteController.dirigente.dataInicio}" 
                                              pattern="dd/MM/yyyy" showIcon="true" required="true" showOnFocus="false" 
-                                             requiredMessage="A data de início é obrigatória" />
+                                             requiredMessage="A data de início é obrigatória"
+                                             disabled="#{not empty dirigenteController.dirigente.id and not dirigenteController.dirigente.statusMandato.vigente}" />
                                 <small class="field-hint">Data em que o dirigente assume o cargo</small>
                             </div>
                             
@@ -100,8 +176,9 @@
                                 <p:outputLabel for="dataFim" value="Data de Fim" styleClass="required-field" />
                                 <p:datePicker id="dataFim" value="#{dirigenteController.dirigente.dataFim}" 
                                              pattern="dd/MM/yyyy" showIcon="true" required="true" showOnFocus="false" 
-                                             requiredMessage="A data de fim é obrigatória" />
-                                <small class="field-hint">Data prevista para o fim do mandato</small>
+                                             requiredMessage="A data de fim é obrigatória"
+                                             disabled="#{not empty dirigenteController.dirigente.id and not dirigenteController.dirigente.statusMandato.vigente}" />
+                                <small class="field-hint">Data prevista para o fim do mandato (padrão: 1 ano). Pode ser prorrogado por mais 1 ano.</small>
                             </div>
                         </div>
                     </p:fieldset>
@@ -115,9 +192,10 @@
                                 <p:outputLabel for="observacoes" value="Observações" />
                                 <p:inputTextarea id="observacoes"
                                                 value="#{dirigenteController.dirigente.observacoes}" 
-                                                maxlength="255" rows="4"
-                                                placeholder="Adicione observações sobre o dirigente..." />
-                                <small class="field-hint">Informações adicionais sobre o dirigente (máximo 255 caracteres)</small>
+                                                maxlength="500" rows="4"
+                                                placeholder="Adicione observações sobre o dirigente..."
+                                                disabled="#{not empty dirigenteController.dirigente.id and not dirigenteController.dirigente.statusMandato.vigente}" />
+                                <small class="field-hint">Informações adicionais sobre o dirigente (máximo 500 caracteres)</small>
                             </div>
                         </div>
                     </p:fieldset>
@@ -131,7 +209,8 @@
                                        action="#{dirigenteController.salvar}" 
                                        update="@form" 
                                        styleClass="ui-button-success action-button-primary"
-                                       validateClient="true" />
+                                       validateClient="true"
+                                       rendered="#{empty dirigenteController.dirigente.id or dirigenteController.dirigente.statusMandato.vigente}" />
 
                         <p:commandButton value="📋 Salvar e Continuar"
 								action="#{dirigenteController.salvarEContinuar}"
@@ -139,7 +218,8 @@
 								process="@form"
 								styleClass="ui-button-info action-button-secondary"
 								validateClient="true"
-						oncomplete="handleSaveAndContinueComplete(args);" />
+						oncomplete="handleSaveAndContinueComplete(args);"
+						rendered="#{empty dirigenteController.dirigente.id or dirigenteController.dirigente.statusMandato.vigente}" />
                         <p:button value="❌ Cancelar" 
                                 outcome="/pages/dirigente/lista.xhtml"
                                 styleClass="ui-button-secondary action-button-cancel" />

@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-
 import br.com.segueme.entity.Contribuicao;
 import br.com.segueme.entity.Trabalhador;
 import br.com.segueme.repository.ContribuicaoRepository;
@@ -17,12 +16,18 @@ import br.com.segueme.repository.TrabalhadorRepository;
 @ApplicationScoped
 public class ContribuicaoService implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     @Inject
     private ContribuicaoRepository contribuicaoRepository;
-    
+
     @Inject
     private TrabalhadorRepository trabalhadorRepository;
+
+    @Inject
+    private AuditoriaService auditoriaService;
+
+    @Inject
+    private UsuarioService usuarioService;
     
     /**
      * Salva uma nova contribuição
@@ -60,7 +65,9 @@ public class ContribuicaoService implements Serializable {
         }
         
         // Salvar contribuição
-        return contribuicaoRepository.save(contribuicao);
+        Contribuicao salva = contribuicaoRepository.save(contribuicao);
+        auditoriaService.registrar("Contribuicao", salva.getId(), "INCLUÍDO", usuarioService.getUsuarioLogadoNome(), salva);
+        return salva;
     }
     
     /**
@@ -85,7 +92,9 @@ public class ContribuicaoService implements Serializable {
         }
         
         // Atualizar contribuição
-        return contribuicaoRepository.update(contribuicao);
+        Contribuicao atualizada = contribuicaoRepository.update(contribuicao);
+        auditoriaService.registrar("Contribuicao", contribuicao.getId(), "ATUALIZADO", usuarioService.getUsuarioLogadoNome(), contribuicao);
+        return atualizada;
     }
     
     /**

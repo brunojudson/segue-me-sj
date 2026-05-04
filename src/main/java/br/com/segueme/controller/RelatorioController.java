@@ -272,6 +272,45 @@ public class RelatorioController implements Serializable {
         resultadoRelatorio = relatorioService.buscarPalestrasPorEncontro(encontroSelecionado.getId());
         tipoRelatorioSelecionado = "Palestras e Palestrantes por Encontro";
     }
+
+    public void gerarRelatorioAptidoesPorEncontro() {
+        if (encontroSelecionado == null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", "Selecione um encontro."));
+            return;
+        }
+        resultadoRelatorio = relatorioService.buscarAptidoesPorEncontro(encontroSelecionado.getId());
+        tipoRelatorioSelecionado = "Aptidões dos Seguimistas por Encontro";
+    }
+
+    public void gerarRelatorioAptidoesSeguimistasPorEncontro() {
+        if (encontroSelecionado == null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", "Selecione um encontro."));
+            return;
+        }
+        resultadoRelatorio = relatorioService.buscarAptidoesSeguimistasPorEncontro(encontroSelecionado.getId());
+        tipoRelatorioSelecionado = "Aptidões dos Seguimistas/Encontristas por Encontro";
+    }
+
+    public long getContarSeguimistasComAptidoes() {
+        if (resultadoRelatorio == null) return 0;
+        return resultadoRelatorio.stream()
+                .filter(m -> m.get("aptidoes") != null && !"Nenhuma".equals(m.get("aptidoes")))
+                .count();
+    }
+
+    public long getContarAptosPalestrar() {
+        if (resultadoRelatorio == null) return 0;
+        return resultadoRelatorio.stream()
+                .filter(m -> "Sim".equals(m.get("apto_palestrar")))
+                .count();
+    }
+
+    public long getContarAptosCoordena() {
+        if (resultadoRelatorio == null) return 0;
+        return resultadoRelatorio.stream()
+                .filter(m -> "Sim".equals(m.get("apto_coordenar")))
+                .count();
+    }
     //INICIO DA INFORMAÇÃO DE CIRCULOS
     // Retorna todos os círculos
     public Circulo[] getCirculos() {

@@ -7,20 +7,26 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-
 import br.com.segueme.entity.Equipe;
 import br.com.segueme.entity.Pasta;
 import br.com.segueme.repository.EquipeRepository;
 import br.com.segueme.repository.PastaRepository;
+
 @ApplicationScoped
-public class PastaService  implements Serializable {
+public class PastaService implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     @Inject
     private PastaRepository pastaRepository;
-    
+
     @Inject
     private EquipeRepository equipeRepository;
+
+    @Inject
+    private AuditoriaService auditoriaService;
+
+    @Inject
+    private UsuarioService usuarioService;
     
     /**
      * Salva uma nova pasta
@@ -72,7 +78,9 @@ public class PastaService  implements Serializable {
         }
         
         // Salvar pasta
-        return pastaRepository.save(pasta);
+        Pasta salva = pastaRepository.save(pasta);
+        auditoriaService.registrar("Pasta", salva.getId(), "INCLUÍDO", usuarioService.getUsuarioLogadoNome(), salva);
+        return salva;
     }
     
     /**
@@ -98,7 +106,9 @@ public class PastaService  implements Serializable {
         }
         
         // Atualizar pasta
-        return pastaRepository.update(pasta);
+        Pasta atualizada = pastaRepository.update(pasta);
+        auditoriaService.registrar("Pasta", pasta.getId(), "ATUALIZADO", usuarioService.getUsuarioLogadoNome(), pasta);
+        return atualizada;
     }
     
     /**

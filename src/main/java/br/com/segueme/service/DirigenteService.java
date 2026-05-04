@@ -9,7 +9,9 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import br.com.segueme.entity.Dirigente;
+import br.com.segueme.entity.MotivoEncerramentoMandato;
 import br.com.segueme.entity.Pasta;
+import br.com.segueme.entity.StatusMandato;
 import br.com.segueme.entity.Trabalhador;
 import br.com.segueme.repository.DirigenteRepository;
 import br.com.segueme.repository.PastaRepository;
@@ -27,14 +29,23 @@ public class DirigenteService implements Serializable {
     
     @Inject
     private PastaRepository pastaRepository;
+
+    @Inject
+    private AuditoriaService auditoriaService;
+
+    @Inject
+    private UsuarioService usuarioService;
     
     /**
-     * Salva um novo dirigente
-     * @param dirigente Objeto dirigente a ser salvo
-     * @return Dirigente salvo com ID gerado
+     * Salva um novo dirigente.
+     * Regras:
+     * - Mandato inicial é de 1 ano (pode ser menor em caso de mandato remanescente)
+     * - Duração máxima sem prorrogação: ~366 dias (1 ano + bissexto)
+     * - Não pode haver mandato vigente do mesmo trabalhador na mesma pasta
+     * - Status inicial é ATIVO
      */
     public Dirigente salvar(Dirigente dirigente) {
-        // Validações
+        // Validações básicas
         if (dirigente == null) {
             throw new IllegalArgumentException("Dirigente não pode ser nulo");
         }
@@ -55,6 +66,11 @@ public class DirigenteService implements Serializable {
             throw new IllegalArgumentException("Data de fim do dirigente é obrigatória");
         }
         
+        if (dirigente.getDataFim().isBefore(dirigente.getDataInicio()) 
+                || dirigente.getDataFim().isEqual(dirigente.getDataInicio())) {
+            throw new IllegalArgumentException("Data de fim deve ser posterior à data de início");
+        }
+        
         // Verificar se trabalhador existe
         Optional<Trabalhador> trabalhadorExistente = trabalhadorRepository.findById(dirigente.getTrabalhador().getId());
         if (!trabalhadorExistente.isPresent()) {
@@ -67,29 +83,37 @@ public class DirigenteService implements Serializable {
             throw new IllegalArgumentException("Pasta não encontrada com o ID: " + dirigente.getPasta().getId());
         }
         
-        // Verificar mandato de 2 anos
-        if (!dirigente.verificarMandatoDoisAnos()) {
-            throw new IllegalArgumentException("Mandato de dirigente deve ser de aproximadamente 2 anos (720-732 dias)");
+        // Verificar duração do mandato (máximo 1 ano para mandato novo)
+        if (!dirigente.verificarDuracaoMandatoValida()) {
+            throw new IllegalArgumentException(
+                "Duração do mandato inválida. O mandato inicial deve ser de até 1 ano ("
+                + Dirigente.DURACAO_MANDATO_DIAS + " dias)");
         }
         
-        // Verificar se já existe um dirigente para este trabalhador e pasta
-        Optional<Dirigente> dirigenteExistente = dirigenteRepository.findByTrabalhadorAndPasta(
+        // Verificar se já existe um mandato VIGENTE para este trabalhador e pasta
+        Optional<Dirigente> mandatoVigente = dirigenteRepository.findMandatoVigente(
                 dirigente.getTrabalhador().getId(), dirigente.getPasta().getId());
-        if (dirigenteExistente.isPresent()) {
-            throw new IllegalArgumentException("Já existe um dirigente cadastrado para este trabalhador e pasta");
+        if (mandatoVigente.isPresent()) {
+            throw new IllegalArgumentException(
+                "Já existe um mandato vigente para este trabalhador nesta pasta. "
+                + "Encerre o mandato atual antes de criar um novo.");
         }
+        
+        // Definir status inicial
+        dirigente.setStatusMandato(StatusMandato.ATIVO);
+        dirigente.setProrrogado(false);
         
         // Salvar dirigente
-        return dirigenteRepository.save(dirigente);
+        Dirigente salvo = dirigenteRepository.save(dirigente);
+        auditoriaService.registrar("Dirigente", salvo.getId(), "INCLUÍDO", usuarioService.getUsuarioLogadoNome(), salvo);
+        return salvo;
     }
     
     /**
-     * Atualiza um dirigente existente
-     * @param dirigente Objeto dirigente a ser atualizado
-     * @return Dirigente atualizado
+     * Atualiza um dirigente existente.
+     * Não permite alterar datas de mandatos já encerrados.
      */
     public Dirigente atualizar(Dirigente dirigente) {
-        // Validações
         if (dirigente == null) {
             throw new IllegalArgumentException("Dirigente não pode ser nulo");
         }
@@ -98,19 +122,104 @@ public class DirigenteService implements Serializable {
             throw new IllegalArgumentException("ID do dirigente é obrigatório para atualização");
         }
         
-        // Verificar se dirigente existe
         Optional<Dirigente> dirigenteExistente = dirigenteRepository.findById(dirigente.getId());
         if (!dirigenteExistente.isPresent()) {
             throw new IllegalArgumentException("Dirigente não encontrado com o ID: " + dirigente.getId());
         }
         
-        // Verificar mandato de 2 anos
-        if (!dirigente.verificarMandatoDoisAnos()) {
-            throw new IllegalArgumentException("Mandato de dirigente deve ser de aproximadamente 2 anos (720-732 dias)");
+        // Não permite editar mandatos encerrados
+        StatusMandato statusAtual = dirigenteExistente.get().getStatusMandato();
+        if (statusAtual != null && statusAtual.isEncerrado()) {
+            throw new IllegalArgumentException(
+                "Não é possível editar um mandato encerrado (status: " + statusAtual.getDescricao() + "). "
+                + "Mandatos encerrados são imutáveis.");
         }
         
-        // Atualizar dirigente
-        return dirigenteRepository.update(dirigente);
+        // Verificar duração do mandato
+        if (!dirigente.verificarDuracaoMandatoValida()) {
+            int limiteMaximo = dirigente.isProrrogado() ? Dirigente.DURACAO_MAXIMA_DIAS : Dirigente.DURACAO_MANDATO_DIAS + 1;
+            throw new IllegalArgumentException(
+                "Duração do mandato inválida. Máximo permitido: " + limiteMaximo + " dias"
+                + (dirigente.isProrrogado() ? " (mandato prorrogado)" : " (mandato inicial)"));
+        }
+        
+        Dirigente atualizado = dirigenteRepository.update(dirigente);
+        auditoriaService.registrar("Dirigente", dirigente.getId(), "ATUALIZADO", usuarioService.getUsuarioLogadoNome(), dirigente);
+        return atualizado;
+    }
+    
+    /**
+     * Prorroga o mandato de um dirigente por mais 1 ano.
+     * Regras:
+     * - Só pode ser prorrogado uma vez
+     * - Mandato deve estar ativo (não encerrado)
+     * - A nova data de fim será dataFim atual + 1 ano
+     */
+    public Dirigente prorrogarMandato(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID do dirigente não pode ser nulo");
+        }
+        
+        Optional<Dirigente> opt = dirigenteRepository.findById(id);
+        if (!opt.isPresent()) {
+            throw new IllegalArgumentException("Dirigente não encontrado com o ID: " + id);
+        }
+        
+        Dirigente dirigente = opt.get();
+        
+        if (!dirigente.podeProrrogar()) {
+            throw new IllegalArgumentException(
+                "Mandato não pode ser prorrogado. " 
+                + (dirigente.isProrrogado() ? "Já foi prorrogado anteriormente." 
+                   : "O mandato não está ativo."));
+        }
+        
+        dirigente.prorrogar();
+        Dirigente prorrogado = dirigenteRepository.update(dirigente);
+        auditoriaService.registrar("Dirigente", id, "PRORROGADO",
+            usuarioService.getUsuarioLogadoNome(),
+            "novaDataFim=" + prorrogado.getDataFim() + " | dataProrrogacao=" + prorrogado.getDataProrrogacao());
+        return prorrogado;
+    }
+    
+    /**
+     * Encerra o mandato de um dirigente antecipadamente.
+     */
+    public Dirigente encerrarMandato(Long id, MotivoEncerramentoMandato motivo, String observacao) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID do dirigente não pode ser nulo");
+        }
+        if (motivo == null) {
+            throw new IllegalArgumentException("Motivo de encerramento é obrigatório");
+        }
+        
+        Optional<Dirigente> opt = dirigenteRepository.findById(id);
+        if (!opt.isPresent()) {
+            throw new IllegalArgumentException("Dirigente não encontrado com o ID: " + id);
+        }
+        
+        Dirigente dirigente = opt.get();
+        
+        if (dirigente.getStatusMandato() != null && dirigente.getStatusMandato().isEncerrado()) {
+            throw new IllegalArgumentException("Mandato já está encerrado.");
+        }
+        
+        dirigente.encerrarMandato(motivo, observacao);
+        Dirigente encerrado = dirigenteRepository.update(dirigente);
+        auditoriaService.registrar("Dirigente", id, "ENCERRADO",
+            usuarioService.getUsuarioLogadoNome(),
+            "status=" + encerrado.getStatusMandato()
+            + " | motivo=" + motivo
+            + " | dataEncerramentoEfetivo=" + encerrado.getDataEncerramentoEfetivo()
+            + " | observacao=" + observacao);
+        return encerrado;
+    }
+    
+    /**
+     * Atalho para renúncia de mandato.
+     */
+    public Dirigente renunciarMandato(Long id, String observacao) {
+        return encerrarMandato(id, MotivoEncerramentoMandato.RENUNCIA, observacao);
     }
     
     /**

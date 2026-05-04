@@ -33,10 +33,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "encontrista", schema="public",uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"pessoa_id", "encontro_id"})
+@Table(name = "encontrista", schema = "public", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "pessoa_id", "encontro_id" })
 })
-public class Encontrista implements Serializable {
+public class Encontrista implements Serializable, Auditavel {
 
     private static final long serialVersionUID = 1L;
 
@@ -69,16 +69,16 @@ public class Encontrista implements Serializable {
     @Size(max = 500, message = "Observações devem ter no máximo 500 caracteres")
     @Column(name = "observacoes")
     private String observacoes;
-    
+
     @Column(name = "ativo")
     private Boolean ativo = true;
 
     @OneToOne(mappedBy = "encontrista", cascade = CascadeType.ALL, orphanRemoval = false)
     private Trabalhador trabalhador;
-    
+
     @Column(name = "idade")
     private Integer idade;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "circulo", length = 10)
     private Circulo circulo;
@@ -205,14 +205,14 @@ public class Encontrista implements Serializable {
     }
 
     public Boolean getAtivo() {
-		return ativo;
-	}
+        return ativo;
+    }
 
-	public void setAtivo(Boolean ativo) {
-		this.ativo = ativo;
-	}
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
 
-	public Trabalhador getTrabalhador() {
+    public Trabalhador getTrabalhador() {
         return trabalhador;
     }
 
@@ -227,7 +227,7 @@ public class Encontrista implements Serializable {
     public void setIdade(Integer idade) {
         this.idade = idade;
     }
-    
+
     public Circulo getCirculo() {
         return circulo;
     }
@@ -244,59 +244,115 @@ public class Encontrista implements Serializable {
         this.tokenFicha = tokenFicha;
     }
 
-    public String getAlergias() { return alergias; }
-    public void setAlergias(String alergias) { this.alergias = alergias; }
+    public String getAlergias() {
+        return alergias;
+    }
 
-    public String getRestricaoAlimentar() { return restricoesAlimentares; }
-    public void setRestricaoAlimentar(String restricoesAlimentares) { this.restricoesAlimentares = restricoesAlimentares; }
+    public void setAlergias(String alergias) {
+        this.alergias = alergias;
+    }
 
-    public String getMedicamentos() { return medicamentos; }
-    public void setMedicamentos(String medicamentos) { this.medicamentos = medicamentos; }
+    public String getRestricaoAlimentar() {
+        return restricoesAlimentares;
+    }
 
-    public String getCondicaoMedica() { return condicaoMedica; }
-    public void setCondicaoMedica(String condicaoMedica) { this.condicaoMedica = condicaoMedica; }
+    public void setRestricaoAlimentar(String restricoesAlimentares) {
+        this.restricoesAlimentares = restricoesAlimentares;
+    }
 
-    public String getContatoEmergenciaNome() { return contatoEmergenciaNome; }
-    public void setContatoEmergenciaNome(String contatoEmergenciaNome) { this.contatoEmergenciaNome = contatoEmergenciaNome; }
+    public String getMedicamentos() {
+        return medicamentos;
+    }
 
-    public String getContatoEmergenciaTelefone() { return contatoEmergenciaTelefone; }
-    public void setContatoEmergenciaTelefone(String contatoEmergenciaTelefone) { this.contatoEmergenciaTelefone = contatoEmergenciaTelefone; }
+    public void setMedicamentos(String medicamentos) {
+        this.medicamentos = medicamentos;
+    }
 
-    public String getResponsavelNome() { return responsavelNome; }
-    public void setResponsavelNome(String responsavelNome) { this.responsavelNome = responsavelNome; }
+    public String getCondicaoMedica() {
+        return condicaoMedica;
+    }
 
-    public String getResponsavelTelefone() { return responsavelTelefone; }
-    public void setResponsavelTelefone(String responsavelTelefone) { this.responsavelTelefone = responsavelTelefone; }
+    public void setCondicaoMedica(String condicaoMedica) {
+        this.condicaoMedica = condicaoMedica;
+    }
 
-    public Boolean getAutorizacaoResponsavel() { return autorizacaoResponsavel; }
-    public void setAutorizacaoResponsavel(Boolean autorizacaoResponsavel) { this.autorizacaoResponsavel = autorizacaoResponsavel; }
+    public String getContatoEmergenciaNome() {
+        return contatoEmergenciaNome;
+    }
 
-    public String getAvaliacaoGeral() { return avaliacaoGeral; }
-    public void setAvaliacaoGeral(String avaliacaoGeral) { this.avaliacaoGeral = avaliacaoGeral; }
+    public void setContatoEmergenciaNome(String contatoEmergenciaNome) {
+        this.contatoEmergenciaNome = contatoEmergenciaNome;
+    }
 
-    public List<AptidaoEquipe> getAptidoes() { return aptidoes; }
-    public void setAptidoes(List<AptidaoEquipe> aptidoes) { this.aptidoes = aptidoes; }
+    public String getContatoEmergenciaTelefone() {
+        return contatoEmergenciaTelefone;
+    }
+
+    public void setContatoEmergenciaTelefone(String contatoEmergenciaTelefone) {
+        this.contatoEmergenciaTelefone = contatoEmergenciaTelefone;
+    }
+
+    public String getResponsavelNome() {
+        return responsavelNome;
+    }
+
+    public void setResponsavelNome(String responsavelNome) {
+        this.responsavelNome = responsavelNome;
+    }
+
+    public String getResponsavelTelefone() {
+        return responsavelTelefone;
+    }
+
+    public void setResponsavelTelefone(String responsavelTelefone) {
+        this.responsavelTelefone = responsavelTelefone;
+    }
+
+    public Boolean getAutorizacaoResponsavel() {
+        return autorizacaoResponsavel;
+    }
+
+    public void setAutorizacaoResponsavel(Boolean autorizacaoResponsavel) {
+        this.autorizacaoResponsavel = autorizacaoResponsavel;
+    }
+
+    public String getAvaliacaoGeral() {
+        return avaliacaoGeral;
+    }
+
+    public void setAvaliacaoGeral(String avaliacaoGeral) {
+        this.avaliacaoGeral = avaliacaoGeral;
+    }
+
+    public List<AptidaoEquipe> getAptidoes() {
+        return aptidoes;
+    }
+
+    public void setAptidoes(List<AptidaoEquipe> aptidoes) {
+        this.aptidoes = aptidoes;
+    }
 
     public void calcularIdade() {
         if (this.pessoa != null && this.pessoa.getDataNascimento() != null) {
             this.idade = java.time.Period.between(
-                this.pessoa.getDataNascimento(),
-                java.time.LocalDate.now()
-            ).getYears();
+                    this.pessoa.getDataNascimento(),
+                    java.time.LocalDate.now()).getYears();
         } else {
             this.idade = null;
         }
     }
-    
+
     // Equals e HashCode
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Encontrista that = (Encontrista) o;
         return Objects.equals(id, that.id) &&
-               Objects.equals(pessoa, that.pessoa) &&
-               Objects.equals(encontro, that.encontro);
+                Objects.equals(pessoa, that.pessoa) &&
+                Objects.equals(encontro, that.encontro);
     }
 
     @Override
@@ -305,10 +361,22 @@ public class Encontrista implements Serializable {
     }
 
     @Override
-	public String toString() {
-		return "Encontrista [id=" + id + ", pessoa=" + pessoa + ", encontro=" + encontro + ", dataInscricao="
-				+ dataInscricao + ", valorPago=" + valorPago + ", formaPagamento=" + formaPagamento + ", observacoes="
-				+ observacoes + ", ativo=" + ativo + ", trabalhador=" + trabalhador + ", idade=" + idade + ", circulo="
-				+ circulo + ", contatoEmergenciaNome=" + contatoEmergenciaNome + "]";
-	}
+    public String toString() {
+        return "Encontrista [id=" + id + ", pessoa=" + pessoa + ", encontro=" + encontro + ", dataInscricao="
+                + dataInscricao + ", valorPago=" + valorPago + ", formaPagamento=" + formaPagamento + ", observacoes="
+                + observacoes + ", ativo=" + ativo + ", trabalhador=" + trabalhador + ", idade=" + idade + ", circulo="
+                + circulo + ", contatoEmergenciaNome=" + contatoEmergenciaNome + "]";
+    }
+
+    @Override
+    public String toAuditString() {
+        return "id=" + id
+                + " | pessoa=" + (pessoa != null ? pessoa.getId() + "/" + pessoa.getNome() : null)
+                + " | encontro=" + (encontro != null ? encontro.getId() + "/" + encontro.getNome() : null)
+                + " | dataInscricao=" + dataInscricao
+                + " | valorPago=" + valorPago
+                + " | formaPagamento=" + formaPagamento
+                + " | circulo=" + circulo
+                + " | ativo=" + ativo;
+    }
 }

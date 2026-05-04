@@ -38,27 +38,28 @@ import br.com.segueme.enums.StatusTransferencia;
 
 @Entity
 @Table(name = "pessoa", schema = "public")
-public class Pessoa implements Serializable {
+public class Pessoa implements Serializable, Auditavel {
 
+    
     private static final long serialVersionUID = 1L;
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     @NotBlank(message = "Nome é obrigatório")
     @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres")
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
-
+    
     @Column(name = "cpf", nullable = true, length = 14, unique = true)
     private String cpf;
-
+    
     @NotNull(message = "Data de nascimento é obrigatória")
     @Past(message = "Data de nascimento deve ser no passado")
     @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
-
+    
     @Size(max = 200, message = "Endereço deve ter no máximo 200 caracteres")
     @Column(name = "endereco", length = 200)
     private String endereco;
@@ -66,24 +67,24 @@ public class Pessoa implements Serializable {
     @Pattern(regexp = "\\(\\d{2}\\) \\d{4,5}-\\d{4}", message = "Telefone deve estar no formato (00) 00000-0000")
     @Column(name = "telefone", length = 15, unique = true)
     private String telefone;
-
+    
     @Email(message = "Email deve ser válido")
     @Size(max = 100, message = "Email deve ter no máximo 100 caracteres")
     @Column(name = "email", length = 100)
     private String email;
-
+    
     @Column(name = "sexo", length = 1)
     private Character sexo;
-
+    
     @Column(name = "data_cadastro")
     private LocalDateTime dataCadastro;
-
+    
     @Column(name = "ativo")
     private Boolean ativo = true;
 
     @Column(name = "foto")
     private String foto;
-
+    
     @Transient
     private Integer idade;
 
@@ -92,16 +93,16 @@ public class Pessoa implements Serializable {
     @CollectionTable(name = "pessoa_sacramento", joinColumns = @JoinColumn(name = "pessoa_id"))
     @Column(name = "sacramento", nullable = true)
     private List<Sacramento> sacramentos;
-
+    
     @Column(name = "naturalidade", length = 100)
     private String naturalidade;
-
+    
     @Column(name = "filiacao_pai", length = 100)
     private String filiacaoPai;
-
+    
     @Column(name = "filiacao_mae", length = 100)
     private String filiacaoMae;
-
+    
     /** Relacionamento com o pai (se cadastrado como pessoa). */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pai_id")
@@ -111,31 +112,31 @@ public class Pessoa implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mae_id")
     private Pessoa mae;
-
+    
     /** Lista de filhos onde esta pessoa é o pai. */
     @OneToMany(mappedBy = "pai", fetch = FetchType.LAZY)
     private Set<Pessoa> filhosDoPai = new HashSet<>();
-
+    
     /** Lista de filhos onde esta pessoa é a mãe. */
     @OneToMany(mappedBy = "mae", fetch = FetchType.LAZY)
     private Set<Pessoa> filhosDaMae = new HashSet<>();
-
+    
     @Enumerated(EnumType.STRING)
     @Column(name = "escolaridade", length = 50)
     private Escolaridade escolaridade;
 
     @Column(name = "curso", length = 100) // Se estudante ou para formação
     private String curso;
-
+    
     @Column(name = "instituicao_ensino", length = 100) // Se estudante ou para formação
     private String instituicaoEnsino;
-
+    
     @Column(name = "religiao", length = 100)
     private String religiao;
-
+    
     @Column(name = "igreja_frequenta", length = 100)
     private String igrejaFrequenta;
-
+    
     @Column(name = "movimento_participou", length = 200) // Pode ser mais de um, separado por vírgula, ou uma descrição
     private String movimentoParticipou;
 
@@ -145,20 +146,20 @@ public class Pessoa implements Serializable {
      * - TRANSFERIDO_SAIDA  : transferido para outra paróquia; NÃO pode trabalhar no encontro.
      * - TRANSFERIDO_ENTRADA: aceito vindo de outra paróquia; pode trabalhar no encontro.
      * - RETORNADO          : voltou para a paróquia de origem; pode trabalhar no encontro.
-     */
+    */
     @Enumerated(EnumType.STRING)
     @Column(name = "status_transferencia", length = 30, nullable = false)
     private StatusTransferencia statusTransferencia = StatusTransferencia.ATIVO_ORIGEM;
-
+    
     /** Nome da paróquia de origem quando o seguidor veio de outra paróquia. */
     @Size(max = 150, message = "Paróquia de origem deve ter no máximo 150 caracteres")
     @Column(name = "paroquia_origem", length = 150)
     private String paroquiaOrigem;
-
+    
     /** Histórico de transferências deste seguidor. */
     @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Transferencia> transferencias = new ArrayList<>();
-
+    
     // Construtores
     public Pessoa() {
         this.dataCadastro = LocalDateTime.now();
@@ -169,19 +170,19 @@ public class Pessoa implements Serializable {
         this.filhosDoPai = new HashSet<>();
         this.filhosDaMae = new HashSet<>();
     }
-
+    
     public Pessoa(String nome, String cpf, LocalDate dataNascimento) {
         this();
         this.nome = nome;
         this.cpf = cpf;
         this.dataNascimento = dataNascimento;
     }
-
+    
     // Getters e Setters
     public Long getId() {
         return id;
     }
-
+    
     public void setId(Long id) {
         this.id = id;
     }
@@ -189,15 +190,15 @@ public class Pessoa implements Serializable {
     public String getNome() {
         return nome;
     }
-
+    
     public void setNome(String nome) {
         this.nome = nome;
     }
-
+    
     public String getCpf() {
         return cpf;
     }
-
+    
     public void setCpf(String cpf) {
         this.cpf = cpf;
     }
@@ -205,15 +206,15 @@ public class Pessoa implements Serializable {
     public LocalDate getDataNascimento() {
         return dataNascimento;
     }
-
+    
     public void setDataNascimento(LocalDate dataNascimento) {
         this.dataNascimento = dataNascimento;
     }
-
+    
     public String getEndereco() {
         return endereco;
     }
-
+    
     public void setEndereco(String endereco) {
         this.endereco = endereco;
     }
@@ -221,15 +222,15 @@ public class Pessoa implements Serializable {
     public String getTelefone() {
         return telefone;
     }
-
+    
     public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
-
+    
     public String getEmail() {
         return email;
     }
-
+    
     public void setEmail(String email) {
         this.email = email;
     }
@@ -237,7 +238,7 @@ public class Pessoa implements Serializable {
     public Character getSexo() {
         return sexo;
     }
-
+    
     public void setSexo(Character sexo) {
         this.sexo = sexo;
     }
@@ -253,7 +254,7 @@ public class Pessoa implements Serializable {
     public Boolean getAtivo() {
         return ativo;
     }
-
+    
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
     }
@@ -265,22 +266,22 @@ public class Pessoa implements Serializable {
     public void setFoto(String foto) {
         this.foto = foto;
     }
-
+    
     public Integer getIdade() {
         if (this.dataNascimento != null) {
             return java.time.Period.between(this.dataNascimento, java.time.LocalDate.now()).getYears();
         }
         return null;
     }
-
+    
     public void setIdade(Integer idade) {
         this.idade = idade;
     }
-
+    
     public List<Sacramento> getSacramentos() {
-		return sacramentos;
+        return sacramentos;
 	}
-
+    
 	public void setSacramentos(List<Sacramento> sacramentos) {
 		this.sacramentos = sacramentos;
 	}
@@ -288,15 +289,15 @@ public class Pessoa implements Serializable {
 	public String getNaturalidade() {
 		return naturalidade;
 	}
-
+    
 	public void setNaturalidade(String naturalidade) {
 		this.naturalidade = naturalidade;
 	}
-
+    
 	public String getFiliacaoPai() {
-		return filiacaoPai;
+        return filiacaoPai;
 	}
-
+    
 	public void setFiliacaoPai(String filiacaoPai) {
 		this.filiacaoPai = filiacaoPai;
 	}
@@ -306,73 +307,73 @@ public class Pessoa implements Serializable {
 	}
 
 	public void setFiliacaoMae(String filiacaoMae) {
-		this.filiacaoMae = filiacaoMae;
+        this.filiacaoMae = filiacaoMae;
 	}
 
     public Escolaridade getEscolaridade() {
-		return escolaridade;
+        return escolaridade;
 	}
 
 	public void setEscolaridade(Escolaridade escolaridade) {
-		this.escolaridade = escolaridade;
+        this.escolaridade = escolaridade;
 	}
-
+    
 	public String getCurso() {
 		return curso;
 	}
-
+    
 	public void setCurso(String curso) {
-		this.curso = curso;
+        this.curso = curso;
 	}
-
+    
 	public String getInstituicaoEnsino() {
 		return instituicaoEnsino;
 	}
-
+    
 	public void setInstituicaoEnsino(String instituicaoEnsino) {
-		this.instituicaoEnsino = instituicaoEnsino;
+        this.instituicaoEnsino = instituicaoEnsino;
 	}
 
 	public String getReligiao() {
-		return religiao;
+        return religiao;
 	}
-
+    
 	public void setReligiao(String religiao) {
 		this.religiao = religiao;
 	}
 
 	public String getIgrejaFrequenta() {
-		return igrejaFrequenta;
+        return igrejaFrequenta;
 	}
-
+    
 	public void setIgrejaFrequenta(String igrejaFrequenta) {
-		this.igrejaFrequenta = igrejaFrequenta;
+        this.igrejaFrequenta = igrejaFrequenta;
 	}
 
 	public String getMovimentoParticipou() {
-		return movimentoParticipou;
+        return movimentoParticipou;
 	}
-
+    
 	public void setMovimentoParticipou(String movimentoParticipou) {
 		this.movimentoParticipou = movimentoParticipou;
 	}
-
+    
 	public StatusTransferencia getStatusTransferencia() {
-		return statusTransferencia;
+        return statusTransferencia;
 	}
 
 	public void setStatusTransferencia(StatusTransferencia statusTransferencia) {
 		this.statusTransferencia = statusTransferencia;
 	}
-
+    
 	public String getParoquiaOrigem() {
-		return paroquiaOrigem;
+        return paroquiaOrigem;
 	}
-
+    
 	public void setParoquiaOrigem(String paroquiaOrigem) {
-		this.paroquiaOrigem = paroquiaOrigem;
+        this.paroquiaOrigem = paroquiaOrigem;
 	}
-
+    
 	public List<Transferencia> getTransferencias() {
 		return transferencias;
 	}
@@ -380,11 +381,11 @@ public class Pessoa implements Serializable {
 	public void setTransferencias(List<Transferencia> transferencias) {
 		this.transferencias = transferencias;
 	}
-
+    
 	public Pessoa getPai() {
 		return pai;
 	}
-
+    
 	public void setPai(Pessoa pai) {
 		this.pai = pai;
 	}
@@ -396,41 +397,41 @@ public class Pessoa implements Serializable {
 	public void setMae(Pessoa mae) {
 		this.mae = mae;
 	}
-
+    
 	public Set<Pessoa> getFilhosDoPai() {
 		return filhosDoPai;
 	}
-
+    
 	public void setFilhosDoPai(Set<Pessoa> filhosDoPai) {
-		this.filhosDoPai = filhosDoPai;
+        this.filhosDoPai = filhosDoPai;
 	}
 
 	public Set<Pessoa> getFilhosDaMae() {
-		return filhosDaMae;
+        return filhosDaMae;
 	}
-
+    
 	public void setFilhosDaMae(Set<Pessoa> filhosDaMae) {
-		this.filhosDaMae = filhosDaMae;
+        this.filhosDaMae = filhosDaMae;
 	}
 
 	/**
 	 * Indica se este seguidor pode ser inscrito como trabalhador em um encontro.
 	 * Seguidores com status TRANSFERIDO_SAIDA (que saíram desta paróquia)
-	 * não podem trabalhar em nenhum encontro.
+     * não podem trabalhar em nenhum encontro.
 	 */
-	@Transient
+    @Transient
 	public boolean podeTrabalharNoEncontro() {
-		return statusTransferencia != StatusTransferencia.TRANSFERIDO_SAIDA;
+        return statusTransferencia != StatusTransferencia.TRANSFERIDO_SAIDA;
 	}
-
+    
 	/**
-	 * Retorna todos os filhos desta pessoa (tanto do lado paterno quanto materno).
-	 */
+     * Retorna todos os filhos desta pessoa (tanto do lado paterno quanto materno).
+    */
 	@Transient
 	public Set<Pessoa> getTodosFilhos() {
 		Set<Pessoa> todosFilhos = new HashSet<>();
 		if (filhosDoPai != null) {
-			todosFilhos.addAll(filhosDoPai);
+            todosFilhos.addAll(filhosDoPai);
 		}
 		if (filhosDaMae != null) {
 			todosFilhos.addAll(filhosDaMae);
@@ -440,15 +441,15 @@ public class Pessoa implements Serializable {
 
 	/**
 	 * Verifica se esta pessoa tem parentesco próximo com outra pessoa.
-	 * Considera: pai/mãe, filho(a) ou irmão(ã).
+     * Considera: pai/mãe, filho(a) ou irmão(ã).
 	 * 
-	 * @param outraPessoa A pessoa a ser verificada
-	 * @return true se houver parentesco próximo, false caso contrário
-	 */
+     * @param outraPessoa A pessoa a ser verificada
+     * @return true se houver parentesco próximo, false caso contrário
+    */
 	@Transient
 	public boolean ehParenteProximoDe(Pessoa outraPessoa) {
 		if (outraPessoa == null || outraPessoa.getId() == null) {
-			return false;
+            return false;
 		}
 		
 		// Não pode ser a mesma pessoa
@@ -463,16 +464,16 @@ public class Pessoa implements Serializable {
 		}
 		if (outraPessoa.getMae() != null && outraPessoa.getMae().getId() != null 
 				&& this.id != null && this.id.equals(outraPessoa.getMae().getId())) {
-			return true;
+                    return true;
 		}
 		
 		// Verifica se esta pessoa é filho(a) da outra
 		if (this.pai != null && this.pai.getId() != null 
 				&& this.pai.getId().equals(outraPessoa.getId())) {
-			return true;
+                    return true;
 		}
 		if (this.mae != null && this.mae.getId() != null 
-				&& this.mae.getId().equals(outraPessoa.getId())) {
+        && this.mae.getId().equals(outraPessoa.getId())) {
 			return true;
 		}
 		
@@ -509,7 +510,7 @@ public class Pessoa implements Serializable {
         }
     }
 
-
+    
     // Equals e HashCode
     @Override
     public boolean equals(Object o) {
@@ -521,17 +522,35 @@ public class Pessoa implements Serializable {
         return Objects.equals(id, pessoa.id) &&
                 Objects.equals(cpf, pessoa.cpf);
     }
-
+    
     @Override
     public int hashCode() {
         return Objects.hash(id, cpf);
     }
-
+    
     @Override
 	public String toString() {
 		return "Pessoa [id=" + id + ", nome=" + nome + ", cpf=" + cpf + ", dataNascimento=" + dataNascimento
 				+ ", endereco=" + endereco + ", telefone=" + telefone + ", email=" + email + ", sexo=" + sexo
 				+ ", dataCadastro=" + dataCadastro + ", ativo=" + ativo + ", foto=" + foto + ", idade=" + idade + "]";
 	}
+    @Override
+    public String toAuditString() {
+        return "id=" + id
+            + " | nome=" + nome
+            + " | cpf=" + (cpf != null ? cpf.replaceAll("(\\d{3})\\.\\d{3}\\.\\d{3}", "$1.***.***") : null)
+            + " | dataNasc=" + dataNascimento
+            + " | sexo=" + sexo
+            + " | telefone=" + telefone
+            + " | email=" + email
+            + " | endereco=" + endereco
+            + " | naturalidade=" + naturalidade
+            + " | filiacaoPai=" + filiacaoPai
+            + " | pai=" + (pai != null ? pai.getId() + "/" + pai.getNome() : null)
+            + " | filiacaoMae=" + filiacaoMae
+            + " | mae=" + (mae != null ? mae.getId() + "/" + mae.getNome() : null)
+            + " | ativo=" + ativo
+            + " | statusTransferencia=" + statusTransferencia;
+    }
 }
 
