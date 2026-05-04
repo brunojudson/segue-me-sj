@@ -248,15 +248,6 @@
                                                  update="dlgDetalhesContent"
                                                  oncomplete="PF('dlgDetalhes').show()"
                                                  styleClass="action-button-secondary-table action-btn" />
-                                
-                                <p:commandButton icon="pi pi-check-circle" title="Fechar pedido"
-                                                 ariaLabel="Fechar pedido"
-                                                 actionListener="#{vendaPedidoController.selecionarPedido(pedido)}"
-                                                 process="@this"
-                                                 update="dlgFecharPedidoConsultaContent dlgFecharPedidoConsulta"
-                                                 oncomplete="PF('dlgFecharPedidoConsulta').show()"
-                                                 styleClass="action-button-primary-table action-btn"
-                                                 rendered="#{pedido.status == 'ABERTO'}" />
                             </div>
                         </p:column>
                     </p:dataTable>
@@ -281,13 +272,13 @@
                             <p:tab title="Informações do Pedido">
                                 <div class="dialog-tab-content">
                                     <!-- Card de Resumo -->
-                                    <div class="modal-pessoa-header" style="border-radius: 8px; margin-bottom: 1.5rem;">
-                                        <div class="modal-pessoa-info-principal">
-                                            <div class="modal-pessoa-meta">Pedido</div>
+                                    <div class="modal-pessoa-header" style="border-radius: 8px; margin-bottom: 1.5rem; align-items: center;">
+                                        <div class="modal-pessoa-info-principal" style="flex-direction: row; align-items: center; gap: 0.6rem;">
+                                            <div class="modal-pessoa-meta" style="margin: 0;">Pedido</div>
                                             <h2 class="modal-pessoa-nome">#{vendaPedidoController.pedidoSelecionado.numeroPedido}</h2>
                                         </div>
-                                        <div class="modal-pessoa-actions">
-                                            <div class="modal-pessoa-meta">Valor Total</div>
+                                        <div class="modal-pessoa-actions" style="align-items: center; gap: 0.6rem;">
+                                            <div class="modal-pessoa-meta" style="margin: 0;">Valor Total</div>
                                             <h2 class="modal-pessoa-nome">
                                                 <h:outputText value="#{vendaPedidoController.pedidoSelecionado.valorTotal}">
                                                     <f:convertNumber type="currency" currencySymbol="R$ " />
@@ -298,10 +289,10 @@
 
                                     <div class="info-grid">
                                         <div class="info-item">
-                                            <label>Encontro:</label>
-                                            <span class="team-badge">
-                                                <i class="pi pi-calendar"></i>
-                                                #{vendaPedidoController.pedidoSelecionado.encontro.nome}
+                                            <label>Status:</label>
+                                            <span class="status-badge #{vendaPedidoController.pedidoSelecionado.status == 'PAGO' ? 'pago' : vendaPedidoController.pedidoSelecionado.status == 'AGUARDO_PAGAMENTO' ? 'aguardando' : vendaPedidoController.pedidoSelecionado.status == 'CANCELADO' ? 'cancelado' : 'aberto'}">
+                                                <i class="pi #{vendaPedidoController.pedidoSelecionado.status == 'PAGO' ? 'pi-check-circle' : vendaPedidoController.pedidoSelecionado.status == 'CANCELADO' ? 'pi-times-circle' : vendaPedidoController.pedidoSelecionado.status == 'AGUARDO_PAGAMENTO' ? 'pi-clock' : 'pi-circle-fill'}"></i>
+                                                #{vendaPedidoController.pedidoSelecionado.status.descricao}
                                             </span>
                                         </div>
                                         
@@ -346,12 +337,12 @@
                                                 <h:outputText value="-" rendered="#{vendaPedidoController.pedidoSelecionado.dataFechamento == null}" styleClass="table-text-muted" />
                                             </div>
                                         </div>
-                                        
+
                                         <div class="info-item">
-                                            <label>Status:</label>
-                                            <span class="status-badge #{vendaPedidoController.pedidoSelecionado.status == 'PAGO' ? 'pago' : vendaPedidoController.pedidoSelecionado.status == 'AGUARDO_PAGAMENTO' ? 'aguardando' : vendaPedidoController.pedidoSelecionado.status == 'CANCELADO' ? 'cancelado' : 'aberto'}">
-                                                <i class="pi #{vendaPedidoController.pedidoSelecionado.status == 'PAGO' ? 'pi-check-circle' : vendaPedidoController.pedidoSelecionado.status == 'CANCELADO' ? 'pi-times-circle' : vendaPedidoController.pedidoSelecionado.status == 'AGUARDO_PAGAMENTO' ? 'pi-clock' : 'pi-circle-fill'}"></i>
-                                                #{vendaPedidoController.pedidoSelecionado.status.descricao}
+                                            <label>Encontro:</label>
+                                            <span class="event-badge" style="color: #fff !important">
+                                                <i class="pi pi-calendar"></i>
+                                                #{vendaPedidoController.pedidoSelecionado.encontro.nome}
                                             </span>
                                         </div>
                                         
@@ -427,6 +418,65 @@
                                     </p:dataTable>
                                 </div>
                             </p:tab>
+
+                            <!-- Tab Fechar Pedido (só aparece quando status é ABERTO) -->
+                            <p:tab title="💳 Fechar Pedido"
+                                   rendered="#{vendaPedidoController.pedidoSelecionado != null and vendaPedidoController.pedidoSelecionado.status == 'ABERTO'}">
+                                <div class="dialog-tab-content">
+
+                                    <div class="venda-summary-card" style="margin-bottom: 1.25rem;">
+                                        <div class="venda-summary-grid">
+                                            <strong>Pedido:</strong>
+                                            <span class="id-badge">#{vendaPedidoController.pedidoSelecionado.numeroPedido}</span>
+                                            <strong>Trabalhador:</strong>
+                                            <span>#{vendaPedidoController.pedidoSelecionado.trabalhadorResponsavel.nomeExibicao}</span>
+                                            <strong>Valor Total:</strong>
+                                            <span class="price-value">
+                                                <h:outputText value="#{vendaPedidoController.pedidoSelecionado.valorTotal}">
+                                                    <f:convertNumber type="currency" currencySymbol="R$ " />
+                                                </h:outputText>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <p:separator />
+
+                                    <div class="venda-checkbox-row" style="margin: 0.75rem 0;">
+                                        <p:selectBooleanCheckbox id="pagarAgoraInline" value="#{vendaPedidoController.pagarAgora}">
+                                            <p:ajax update="pnlPagamentoInline" />
+                                        </p:selectBooleanCheckbox>
+                                        <label for="pagarAgoraInline">Receber pagamento agora</label>
+                                    </div>
+
+                                    <h:panelGroup id="pnlPagamentoInline"
+                                                  style="#{not vendaPedidoController.pagarAgora ? 'display:none;' : ''}">
+                                        <div class="info-item" style="margin-bottom: 1rem;">
+                                            <label for="formaPagamentoInline">Forma de Pagamento: *</label>
+                                            <p:selectOneMenu id="formaPagamentoInline"
+                                                             value="#{vendaPedidoController.formaPagamento}"
+                                                             required="#{vendaPedidoController.pagarAgora}"
+                                                             requiredMessage="Selecione a forma de pagamento">
+                                                <f:selectItem itemLabel="-- Selecione a forma de pagamento --" itemValue="#{null}" />
+                                                <f:selectItem itemLabel="💵 Dinheiro" itemValue="DINHEIRO" />
+                                                <f:selectItem itemLabel="📱 PIX" itemValue="PIX" />
+                                                <f:selectItem itemLabel="💳 Cartão de Débito" itemValue="DEBITO" />
+                                                <f:selectItem itemLabel="💳 Cartão de Crédito" itemValue="CREDITO" />
+                                            </p:selectOneMenu>
+                                            <p:message for="formaPagamentoInline" />
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <div class="dialog-footer-actions" style="margin-top: 1.25rem;">
+                                        <p:commandButton value="Confirmar Fechamento" icon="pi pi-check"
+                                                         actionListener="#{vendaPedidoController.fecharPedido}"
+                                                         process="@this pagarAgoraInline formaPagamentoInline"
+                                                         update="dlgDetalhesContent tblPedidos pnlTotalizadores pnlGraficos"
+                                                         oncomplete="if (!args.validationFailed) PF('dlgDetalhes').hide();"
+                                                         styleClass="action-button-primary" />
+                                    </div>
+                                </div>
+                            </p:tab>
+
                         </p:tabView>
                     </h:panelGroup>
                     
@@ -435,11 +485,6 @@
                             <p:commandButton value="Fechar" icon="pi pi-times" 
                                              onclick="PF('dlgDetalhes').hide(); return false;"
                                              styleClass="action-button-secondary" />
-                            <p:commandButton value="Fechar Pedido" icon="pi pi-check-circle" 
-                                             update="dlgFecharPedidoConsulta" 
-                                             oncomplete="PF('dlgFecharPedidoConsulta').show();"
-                                             styleClass="action-button-primary"
-                                             rendered="#{vendaPedidoController.pedidoSelecionado != null and vendaPedidoController.pedidoSelecionado.status == 'ABERTO'}" />
                         </div>
                     </f:facet>
                 </p:dialog>
